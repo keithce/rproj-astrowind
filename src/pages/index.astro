@@ -13,7 +13,7 @@ import Stats from '~/components/widgets/Stats.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 
 const metadata = {
-  title: 'AstroWind — Free template for creating websites with Astro + Tailwind CSS',
+  title: 'Resonant Projects — Amplifying your Creative Output with Frequency Resonance',
   ignoreTitleTemplate: true,
 };
 ---
@@ -25,28 +25,26 @@ const metadata = {
     actions={[
       {
         variant: 'primary',
-        text: 'Get template',
+        text: 'Start Project',
         href: 'https://github.com/onwidget/astrowind',
         target: '_blank',
-        icon: 'tabler:download',
+        icon: 'tabler:input-spark',
       },
       { text: 'Learn more', href: '#features' },
     ]}
     image={{ src: '~/assets/images/hero-image.png', alt: 'AstroWind Hero Image' }}
   >
     <Fragment slot="title">
-      Free template for <span class="hidden xl:inline">creating websites with</span>
-      <span class="text-accent dark:text-white highlight"> Astro 5.0</span> + Tailwind CSS
+      <span class="hidden xl:inline">Turn Up Your</span>
+      <span class="text-accent highlight"> Creative Frequency</span>
     </Fragment>
 
     <Fragment slot="subtitle">
       <span class="hidden sm:inline">
-        <span class="font-semibold">AstroWind</span> is a free, customizable and production-ready template for Astro 5.0
-        + Tailwind CSS.</span
-      >
-      <span class="block mb-1 sm:hidden font-bold text-blue-600">AstroWind: Production-ready.</span>
-      Suitable for Startups, Small Business, SaaS websites, Professional Portfolios, Marketing websites, Landing Pages &
-      Blogs.
+        <span class="font-bold text-myColor-100">From Vision to Vibration - Creating Work That Moves People</span>
+      <span class="block mb-1 dark:text-myColor-50">Guidance through your technical and artistic landscape
+      to help your work achieve its fullest resonance.</span>
+        </span>
     </Fragment>
   </Hero>
 
@@ -59,44 +57,32 @@ const metadata = {
   <Features
     id="features"
     tagline="Features"
-    title="What you get with AstroWind"
+    title="How We Create Resonance"
     subtitle="One of the most professional and comprehensive templates currently on the market. Most starred & forked Astro theme in 2022, 2023 and 2024."
     items={[
       {
-        title: 'Astro + Tailwind CSS Integration',
+        title: 'Resonant Rhythm (Audio)',
         description:
-          'A seamless integration between two great frameworks that offer high productivity, performance and versatility.',
-        icon: 'tabler:brand-tailwind',
+          'We blend classical musicianship with digital engineering precision to create sound that moves people. From electronic production to Mastering for Apple Music, our deep understanding of both the technical and emotional aspects of audio ensures your music resonates with authentic power.',
+        icon: 'tabler:music',
       },
       {
-        title: 'Ready-to-use Components',
+        title: 'Resonant Color (Photography)',
         description:
-          'Widgets made with Tailwind CSS ready to be used in Marketing Websites, SaaS, Blogs, Personal Profiles, Small Business...',
-        icon: 'tabler:components',
+          'Through meticulous color grading and visual enhancement, we help your visual story achieve its perfect tonal balance. Our approach combines traditional photography foundations with cutting-edge digital expertise to shape emotion and drive narrative.',
+        icon: 'tabler:camera',
       },
       {
-        title: 'Best Practices',
+        title: 'Resonant Motion (Video)',
         description:
-          'Creating secure, efficient, and user-friendly websites that deliver exceptional experiences and lasting value.',
-        icon: 'tabler:list-check',
+          'We bring dynamic life to your vision through expert post-production and visual effects, informed by natural rhythms and precise timing. Every frame is crafted to maintain your audience\'s engagement while serving your story\'s purpose.',
+        icon: 'tabler:movie',
       },
       {
-        title: 'Excellent Page Speed',
+        title: 'Resonant Design (Consulting)',
         description:
-          'Having a good page speed impacts organic search ranking, improves user experience (UI/UX) and increase conversion rates.',
-        icon: 'tabler:rocket',
-      },
-      {
-        title: 'Search Engine Optimization (SEO)',
-        description:
-          "SEO lies in its ability to enhance a website's visibility, driving organic traffic and enabling it to reach a wider audience.",
-        icon: 'tabler:arrows-right-left',
-      },
-      {
-        title: 'Open to new ideas and contributions',
-        description:
-          'Embracing a culture that is open to new ideas and contributions is integral fostering innovation, collaboration, and a dynamic user experience.',
-        icon: 'tabler:bulb',
+          'Our unique fusion of technical expertise and artistic sensitivity creates powerful yet intuitive systems for creators. From audio plugins to complete post-production workflows, we design tools that enhance rather than hinder your creative process.',
+        icon: 'tabler:checklist',
       },
     ]}
   />

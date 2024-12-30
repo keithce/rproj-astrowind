@@ -7,6 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
+        myColor: {
+          50: '#f1e9f0',
+          100: '#e2d4e0',
+          200: '#c5a9c1',
+          300: '#a87da3',
+          400: '#8b5284',
+          500: '#6e2765',
+          600: '#581f51',
+          700: '#42173d',
+          800: '#2c1028',
+          900: '#160814',
+        },
         primary: 'var(--aw-color-primary)',
         secondary: 'var(--aw-color-secondary)',
         accent: 'var(--aw-color-accent)',
