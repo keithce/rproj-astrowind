@@ -11,6 +11,7 @@ import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import Stats from '~/components/widgets/Stats.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getPermalink } from '~/utils/permalinks';
 
 const metadata = {
   title: 'Resonant Projects — Amplifying your Creative Output with Frequency Resonance',
@@ -19,14 +20,13 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero Widget ******************* -->
 
   <Hero
     actions={[
       {
         variant: 'primary',
         text: 'Start Project',
-        href: 'https://github.com/onwidget/astrowind',
+        href: getPermalink('/contact#form'),
         target: '_blank',
         icon: 'tabler:input-spark',
       },
@@ -49,7 +49,60 @@ const metadata = {
     </Fragment>
   </Hero>
 
-  <!-- Note Widget ******************* -->
+  <Content
+    id="about"
+    columns={3}
+    items={[
+      {
+        icon: 'tabler:brand-instagram',
+        callToAction: {
+          target: '_blank',
+          text: 'Photography Portfolio',
+          href: 'https://resonantrhythm.pixieset.com/resonantcolorportfolio/',
+        },
+      },
+      {
+        icon: 'tabler:brand-github',
+        callToAction: {
+          target: '_blank',
+          text: 'Github',
+          href: 'https://github.com/keithce',
+        },
+      },
+      {
+        icon: 'tabler:brand-soundcloud',
+        callToAction: {
+          target: '_blank',
+          text: 'Music Portfolio',
+          href: 'https://play.reelcrafter.com/resonantrhythm/portfolio',
+        },
+      },
+    ]}
+    image={{
+      src: '~/assets/images/portrait_by_tutti.jpg',
+      alt: 'Portrait of Keith. Photographed by Tutti del Monte',
+      loading: 'eager',
+    }}
+  >
+    <Fragment slot="content">
+      <h2 class="text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2">About me</h2>
+      <p>
+        Welcome to my creative journey. My work is a testament to my commitment to bringing ideas to life, where each
+        pixel becomes a brushstroke in the canvas of imagination.
+      </p>
+      <br />
+      <p>
+        I find inspiration in the world around me, whether through the pages of a captivating novel, the intricate
+        details of typography, or the vibrant hues of nature during my outdoor escapades.
+      </p>
+      <br />
+      <p>If you're curious to dive deeper into my work, you can follow me:</p>
+    </Fragment>
+
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-blue-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Content>
 
   <Note />
 
