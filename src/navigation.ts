@@ -50,7 +50,7 @@ export const headerData = {
     },
     {
       text: 'My Story',
-      href: getPermalink('/about'),      
+      href: getPermalink('/about'),
     },
     // {
     //   text: 'Landing',
