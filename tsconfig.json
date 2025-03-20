@@ -2,10 +2,13 @@
   "extends": "astro/tsconfigs/base",
   "compilerOptions": {
     "strictNullChecks": true,
+    // "module": "Node16",
+    // "moduleResolution": "Node16",
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["src/*"],
+      "@/*": ["src/*"],
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
