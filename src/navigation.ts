@@ -27,30 +27,22 @@ export const headerData = {
       text: 'Services',
       links: [
         {
-          text: 'Features (Anchor Link)',
-          href: getPermalink('/#features'),
+          text: 'Design',
+          href: getPermalink('/design'),
         },
         {
-          text: 'Services',
-          href: getPermalink('/services'),
+          text: 'Rhythm',
+          href: getPermalink('/rhythm'),
         },
         {
-          text: 'Pricing',
-          href: getPermalink('/pricing'),
+          text: 'Color',
+          href: getPermalink('/color'),
         },
         {
-          text: 'My Story',
-          href: getPermalink('/about'),
-        },
-        {
-          text: 'Contact',
-          href: getPermalink('/contact'),
+          text: 'Motion',
+          href: getPermalink('/motion'),
         },
       ],
-    },
-    {
-      text: 'My Story',
-      href: getPermalink('/about'),
     },
     // {
     //   text: 'Landing',
@@ -97,6 +89,10 @@ export const headerData = {
           href: getPermalink('astro', 'tag'),
         },
       ],
+    },
+    {
+      text: 'My Story',
+      href: getPermalink('/about'),
     },
   ],
   actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), target: '_blank' }],

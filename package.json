@@ -1,7 +1,7 @@
 {
-  "name": "@onwidget/astrowind",
-  "version": "1.0.0-beta.49",
-  "description": "AstroWind: A free template using Astro 5.0 and Tailwind CSS. Astro starter theme.",
+  "name": "@keithce/rproj-astrowind",
+  "version": "0.1",
+  "description": "Resonant Projects - How we bring resonance to your Creative Projects",
   "type": "module",
   "private": true,
   "engines": {
