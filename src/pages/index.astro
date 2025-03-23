@@ -48,6 +48,47 @@ const metadata = {
     </Fragment>
   </Hero>
 
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="features"
+    tagline="Services"
+    title="How We Create Resonance"
+    subtitle="Harmonizing technical expertise with artistic vision to help creators achieve their highest potential. Each service is crafted to enhance your creative process and amplify your work's impact."
+    items={[
+      {
+        title: 'Resonant Design (Consulting)',
+        description:
+          'Our unique fusion of technical expertise and artistic sensitivity creates powerful yet intuitive systems for creators. From audio plugins to complete post-production workflows, we design tools that enhance rather than hinder your creative process.',
+        icon: 'tabler:checklist',
+      },
+      {
+        title: 'Resonant Rhythm (Audio)',
+        description:
+          'We blend classical musicianship with digital engineering precision to create sound that moves people. From electronic production to Mastering for Apple Music, our deep understanding of both the technical and emotional aspects of audio ensures your music resonates with authentic power.',
+        icon: 'tabler:music',
+      },
+      {
+        title: 'Resonant Color (Photography)',
+        description:
+          'Through meticulous color grading and visual enhancement, we help your visual story achieve its perfect tonal balance. Our approach combines traditional photography foundations with cutting-edge digital expertise to shape emotion and drive narrative.',
+        icon: 'tabler:camera',
+      },
+      {
+        title: 'Resonant Motion (Video)',
+        description:
+          "We bring dynamic life to your vision through expert post-production and visual effects, informed by natural rhythms and precise timing. Every frame is crafted to maintain your audience's engagement while serving your story's purpose.",
+        icon: 'tabler:movie',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-slate-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Features>
+
+  <Note />
+
   <Content
     id="about"
     columns={3}
@@ -99,46 +140,9 @@ const metadata = {
     </Fragment>
 
     <Fragment slot="bg">
-      <div class="absolute inset-0 bg-blue-50 dark:bg-transparent"></div>
+      <div class="absolute inset-0 bg-myColor-50 dark:bg-transparent"></div>
     </Fragment>
   </Content>
-
-  <Note />
-
-  <!-- Features Widget *************** -->
-
-  <Features
-    id="features"
-    tagline="Features"
-    title="How We Create Resonance"
-    subtitle="One of the most professional and comprehensive templates currently on the market. Most starred & forked Astro theme in 2022, 2023 and 2024."
-    items={[
-      {
-        title: 'Resonant Design (Consulting)',
-        description:
-          'Our unique fusion of technical expertise and artistic sensitivity creates powerful yet intuitive systems for creators. From audio plugins to complete post-production workflows, we design tools that enhance rather than hinder your creative process.',
-        icon: 'tabler:checklist',
-      },
-      {
-        title: 'Resonant Rhythm (Audio)',
-        description:
-          'We blend classical musicianship with digital engineering precision to create sound that moves people. From electronic production to Mastering for Apple Music, our deep understanding of both the technical and emotional aspects of audio ensures your music resonates with authentic power.',
-        icon: 'tabler:music',
-      },
-      {
-        title: 'Resonant Color (Photography)',
-        description:
-          'Through meticulous color grading and visual enhancement, we help your visual story achieve its perfect tonal balance. Our approach combines traditional photography foundations with cutting-edge digital expertise to shape emotion and drive narrative.',
-        icon: 'tabler:camera',
-      },
-      {
-        title: 'Resonant Motion (Video)',
-        description:
-          "We bring dynamic life to your vision through expert post-production and visual effects, informed by natural rhythms and precise timing. Every frame is crafted to maintain your audience's engagement while serving your story's purpose.",
-        icon: 'tabler:movie',
-      },
-    ]}
-  />
 
   <Features3
     title="Skills"

@@ -4,43 +4,26 @@ export const headerData = {
   links: [
     {
       text: 'Home',
-      links: [
-        {
-          text: 'About',
-          href: getPermalink('/#about'),
-        },
-        {
-          text: 'Resume',
-          href: getPermalink('/#resume'),
-        },
-        {
-          text: 'Porfolio',
-          href: getPermalink('/#portfolio'),
-        },
-        {
-          text: 'Blog',
-          href: getPermalink('/#blog'),
-        },
-      ],
+      href: getPermalink('/'),
     },
     {
       text: 'Services',
       links: [
         {
           text: 'Design',
-          href: getPermalink('/design'),
+          href: getPermalink('/services/design'),
         },
         {
           text: 'Rhythm',
-          href: getPermalink('/rhythm'),
+          href: getPermalink('/services/rhythm'),
         },
         {
           text: 'Color',
-          href: getPermalink('/color'),
+          href: getPermalink('/services/color'),
         },
         {
           text: 'Motion',
-          href: getPermalink('/motion'),
+          href: getPermalink('/services/motion'),
         },
       ],
     },
