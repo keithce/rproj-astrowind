@@ -7,7 +7,7 @@ import Features from '~/components/widgets/Features.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import Testimonials from '~/components/widgets/Testimonials.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
-import Contact from '~/components/widgets/Contact.astro';
+import NotionContact from '~/components/widgets/NotionContact.astro';
 
 const metadata = {
   title: 'Rhythm',
@@ -35,12 +35,21 @@ const metadata = {
 
   <Steps
     title="How We Bring Your Music to Life"
-    items={[{ title: 'Idea / Producing', description: 'Spark your inspiration and propel your project forward.' }, { title: 'Arranging and Ear Candy', description: 'Add the magic touches that make your track stand out.' }, { title: 'Mixing / Mastering', description: 'Polish and finalize your song for release.' }, { title: 'Choosing a Label or Self-Releasing', description: 'Get your music into the world with confidence.' }]}
+    items={[
+      { title: 'Idea / Producing', description: 'Spark your inspiration and propel your project forward.' },
+      { title: 'Arranging and Ear Candy', description: 'Add the magic touches that make your track stand out.' },
+      { title: 'Mixing / Mastering', description: 'Polish and finalize your song for release.' },
+      { title: 'Choosing a Label or Self-Releasing', description: 'Get your music into the world with confidence.' },
+    ]}
   />
 
   <Features
     title="Resonant Rhythm's Finishing Service"
-    items={[{ title: 'Go back to the basics of the original vision for your song' }, { title: 'Polish your song\'s intro to a catchy label-worthy standard' }, { title: 'Master the track until you\'re entirely happy with it' }]}
+    items={[
+      { title: 'Go back to the basics of the original vision for your song' },
+      { title: "Polish your song's intro to a catchy label-worthy standard" },
+      { title: "Master the track until you're entirely happy with it" },
+    ]}
   />
 
   <CallToAction
@@ -50,26 +59,55 @@ const metadata = {
 
   <Testimonials
     title="What Artists Are Saying"
-    testimonials={[{ testimonial: "It's unbelievable how much the song has improved. Everything is much more intense, feels really expanded on the high end but the low end is still in the middle as I like. Somehow I think now I really understand what you meant you could do with the bass, like round it you said. I have been testing it in different sound systems, and I really love it.", name: 'Artist 1' }, { testimonial: "I couldn't be happier with Keith's service. He provided me with very positive and in-depth feedback on my latest song, which has been incredibly helpful in improving my craft. He took the time to understand my needs and personal preferences, which made the experience feel personalized and tailored to my specific goals.", name: 'Artist 2' }, { testimonial: "I highly recommend Keith's services to anyone looking to improve their music. He is a skilled professional who truly cares about his clients, and I am grateful for the guidance he provided me.", name: 'Artist 3' }]}
+    testimonials={[
+      {
+        testimonial:
+          "It's unbelievable how much the song has improved. Everything is much more intense, feels really expanded on the high end but the low end is still in the middle as I like. Somehow I think now I really understand what you meant you could do with the bass, like round it you said. I have been testing it in different sound systems, and I really love it.",
+        name: 'Artist 1',
+      },
+      {
+        testimonial:
+          "I couldn't be happier with Keith's service. He provided me with very positive and in-depth feedback on my latest song, which has been incredibly helpful in improving my craft. He took the time to understand my needs and personal preferences, which made the experience feel personalized and tailored to my specific goals.",
+        name: 'Artist 2',
+      },
+      {
+        testimonial:
+          "I highly recommend Keith's services to anyone looking to improve their music. He is a skilled professional who truly cares about his clients, and I am grateful for the guidance he provided me.",
+        name: 'Artist 3',
+      },
+    ]}
   />
 
   <FAQs
     title="Frequently Asked Questions"
-    items={[{ title: 'What happens after we have our initial call?', description: 'You\'ll share your track and vision with me during our first call. If we\'re a good fit to move forward, I\'ll send you a contract and details to make the first payment. Then I\'ll provide a detailed document of feedback for you to get started.' }, { title: 'What if I don\'t feel ready to improve my track yet?', description: 'There is no time like the present! Often, the reason we don\'t feel ready to take action is because we don\'t have clear next steps. It\'s easy to start a project- to complete it is the real victory.' }, { title: 'How long does it take to complete a song?', description: 'On average, at a steady pace, a song takes around one month from start to finish, completing the required step once per week. However, if you have a deadline, we can complete your track as quickly as one week!' }, { title: 'What if I never like my song?!', description: 'If after giving everything to a track, you just can\'t fall in love with it, I\'ll offer 50% off the initial payment of a new contract to start over on a brand new record.' }, { title: 'What\'s your refund policy?', description: 'If after the first round of written feedback, you are not satisfied then I will refund the initial payment. Once the project moves beyond this stage no refund will be issued as my time has been invested.' }]}
+    items={[
+      {
+        title: 'What happens after we have our initial call?',
+        description:
+          "You'll share your track and vision with me during our first call. If we're a good fit to move forward, I'll send you a contract and details to make the first payment. Then I'll provide a detailed document of feedback for you to get started.",
+      },
+      {
+        title: "What if I don't feel ready to improve my track yet?",
+        description:
+          "There is no time like the present! Often, the reason we don't feel ready to take action is because we don't have clear next steps. It's easy to start a project- to complete it is the real victory.",
+      },
+      {
+        title: 'How long does it take to complete a song?',
+        description:
+          'On average, at a steady pace, a song takes around one month from start to finish, completing the required step once per week. However, if you have a deadline, we can complete your track as quickly as one week!',
+      },
+      {
+        title: 'What if I never like my song?!',
+        description:
+          "If after giving everything to a track, you just can't fall in love with it, I'll offer 50% off the initial payment of a new contract to start over on a brand new record.",
+      },
+      {
+        title: "What's your refund policy?",
+        description:
+          'If after the first round of written feedback, you are not satisfied then I will refund the initial payment. Once the project moves beyond this stage no refund will be issued as my time has been invested.',
+      },
+    ]}
   />
 
-  <Contact
-    id="contact"
-    title="Ready to make the leap?"
-    subtitle="Whatever your goal, Resonant Rhythm is ready to help you reach it- YOUR way. Let's work together and help you become a signed artist for your dream label today."
-    inputs={[{ type: 'text', name: 'name', label: 'Name', placeholder: 'Your Name' }, { type: 'email', name: 'email', label: 'Email', placeholder: 'you@email.com' }]}
-    textarea={{ label: 'Message', name: 'message', placeholder: 'Tell me about your project...' }}
-    button="Send Message"
-    description="I'll get back to you as soon as possible."
-    classes={{ container: 'mt-12' }}
-    isDark={false}
-    bg=""
-    disclaimer={{ label: 'I agree to the privacy policy.' }}
-    formAction="https://formspree.io/f/your-form-id"  
-  />
+  <NotionContact id="contact" classes={{ container: 'mt-12' }} isDark={false} bg="" />
 </PageLayout>

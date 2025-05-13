@@ -4,12 +4,12 @@ title: Mastering Light - Adventures with Speed Lights and On-Camera Flash
 exerpt: There's something magical about that moment when you finally understand how to shape light.
 # image:
 tags:
- - photography
+  - photography
 # metadata:
 ---
 
 # Mastering Light: Adventures with Speed Lights and On-Camera Flash
-    
+
 There's something magical about that moment when you finally understand how to shape light. For years, I relied on natural lighting or basic on-camera flashes, producing decent but often flat images. That all changed after attending the the [FCCC 2025 Annual Conference](https://dpi-sig.org/Members/f3c25/mainpage.html), where I had the incredible opportunity to learn from the renowned photographer Bobbi Lane, widely known by her moniker, "The Mistress of Light."
 
 ## The Light Bulb Moment

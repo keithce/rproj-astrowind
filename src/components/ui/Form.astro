@@ -5,11 +5,11 @@ import Button from '~/components/ui/Button.astro';
 const { inputs, textarea, disclaimer, button = 'Contact us', description = '', formAction } = Astro.props;
 ---
 
-<form action={formAction ? formAction : undefined} method={formAction ? 'POST' : undefined}>
+<form action={formAction ? formAction : undefined} method="POST">
   {
     inputs &&
       inputs.map(
-        ({ type = 'text', name, label = '', autocomplete = 'on', placeholder = '' }) =>
+        ({ type = 'text', name, label = '', autocomplete = 'on', placeholder = '', options = [], required = false }) =>
           name && (
             <div class="mb-6">
               {label && (
@@ -17,14 +17,28 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   {label}
                 </label>
               )}
-              <input
-                type={type}
-                name={name}
-                id={name}
-                autocomplete={autocomplete}
-                placeholder={placeholder}
-                class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
-              />
+              {type === 'select' ? (
+                <select
+                  name={name}
+                  id={name}
+                  required={required}
+                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                >
+                  {options.map(({ value, label }) => (
+                    <option value={value}>{label}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type={type}
+                  name={name}
+                  id={name}
+                  autocomplete={autocomplete}
+                  placeholder={placeholder}
+                  required={required}
+                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                />
+              )}
             </div>
           )
       )
@@ -41,6 +55,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           name={textarea.name ? textarea.name : 'message'}
           rows={textarea.rows ? textarea.rows : 4}
           placeholder={textarea.placeholder}
+          required={textarea.required}
           class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
         />
       </div>

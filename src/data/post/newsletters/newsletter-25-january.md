@@ -4,9 +4,9 @@ title: Newsletter - January 2025
 exerpt: This month has been filled with exploration, tech adventures, and some unexpected challenges.
 # image:
 tags:
- - newsletter
- - coding
- - tools
+  - newsletter
+  - coding
+  - tools
 # metadata:
 ---
 
@@ -83,4 +83,4 @@ Keith
 
 ---
 
-*RProj.ART Newsletter is sent monthly with updates on what I'm learning, building, and discovering in the worlds of technology, productivity, and creativity. If you know someone who might enjoy this content, feel free to forward it their way!*
+_RProj.ART Newsletter is sent monthly with updates on what I'm learning, building, and discovering in the worlds of technology, productivity, and creativity. If you know someone who might enjoy this content, feel free to forward it their way!_

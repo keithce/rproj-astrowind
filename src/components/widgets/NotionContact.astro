@@ -1,0 +1,55 @@
+---
+import Contact from './Contact.astro';
+
+const inputs = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    placeholder: 'Your name',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+    required: true,
+    placeholder: 'you@email.com',
+  },
+  {
+    name: 'service',
+    label: 'Service',
+    type: 'select',
+    required: true,
+    options: [
+      { value: '', label: 'Select a service' },
+      { value: 'Design', label: 'Design' },
+      { value: 'Rhythm', label: 'Rhythm' },
+      { value: 'Color', label: 'Color' },
+      { value: 'Motion', label: 'Motion' },
+    ],
+  },
+];
+
+const textarea = {
+  name: 'message',
+  label: 'Message',
+  required: true,
+  placeholder: 'Share your ideas, questions, or goals with us!',
+};
+
+const button = 'Start the Conversation';
+
+const description = "We love connecting with creative minds! Reach out and let's make something amazing together.";
+---
+
+<Contact
+  title="Let's Connect and Create Together!"
+  subtitle="We're excited to hear from you—share your vision and let's get started."
+  inputs={inputs}
+  textarea={textarea}
+  button={button}
+  description={description}
+  formAction="/api/submit-to-notion"
+/>
+

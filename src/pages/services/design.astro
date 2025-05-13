@@ -6,11 +6,12 @@ import Features from '~/components/widgets/Features.astro';
 import Steps from '~/components/widgets/Steps.astro';
 import Testimonials from '~/components/widgets/Testimonials.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
-import Contact from '~/components/widgets/Contact.astro';
+import NotionContact from '~/components/widgets/NotionContact.astro';
 
 const metadata = {
   title: 'Resonant Design',
-  description: 'Bespoke consulting for creator solopreneurs and small businesses. Optimize your workflow and tech stack with decades of experience.'
+  description:
+    'Bespoke consulting for creator solopreneurs and small businesses. Optimize your workflow and tech stack with decades of experience.',
 };
 ---
 
@@ -28,7 +29,7 @@ const metadata = {
     stats={[
       { amount: '20+', title: 'Years in Tech Integration', icon: 'tabler:device-desktop' },
       { amount: '100+', title: 'Businesses Empowered', icon: 'tabler:building-store' },
-      { amount: '98%', title: 'Client Satisfaction', icon: 'tabler:star' }
+      { amount: '98%', title: 'Client Satisfaction', icon: 'tabler:star' },
     ]}
   />
 
@@ -36,10 +37,26 @@ const metadata = {
     title="What We Offer"
     subtitle="Personalized consulting to help you thrive."
     items={[
-      { title: 'Workflow Optimization', description: 'Streamline your daily operations with proven systems tailored to your needs.', icon: 'tabler:settings-cog' },
-      { title: 'Tech Stack Consulting', description: 'Choose and implement the right tools for your creative business.', icon: 'tabler:stack-2' },
-      { title: 'Automation & Integration', description: 'Automate repetitive tasks and connect your favorite apps.', icon: 'tabler:api-app' },
-      { title: 'Personalized Support', description: 'Ongoing guidance and troubleshooting as your business evolves.', icon: 'tabler:heart-handshake' }
+      {
+        title: 'Workflow Optimization',
+        description: 'Streamline your daily operations with proven systems tailored to your needs.',
+        icon: 'tabler:settings-cog',
+      },
+      {
+        title: 'Tech Stack Consulting',
+        description: 'Choose and implement the right tools for your creative business.',
+        icon: 'tabler:stack-2',
+      },
+      {
+        title: 'Automation & Integration',
+        description: 'Automate repetitive tasks and connect your favorite apps.',
+        icon: 'tabler:api-app',
+      },
+      {
+        title: 'Personalized Support',
+        description: 'Ongoing guidance and troubleshooting as your business evolves.',
+        icon: 'tabler:heart-handshake',
+      },
     ]}
     columns={2}
   />
@@ -51,16 +68,29 @@ const metadata = {
       { title: 'Discovery Call', description: 'We learn about your goals, challenges, and current setup.' },
       { title: 'Personalized Plan', description: 'Receive a tailored roadmap for your workflow and tech stack.' },
       { title: 'Implementation', description: 'We guide you through setup, integration, and training.' },
-      { title: 'Ongoing Support', description: 'Continuous improvement and support as your needs grow.' }
+      { title: 'Ongoing Support', description: 'Continuous improvement and support as your needs grow.' },
     ]}
   />
 
   <Testimonials
     title="What Clients Say"
     testimonials={[
-      { name: 'Alex Rivera', job: 'Artist & Entrepreneur', testimonial: 'Resonant Design transformed my creative workflow. I save hours every week and feel more in control of my business.' },
-      { name: 'Morgan Lee', job: 'Small Business Owner', testimonial: 'The personalized tech advice was a game changer. Highly recommend for any solopreneur.' },
-      { name: 'Jamie Chen', job: 'Content Creator', testimonial: 'I finally have a system that works for me, not against me. The ongoing support is invaluable.' }
+      {
+        name: 'Alex Rivera',
+        job: 'Artist & Entrepreneur',
+        testimonial:
+          'Resonant Design transformed my creative workflow. I save hours every week and feel more in control of my business.',
+      },
+      {
+        name: 'Morgan Lee',
+        job: 'Small Business Owner',
+        testimonial: 'The personalized tech advice was a game changer. Highly recommend for any solopreneur.',
+      },
+      {
+        name: 'Jamie Chen',
+        job: 'Content Creator',
+        testimonial: 'I finally have a system that works for me, not against me. The ongoing support is invaluable.',
+      },
     ]}
   />
 
@@ -70,16 +100,5 @@ const metadata = {
     actions={[{ text: 'Contact Us', href: '#contact', variant: 'primary' }]}
   />
 
-  <Contact
-    id="contact"
-    title="Contact Resonant Design"
-    subtitle="Let's start your consultation."
-    inputs={[
-      { name: 'name', label: 'Name', type: 'text' },
-      { name: 'email', label: 'Email', type: 'email' },
-      { name: 'business', label: 'Business/Project', type: 'text' }
-    ]}
-    textarea={{ name: 'message', label: 'How can we help?' }}
-    button="Send Message"
-  />
+  <NotionContact id="contact" />
 </PageLayout>
