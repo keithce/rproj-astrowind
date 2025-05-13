@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { Client } from '@notionhq/client';
 import { z } from 'astro:content';
 
+export const config = { runtime: 'edge' };
+
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
 const ALLOWED_SERVICES = ['Design', 'Rhythm', 'Color', 'Motion'] as const;
@@ -14,7 +16,7 @@ const schema = z.object({
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const formData = await request.json();
+    const formData = await request.formData();
     const result = schema.safeParse(formData);
     if (!result.success) {
       return new Response(

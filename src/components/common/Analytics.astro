@@ -2,6 +2,7 @@
 import { GoogleAnalytics } from '@astrolib/analytics';
 import { ANALYTICS } from 'astrowind:config';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import VercelAnalytics from '@vercel/analytics/astro';
 ---
 
 {
@@ -14,3 +15,4 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 }
 
 <SpeedInsights />
+<VercelAnalytics />

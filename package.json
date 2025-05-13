@@ -30,6 +30,7 @@
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource-variable/raleway": "^5.1.0",
     "@notionhq/client": "^3.0.1",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "astro": "^5.7.12",
     "astro-embed": "^0.9.0",
@@ -40,7 +41,8 @@
     "notion-client": "^7.3.0",
     "notion-utils": "^7.3.0",
     "redis": "^5.0.1",
-    "unpic": "^3.22.0"
+    "unpic": "^3.22.0",
+    "vercel": "^25.2.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
