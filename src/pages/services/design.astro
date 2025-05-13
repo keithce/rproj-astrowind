@@ -1,11 +1,85 @@
 ---
-import Layout from '~/layouts/PageLayout.astro';
+import PageLayout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import Features from '~/components/widgets/Features.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Testimonials from '~/components/widgets/Testimonials.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import Contact from '~/components/widgets/Contact.astro';
 
 const metadata = {
-  title: 'Design',
+  title: 'Resonant Design',
+  description: 'Bespoke consulting for creator solopreneurs and small businesses. Optimize your workflow and tech stack with decades of experience.'
 };
 ---
 
-<Layout metadata={metadata}>
-  <h1>Design</h1>
-</Layout>
+<PageLayout metadata={metadata}>
+  <Hero
+    tagline="A Resonant Projects Company"
+    title="Resonant Design: Bespoke Consulting for Creators"
+    subtitle="Enhance and optimize your workflow and tech stack. Personalized technology integration for solopreneurs and small businesses."
+    actions={[{ text: 'Get Started', href: '#contact', variant: 'primary' }]}
+    image={{ src: '/assets/images/consulting-hero.webp', alt: 'Consulting session', width: 1024, height: 576 }}
+  />
+
+  <Stats
+    title="Decades of Experience, Real Results"
+    stats={[
+      { amount: '20+', title: 'Years in Tech Integration', icon: 'tabler:device-desktop' },
+      { amount: '100+', title: 'Businesses Empowered', icon: 'tabler:building-store' },
+      { amount: '98%', title: 'Client Satisfaction', icon: 'tabler:star' }
+    ]}
+  />
+
+  <Features
+    title="What We Offer"
+    subtitle="Personalized consulting to help you thrive."
+    items={[
+      { title: 'Workflow Optimization', description: 'Streamline your daily operations with proven systems tailored to your needs.', icon: 'tabler:settings-cog' },
+      { title: 'Tech Stack Consulting', description: 'Choose and implement the right tools for your creative business.', icon: 'tabler:stack-2' },
+      { title: 'Automation & Integration', description: 'Automate repetitive tasks and connect your favorite apps.', icon: 'tabler:api-app' },
+      { title: 'Personalized Support', description: 'Ongoing guidance and troubleshooting as your business evolves.', icon: 'tabler:heart-handshake' }
+    ]}
+    columns={2}
+  />
+
+  <Steps
+    title="How It Works"
+    subtitle="A simple, collaborative process."
+    items={[
+      { title: 'Discovery Call', description: 'We learn about your goals, challenges, and current setup.' },
+      { title: 'Personalized Plan', description: 'Receive a tailored roadmap for your workflow and tech stack.' },
+      { title: 'Implementation', description: 'We guide you through setup, integration, and training.' },
+      { title: 'Ongoing Support', description: 'Continuous improvement and support as your needs grow.' }
+    ]}
+  />
+
+  <Testimonials
+    title="What Clients Say"
+    testimonials={[
+      { name: 'Alex Rivera', job: 'Artist & Entrepreneur', testimonial: 'Resonant Design transformed my creative workflow. I save hours every week and feel more in control of my business.' },
+      { name: 'Morgan Lee', job: 'Small Business Owner', testimonial: 'The personalized tech advice was a game changer. Highly recommend for any solopreneur.' },
+      { name: 'Jamie Chen', job: 'Content Creator', testimonial: 'I finally have a system that works for me, not against me. The ongoing support is invaluable.' }
+    ]}
+  />
+
+  <CallToAction
+    title="Ready to Optimize Your Workflow?"
+    subtitle="Let's work together to make your next technology investment truly resonate."
+    actions={[{ text: 'Contact Us', href: '#contact', variant: 'primary' }]}
+  />
+
+  <Contact
+    id="contact"
+    title="Contact Resonant Design"
+    subtitle="Let's start your consultation."
+    inputs={[
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'email', label: 'Email', type: 'email' },
+      { name: 'business', label: 'Business/Project', type: 'text' }
+    ]}
+    textarea={{ name: 'message', label: 'How can we help?' }}
+    button="Send Message"
+  />
+</PageLayout>

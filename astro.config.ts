@@ -12,8 +12,11 @@ import compress from 'astro-compress';
 import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
+import vercelServerless from '@astrojs/vercel';
 
 import { lazyImagesRehypePlugin, readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
+
+import mcp from 'astro-mcp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,54 +25,59 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
   hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];
 
 export default defineConfig({
-  output: 'static',
+  output: 'server',
+  adapter: vercelServerless({
+    webAnalytics: {
+      enabled: true,
+    },
+    maxDuration: 4,
+    imageService: true,
+    edgeMiddleware: true,
+    isr: true,
+  }),
 
-  integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    sitemap(),
-    mdx(),
-    icon({
-      include: {
-        tabler: ['*'],
-        'flat-color-icons': [
-          'template',
-          'gallery',
-          'approval',
-          'document',
-          'advertising',
-          'currency-exchange',
-          'voice-presentation',
-          'business-contact',
-          'database',
-        ],
+  session: {
+    driver: 'redis',
+    options: {
+      url: process.env.REDIS_URL,
+    },
+  },
+
+  integrations: [tailwind({
+    applyBaseStyles: false,
+  }), sitemap(), mdx(), icon({
+    include: {
+      tabler: ['*'],
+      'flat-color-icons': [
+        'template',
+        'gallery',
+        'approval',
+        'document',
+        'advertising',
+        'currency-exchange',
+        'voice-presentation',
+        'business-contact',
+        'database',
+      ],
+    },
+  }), ...whenExternalScripts(() =>
+    partytown({
+      config: { forward: ['dataLayer.push'] },
+    })
+  ), compress({
+    CSS: true,
+    HTML: {
+      'html-minifier-terser': {
+        removeAttributeQuotes: false,
       },
-    }),
-
-    ...whenExternalScripts(() =>
-      partytown({
-        config: { forward: ['dataLayer.push'] },
-      })
-    ),
-
-    compress({
-      CSS: true,
-      HTML: {
-        'html-minifier-terser': {
-          removeAttributeQuotes: false,
-        },
-      },
-      Image: false,
-      JavaScript: true,
-      SVG: false,
-      Logger: 1,
-    }),
-
-    astrowind({
-      config: './src/config.yaml',
-    }),
-  ],
+    },
+    Image: false,
+    JavaScript: true,
+    SVG: false,
+    Logger: 1,
+  }), astrowind({
+    config: './src/config.yaml',
+  }), mcp()],
 
   image: {
     domains: ['cdn.pixabay.com'],
