@@ -1,9 +1,9 @@
 import type { PaginateFunction } from 'astro';
-import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import type { Post } from '~/types';
 import { APP_BLOG } from 'astrowind:config';
-import { BLOG_BASE, CATEGORY_BASE, cleanSlug, POST_PERMALINK_PATTERN, TAG_BASE, trimSlash } from './permalinks';
+import { cleanSlug, trimSlash, BLOG_BASE, POST_PERMALINK_PATTERN, CATEGORY_BASE, TAG_BASE } from './permalinks';
 
 const generatePermalink = async ({
   id,

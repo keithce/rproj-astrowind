@@ -20,20 +20,17 @@ export interface SiteConfig {
   trailingSlash?: boolean;
   googleSiteVerificationId?: string;
 }
-
 export interface MetaDataConfig extends Omit<MetaData, 'title'> {
   title?: {
     default: string;
     template: string;
   };
 }
-
 export interface I18NConfig {
   language: string;
   textDirection: string;
   dateFormatter?: Intl.DateTimeFormat;
 }
-
 export interface AppBlogConfig {
   isEnabled: boolean;
   postsPerPage: number;
@@ -72,7 +69,6 @@ export interface AppBlogConfig {
     };
   };
 }
-
 export interface AnalyticsConfig {
   vendors: {
     googleAnalytics: {
