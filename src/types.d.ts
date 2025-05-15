@@ -169,6 +169,7 @@ export interface Input {
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
   required?: boolean;
+  defaultValue?: string;
 }
 
 export interface Textarea {

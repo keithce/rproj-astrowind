@@ -1,6 +1,11 @@
 ---
 import Contact from './Contact.astro';
 
+const { defaultService = '' } = Astro.props;
+
+/**
+ * @type {Array<{name: string, label: string, type: string, required: boolean, placeholder?: string, options?: Array<{value: string, label: string}>, defaultValue?: string}>}
+ */
 const inputs = [
   {
     name: 'name',
@@ -28,6 +33,7 @@ const inputs = [
       { value: 'Color', label: 'Color' },
       { value: 'Motion', label: 'Motion' },
     ],
+    defaultValue: defaultService,
   },
 ];
 
@@ -51,4 +57,5 @@ const description = "We love connecting with creative minds! Reach out and let's
   button={button}
   description={description}
   formAction="/api/submit-to-notion"
+  {...Astro.props}
 />

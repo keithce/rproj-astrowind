@@ -52,10 +52,4 @@ if (
 }
 ---
 
-{
-  !image ? (
-    <Fragment />
-  ) : (
-    <img src={image.src} {...image.attributes} />
-  )
-}
+{!image ? <Fragment /> : <img src={image.src} {...image.attributes} />}

@@ -9,7 +9,16 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     inputs &&
       inputs.map(
-        ({ type = 'text', name, label = '', autocomplete = 'on', placeholder = '', options = [], required = false }) =>
+        ({
+          type = 'text',
+          name,
+          label = '',
+          autocomplete = 'on',
+          placeholder = '',
+          options = [],
+          required = false,
+          defaultValue,
+        }) =>
           name && (
             <div class="mb-6">
               {label && (
@@ -25,7 +34,9 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
                 >
                   {options.map(({ value, label }) => (
-                    <option value={value}>{label}</option>
+                    <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
               ) : (
