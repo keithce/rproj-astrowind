@@ -34,12 +34,12 @@ const metadata = {
     image={{ src: '~/assets/images/purple_scale_river.svg', alt: 'RProj Hero Image' }}
   >
     <Fragment slot="title">
-      <span class="hidden xl:inline">Turn Up Your</span>
+      <span class="sm:wrap-normal xl:inline">Turn Up Your</span>
       <span class="text-accent highlight"> Creative Frequency</span>
     </Fragment>
 
     <Fragment slot="subtitle">
-      <span class="hidden sm:inline">
+      <span class="sm:inline">
         <span class="font-bold dark:text-myColor-100">From Vision to Vibration - Creating Work That Moves People</span>
         <span class="block mb-1 dark:text-myColor-50"
           >Guidance through your technical and artistic landscape to help your work achieve its fullest resonance.</span
@@ -87,7 +87,10 @@ const metadata = {
     </Fragment>
   </Features>
 
-  <Note icon="tabler:brand-craft" title='When art resonates at its true frequency, it transforms both creator and audience.'/>
+  <Note
+    icon="tabler:brand-craft"
+    title="When art resonates at its true frequency, it transforms both creator and audience."
+  />
 
   <Content
     id="about"
@@ -120,6 +123,7 @@ const metadata = {
     ]}
     image={{
       src: '~/assets/images/portrait_by_tutti.jpg',
+
       alt: 'Portrait of Keith. Photographed by Tutti del Monte',
       loading: 'eager',
     }}
