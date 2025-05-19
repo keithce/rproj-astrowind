@@ -103,6 +103,29 @@
   @apply rotate-45 translate-y-[-8px] translate-x-[14px];
 }
 
+/* pagefind */
+body {
+  --pagefind-ui-scale: 1;
+  --pagefind-ui-primary: #6e2765;
+  --pagefind-ui-text: #2c1028;
+  --pagefind-ui-background: #f1e9f0;
+  --pagefind-ui-border: #c5a9c1;
+  --pagefind-ui-tag: #c5a9c1;
+  --pagefind-ui-border-width: 2px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-image-border-radius: 8px;
+  --pagefind-ui-image-box-ratio: 3 / 2;
+  --pagefind-ui-font: sans-serif;
+}
+
+html.dark body {
+  --pagefind-ui-primary: #c5a9c1;
+  --pagefind-ui-text: #f1e9f0;
+  --pagefind-ui-background: #160814;
+  --pagefind-ui-border: #6e2765;
+  --pagefind-ui-tag: #6e2765;
+}
+
 /* To deprecated */
 
 .dd *:first-child {
