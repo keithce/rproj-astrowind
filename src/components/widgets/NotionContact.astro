@@ -1,12 +1,10 @@
 ---
+import type { Input } from '~/types';
 import Contact from './Contact.astro';
 
 const { defaultService = '' } = Astro.props;
 
-/**
- * @type {Array<{name: string, label: string, type: string, required: boolean, placeholder?: string, options?: Array<{value: string, label: string}>, defaultValue?: string}>}
- */
-const inputs = [
+const inputs: Array<Input> = [
   {
     name: 'name',
     label: 'Name',

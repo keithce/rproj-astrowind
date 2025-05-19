@@ -13,6 +13,7 @@ import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
 import vercelServerless from '@astrojs/vercel';
+import pagefind from './src/utils/pagefind';
 
 import { lazyImagesRehypePlugin, readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
 
@@ -35,6 +36,10 @@ export default defineConfig({
     isr: true,
   }),
 
+  build: {
+    format: 'file',
+  },
+
   session: {
     driver: 'redis',
     options: {
@@ -43,6 +48,7 @@ export default defineConfig({
   },
 
   integrations: [
+    pagefind(),
     sitemap(),
     mdx(),
     icon({

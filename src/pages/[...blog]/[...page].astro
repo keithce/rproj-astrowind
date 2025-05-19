@@ -6,6 +6,7 @@ import BlogList from '~/components/blog/List.astro';
 import Headline from '~/components/blog/Headline.astro';
 import Pagination from '~/components/blog/Pagination.astro';
 import PostTags from '~/components/blog/Tags.astro';
+import Search from '~/components/ui/Search.astro';
 
 import { blogListRobots, getStaticPathsBlogList, findCategories, findTags } from '~/utils/blog';
 
@@ -43,44 +44,19 @@ const metadata = {
     >
       Resonant Projects Blog
     </Headline>
-    <div id="search"></div>
+    <Search
+      id="search"
+      className="pagefind-ui"
+      uiOptions={{
+        showSubResults: true,
+        resetStyles: false,
+        showEmptyFilters: false,
+      }}
+    />
     <BlogList posts={page.data} />
     <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
 
     <PostTags tags={allCategories} class="mb-2" title="Search by Categories:" isCategory />
     <PostTags tags={allTags} title="Search by Tags:" />
   </section>
-  <script>
-    function initPagefind() {
-      // @ts-expect-error PagefindUI is loaded from external script
-      if (typeof PagefindUI !== 'undefined') {
-        // @ts-expect-error PagefindUI is loaded from external script
-        new PagefindUI({
-          element: '#search',
-          showSubResults: true,
-          resetStyles: false,
-          showEmptyFilters: false,
-          processResult: function (result) {
-            result.url = result.url.replace('client/', '').replace(/\/$/, '');
-            return result;
-          },
-        });
-      }
-    }
-
-    function loadPagefindAndInit() {
-      // @ts-expect-error PagefindUI is loaded from external script
-      if (typeof PagefindUI === 'undefined') {
-        const script = document.createElement('script');
-        script.src = '/pagefind/pagefind-ui.js';
-        script.onload = initPagefind;
-        document.body.appendChild(script);
-      } else {
-        initPagefind();
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', loadPagefindAndInit);
-    window.addEventListener('astro:after-swap', loadPagefindAndInit);
-  </script>
 </Layout>
