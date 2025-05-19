@@ -54,6 +54,6 @@ export default [
     },
   },
   {
-    ignores: ['dist', 'node_modules', '.github', 'types.generated.d.ts', '.astro', '.vercel'],
+    ignores: ['dist', 'node_modules', '.github', 'types.generated.d.ts', '.astro', '.vercel', 'public/pagefind'],
   },
 ];

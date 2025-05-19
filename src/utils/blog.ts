@@ -1,7 +1,7 @@
 import type { PaginateFunction } from 'astro';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import type { Post } from '~/types';
+import type { Post, Taxonomy } from '~/types';
 import { APP_BLOG } from 'astrowind:config';
 import { cleanSlug, trimSlash, BLOG_BASE, POST_PERMALINK_PATTERN, CATEGORY_BASE, TAG_BASE } from './permalinks';
 
@@ -171,6 +171,34 @@ export const findLatestPosts = async ({ count }: { count?: number }): Promise<Ar
   const posts = await fetchPosts();
 
   return posts ? posts.slice(0, _count) : [];
+};
+
+/** */
+export const findCategories = async (): Promise<Taxonomy[]> => {
+  const posts = await fetchPosts();
+  const categoryMap = new Map<string, Taxonomy>();
+  posts.forEach((post) => {
+    if (post.category?.slug && post.category?.title) {
+      categoryMap.set(post.category.slug, { slug: post.category.slug, title: post.category.title });
+    }
+  });
+  return Array.from(categoryMap.values());
+};
+
+/** */
+export const findTags = async (): Promise<Taxonomy[]> => {
+  const posts = await fetchPosts();
+  const tagMap = new Map<string, Taxonomy>();
+  posts.forEach((post) => {
+    if (Array.isArray(post.tags)) {
+      post.tags.forEach((tag) => {
+        if (tag?.slug && tag?.title) {
+          tagMap.set(tag.slug, { slug: tag.slug, title: tag.title });
+        }
+      });
+    }
+  });
+  return Array.from(tagMap.values());
 };
 
 /** */
