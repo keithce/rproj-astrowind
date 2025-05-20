@@ -17,7 +17,8 @@ const schema = z.object({
 export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.formData();
-    const result = schema.safeParse(formData);
+    const data = Object.fromEntries(formData.entries());
+    const result = schema.safeParse(data);
     if (!result.success) {
       return new Response(
         JSON.stringify({
