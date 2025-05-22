@@ -1,0 +1,47 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import Headline from '~/components/ui/Headline.astro';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Button from '~/components/ui/Button.astro';
+import BookACall from '~/utils/book-a-call';
+---
+
+<PageLayout>
+  <WidgetWrapper containerClass="max-w-2xl mx-auto">
+    <Headline
+      title="Thank you for reaching out to Resonant Projects.art!"
+      subtitle="We're grateful for your message and excited to connect."
+      tagline="You're in good company."
+      classes={{
+        container: 'mb-8 md:mb-12 text-center',
+        title: 'text-4xl md:text-5xl font-bold tracking-tighter mb-4 font-heading',
+        subtitle: 'text-xl text-muted dark:text-slate-400',
+      }}
+    />
+    <div class="text-lg text-muted dark:text-slate-400 mb-8 text-center">
+      <p class="mb-4">
+        We've received your message and will get back to you soon. In the meantime, here are your next steps:
+      </p>
+      <ul class="list-disc list-inside text-left mx-auto max-w-md mb-6">
+        <li class="mb-2">Book a free discovery call to discuss your project and vision.</li>
+        <li>Follow our newsletter for thoughtful insights on music, technology, and spiritual evolution.</li>
+      </ul>
+    </div>
+    <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+      <div class="w-full">
+        <BookACall />
+      </div>
+      <Button
+        variant="secondary"
+        href="https://newsletter.resonantprojects.art/"
+        target="_blank"
+        text="Join the Newsletter"
+        icon="tabler:mail"
+        class="w-full sm:w-auto"
+      />
+    </div>
+    <div class="text-center text-sm text-muted dark:text-slate-500">
+      <span>We look forward to connecting with you!<br />— The Resonant Projects Team</span>
+    </div>
+  </WidgetWrapper>
+</PageLayout>
