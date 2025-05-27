@@ -19,15 +19,14 @@ jobs:
           - 22
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js v${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
       - uses: pnpm/action-setup@v2
         with:
           version: 8.15.5
-          run_install: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       # - run: pnpm test
 
@@ -35,57 +34,56 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
       - uses: pnpm/action-setup@v2
         with:
           version: 8.15.5
-          run_install: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run check
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.5
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.15.5
-          run_install: true
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.5
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.15.5
-          run_install: true
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run format
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.5
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.15.5
-          run_install: true
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
   codeql:
@@ -101,6 +99,9 @@ jobs:
         language: [ 'javascript', 'typescript' ]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.5
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -108,10 +109,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.15.5
-          run_install: true
       - run: pnpm install --frozen-lockfile
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
