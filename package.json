@@ -21,7 +21,8 @@
     "fix:eslint": "eslint --fix .",
     "fix:prettier": "prettier -w .",
     "lint": "eslint .",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11",
