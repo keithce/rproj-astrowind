@@ -138,11 +138,13 @@ ResonantWelcomeEmail.PreviewProps = {
     },
     {
       id: 2,
-      description: "Project exploration. We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.",
+      description:
+        "Project exploration. We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.",
     },
     {
       id: 3,
-      description: "Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.",
+      description:
+        "Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.",
     },
   ],
 } satisfies ResonantWelcomeEmailProps;
