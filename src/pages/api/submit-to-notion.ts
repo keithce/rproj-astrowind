@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
     // --- Send the personalized welcome email to the user ---
     console.log('Sending welcome email to:', email);
     await resend.emails.send({
-      from: 'noreply@resonantprojects.art',
+      from: 'info@rproj.art',
       to: email,
       subject: 'Welcome to Resonant Projects.art!',
       html,
