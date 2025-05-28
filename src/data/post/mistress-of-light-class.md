@@ -2,7 +2,7 @@
 publishDate: 2025-04-02
 title: Mastering Light - Adventures with Speed Lights and On-Camera Flash
 exerpt: There's something magical about that moment when you finally understand how to shape light.
-# image:
+image: /src/assets/images/bobbi-lane-FCCC.jpg
 tags:
   - photography
 # metadata:
@@ -58,7 +58,7 @@ From flowers to portraits, it's incredible the story you can tell with just a ch
 
 ## The Art of Still Life and Product Photography
 
-Outside of portrait photography, Bobbi's counterpart Lee Varis gave a presentation on still-life photography, “Creative Still Life Photography”. When crafting a still-life photo, using a flash to specifically light certain parts of an image allows you, in post-processing, to literally paint the light using masks. Although this type of work can take longer, its surreal or hyper-real effect can be exactly what a product or art director wants.
+Outside of portrait photography, Bobbi's counterpart Lee Varis gave a presentation on still-life photography, "Creative Still Life Photography". When crafting a still-life photo, using a flash to specifically light certain parts of an image allows you, in post-processing, to literally paint the light using masks. Although this type of work can take longer, its surreal or hyper-real effect can be exactly what a product or art director wants.
 
 These days, the tools make such a process a breeze. It just takes a few clicks in Photoshop to use a paint brush and make magic. A trick you'll have to learn from the man himself is using color channels to paint. You'll feel like you're back at school, remembering what paint color mixes with what to make the combination you envision.
 
