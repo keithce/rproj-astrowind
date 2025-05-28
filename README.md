@@ -43,7 +43,6 @@ Whether you're a musician, filmmaker, photographer, or content creator, this is 
 ## 🛠️ Tech Stack
 
 - ⚡ **Astro** – Static site generator for blazing-fast performance
-- ☁️ **Static Hosting** – Deployed via [sevalla.com](https://sevalla.com)
 - 🔄 **CI/CD** – Automated deployment from GitHub
 
 ---
