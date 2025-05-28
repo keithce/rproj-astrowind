@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": "^18.17.1 || ^20.3.0 || >= 21.0.0"
+    "node": ">= 21.0.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -41,7 +41,7 @@
     "@tailwindcss/vite": "^4.1.6",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "astro": "^5.7.12",
+    "astro": "^5.8.0",
     "astro-embed": "^0.9.0",
     "astro-icon": "^1.1.5",
     "astro-mcp": "^0.3.1",
@@ -58,7 +58,7 @@
     "tailwind-variants": "^1.0.0",
     "tw-animate-css": "^1.2.9",
     "unpic": "^4.1.2",
-    "vercel": "^41.7.8"
+    "vercel": "^42.2.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -69,10 +69,10 @@
     "@iconify-json/flat-color-icons": "^1.2.1",
     "@iconify-json/tabler": "^1.2.17",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/eslint__js": "^9.14.0",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash.merge": "^4.6.9",
     "@types/mdx": "^2.0.13",
+    "@types/node": "^22.15.23",
     "@types/react": "^19.1.5",
     "@typescript-eslint/eslint-plugin": "^8.30.1",
     "@typescript-eslint/parser": "^8.30.1",
@@ -87,8 +87,8 @@
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "reading-time": "^1.5.0",
-    "sharp": "0.34.1",
-    "tailwind-merge": "^2.6.0",
+    "sharp": "0.34.2",
+    "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.6",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.30.1",
