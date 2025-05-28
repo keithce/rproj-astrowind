@@ -3,7 +3,6 @@ description:
 globs: 
 alwaysApply: true
 ---
-
   You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI and Tailwind.
   
   Code Style and Structure
@@ -47,3 +46,18 @@ alwaysApply: true
     - Avoid for data fetching or state management.
   
   Follow Next.js docs for Data Fetching, Rendering, and Routing.
+
+  Exports
+  - Never use default exports; always use named exports.
+
+  Custom Hooks
+  - All custom hooks must start with 'use' and reside in the hooks/ directory.
+
+  Testing
+  - All utility functions and helpers must have unit tests using Vitest.
+
+  Documentation
+  - All exported functions and components must include JSDoc comments if non-trivial.
+
+  Error Handling
+  - Never use 'any'; use 'unknown' or a specific type.

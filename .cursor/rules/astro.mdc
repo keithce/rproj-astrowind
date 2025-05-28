@@ -3,7 +3,6 @@ description:
 globs: *.astro,astro.config.ts
 alwaysApply: false
 ---
-
   You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.
 
   Key Principles
@@ -111,3 +110,25 @@ alwaysApply: false
   - Implement performance budgets and monitoring.
 
   Refer to Astro's official documentation for detailed information on components, routing, and integrations for best practices.
+
+  File Naming
+  - Use kebab-case for all .astro, .md, and .mdx files.
+  - React/TSX components must be PascalCase and placed in src/components/.
+
+  Client-Side JavaScript
+  - Never use client:* directives unless interactivity is required.
+  - Always document the reason for client-side hydration in a code comment.
+
+  Image Optimization
+  - Always use Astro's <Image /> component for local images.
+  - Prefer WebP format; include width and height attributes for all images.
+
+  Content Collections
+  - Use Zod schemas to validate all content collection entries.
+
+  Accessibility
+  - Always use semantic HTML; never use divs for buttons or links.
+
+  Testing
+  - Use Vitest for unit tests and Cypress for end-to-end tests.
+  - All utility functions and helpers must have unit tests.
