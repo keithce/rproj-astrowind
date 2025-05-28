@@ -3,8 +3,10 @@ import { Client } from '@notionhq/client';
 import { z } from 'astro:content';
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
-import { ResonantWelcomeEmail } from '~/utils/welcome-email';
+import ResonantWelcomeEmail from '~/utils/welcome-email';
+import React from 'react';
 
+console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
@@ -53,40 +55,30 @@ export const POST: APIRoute = async ({ request }) => {
     const steps = [
       {
         id: 1,
-        Description: (
-          <li className="mb-20" key={1}>
-            <strong>Thank you, {name}!</strong> I'll review your message about <strong>{service}</strong> and respond with tailored insights or next steps.
-          </li>
-        ),
+        description: `Thank you, ${name}! I'll review your message about ${service} and respond with tailored insights or next steps.`,
       },
       {
         id: 2,
-        Description: (
-          <li className="mb-20" key={2}>
-            <strong>Project exploration.</strong> We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.
-          </li>
-        ),
+        description: `Project exploration. We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.`,
       },
       {
         id: 3,
-        Description: (
-          <li className="mb-20" key={3}>
-            <strong>Resource sharing.</strong> You'll receive curated resources, ideas, and opportunities to collaborate or learn more.
-          </li>
-        ),
+        description: `Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.`,
       },
     ];
 
     // --- Render the welcome email to HTML ---
-    const html = await render(<ResonantWelcomeEmail steps={steps} />);
+    const html = await render(React.createElement(ResonantWelcomeEmail, { steps }));
 
     // --- Send the personalized welcome email to the user ---
+    console.log('Sending welcome email to:', email);
     await resend.emails.send({
       from: 'noreply@resonantprojects.art',
       to: email,
       subject: 'Welcome to Resonant Projects.art!',
       html,
     });
+    console.log('Welcome email sent to:', email);
 
     // Redirect to thank you page with success param
    return new Response(null, {
