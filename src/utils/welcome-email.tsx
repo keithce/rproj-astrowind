@@ -14,12 +14,12 @@ import {
   Tailwind,
   Text,
 } from '@react-email/components';
-import type * as React from 'react';
+import React from 'react';
 
 interface ResonantWelcomeEmailProps {
   steps: {
     id: number;
-    Description: React.ReactNode;
+    description: string;
   }[];
 }
 
@@ -84,7 +84,11 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
             </Section>
 
             <ul className="mt-4 mb-8 list-disc list-inside text-text">
-              {steps?.map(({ Description }) => Description)}
+              {steps?.map(({ id, description }) => (
+                <li className="mb-20" key={id}>
+                  {description}
+                </li>
+              ))}
             </ul>
 
             <Section className="text-center mt-8">
@@ -130,30 +134,17 @@ ResonantWelcomeEmail.PreviewProps = {
   steps: [
     {
       id: 1,
-      Description: (
-        <li className="mb-20" key={1}>
-          <strong>Personalized follow-up.</strong> I'll review your message and respond with tailored insights or next
-          steps.
-        </li>
-      ),
+      description: "Personalized follow-up. I'll review your message and respond with tailored insights or next steps.",
     },
     {
       id: 2,
-      Description: (
-        <li className="mb-20" key={2}>
-          <strong>Project exploration.</strong> We'll discuss your goals, inspirations, and how Resonant Projects.art
-          can support your vision.
-        </li>
-      ),
+      description:
+        "Project exploration. We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.",
     },
     {
       id: 3,
-      Description: (
-        <li className="mb-20" key={3}>
-          <strong>Resource sharing.</strong> You'll receive curated resources, ideas, and opportunities to collaborate
-          or learn more.
-        </li>
-      ),
+      description:
+        "Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.",
     },
   ],
 } satisfies ResonantWelcomeEmailProps;

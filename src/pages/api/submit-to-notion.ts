@@ -2,7 +2,11 @@ import type { APIRoute } from 'astro';
 import { Client } from '@notionhq/client';
 import { z } from 'astro:content';
 import { Resend } from 'resend';
+import { render } from '@react-email/render';
+import ResonantWelcomeEmail from '~/utils/welcome-email';
+import React from 'react';
 
+console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
@@ -47,16 +51,40 @@ export const POST: APIRoute = async ({ request }) => {
       },
     });
 
-    // Send success email
+    // --- Compose personalized steps for the welcome email ---
+    const steps = [
+      {
+        id: 1,
+        description: `Thank you, ${name}! I'll review your message about ${service} and respond with tailored insights or next steps.`,
+      },
+      {
+        id: 2,
+        description: `Project exploration. We'll discuss your goals, inspirations, and how Resonant Projects.art can support your vision.`,
+      },
+      {
+        id: 3,
+        description: `Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.`,
+      },
+    ];
+
+    // --- Render the welcome email to HTML ---
+    const html = await render(React.createElement(ResonantWelcomeEmail, { steps }));
+
+    // --- Send the personalized welcome email to the user ---
+    console.log('Sending welcome email to:', email);
     await resend.emails.send({
-      from: 'noreply@yourdomain.com',
-      to: 'your@email.com',
-      subject: 'New Contact Form Submission',
-      html: `<pre>${JSON.stringify(formData, null, 2)}</pre>`,
+      from: 'info@rproj.art',
+      to: email,
+      subject: 'Welcome to Resonant Projects.art!',
+      html,
     });
+    console.log('Welcome email sent to:', email);
 
     // Redirect to thank you page with success param
-    return new Response('/thank-you', { status: 303 });
+    return new Response(null, {
+      status: 303,
+      headers: { Location: '/thank-you' },
+    });
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
@@ -78,6 +106,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     // Redirect to thank you page
-    return new Response('/thank-you', { status: 303 });
+    return new Response(null, {
+      status: 303,
+      headers: { Location: '/thank-you' },
+    });
   }
 };

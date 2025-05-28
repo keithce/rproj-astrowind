@@ -37,7 +37,6 @@ Whether you're a musician, filmmaker, photographer, or content creator, this is 
 
 [https://www.rproj.art](https://www.rproj.art)
 
-
 ---
 
 ## 🛠️ Tech Stack
