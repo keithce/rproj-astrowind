@@ -4,3 +4,4 @@ node_modules
 .changeset
 .idea
 .vercel
+.pnpm-lock.yaml
