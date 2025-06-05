@@ -53,6 +53,18 @@
   --color-input: var(--input);
   --color-outline: var(--outline);
 
+  --color-myColor-50: #f1e9f0;
+  --color-myColor-100: #e2d4e0;
+  --color-myColor-200: #c5a9c1;
+  --color-myColor-300: #a87da3;
+  --color-myColor-400: #8b5284;
+  --color-myColor-500: #6e2765;
+  --color-myColor-600: #581f51;
+  --color-myColor-700: #42173d;
+  --color-myColor-800: #2c1028;
+  --color-myColor-900: #160814;
+  --color-myColor-950: #0a040a;
+
   --radius-xs: calc(var(--radius) - 0.375rem);
   --radius-sm: calc(var(--radius) - 0.25rem);
   --radius-md: calc(var(--radius) - 0.125rem);
@@ -64,20 +76,20 @@
 
 @layer base {
   :root {
-    --background: var(--color-slate-50);
-    --foreground: var(--color-slate-950);
-    --card: var(--color-slate-50);
-    --card-foreground: var(--color-slate-950);
-    --popover: var(--color-slate-50);
-    --popover-foreground: var(--color-slate-950);
+    --background: var(--color-myColor-50);
+    --foreground: var(--color-myColor-950);
+    --card: var(--color-myColor-50);
+    --card-foreground: var(--color-myColor-950);
+    --popover: var(--color-myColor-50);
+    --popover-foreground: var(--color-myColor-950);
     --primary: var(--color-blue-700);
-    --primary-foreground: var(--color-slate-50);
+    --primary-foreground: var(--color-myColor-50);
     --secondary: var(--color-fuchsia-700);
-    --secondary-foreground: var(--color-slate-50);
-    --muted: var(--color-slate-100);
-    --muted-foreground: var(--color-slate-600);
-    --accent: var(--color-slate-200);
-    --accent-foreground: var(--color-slate-900);
+    --secondary-foreground: var(--color-myColor-50);
+    --muted: var(--color-myColor-100);
+    --muted-foreground: var(--color-myColor-600);
+    --accent: var(--color-myColor-200);
+    --accent-foreground: var(--color-myColor-900);
     --info: var(--color-sky-300);
     --info-foreground: var(--color-sky-950);
     --success: var(--color-green-300);
@@ -85,28 +97,28 @@
     --warning: var(--color-amber-300);
     --warning-foreground: var(--color-amber-950);
     --error: var(--color-red-700);
-    --error-foreground: var(--color-slate-50);
-    --border: var(--color-slate-200);
-    --input: var(--color-slate-200);
+    --error-foreground: var(--color-myColor-50);
+    --border: var(--color-myColor-200);
+    --input: var(--color-myColor-200);
     --outline: var(--color-blue-600);
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: var(--color-slate-950);
-    --foreground: var(--color-slate-50);
-    --card: var(--color-slate-950);
-    --card-foreground: var(--color-slate-50);
-    --popover: var(--color-slate-950);
-    --popover-foreground: var(--color-slate-50);
+    --background: var(--color-myColor-950);
+    --foreground: var(--color-myColor-50);
+    --card: var(--color-myColor-950);
+    --card-foreground: var(--color-myColor-50);
+    --popover: var(--color-myColor-950);
+    --popover-foreground: var(--color-myColor-50);
     --primary: var(--color-blue-700);
-    --primary-foreground: var(--color-slate-50);
+    --primary-foreground: var(--color-myColor-50);
     --secondary: var(--color-fuchsia-300);
-    --secondary-foreground: var(--color-slate-950);
-    --muted: var(--color-slate-900);
-    --muted-foreground: var(--color-slate-400);
-    --accent: var(--color-slate-900);
-    --accent-foreground: var(--color-slate-100);
+    --secondary-foreground: var(--color-myColor-950);
+    --muted: var(--color-myColor-900);
+    --muted-foreground: var(--color-myColor-400);
+    --accent: var(--color-myColor-900);
+    --accent-foreground: var(--color-myColor-100);
     --info: var(--color-sky-300);
     --info-foreground: var(--color-sky-950);
     --success: var(--color-green-300);
@@ -114,9 +126,9 @@
     --warning: var(--color-amber-300);
     --warning-foreground: var(--color-amber-950);
     --error: var(--color-red-800);
-    --error-foreground: var(--color-slate-50);
-    --border: var(--color-slate-800);
-    --input: var(--color-slate-800);
+    --error-foreground: var(--color-myColor-50);
+    --border: var(--color-myColor-800);
+    --input: var(--color-myColor-800);
     --outline: var(--color-blue-600);
     --radius: 0.5rem;
   }

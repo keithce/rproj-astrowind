@@ -5,6 +5,7 @@ import { defineConfig } from 'astro/config';
 
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import autoprefixer from 'autoprefixer';
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
 import icon from 'astro-icon';
@@ -103,6 +104,11 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    css: {
+      postcss: {
+        plugins: [autoprefixer()],
+      },
+    },
     resolve: {
       alias: {
         '~': path.resolve(__dirname, './src'),

@@ -10,7 +10,7 @@ export interface Props {
   className?: string;
 }
 
-const { images, title, category, className = "" } = Astro.props;
+const { images, title, category, className = '' } = Astro.props;
 
 // Function to generate different placeholder images based on category and index
 function getPlaceholderImage(category: string, index: number): string {
@@ -24,7 +24,7 @@ function getPlaceholderImage(category: string, index: number): string {
       'photo-1506905925346-21bda4d32df4', // mountain sunset
       'photo-1441974231531-c6227db76b6e', // forest path
       'photo-1439066615861-d1af74d74000', // serene lake
-      'photo-1518837695005-2083093ee35b'  // coastline
+      'photo-1518837695005-2083093ee35b', // coastline
     ],
     portrait: [
       'photo-1507003211169-0a1dd7228f2d', // business portrait
@@ -33,7 +33,7 @@ function getPlaceholderImage(category: string, index: number): string {
       'photo-1608844881716-d8c27503bec8', // senior portrait
       'photo-1522075469751-3847ae348b73', // couple portrait
       'photo-1619380061814-58f03707f082', // musician portrait
-      'photo-1567515004624-219c11d31f2e'  // lifestyle portrait
+      'photo-1567515004624-219c11d31f2e', // lifestyle portrait
     ],
     boudoir: [
       'photo-1594736797933-d0401ba2fe65', // elegant silhouette
@@ -41,7 +41,7 @@ function getPlaceholderImage(category: string, index: number): string {
       'photo-1567515004624-219c11d31f2e', // natural light
       'photo-1550639524-b70982e95e75', // dramatic lighting
       'photo-1609256646376-daa5e21021c7', // intimate portrait
-      'photo-1596728113430-ce1d9b65b498'  // elegant pose
+      'photo-1596728113430-ce1d9b65b498', // elegant pose
     ],
     'maternity-children': [
       'photo-1555532538-dcdbd01d373d', // maternity portrait
@@ -50,45 +50,49 @@ function getPlaceholderImage(category: string, index: number): string {
       'photo-1581726690015-c9861fa5057f', // expecting couple
       'photo-1595123550441-d377e017de6a', // siblings
       'photo-1554089845-5e0e0b22e6b7', // baby portrait
-      'photo-1545558014-8692077e9b5c'  // family moment
-    ]
+      'photo-1545558014-8692077e9b5c', // family moment
+    ],
   };
-  
+
   const categoryImages = imageIds[category as keyof typeof imageIds] || imageIds.landscape;
   const imageId = categoryImages[index % categoryImages.length];
-  
+
   return `${baseUrl}/${imageId}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80`;
 }
 ---
 
 <div class={`photo-swiper-container ${className}`}>
   <div class="mb-6">
-    <h3 class="text-2xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-2">{title}</h3>
+    <h3 class="text-2xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-2">
+      {title}
+    </h3>
     <p class="text-[var(--aw-color-text-muted)]">Explore our {category} photography collection</p>
   </div>
-  
+
   <div class="swiper-wrapper-container">
     <div class="swiper mySwiper" data-category={category}>
       <div class="swiper-wrapper">
-        {images.map((image, index) => (
-          <div class="swiper-slide">
-            <div class="relative aspect-[4/3] overflow-hidden rounded-lg shadow-lg">
-              <img
-                src={getPlaceholderImage(category, index)}
-                alt={image.alt}
-                width={800}
-                height={600}
-                loading="lazy"
-                class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-              {image.title && (
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                  <p class="text-white text-sm font-medium">{image.title}</p>
-                </div>
-              )}
+        {
+          images.map((image, index) => (
+            <div class="swiper-slide">
+              <div class="relative aspect-[4/3] overflow-hidden rounded-lg shadow-lg">
+                <img
+                  src={getPlaceholderImage(category, index)}
+                  alt={image.alt}
+                  width={800}
+                  height={600}
+                  loading="lazy"
+                  class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+                {image.title && (
+                  <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <p class="text-white text-sm font-medium">{image.title}</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
       <div class="swiper-button-next"></div>
       <div class="swiper-button-prev"></div>
@@ -161,14 +165,14 @@ function getPlaceholderImage(category: string, index: number): string {
       height: 300px;
       padding: 0 20px 40px 20px;
     }
-    
+
     .swiper-button-next,
     .swiper-button-prev {
       width: 36px;
       height: 36px;
       margin-top: -18px;
     }
-    
+
     .swiper-button-next:after,
     .swiper-button-prev:after {
       font-size: 14px;
@@ -183,9 +187,9 @@ function getPlaceholderImage(category: string, index: number): string {
   import 'swiper/css/navigation';
   import 'swiper/css/pagination';
 
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     const swipers = document.querySelectorAll('.mySwiper');
-    
+
     swipers.forEach((swiperElement) => {
       new Swiper(swiperElement as HTMLElement, {
         cssMode: true,
@@ -220,4 +224,5 @@ function getPlaceholderImage(category: string, index: number): string {
       });
     });
   });
-</script> 
+</script>
+

@@ -31,7 +31,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   name={name}
                   id={name}
                   required={required}
-                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-myColor-900"
                 >
                   {options.map(({ value, label }) => (
                     <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
@@ -47,7 +47,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   autocomplete={autocomplete}
                   placeholder={placeholder}
                   required={required}
-                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-myColor-900"
                 />
               )}
             </div>
@@ -67,7 +67,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           rows={textarea.rows ? textarea.rows : 4}
           placeholder={textarea.placeholder}
           required={textarea.required}
-          class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+          class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-myColor-900"
         />
       </div>
     )
@@ -81,7 +81,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
             id="disclaimer"
             name="disclaimer"
             type="checkbox"
-            class="cursor-pointer mt-1 py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+            class="cursor-pointer mt-1 py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-myColor-900"
           />
         </div>
         <div class="ml-3">

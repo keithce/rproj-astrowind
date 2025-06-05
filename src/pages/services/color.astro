@@ -3,150 +3,218 @@ import Layout from '~/layouts/PageLayout.astro';
 import PhotoSwiper from '~/components/ui/PhotoSwiper.astro';
 import TestimonialCard from '~/components/ui/TestimonialCard.astro';
 import CategoryHero from '~/components/widgets/CategoryHero.astro';
-import SocialLinks from '~/components/common/SocialLinks.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
+import Hero from '~/components/widgets/Hero.astro';
 
 const metadata = {
-  title: 'Photography Portfolio - Capturing Life\'s Beautiful Moments',
-  description: 'Professional photographer specializing in landscapes, portraits, boudoir, and family photography. Creating timeless memories through artistic vision and technical excellence.',
-  keywords: 'photography, portraits, landscapes, boudoir, maternity, children, professional photographer, San Francisco',
+  title: "Photography Portfolio - Capturing Life's Beautiful Moments",
+  description:
+    'Professional photographer specializing in landscapes, portraits, boudoir, and family photography. Creating timeless memories through artistic vision and technical excellence.',
+  keywords:
+    'photography, portraits, landscapes, boudoir, maternity, children, professional photographer, San Francisco',
 };
 
 // Sample image data for each category
 const landscapeImages = [
-  { src: 'samples/landscape/mountain-sunset', alt: 'Golden hour mountain vista with dramatic clouds', title: 'Mountain Sunset Vista' },
-  { src: 'samples/landscape/ocean-waves', alt: 'Powerful ocean waves crashing against rocky coastline', title: 'Coastal Symphony' },
-  { src: 'samples/landscape/forest-mist', alt: 'Misty forest with sunbeams filtering through trees', title: 'Enchanted Forest' },
-  { src: 'samples/landscape/desert-dunes', alt: 'Sand dunes with rippling patterns at sunrise', title: 'Desert Dreams' },
+  {
+    src: 'samples/landscape/mountain-sunset',
+    alt: 'Golden hour mountain vista with dramatic clouds',
+    title: 'Mountain Sunset Vista',
+  },
+  {
+    src: 'samples/landscape/ocean-waves',
+    alt: 'Powerful ocean waves crashing against rocky coastline',
+    title: 'Coastal Symphony',
+  },
+  {
+    src: 'samples/landscape/forest-mist',
+    alt: 'Misty forest with sunbeams filtering through trees',
+    title: 'Enchanted Forest',
+  },
+  {
+    src: 'samples/landscape/desert-dunes',
+    alt: 'Sand dunes with rippling patterns at sunrise',
+    title: 'Desert Dreams',
+  },
   { src: 'samples/landscape/city-skyline', alt: 'Urban skyline at twilight with city lights', title: 'Urban Twilight' },
-  { src: 'samples/landscape/lake-reflection', alt: 'Perfect mountain reflection in crystal clear lake', title: 'Mirror Lake' },
-  { src: 'samples/landscape/waterfall', alt: 'Cascading waterfall in lush green canyon', title: 'Nature\'s Power' },
-  { src: 'samples/landscape/northern-lights', alt: 'Aurora borealis dancing across starry sky', title: 'Celestial Dance' }
+  {
+    src: 'samples/landscape/lake-reflection',
+    alt: 'Perfect mountain reflection in crystal clear lake',
+    title: 'Mirror Lake',
+  },
+  { src: 'samples/landscape/waterfall', alt: 'Cascading waterfall in lush green canyon', title: "Nature's Power" },
+  {
+    src: 'samples/landscape/northern-lights',
+    alt: 'Aurora borealis dancing across starry sky',
+    title: 'Celestial Dance',
+  },
 ];
 
 const portraitImages = [
-  { src: 'samples/portraits/business-headshot', alt: 'Professional business headshot with confident expression', title: 'Executive Portrait' },
-  { src: 'samples/portraits/artistic-portrait', alt: 'Creative artistic portrait with dramatic lighting', title: 'Artistic Vision' },
-  { src: 'samples/portraits/senior-portrait', alt: 'High school senior portrait in natural setting', title: 'Senior Celebration' },
+  {
+    src: 'samples/portraits/business-headshot',
+    alt: 'Professional business headshot with confident expression',
+    title: 'Executive Portrait',
+  },
+  {
+    src: 'samples/portraits/artistic-portrait',
+    alt: 'Creative artistic portrait with dramatic lighting',
+    title: 'Artistic Vision',
+  },
+  {
+    src: 'samples/portraits/senior-portrait',
+    alt: 'High school senior portrait in natural setting',
+    title: 'Senior Celebration',
+  },
   { src: 'samples/portraits/couple-portrait', alt: 'Romantic couple portrait during golden hour', title: 'Love Story' },
-  { src: 'samples/portraits/musician-portrait', alt: 'Musician portrait with instrument in studio', title: 'Artist Expression' },
-  { src: 'samples/portraits/lifestyle-portrait', alt: 'Natural lifestyle portrait in urban environment', title: 'Urban Lifestyle' },
-  { src: 'samples/portraits/family-portrait', alt: 'Multi-generational family portrait outdoors', title: 'Family Legacy' }
+  {
+    src: 'samples/portraits/musician-portrait',
+    alt: 'Musician portrait with instrument in studio',
+    title: 'Artist Expression',
+  },
+  {
+    src: 'samples/portraits/lifestyle-portrait',
+    alt: 'Natural lifestyle portrait in urban environment',
+    title: 'Urban Lifestyle',
+  },
+  {
+    src: 'samples/portraits/family-portrait',
+    alt: 'Multi-generational family portrait outdoors',
+    title: 'Family Legacy',
+  },
 ];
 
 const boudoirImages = [
-  { src: 'samples/boudoir/elegant-silhouette', alt: 'Elegant boudoir silhouette with soft lighting', title: 'Elegant Grace' },
+  {
+    src: 'samples/boudoir/elegant-silhouette',
+    alt: 'Elegant boudoir silhouette with soft lighting',
+    title: 'Elegant Grace',
+  },
   { src: 'samples/boudoir/vintage-style', alt: 'Vintage-inspired boudoir photography', title: 'Vintage Romance' },
-  { src: 'samples/boudoir/modern-artistic', alt: 'Modern artistic boudoir with creative composition', title: 'Modern Art' },
+  {
+    src: 'samples/boudoir/modern-artistic',
+    alt: 'Modern artistic boudoir with creative composition',
+    title: 'Modern Art',
+  },
   { src: 'samples/boudoir/natural-light', alt: 'Natural light boudoir with soft shadows', title: 'Natural Beauty' },
-  { src: 'samples/boudoir/dramatic-lighting', alt: 'Dramatic lighting creating mood and atmosphere', title: 'Dramatic Mood' },
-  { src: 'samples/boudoir/intimate-portrait', alt: 'Intimate portrait celebrating femininity', title: 'Celebration' }
+  {
+    src: 'samples/boudoir/dramatic-lighting',
+    alt: 'Dramatic lighting creating mood and atmosphere',
+    title: 'Dramatic Mood',
+  },
+  { src: 'samples/boudoir/intimate-portrait', alt: 'Intimate portrait celebrating femininity', title: 'Celebration' },
 ];
 
 const maternityChildrenImages = [
-  { src: 'samples/maternity/pregnancy-glow', alt: 'Beautiful maternity portrait celebrating pregnancy', title: 'Expecting Joy' },
-  { src: 'samples/children/newborn-peaceful', alt: 'Peaceful sleeping newborn in soft wrapping', title: 'New Beginning' },
+  {
+    src: 'samples/maternity/pregnancy-glow',
+    alt: 'Beautiful maternity portrait celebrating pregnancy',
+    title: 'Expecting Joy',
+  },
+  {
+    src: 'samples/children/newborn-peaceful',
+    alt: 'Peaceful sleeping newborn in soft wrapping',
+    title: 'New Beginning',
+  },
   { src: 'samples/children/toddler-playful', alt: 'Playful toddler portrait with genuine smile', title: 'Pure Joy' },
-  { src: 'samples/maternity/couple-expecting', alt: 'Expecting couple in intimate maternity session', title: 'Growing Love' },
+  {
+    src: 'samples/maternity/couple-expecting',
+    alt: 'Expecting couple in intimate maternity session',
+    title: 'Growing Love',
+  },
   { src: 'samples/children/siblings', alt: 'Sweet sibling portrait showing their bond', title: 'Sibling Bond' },
-  { src: 'samples/children/first-birthday', alt: 'First birthday celebration cake smash session', title: 'Milestone Moment' },
-  { src: 'samples/maternity/maternity-nature', alt: 'Maternity portrait in beautiful natural setting', title: 'Nature\'s Blessing' }
+  {
+    src: 'samples/children/first-birthday',
+    alt: 'First birthday celebration cake smash session',
+    title: 'Milestone Moment',
+  },
+  {
+    src: 'samples/maternity/maternity-nature',
+    alt: 'Maternity portrait in beautiful natural setting',
+    title: "Nature's Blessing",
+  },
 ];
 
 // Testimonials data
 const testimonials = [
   {
-    testimonial: "Working with this photographer was an absolute dream! They captured not just our images, but our emotions and the essence of who we are as a family. Every photo tells a story.",
-    clientName: "Sarah Johnson",
-    clientTitle: "Family Portrait Client",
-    rating: 5
+    testimonial:
+      'Working with this photographer was an absolute dream! They captured not just our images, but our emotions and the essence of who we are as a family. Every photo tells a story.',
+    clientName: 'Sarah Johnson',
+    clientTitle: 'Family Portrait Client',
+    rating: 5,
   },
   {
-    testimonial: "The boudoir session was empowering and beautiful. The photographer made me feel comfortable and confident, and the results exceeded all my expectations. Truly artistic work!",
-    clientName: "Maria Rodriguez", 
-    clientTitle: "Boudoir Session Client",
-    rating: 5
+    testimonial:
+      'The boudoir session was empowering and beautiful. The photographer made me feel comfortable and confident, and the results exceeded all my expectations. Truly artistic work!',
+    clientName: 'Maria Rodriguez',
+    clientTitle: 'Boudoir Session Client',
+    rating: 5,
   },
   {
-    testimonial: "Professional, creative, and incredibly talented. The landscape photos from our engagement session are breathtaking. We couldn't be happier with the memories captured.",
-    clientName: "David & Emma Chen",
-    clientTitle: "Engagement Session",
-    rating: 5
-  }
+    testimonial:
+      "Professional, creative, and incredibly talented. The landscape photos from our engagement session are breathtaking. We couldn't be happier with the memories captured.",
+    clientName: 'David & Emma Chen',
+    clientTitle: 'Engagement Session',
+    rating: 5,
+  },
 ];
 ---
 
 <Layout metadata={metadata}>
   <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-[var(--aw-color-secondary)] to-slate-900 overflow-hidden">
-    <div class="absolute inset-0 bg-black/40"></div>
-    <div class="absolute inset-0">
-      <div class="w-full h-full bg-[url('https://images.unsplash.com/photo-1554048612-b6a482b224ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80')] bg-cover bg-center opacity-30"></div>
-    </div>
-    
-    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
-      <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-        Capturing Life's
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--aw-color-accent)] to-[var(--aw-color-primary)]">
-          Beautiful Moments
-        </span>
-      </h1>
-      <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-        Professional photographer specializing in creating timeless memories through artistic vision, 
-        technical excellence, and a passion for storytelling.
-      </p>
-      
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-        <a href="#portfolio" class="bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105">
-          View Portfolio
-        </a>
-        <a href="#contact" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105">
-          Book Session
-        </a>
-      </div>
-
-      <SocialLinks size="lg" className="mb-8" />
-      
-      <div class="text-gray-300">
-        <p class="mb-2">📍 San Francisco Bay Area</p>
-        <p>📧 hello@yourphotography.com | 📱 (555) 123-4567</p>
-      </div>
-    </div>
-
-    <!-- Scroll Down Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-      </svg>
-    </div>
-  </section>
+  <Hero
+    title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--aw-color-accent)] to-[var(--aw-color-primary)]">Beautiful Moments</span>`}
+    subtitle="Professional photographer specializing in creating timeless memories through artistic vision, technical excellence, and a passion for storytelling."
+    actions={[
+      {
+        variant: 'primary',
+        text: 'View Portfolio',
+        href: '#portfolio',
+        class:
+          'bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105',
+      },
+      {
+        variant: 'secondary',
+        text: 'Book Session',
+        href: '#contact',
+        class:
+          'border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105',
+      },
+    ]}
+    gradientBg={true}
+    showScrollIndicator={true}
+  />
 
   <!-- Portfolio Section -->
   <section id="portfolio" class="py-20 bg-[var(--aw-color-bg-page)] dark:bg-[var(--aw-color-bg-page-dark)]">
     <div class="max-w-7xl mx-auto px-4">
       <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6">Photography Portfolio</h2>
+        <h2
+          class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+        >
+          Photography Portfolio
+        </h2>
         <p class="text-xl text-[var(--aw-color-text-muted)] max-w-3xl mx-auto">
-          Explore our diverse collection of photography services, each crafted with artistic vision and professional expertise.
+          Explore our diverse collection of photography services, each crafted with artistic vision and professional
+          expertise.
         </p>
       </div>
 
       <!-- Landscape Photography -->
       <div class="mb-20">
-        <CategoryHero 
+        <CategoryHero
           title="Landscape Photography"
           subtitle="Nature's Canvas"
           description="Capturing the raw beauty and grandeur of nature's most spectacular moments. From mountain vistas to ocean shores, each landscape tells a story of natural wonder."
         />
         <div class="mt-12">
-          <PhotoSwiper 
-            images={landscapeImages}
-            title="Nature's Masterpieces"
-            category="landscape"
-            className="mb-8"
-          />
+          <PhotoSwiper images={landscapeImages} title="Nature's Masterpieces" category="landscape" className="mb-8" />
           <div class="text-center">
-            <a href="/gallery/landscapes" class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200">
+            <a
+              href="/gallery/landscapes"
+              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+            >
               View Full Landscape Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -158,20 +226,18 @@ const testimonials = [
 
       <!-- Portrait Photography -->
       <div class="mb-20">
-        <CategoryHero 
+        <CategoryHero
           title="Portrait Photography"
           subtitle="Human Connection"
           description="Professional portraits that capture personality, emotion, and the unique essence of each individual. From corporate headshots to artistic expressions."
         />
         <div class="mt-12">
-          <PhotoSwiper 
-            images={portraitImages}
-            title="Capturing Character"
-            category="portrait"
-            className="mb-8"
-          />
+          <PhotoSwiper images={portraitImages} title="Capturing Character" category="portrait" className="mb-8" />
           <div class="text-center">
-            <a href="/gallery/portraits" class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200">
+            <a
+              href="/gallery/portraits"
+              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+            >
               View Full Portrait Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -183,20 +249,18 @@ const testimonials = [
 
       <!-- Boudoir Photography -->
       <div class="mb-20">
-        <CategoryHero 
+        <CategoryHero
           title="Boudoir Photography"
           subtitle="Intimate Artistry"
           description="Elegant and tasteful intimate photography that celebrates confidence, beauty, and self-expression in a comfortable, professional environment."
         />
         <div class="mt-12">
-          <PhotoSwiper 
-            images={boudoirImages}
-            title="Celebrating You"
-            category="boudoir"
-            className="mb-8"
-          />
+          <PhotoSwiper images={boudoirImages} title="Celebrating You" category="boudoir" className="mb-8" />
           <div class="text-center">
-            <a href="/gallery/boudoir" class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200">
+            <a
+              href="/gallery/boudoir"
+              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+            >
               View Full Boudoir Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -208,20 +272,23 @@ const testimonials = [
 
       <!-- Maternity & Children Photography -->
       <div class="mb-20">
-        <CategoryHero 
+        <CategoryHero
           title="Maternity & Children"
           subtitle="Life's Precious Moments"
           description="Capturing the wonder of new life, from pregnancy glow to first smiles. Creating timeless memories of your family's most precious moments."
         />
         <div class="mt-12">
-          <PhotoSwiper 
+          <PhotoSwiper
             images={maternityChildrenImages}
             title="Growing Families"
             category="maternity-children"
             className="mb-8"
           />
           <div class="text-center">
-            <a href="/gallery/family" class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200">
+            <a
+              href="/gallery/family"
+              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+            >
               View Full Family Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -237,21 +304,27 @@ const testimonials = [
   <section class="py-20 bg-white dark:bg-[var(--aw-color-bg-page-dark)]">
     <div class="max-w-7xl mx-auto px-4">
       <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6">Client Testimonials</h2>
+        <h2
+          class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+        >
+          Client Testimonials
+        </h2>
         <p class="text-xl text-[var(--aw-color-text-muted)] max-w-3xl mx-auto">
           Don't just take our word for it. Here's what our clients say about their photography experience.
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {testimonials.map((testimonial) => (
-          <TestimonialCard 
-            testimonial={testimonial.testimonial}
-            clientName={testimonial.clientName}
-            clientTitle={testimonial.clientTitle}
-            rating={testimonial.rating}
-          />
-        ))}
+        {
+          testimonials.map((testimonial) => (
+            <TestimonialCard
+              testimonial={testimonial.testimonial}
+              clientName={testimonial.clientName}
+              clientTitle={testimonial.clientTitle}
+              rating={testimonial.rating}
+            />
+          ))
+        }
       </div>
     </div>
   </section>
@@ -261,26 +334,34 @@ const testimonials = [
     <div class="max-w-7xl mx-auto px-4">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
-          <h2 class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6">About the Artist</h2>
+          <h2
+            class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+          >
+            About the Artist
+          </h2>
           <div class="space-y-6 text-lg text-[var(--aw-color-text-default)] dark:text-[var(--aw-color-text-default)]">
             <p>
-              With over a decade of experience in professional photography, I specialize in creating visual stories 
-              that capture the essence of life's most meaningful moments. My approach combines technical expertise 
-              with artistic vision to deliver images that not only look beautiful but feel authentic.
+              With over a decade of experience in professional photography, I specialize in creating visual stories that
+              capture the essence of life's most meaningful moments. My approach combines technical expertise with
+              artistic vision to deliver images that not only look beautiful but feel authentic.
             </p>
             <p>
-              Whether it's the raw power of a landscape, the intimate connection in a portrait, or the joy of a 
-              family milestone, I believe every photograph should tell a story. My goal is to create images that 
-              you'll treasure for generations to come.
+              Whether it's the raw power of a landscape, the intimate connection in a portrait, or the joy of a family
+              milestone, I believe every photograph should tell a story. My goal is to create images that you'll
+              treasure for generations to come.
             </p>
             <p>
-              Based in the San Francisco Bay Area, I work with clients locally and travel for destination sessions. 
+              Based in the San Francisco Bay Area, I work with clients locally and travel for destination sessions.
               Every project is approached with passion, creativity, and a commitment to excellence.
             </p>
           </div>
-          
+
           <div class="mt-8">
-            <h3 class="text-xl font-semibold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-4">Achievements & Recognition</h3>
+            <h3
+              class="text-xl font-semibold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-4"
+            >
+              Achievements & Recognition
+            </h3>
             <ul class="space-y-2 text-[var(--aw-color-text-muted)]">
               <li>• Featured in Photography Magazine (2023)</li>
               <li>• Winner - Bay Area Photography Awards (2022)</li>
@@ -289,16 +370,18 @@ const testimonials = [
             </ul>
           </div>
         </div>
-        
+
         <div class="relative">
           <div class="aspect-[4/5] overflow-hidden rounded-lg shadow-2xl">
-            <img 
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" 
+            <img
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80"
               alt="Professional photographer at work"
               class="w-full h-full object-cover"
             />
           </div>
-          <div class="absolute -bottom-6 -right-6 bg-white dark:bg-[var(--aw-color-bg-page-dark)] p-6 rounded-lg shadow-lg border border-[var(--aw-color-accent)]/20">
+          <div
+            class="absolute -bottom-6 -right-6 bg-white dark:bg-[var(--aw-color-bg-page-dark)] p-6 rounded-lg shadow-lg border border-[var(--aw-color-accent)]/20"
+          >
             <p class="text-2xl font-bold text-[var(--aw-color-primary)]">10+</p>
             <p class="text-[var(--aw-color-text-muted)]">Years Experience</p>
           </div>
@@ -320,10 +403,16 @@ const testimonials = [
         Let's work together to capture your vision and create memories that will last a lifetime.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#contact" class="bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105">
+        <a
+          href="#contact"
+          class="bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105"
+        >
           Get Started Today
         </a>
-        <a href="tel:+15551234567" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105">
+        <a
+          href="tel:+15551234567"
+          class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105"
+        >
           Call Now
         </a>
       </div>
@@ -335,33 +424,33 @@ const testimonials = [
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* Custom scrollbar for better UX */
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: var(--aw-color-bg-page);
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: var(--aw-color-accent);
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--aw-color-primary);
   }
-  
+
   .dark ::-webkit-scrollbar-track {
     background: var(--aw-color-bg-page-dark);
   }
-  
+
   .dark ::-webkit-scrollbar-thumb {
     background: var(--aw-color-accent);
   }
-  
+
   .dark ::-webkit-scrollbar-thumb:hover {
     background: var(--aw-color-primary);
   }
