@@ -1,0 +1,453 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Performance Optimization for Astro Applications
+
+## Rule
+Implement comprehensive performance optimization strategies leveraging Astro's strengths and modern web performance best practices.
+
+## Guidelines
+
+### Astro-Specific Optimizations
+- Leverage Astro's zero JavaScript by default approach
+- Use partial hydration strategically with appropriate client directives
+- Prefer static site generation (SSG) over server-side rendering (SSR) when possible
+- Minimize client-side JavaScript to essential interactive components only
+
+### Asset Optimization
+- Use Astro's built-in Image component for automatic optimization
+- Implement proper lazy loading for images and non-critical resources
+- Optimize font loading with appropriate display strategies
+- Manage static assets efficiently between `public/` and `src/assets/`
+
+### Code Splitting and Bundle Optimization
+- Take advantage of Astro's automatic code splitting
+- Minimize JavaScript bundle sizes through selective hydration
+- Use dynamic imports for non-critical functionality
+- Regularly analyze bundle sizes to identify bloat
+
+## Examples
+
+### Optimized Image Usage
+```astro
+---
+// components/OptimizedImage.astro
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { 
+  src, 
+  alt, 
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  loading = 'lazy',
+  class: className 
+} = Astro.props;
+---
+
+<Image
+  src={src}
+  alt={alt}
+  sizes={sizes}
+  loading={loading}
+  class={className}
+  format="webp"
+  quality={80}
+  widths={[320, 640, 768, 1024, 1280, 1600]}
+/>
+```
+
+### Strategic Hydration Patterns
+```astro
+---
+// pages/optimized-page.astro
+import HeroSection from '../components/HeroSection.astro';
+import InteractiveChart from '../components/InteractiveChart.tsx';
+import ContactForm from '../components/ContactForm.tsx';
+import Newsletter from '../components/Newsletter.tsx';
+import LazyModal from '../components/LazyModal.tsx';
+
+const chartData = await fetch('/api/analytics').then(res => res.json());
+---
+
+<html>
+<head>
+  <title>Performance Optimized Page</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="//analytics.google.com">
+  
+  <!-- Critical CSS inlined -->
+  <style>
+    /* Critical above-the-fold styles */
+    .hero { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <!-- Static hero - no hydration needed -->
+  <HeroSection title="Welcome" subtitle="Fast loading page" />
+  
+  <!-- Critical interactive content - load immediately -->
+  <section>
+    <InteractiveChart 
+      client:load 
+      data={chartData}
+      priority="high"
+    />
+  </section>
+  
+  <!-- Below-the-fold content - load when visible -->
+  <section>
+    <ContactForm client:visible />
+  </section>
+  
+  <!-- Non-critical - load when browser is idle -->
+  <Newsletter client:idle />
+  
+  <!-- Modal - only load when needed -->
+  <LazyModal client:only="react" />
+  
+  <!-- Defer non-critical scripts -->
+  <script async src="/js/analytics.js"></script>
+</body>
+</html>
+```
+
+### Font Optimization
+```astro
+---
+// layouts/BaseLayout.astro
+---
+
+<html>
+<head>
+  <!-- Preload critical fonts -->
+  <link 
+    rel="preload" 
+    href="/fonts/inter-var.woff2" 
+    as="font" 
+    type="font/woff2" 
+    crossorigin
+  >
+  
+  <!-- Font display optimization -->
+  <style>
+    @font-face {
+      font-family: 'Inter';
+      src: url('/fonts/inter-var.woff2') format('woff2');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap; /* Improve CLS */
+    }
+    
+    /* Fallback font stack */
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <slot />
+</body>
+</html>
+```
+
+### Optimized Asset Management
+```astro
+---
+// components/AssetOptimized.astro
+import heroImage from '../assets/images/hero.jpg';
+import { Image } from 'astro:assets';
+
+// Critical CSS for above-the-fold content
+const criticalCSS = `
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+`;
+---
+
+<!-- Inline critical CSS -->
+<style set:html={criticalCSS}></style>
+
+<!-- Optimized hero image -->
+<section class="hero">
+  <Image
+    src={heroImage}
+    alt="Hero image"
+    loading="eager"
+    format="webp"
+    quality={85}
+    sizes="100vw"
+    widths={[768, 1024, 1280, 1920]}
+  />
+</section>
+
+<!-- Lazy load non-critical CSS -->
+<link 
+  rel="preload" 
+  href="/styles/non-critical.css" 
+  as="style" 
+  onload="this.onload=null;this.rel='stylesheet'"
+>
+```
+
+### Performance-Focused Component
+```tsx
+// components/PerformantChart.tsx
+import { memo, useMemo, lazy, Suspense } from 'react';
+import type { ChartData } from '../types/chart';
+
+// Lazy load heavy chart library
+const Chart = lazy(() => import('react-chartjs-2'));
+
+interface Props {
+  data: ChartData;
+  width?: number;
+  height?: number;
+}
+
+export const PerformantChart = memo(({ data, width = 400, height = 300 }: Props) => {
+  // Memoize expensive calculations
+  const processedData = useMemo(() => {
+    return {
+      ...data,
+      datasets: data.datasets.map(dataset => ({
+        ...dataset,
+        backgroundColor: dataset.backgroundColor || '#3b82f6',
+      })),
+    };
+  }, [data]);
+
+  const options = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false, // Reduce rendering complexity
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+      },
+      y: {
+        display: true,
+      },
+    },
+  }), []);
+
+  return (
+    <div style={{ width, height }}>
+      <Suspense fallback={
+        <div className="flex items-center justify-center h-full bg-gray-100 rounded">
+          <span>Loading chart...</span>
+        </div>
+      }>
+        <Chart type="line" data={processedData} options={options} />
+      </Suspense>
+    </div>
+  );
+});
+
+PerformantChart.displayName = 'PerformantChart';
+```
+
+### TypeScript Performance Configuration
+```json
+// tsconfig.json - Performance optimized
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    
+    // Performance optimizations
+    "incremental": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    
+    // Reduce compiler work
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    
+    // Path mapping for better tree shaking
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+### Web Vitals Monitoring
+```typescript
+// lib/performance/web-vitals.ts
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+
+interface VitalsMetric {
+  name: string;
+  value: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+}
+
+function sendToAnalytics(metric: VitalsMetric) {
+  // Send to your analytics service
+  if (typeof gtag !== 'undefined') {
+    gtag('event', metric.name, {
+      value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+      event_category: 'Web Vitals',
+      event_label: metric.rating,
+      non_interaction: true,
+    });
+  }
+}
+
+export function initWebVitals() {
+  getCLS(sendToAnalytics);
+  getFID(sendToAnalytics);
+  getFCP(sendToAnalytics);
+  getLCP(sendToAnalytics);
+  getTTFB(sendToAnalytics);
+}
+
+// Usage in Astro component
+// <script>
+//   import { initWebVitals } from '/lib/performance/web-vitals.js';
+//   initWebVitals();
+// </script>
+```
+
+### Caching Strategy
+```typescript
+// lib/cache/strategy.ts
+interface CacheConfig {
+  ttl: number; // Time to live in seconds
+  staleWhileRevalidate?: number;
+}
+
+const cacheConfigs: Record<string, CacheConfig> = {
+  'api-data': { ttl: 300, staleWhileRevalidate: 600 }, // 5min cache, 10min stale
+  'static-content': { ttl: 3600 }, // 1 hour cache
+  'user-data': { ttl: 60 }, // 1 minute cache
+};
+
+export async function cachedFetch(
+  url: string, 
+  cacheKey: string,
+  options?: RequestInit
+): Promise<Response> {
+  const config = cacheConfigs[cacheKey] || { ttl: 300 };
+  
+  // Implement caching logic based on environment
+  if (typeof caches !== 'undefined') {
+    const cache = await caches.open('api-cache');
+    const cachedResponse = await cache.match(url);
+    
+    if (cachedResponse) {
+      const cacheTime = new Date(cachedResponse.headers.get('cache-time') || '');
+      const now = new Date();
+      const age = (now.getTime() - cacheTime.getTime()) / 1000;
+      
+      if (age < config.ttl) {
+        return cachedResponse;
+      }
+    }
+  }
+  
+  const response = await fetch(url, options);
+  
+  if (response.ok && typeof caches !== 'undefined') {
+    const cache = await caches.open('api-cache');
+    const responseToCache = response.clone();
+    responseToCache.headers.set('cache-time', new Date().toISOString());
+    await cache.put(url, responseToCache);
+  }
+  
+  return response;
+}
+```
+
+### Bad Performance Practices
+```astro
+<!-- ❌ Bad - Over-hydration -->
+<div client:load>
+  <h1>Static Title</h1>
+  <p>This content doesn't need JavaScript</p>
+</div>
+
+<!-- ❌ Bad - No image optimization -->
+<img src="/large-image.jpg" alt="Large image" />
+
+<!-- ❌ Bad - Blocking scripts -->
+<script src="/heavy-library.js"></script>
+<script src="/analytics.js"></script>
+
+<!-- ❌ Bad - No lazy loading -->
+<iframe src="https://youtube.com/embed/video" width="560" height="315"></iframe>
+```
+
+### Good Performance Practices
+```astro
+<!-- ✅ Good - Static content stays static -->
+<div>
+  <h1>Static Title</h1>
+  <p>This content doesn't need JavaScript</p>
+</div>
+
+<!-- ✅ Good - Optimized images -->
+<Image 
+  src={optimizedImage} 
+  alt="Optimized image"
+  loading="lazy"
+  format="webp"
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
+
+<!-- ✅ Good - Deferred scripts -->
+<script async src="/analytics.js"></script>
+<script type="module" src="/app.js"></script>
+
+<!-- ✅ Good - Lazy loading with intersection observer -->
+<iframe 
+  src="about:blank" 
+  data-src="https://youtube.com/embed/video"
+  loading="lazy"
+  width="560" 
+  height="315"
+></iframe>
+```
+
+## Performance Metrics to Monitor
+- **Largest Contentful Paint (LCP)**: < 2.5s
+- **First Input Delay (FID)**: < 100ms
+- **Cumulative Layout Shift (CLS)**: < 0.1
+- **First Contentful Paint (FCP)**: < 1.8s
+- **Time to First Byte (TTFB)**: < 600ms
+
+## Tools for Performance Analysis
+- Lighthouse CI for automated testing
+- WebPageTest for detailed analysis
+- Bundle analyzer for JavaScript size optimization
+- Chrome DevTools Performance tab
+- Astro's built-in dev tools

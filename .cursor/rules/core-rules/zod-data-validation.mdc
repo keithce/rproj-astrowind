@@ -1,0 +1,382 @@
+---
+description: Anytime validation is needed or zod is used.
+globs: 
+alwaysApply: false
+---
+# Zod Data Validation and Handling
+
+## Rule
+Use Zod schemas for comprehensive data validation and type-safe data handling throughout the application.
+
+## Guidelines
+
+### Schema Definition
+- Define Zod schemas for all external data sources (APIs, form submissions, environment variables)
+- Keep Zod schemas modular and reusable across the application
+- Parse data at application boundaries (API responses, user input, configuration)
+- Use Zod's built-in validation methods and custom refinements
+
+### Type Safety Integration
+- Infer TypeScript types from Zod schemas using `z.infer<typeof schema>`
+- Ensure fetched data is correctly typed through schema validation
+- Handle validation errors gracefully with meaningful error messages
+
+### API and External Data
+- Validate all API responses and request payloads
+- Create dedicated validation modules for different data sources
+- Handle validation failures with appropriate error handling strategies
+
+## Examples
+
+### Basic Schema Definitions
+```typescript
+// lib/schemas/user.ts
+import { z } from 'zod';
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, 'Name is required').max(100),
+  email: z.string().email('Invalid email format'),
+  age: z.number().int().min(0).max(120).optional(),
+  role: z.enum(['admin', 'user', 'moderator']),
+  preferences: z.object({
+    theme: z.enum(['light', 'dark']).default('light'),
+    notifications: z.boolean().default(true),
+  }).optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export const CreateUserSchema = UserSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+
+export const UpdateUserSchema = UserSchema.partial().omit({ 
+  id: true, 
+  createdAt: true 
+});
+
+// Infer types from schemas
+export type User = z.infer<typeof UserSchema>;
+export type CreateUser = z.infer<typeof CreateUserSchema>;
+export type UpdateUser = z.infer<typeof UpdateUserSchema>;
+```
+
+### API Response Validation
+```typescript
+// lib/schemas/api.ts
+import { z } from 'zod';
+
+export const ApiResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.unknown(),
+  message: z.string().optional(),
+  errors: z.array(z.string()).optional(),
+});
+
+export const PaginatedResponseSchema = z.object({
+  data: z.array(z.unknown()),
+  meta: z.object({
+    total: z.number(),
+    page: z.number(),
+    limit: z.number(),
+    totalPages: z.number(),
+  }),
+});
+
+// Notion API specific schemas
+export const NotionPageSchema = z.object({
+  id: z.string(),
+  created_time: z.string().datetime(),
+  last_edited_time: z.string().datetime(),
+  properties: z.record(z.unknown()),
+  url: z.string().url(),
+});
+
+export const NotionDatabaseQuerySchema = z.object({
+  results: z.array(NotionPageSchema),
+  next_cursor: z.string().nullable(),
+  has_more: z.boolean(),
+});
+
+export type NotionPage = z.infer<typeof NotionPageSchema>;
+export type NotionDatabaseQuery = z.infer<typeof NotionDatabaseQuerySchema>;
+```
+
+### Form Validation
+```typescript
+// lib/schemas/forms.ts
+import { z } from 'zod';
+
+export const ContactFormSchema = z.object({
+  name: z.string()
+    .min(1, 'Name is required')
+    .max(100, 'Name must be less than 100 characters'),
+  email: z.string()
+    .email('Please enter a valid email address'),
+  subject: z.string()
+    .min(1, 'Subject is required')
+    .max(200, 'Subject must be less than 200 characters'),
+  message: z.string()
+    .min(10, 'Message must be at least 10 characters')
+    .max(1000, 'Message must be less than 1000 characters'),
+  consent: z.boolean()
+    .refine(val => val === true, 'You must agree to the terms'),
+});
+
+export const NewsletterSignupSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  preferences: z.object({
+    weekly: z.boolean().default(true),
+    monthly: z.boolean().default(false),
+    announcements: z.boolean().default(true),
+  }).optional(),
+});
+
+export type ContactFormData = z.infer<typeof ContactFormSchema>;
+export type NewsletterSignupData = z.infer<typeof NewsletterSignupSchema>;
+```
+
+### Environment Variables Validation
+```typescript
+// lib/schemas/env.ts
+import { z } from 'zod';
+
+export const EnvSchema = z.object({
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  PORT: z.string().transform(val => parseInt(val, 10)).default('3000'),
+  
+  // API Keys
+  NOTION_API_KEY: z.string().min(1, 'Notion API key is required'),
+  RESEND_API_KEY: z.string().min(1, 'Resend API key is required'),
+  
+  // Database
+  DATABASE_URL: z.string().url('Invalid database URL'),
+  
+  // Optional configurations
+  ANALYTICS_ID: z.string().optional(),
+  SENTRY_DSN: z.string().url().optional(),
+});
+
+// Validate environment variables at startup
+export const env = EnvSchema.parse(process.env);
+
+export type Env = z.infer<typeof EnvSchema>;
+```
+
+### Data Fetching with Validation
+```typescript
+// lib/api/users.ts
+import { UserSchema, type User } from '../schemas/user.ts';
+import { ApiResponseSchema } from '../schemas/api.ts';
+
+export async function fetchUser(id: string): Promise<User | null> {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const rawData = await response.json();
+    
+    // Validate API response structure
+    const apiResponse = ApiResponseSchema.parse(rawData);
+    
+    if (!apiResponse.success) {
+      throw new Error(apiResponse.message || 'API request failed');
+    }
+    
+    // Validate user data
+    const user = UserSchema.parse(apiResponse.data);
+    return user;
+    
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('User data validation failed:', error.errors);
+      return null;
+    }
+    
+    console.error('Failed to fetch user:', error);
+    return null;
+  }
+}
+
+export async function createUser(userData: CreateUser): Promise<User | null> {
+  try {
+    // Validate input data
+    const validatedData = CreateUserSchema.parse(userData);
+    
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(validatedData),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const rawData = await response.json();
+    const apiResponse = ApiResponseSchema.parse(rawData);
+    
+    if (!apiResponse.success) {
+      throw new Error(apiResponse.message || 'Failed to create user');
+    }
+    
+    return UserSchema.parse(apiResponse.data);
+    
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('User creation validation failed:', error.errors);
+      return null;
+    }
+    
+    console.error('Failed to create user:', error);
+    return null;
+  }
+}
+```
+
+### Error Handling with Zod
+```typescript
+// lib/utils/validation.ts
+import { z } from 'zod';
+
+export interface ValidationResult<T> {
+  success: boolean;
+  data?: T;
+  errors?: string[];
+}
+
+export function validateData<T>(
+  schema: z.ZodSchema<T>, 
+  data: unknown
+): ValidationResult<T> {
+  try {
+    const validatedData = schema.parse(data);
+    return {
+      success: true,
+      data: validatedData,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        errors: error.errors.map(err => 
+          `${err.path.join('.')}: ${err.message}`
+        ),
+      };
+    }
+    
+    return {
+      success: false,
+      errors: ['Unknown validation error'],
+    };
+  }
+}
+
+export function formatZodError(error: z.ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  
+  error.errors.forEach(err => {
+    const path = err.path.join('.');
+    fieldErrors[path] = err.message;
+  });
+  
+  return fieldErrors;
+}
+```
+
+### Astro API Route with Validation
+```typescript
+// src/pages/api/contact.ts
+import type { APIRoute } from 'astro';
+import { ContactFormSchema } from '../../lib/schemas/forms.ts';
+import { validateData } from '../../lib/utils/validation.ts';
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json();
+    
+    // Validate form data
+    const validation = validateData(ContactFormSchema, body);
+    
+    if (!validation.success) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Validation failed',
+        errors: validation.errors,
+      }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
+    
+    const { name, email, subject, message } = validation.data!;
+    
+    // Process the validated data
+    // ... send email, save to database, etc.
+    
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Message sent successfully',
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+  } catch (error) {
+    console.error('Contact form error:', error);
+    
+    return new Response(JSON.stringify({
+      success: false,
+      message: 'Internal server error',
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+};
+```
+
+### Bad Practices
+```typescript
+// ❌ Bad - No validation
+async function fetchUserBad(id: string): Promise<any> {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json(); // No validation!
+}
+
+// ❌ Bad - Inline validation without reusable schemas
+function validateUserBad(data: any) {
+  if (!data.name || !data.email) {
+    throw new Error('Invalid user');
+  }
+  return data;
+}
+
+// ❌ Bad - Ignoring validation errors
+try {
+  const user = UserSchema.parse(data);
+} catch {
+  // Silently ignoring validation errors
+}
+```
+
+## Benefits
+- Type safety at runtime and compile time
+- Consistent data validation across the application
+- Clear error messages for debugging and user feedback
+- Automatic TypeScript type inference
+- Protection against malformed external data

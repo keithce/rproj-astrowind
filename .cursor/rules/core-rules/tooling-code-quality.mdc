@@ -1,0 +1,656 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Tooling and Code Quality Best Practices
+
+## Rule
+Implement comprehensive tooling and code quality measures to maintain consistent, reliable, and maintainable code across the development team.
+
+## Guidelines
+
+### Linting and Formatting
+- Use ESLint for JavaScript/TypeScript linting with appropriate rules
+- Use Prettier for consistent code formatting
+- Integrate tools into development workflow with editor support
+- Configure pre-commit hooks to enforce code quality
+
+### TypeScript Integration
+- Use `astro check` or `tsc --noEmit` for type checking
+- Integrate TypeScript checking into CI/CD pipeline
+- Use the official Astro VS Code extension for optimal editor support
+
+### Testing and Quality Assurance
+- Write unit tests for utility functions and complex logic
+- Consider end-to-end tests for critical user flows
+- Implement code reviews as part of the development process
+- Use automated testing in CI/CD pipelines
+
+## Examples
+
+### ESLint Configuration
+```javascript
+// eslint.config.js
+import js from '@eslint/js';
+import typescript from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import astro from 'eslint-plugin-astro';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+
+export default [
+  js.configs.recommended,
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescript,
+      react,
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+    },
+    rules: {
+      // TypeScript rules
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/prefer-const': 'error',
+      '@typescript-eslint/no-var-requires': 'error',
+
+      // React rules
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'error',
+      'react/jsx-key': 'error',
+      'react/no-unescaped-entities': 'warn',
+
+      // React Hooks rules
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // Accessibility rules
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-has-content': 'error',
+      'jsx-a11y/anchor-is-valid': 'error',
+      'jsx-a11y/aria-props': 'error',
+      'jsx-a11y/aria-proptypes': 'error',
+      'jsx-a11y/aria-unsupported-elements': 'error',
+      'jsx-a11y/heading-has-content': 'error',
+      'jsx-a11y/label-has-associated-control': 'error',
+
+      // General rules
+      'no-console': 'warn',
+      'no-debugger': 'error',
+      'no-unused-vars': 'off', // Handled by TypeScript
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
+  {
+    files: ['**/*.astro'],
+    plugins: {
+      astro,
+    },
+    languageOptions: {
+      parser: astro.parser,
+      parserOptions: {
+        parser: typescriptParser,
+        extraFileExtensions: ['.astro'],
+      },
+    },
+    rules: {
+      ...astro.configs.recommended.rules,
+      'astro/no-conflict-set-directives': 'error',
+      'astro/no-unused-define-vars-in-style': 'error',
+      'astro/no-set-html-directive': 'warn',
+      'astro/semi': ['error', 'always'],
+    },
+  },
+  {
+    files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+];
+```
+
+### Prettier Configuration
+```javascript
+// prettier.config.js
+export default {
+  // Basic formatting
+  semi: true,
+  singleQuote: true,
+  quoteProps: 'as-needed',
+  trailingComma: 'es5',
+  tabWidth: 2,
+  useTabs: false,
+  
+  // Line length and wrapping
+  printWidth: 100,
+  proseWrap: 'preserve',
+  
+  // HTML/JSX formatting
+  htmlWhitespaceSensitivity: 'css',
+  bracketSpacing: true,
+  bracketSameLine: false,
+  arrowParens: 'avoid',
+  
+  // Plugin configurations
+  plugins: [
+    'prettier-plugin-astro',
+    'prettier-plugin-tailwindcss',
+  ],
+  
+  // File-specific overrides
+  overrides: [
+    {
+      files: '*.astro',
+      options: {
+        parser: 'astro',
+      },
+    },
+    {
+      files: '*.md',
+      options: {
+        proseWrap: 'always',
+        printWidth: 80,
+      },
+    },
+    {
+      files: '*.json',
+      options: {
+        printWidth: 120,
+      },
+    },
+  ],
+  
+  // Tailwind CSS class sorting
+  tailwindConfig: './tailwind.config.cjs',
+  tailwindFunctions: ['clsx', 'cn', 'cva'],
+};
+```
+
+### TypeScript Configuration for Development
+```json
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    
+    // Strict type checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    
+    // Additional checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    
+    // Performance optimizations
+    "incremental": true,
+    "skipLibCheck": true,
+    
+    // Path mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@pages/*": ["src/pages/*"],
+      "@lib/*": ["src/lib/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"],
+      "@assets/*": ["src/assets/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "astro.config.mjs",
+    "tailwind.config.cjs",
+    "eslint.config.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".astro"
+  ]
+}
+```
+
+### Git Hooks with Lefthook
+```yaml
+# lefthook.yml
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx,astro}"
+      run: npx eslint {staged_files} --fix
+      stage_fixed: true
+    
+    format:
+      glob: "*.{js,jsx,ts,tsx,astro,md,json}"
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+    
+    type-check:
+      run: npm run type-check
+    
+    test:
+      run: npm run test:staged
+
+pre-push:
+  commands:
+    test:
+      run: npm run test
+    
+    build:
+      run: npm run build
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx commitlint --edit {1}
+```
+
+### Package.json Scripts
+```json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    
+    "type-check": "astro check && tsc --noEmit",
+    "type-check:watch": "astro check --watch",
+    
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
+    "lint:staged": "lint-staged",
+    
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:staged": "vitest related --run",
+    
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
+    
+    "prepare": "lefthook install",
+    "clean": "rm -rf dist .astro node_modules/.cache",
+    "reset": "npm run clean && npm install",
+    
+    "analyze": "npm run build && npx @next/bundle-analyzer",
+    "lighthouse": "lhci autorun"
+  }
+}
+```
+
+### Vitest Configuration
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import { getViteConfig } from 'astro/config';
+
+export default defineConfig(
+  getViteConfig({
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.ts'],
+      include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+      exclude: ['node_modules', 'dist', '.astro'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        exclude: [
+          'node_modules/',
+          'src/test/',
+          '**/*.d.ts',
+          '**/*.config.*',
+          'dist/',
+        ],
+        thresholds: {
+          global: {
+            branches: 80,
+            functions: 80,
+            lines: 80,
+            statements: 80,
+          },
+        },
+      },
+    },
+  })
+);
+```
+
+### Test Setup File
+```typescript
+// src/test/setup.ts
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
+
+// Clean up after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+};
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+};
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => {},
+  }),
+});
+```
+
+### Example Unit Tests
+```typescript
+// src/lib/utils.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatDate, slugify, truncateText } from './utils';
+
+describe('formatDate', () => {
+  it('should format date correctly', () => {
+    const date = new Date('2023-12-25');
+    expect(formatDate(date)).toBe('December 25, 2023');
+  });
+
+  it('should handle invalid dates', () => {
+    expect(formatDate(new Date('invalid'))).toBe('Invalid Date');
+  });
+});
+
+describe('slugify', () => {
+  it('should convert text to slug', () => {
+    expect(slugify('Hello World!')).toBe('hello-world');
+    expect(slugify('TypeScript & React')).toBe('typescript-react');
+  });
+
+  it('should handle empty strings', () => {
+    expect(slugify('')).toBe('');
+  });
+});
+
+describe('truncateText', () => {
+  it('should truncate long text', () => {
+    const longText = 'This is a very long text that should be truncated';
+    expect(truncateText(longText, 20)).toBe('This is a very long...');
+  });
+
+  it('should not truncate short text', () => {
+    const shortText = 'Short text';
+    expect(truncateText(shortText, 20)).toBe('Short text');
+  });
+});
+```
+
+### Component Testing Example
+```tsx
+// src/components/Button.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('should render with correct text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button')).toHaveTextContent('Click me');
+  });
+
+  it('should handle click events', () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    
+    fireEvent.click(screen.getByRole('button'));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be disabled when loading', () => {
+    render(<Button loading>Click me</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+
+  it('should apply correct variant classes', () => {
+    render(<Button variant="primary">Primary</Button>);
+    expect(screen.getByRole('button')).toHaveClass('btn-primary');
+  });
+});
+```
+
+### Playwright E2E Configuration
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+  ],
+
+  webServer: {
+    command: 'npm run preview',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+
+### VS Code Settings
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "astro.typescript.allowArbitraryAttributes": false,
+  "files.associations": {
+    "*.astro": "astro"
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "astro"
+  ],
+  "tailwindCSS.includeLanguages": {
+    "astro": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`](mdc:[^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`](mdc:[^\"'`]*).*?[\"'`]"]
+  ]
+}
+```
+
+### GitHub Actions Workflow
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Type check
+        run: npm run type-check
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Format check
+        run: npm run format:check
+      
+      - name: Unit tests
+        run: npm run test:coverage
+      
+      - name: Build
+        run: npm run build
+      
+      - name: E2E tests
+        run: npm run e2e
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+```
+
+## Quality Gates and Standards
+
+### Code Quality Metrics
+- **Test Coverage**: Minimum 80% for critical paths
+- **TypeScript Strict Mode**: Enabled with no `any` types
+- **ESLint**: Zero errors, warnings addressed
+- **Prettier**: Consistent formatting enforced
+- **Bundle Size**: Monitor and optimize regularly
+
+### Development Workflow
+1. **Feature Development**: Create feature branch from `develop`
+2. **Code Quality**: Pre-commit hooks ensure quality
+3. **Testing**: Unit and integration tests required
+4. **Code Review**: Peer review before merge
+5. **CI/CD**: Automated testing and deployment
+
+### Tools Integration
+- **Editor**: VS Code with recommended extensions
+- **Git Hooks**: Lefthook for automated quality checks
+- **CI/CD**: GitHub Actions for continuous integration
+- **Monitoring**: Error tracking and performance monitoring

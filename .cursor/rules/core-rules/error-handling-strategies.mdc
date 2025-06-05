@@ -1,0 +1,739 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Error Handling Strategies for Astro Applications
+
+## Rule
+Implement comprehensive error handling strategies that provide meaningful feedback to users while maintaining security and enabling effective debugging.
+
+## Guidelines
+
+### Consistent Error Handling Strategy
+- Define a consistent approach for handling errors throughout the application
+- Separate validation errors from unexpected runtime errors
+- Provide clear, user-friendly error messages
+- Log detailed error information for debugging without exposing sensitive data
+
+### Zod Integration for Validation Errors
+- Use Zod's error reporting for meaningful validation error messages
+- Transform Zod errors into user-friendly formats
+- Handle validation errors at API boundaries
+
+### Client-Side Error Handling
+- Implement Error Boundaries in React components
+- Handle async operations with proper error states
+- Provide fallback UI for failed components
+
+## Examples
+
+### Centralized Error Handling Utilities
+```typescript
+// lib/errors/types.ts
+export enum ErrorType {
+  VALIDATION = 'VALIDATION',
+  AUTHENTICATION = 'AUTHENTICATION',
+  AUTHORIZATION = 'AUTHORIZATION',
+  NOT_FOUND = 'NOT_FOUND',
+  RATE_LIMIT = 'RATE_LIMIT',
+  EXTERNAL_API = 'EXTERNAL_API',
+  INTERNAL = 'INTERNAL',
+}
+
+export interface AppError {
+  type: ErrorType;
+  message: string;
+  code?: string;
+  details?: Record<string, unknown>;
+  statusCode: number;
+  userMessage: string;
+  timestamp: string;
+}
+
+export class CustomError extends Error {
+  public readonly type: ErrorType;
+  public readonly code?: string;
+  public readonly details?: Record<string, unknown>;
+  public readonly statusCode: number;
+  public readonly userMessage: string;
+  public readonly timestamp: string;
+
+  constructor(
+    type: ErrorType,
+    message: string,
+    userMessage: string,
+    statusCode: number = 500,
+    code?: string,
+    details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'CustomError';
+    this.type = type;
+    this.code = code;
+    this.details = details;
+    this.statusCode = statusCode;
+    this.userMessage = userMessage;
+    this.timestamp = new Date().toISOString();
+  }
+
+  toJSON(): AppError {
+    return {
+      type: this.type,
+      message: this.message,
+      code: this.code,
+      details: this.details,
+      statusCode: this.statusCode,
+      userMessage: this.userMessage,
+      timestamp: this.timestamp,
+    };
+  }
+}
+```
+
+### Error Factory Functions
+```typescript
+// lib/errors/factory.ts
+import { CustomError, ErrorType } from './types';
+import { ZodError } from 'zod';
+
+export function createValidationError(
+  zodError: ZodError,
+  userMessage: string = 'Please check your input and try again'
+): CustomError {
+  const details = zodError.errors.reduce((acc, err) => {
+    const path = err.path.join('.');
+    acc[path] = err.message;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return new CustomError(
+    ErrorType.VALIDATION,
+    `Validation failed: ${zodError.errors.map(e => e.message).join(', ')}`,
+    userMessage,
+    400,
+    'VALIDATION_FAILED',
+    details
+  );
+}
+
+export function createNotFoundError(
+  resource: string,
+  identifier?: string
+): CustomError {
+  const message = identifier 
+    ? `${resource} with identifier '${identifier}' not found`
+    : `${resource} not found`;
+
+  return new CustomError(
+    ErrorType.NOT_FOUND,
+    message,
+    'The requested resource could not be found',
+    404,
+    'RESOURCE_NOT_FOUND',
+    { resource, identifier }
+  );
+}
+
+export function createAuthenticationError(
+  message: string = 'Authentication failed'
+): CustomError {
+  return new CustomError(
+    ErrorType.AUTHENTICATION,
+    message,
+    'Please log in to access this resource',
+    401,
+    'AUTHENTICATION_REQUIRED'
+  );
+}
+
+export function createAuthorizationError(
+  action: string,
+  resource: string
+): CustomError {
+  return new CustomError(
+    ErrorType.AUTHORIZATION,
+    `Insufficient permissions to ${action} ${resource}`,
+    'You do not have permission to perform this action',
+    403,
+    'INSUFFICIENT_PERMISSIONS',
+    { action, resource }
+  );
+}
+
+export function createRateLimitError(
+  retryAfter: number
+): CustomError {
+  return new CustomError(
+    ErrorType.RATE_LIMIT,
+    'Rate limit exceeded',
+    'Too many requests. Please try again later.',
+    429,
+    'RATE_LIMIT_EXCEEDED',
+    { retryAfter }
+  );
+}
+
+export function createExternalApiError(
+  service: string,
+  originalError: Error
+): CustomError {
+  return new CustomError(
+    ErrorType.EXTERNAL_API,
+    `External API error from ${service}: ${originalError.message}`,
+    'A service we depend on is currently unavailable. Please try again later.',
+    502,
+    'EXTERNAL_SERVICE_ERROR',
+    { service, originalMessage: originalError.message }
+  );
+}
+
+export function createInternalError(
+  message: string,
+  originalError?: Error
+): CustomError {
+  return new CustomError(
+    ErrorType.INTERNAL,
+    message,
+    'An unexpected error occurred. Please try again later.',
+    500,
+    'INTERNAL_SERVER_ERROR',
+    originalError ? { originalMessage: originalError.message } : undefined
+  );
+}
+```
+
+### Error Logging Service
+```typescript
+// lib/errors/logger.ts
+import { CustomError, AppError } from './types';
+
+export enum LogLevel {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error',
+}
+
+interface LogEntry {
+  level: LogLevel;
+  message: string;
+  timestamp: string;
+  error?: AppError;
+  context?: Record<string, unknown>;
+  userId?: string;
+  requestId?: string;
+}
+
+class ErrorLogger {
+  private isDevelopment = process.env.NODE_ENV === 'development';
+
+  log(entry: LogEntry): void {
+    const logData = {
+      ...entry,
+      timestamp: new Date().toISOString(),
+    };
+
+    if (this.isDevelopment) {
+      this.logToConsole(logData);
+    } else {
+      this.logToService(logData);
+    }
+  }
+
+  logError(
+    error: Error | CustomError,
+    context?: Record<string, unknown>,
+    userId?: string,
+    requestId?: string
+  ): void {
+    const isCustomError = error instanceof CustomError;
+    const level = isCustomError && error.statusCode < 500 ? LogLevel.WARN : LogLevel.ERROR;
+
+    this.log({
+      level,
+      message: error.message,
+      timestamp: new Date().toISOString(),
+      error: isCustomError ? error.toJSON() : {
+        type: 'UNKNOWN',
+        message: error.message,
+        statusCode: 500,
+        userMessage: 'An unexpected error occurred',
+        timestamp: new Date().toISOString(),
+      } as AppError,
+      context,
+      userId,
+      requestId,
+    });
+  }
+
+  private logToConsole(entry: LogEntry): void {
+    const { level, message, error, context } = entry;
+    
+    console[level](mdc:`[${entry.timestamp}] ${message}`);
+    
+    if (error) {
+      console[level](mdc:'Error details:', error);
+    }
+    
+    if (context) {
+      console[level](mdc:'Context:', context);
+    }
+  }
+
+  private logToService(entry: LogEntry): void {
+    // Send to external logging service (e.g., Sentry, LogRocket, etc.)
+    // This is where you'd integrate with your preferred logging service
+    
+    if (typeof window !== 'undefined' && window.Sentry) {
+      // Client-side error reporting
+      window.Sentry.captureException(new Error(entry.message), {
+        level: entry.level,
+        extra: {
+          error: entry.error,
+          context: entry.context,
+        },
+        user: entry.userId ? { id: entry.userId } : undefined,
+        tags: {
+          requestId: entry.requestId,
+        },
+      });
+    }
+  }
+}
+
+export const errorLogger = new ErrorLogger();
+```
+
+### API Error Handler Middleware
+```typescript
+// lib/errors/api-handler.ts
+import type { APIRoute } from 'astro';
+import { CustomError, ErrorType } from './types';
+import { errorLogger } from './logger';
+import { ZodError } from 'zod';
+import { createValidationError, createInternalError } from './factory';
+
+export function withErrorHandler(handler: APIRoute): APIRoute {
+  return async (context) => {
+    const requestId = crypto.randomUUID();
+    
+    try {
+      return await handler(context);
+    } catch (error) {
+      return handleApiError(error, context, requestId);
+    }
+  };
+}
+
+function handleApiError(
+  error: unknown,
+  context: Parameters<APIRoute>[0],
+  requestId: string
+): Response {
+  let customError: CustomError;
+
+  if (error instanceof CustomError) {
+    customError = error;
+  } else if (error instanceof ZodError) {
+    customError = createValidationError(error);
+  } else if (error instanceof Error) {
+    customError = createInternalError(
+      'Unexpected error in API handler',
+      error
+    );
+  } else {
+    customError = createInternalError(
+      'Unknown error in API handler'
+    );
+  }
+
+  // Log the error
+  errorLogger.logError(customError, {
+    url: context.url.toString(),
+    method: context.request.method,
+    userAgent: context.request.headers.get('user-agent'),
+    clientAddress: context.clientAddress,
+  }, undefined, requestId);
+
+  // Return appropriate response
+  const responseBody = {
+    success: false,
+    error: {
+      type: customError.type,
+      message: customError.userMessage,
+      code: customError.code,
+      ...(customError.type === ErrorType.VALIDATION && { 
+        details: customError.details 
+      }),
+    },
+    requestId,
+  };
+
+  return new Response(JSON.stringify(responseBody), {
+    status: customError.statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+```
+
+### React Error Boundary
+```tsx
+// components/ErrorBoundary.tsx
+import { Component, type ReactNode, type ErrorInfo } from 'react';
+import { errorLogger } from '../lib/errors/logger';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+  errorId?: string;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { 
+      hasError: true, 
+      error,
+      errorId: crypto.randomUUID(),
+    };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log error details
+    errorLogger.logError(error, {
+      componentStack: errorInfo.componentStack,
+      errorBoundary: true,
+    });
+
+    // Call custom error handler if provided
+    this.props.onError?.(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
+        <div className="error-boundary p-6 bg-red-50 border border-red-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-red-600 mb-4">
+            We're sorry, but something unexpected happened. Please try refreshing the page.
+          </p>
+          <details className="text-sm text-red-700">
+            <summary className="cursor-pointer font-medium">
+              Error Details (ID: {this.state.errorId})
+            </summary>
+            <pre className="mt-2 p-2 bg-red-100 rounded text-xs overflow-auto">
+              {this.state.error?.message}
+            </pre>
+          </details>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+### Async Error Handling Hook
+```tsx
+// hooks/useAsyncError.ts
+import { useState, useCallback } from 'react';
+import { errorLogger } from '../lib/errors/logger';
+
+interface AsyncState<T> {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useAsyncError<T>() {
+  const [state, setState] = useState<AsyncState<T>>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+
+  const execute = useCallback(async (
+    asyncFunction: () => Promise<T>,
+    errorMessage: string = 'An error occurred'
+  ) => {
+    setState({ data: null, loading: true, error: null });
+
+    try {
+      const result = await asyncFunction();
+      setState({ data: result, loading: false, error: null });
+      return result;
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : errorMessage;
+      
+      // Log the error
+      errorLogger.logError(
+        error instanceof Error ? error : new Error(errorMessage),
+        { asyncOperation: true }
+      );
+
+      setState({ data: null, loading: false, error: errorMsg });
+      throw error;
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setState({ data: null, loading: false, error: null });
+  }, []);
+
+  return {
+    ...state,
+    execute,
+    reset,
+  };
+}
+```
+
+### Custom Error Pages
+```astro
+---
+// src/pages/404.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found">
+  <main class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full text-center">
+      <div class="mb-8">
+        <h1 class="text-9xl font-bold text-gray-300">404</h1>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Page Not Found
+        </h2>
+        <p class="text-gray-600 mb-8">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+      </div>
+      
+      <div class="space-y-4">
+        <a 
+          href="/"
+          class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Go Home
+        </a>
+        
+        <button
+          onclick="history.back()"
+          class="block w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+    </div>
+  </main>
+</Layout>
+```
+
+### Error-Aware Data Fetching
+```typescript
+// lib/api/safe-fetch.ts
+import { CustomError, ErrorType } from '../errors/types';
+import { createExternalApiError, createNotFoundError } from '../errors/factory';
+
+interface FetchOptions extends RequestInit {
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+}
+
+export async function safeFetch<T>(
+  url: string,
+  options: FetchOptions = {}
+): Promise<T> {
+  const {
+    timeout = 10000,
+    retries = 3,
+    retryDelay = 1000,
+    ...fetchOptions
+  } = options;
+
+  let lastError: Error;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw createNotFoundError('Resource', url);
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === retries) {
+        if (lastError.name === 'AbortError') {
+          throw createExternalApiError('API', new Error('Request timeout'));
+        }
+        throw createExternalApiError('API', lastError);
+      }
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+    }
+  }
+
+  throw lastError!;
+}
+```
+
+### Form Error Handling Component
+```tsx
+// components/FormWithErrorHandling.tsx
+import { useState } from 'react';
+import { useAsyncError } from '../hooks/useAsyncError';
+import { ContactFormSchema, type ContactFormData } from '../lib/schemas/forms';
+
+export function ContactFormWithErrorHandling() {
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const { loading, error, execute } = useAsyncError<void>();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFieldErrors({});
+
+    try {
+      // Validate form data
+      const validatedData = ContactFormSchema.parse(formData);
+
+      await execute(async () => {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validatedData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          if (errorData.error?.details) {
+            setFieldErrors(errorData.error.details);
+          }
+          
+          throw new Error(errorData.error?.message || 'Failed to send message');
+        }
+      }, 'Failed to send your message. Please try again.');
+
+      // Reset form on success
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      
+    } catch (validationError) {
+      if (validationError instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        validationError.errors.forEach(err => {
+          const path = err.path.join('.');
+          errors[path] = err.message;
+        });
+        setFieldErrors(errors);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.name ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.name && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>
+        )}
+      </div>
+
+      {/* Similar fields for email, subject, message */}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      >
+        {loading ? 'Sending...' : 'Send Message'}
+      </button>
+    </form>
+  );
+}
+```
+
+## Error Handling Best Practices
+
+### Do's
+- ✅ Provide meaningful error messages to users
+- ✅ Log detailed error information for debugging
+- ✅ Use consistent error handling patterns
+- ✅ Implement proper fallback UI
+- ✅ Validate input at boundaries
+- ✅ Handle async operations gracefully
+
+### Don'ts
+- ❌ Expose sensitive information in error messages
+- ❌ Ignore or silently swallow errors
+- ❌ Show technical error details to end users
+- ❌ Use generic error messages without context
+- ❌ Forget to log errors for debugging
+- ❌ Let errors crash the entire application

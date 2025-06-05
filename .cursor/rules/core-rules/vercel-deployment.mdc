@@ -1,0 +1,591 @@
+---
+description: using git, using vercel, deploy
+globs: 
+alwaysApply: false
+---
+# Vercel Deployment Best Practices
+
+## Rule
+Implement proper deployment strategies for Astro applications on Vercel with secure configuration, monitoring, and optimization.
+
+## Guidelines
+
+### Repository and Git Integration
+- Connect Git repository to Vercel for automatic deployments
+- Use proper branch strategies with preview deployments
+- Configure build settings appropriately for Astro projects
+- Implement proper environment variable management
+
+### Performance and Monitoring
+- Utilize Vercel's analytics and logging capabilities
+- Configure custom domains with proper SSL
+- Leverage Vercel's CDN and caching features
+- Monitor application health and performance metrics
+
+### Security and Configuration
+- Secure environment variable configuration
+- Implement proper headers and security policies
+- Use Vercel's built-in security features
+- Configure proper redirects and rewrites
+
+## Examples
+
+### Vercel Configuration File
+```json
+{
+  "version": 2,
+  "name": "astro-app",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://yourdomain.com"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old-path",
+      "destination": "/new-path",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/blog/:slug",
+      "destination": "/blog/posts/:slug"
+    }
+  ],
+  "functions": {
+    "src/pages/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/daily-cleanup",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
+```
+
+### Environment Variables Configuration
+```typescript
+// lib/config/vercel-env.ts
+import { z } from 'zod';
+
+// Environment-specific validation
+const VercelEnvSchema = z.object({
+  // Vercel-specific variables
+  VERCEL: z.string().optional(),
+  VERCEL_ENV: z.enum(['development', 'preview', 'production']).optional(),
+  VERCEL_URL: z.string().optional(),
+  VERCEL_REGION: z.string().optional(),
+  
+  // Application environment variables
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  
+  // Public variables (available in browser)
+  PUBLIC_SITE_URL: z.string().url(),
+  PUBLIC_ANALYTICS_ID: z.string().optional(),
+  PUBLIC_VERCEL_URL: z.string().optional(),
+  
+  // Private variables (server-side only)
+  NOTION_API_KEY: z.string().min(1, 'Notion API key is required'),
+  RESEND_API_KEY: z.string().min(1, 'Resend API key is required'),
+  DATABASE_URL: z.string().url('Invalid database URL'),
+  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
+  
+  // Optional services
+  SENTRY_DSN: z.string().url().optional(),
+  WEBHOOK_SECRET: z.string().min(16).optional(),
+});
+
+// Validate and export environment variables
+export const vercelEnv = VercelEnvSchema.parse(process.env);
+
+// Helper functions for Vercel-specific logic
+export const isVercelProduction = vercelEnv.VERCEL_ENV === 'production';
+export const isVercelPreview = vercelEnv.VERCEL_ENV === 'preview';
+export const isVercelDevelopment = vercelEnv.VERCEL_ENV === 'development';
+
+// Get the correct site URL based on environment
+export function getSiteUrl(): string {
+  if (isVercelProduction) {
+    return vercelEnv.PUBLIC_SITE_URL;
+  }
+  
+  if (vercelEnv.VERCEL_URL) {
+    return `https://${vercelEnv.VERCEL_URL}`;
+  }
+  
+  return 'http://localhost:3000';
+}
+
+// Environment-specific configuration
+export const deploymentConfig = {
+  isDevelopment: vercelEnv.NODE_ENV === 'development',
+  isProduction: isVercelProduction,
+  isPreview: isVercelPreview,
+  siteUrl: getSiteUrl(),
+  region: vercelEnv.VERCEL_REGION || 'unknown',
+};
+```
+
+### Build Configuration
+```javascript
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless';
+import tailwind from '@astrojs/tailwind';
+import react from '@astrojs/react';
+
+export default defineConfig({
+  output: 'hybrid', // or 'server' for full SSR
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+    speedInsights: {
+      enabled: true,
+    },
+    imageService: true,
+    imagesConfig: {
+      sizes: [320, 640, 768, 1024, 1280, 1600],
+      formats: ['image/webp', 'image/avif'],
+      minimumCacheTTL: 300,
+    },
+  }),
+  integrations: [
+    tailwind(),
+    react(),
+  ],
+  vite: {
+    define: {
+      __VERCEL_ENV__: JSON.stringify(process.env.VERCEL_ENV || 'development'),
+    },
+  },
+  build: {
+    inlineStylesheets: 'auto',
+  },
+  compressHTML: true,
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+  },
+});
+```
+
+### Deployment Scripts
+```json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "build:vercel": "npm run type-check && npm run build",
+    "type-check": "astro check",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "deploy:preview": "vercel --prod=false",
+    "deploy:production": "vercel --prod",
+    "env:pull": "vercel env pull .env.local",
+    "env:add": "vercel env add"
+  }
+}
+```
+
+### Vercel API Route Optimization
+```typescript
+// src/pages/api/optimized-endpoint.ts
+import type { APIRoute } from 'astro';
+import { vercelEnv, isVercelProduction } from '../../lib/config/vercel-env';
+
+export const config = {
+  runtime: 'nodejs18.x',
+  maxDuration: isVercelProduction ? 30 : 60, // Shorter timeout in production
+  memory: 1024, // MB
+  regions: ['iad1'], // Specify regions for better performance
+};
+
+export const GET: APIRoute = async ({ request, url }) => {
+  // Set appropriate cache headers for Vercel's CDN
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Cache-Control': isVercelProduction 
+      ? 'public, s-maxage=300, stale-while-revalidate=600'
+      : 'no-cache',
+  });
+
+  try {
+    // Your API logic here
+    const data = await fetchData();
+
+    return new Response(JSON.stringify({
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+      region: vercelEnv.VERCEL_REGION,
+    }), {
+      status: 200,
+      headers,
+    });
+
+  } catch (error) {
+    console.error('API Error:', error);
+
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Internal server error',
+      timestamp: new Date().toISOString(),
+    }), {
+      status: 500,
+      headers,
+    });
+  }
+};
+
+async function fetchData() {
+  // Implement your data fetching logic
+  return { message: 'Hello from Vercel!' };
+}
+```
+
+### Edge Function Example
+```typescript
+// src/pages/api/edge/geolocation.ts
+import type { APIRoute } from 'astro';
+
+export const config = {
+  runtime: 'edge',
+};
+
+export const GET: APIRoute = async ({ request }) => {
+  // Access Vercel Edge Runtime features
+  const country = request.headers.get('x-vercel-ip-country') || 'Unknown';
+  const city = request.headers.get('x-vercel-ip-city') || 'Unknown';
+  const region = request.headers.get('x-vercel-ip-country-region') || 'Unknown';
+
+  return new Response(JSON.stringify({
+    location: {
+      country,
+      city,
+      region,
+    },
+    timestamp: new Date().toISOString(),
+  }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+    },
+  });
+};
+```
+
+### Monitoring and Analytics Setup
+```typescript
+// lib/analytics/vercel.ts
+import { deploymentConfig } from '../config/vercel-env';
+
+interface AnalyticsEvent {
+  name: string;
+  properties?: Record<string, string | number | boolean>;
+}
+
+class VercelAnalytics {
+  private isEnabled: boolean;
+
+  constructor() {
+    this.isEnabled = deploymentConfig.isProduction;
+  }
+
+  track(event: AnalyticsEvent): void {
+    if (!this.isEnabled) return;
+
+    // Use Vercel Analytics
+    if (typeof window !== 'undefined' && window.va) {
+      window.va('track', event.name, event.properties);
+    }
+  }
+
+  pageView(path: string): void {
+    if (!this.isEnabled) return;
+
+    this.track({
+      name: 'pageview',
+      properties: {
+        path,
+        timestamp: Date.now(),
+      },
+    });
+  }
+
+  error(error: Error, context?: Record<string, unknown>): void {
+    if (!this.isEnabled) return;
+
+    this.track({
+      name: 'error',
+      properties: {
+        message: error.message,
+        stack: error.stack?.substring(0, 1000), // Truncate stack trace
+        ...context,
+      },
+    });
+  }
+}
+
+export const analytics = new VercelAnalytics();
+
+// Web Vitals integration
+export function initWebVitals(): void {
+  if (typeof window === 'undefined' || !deploymentConfig.isProduction) return;
+
+  import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+    getCLS((metric) => analytics.track({ name: 'CLS', properties: { value: metric.value } }));
+    getFID((metric) => analytics.track({ name: 'FID', properties: { value: metric.value } }));
+    getFCP((metric) => analytics.track({ name: 'FCP', properties: { value: metric.value } }));
+    getLCP((metric) => analytics.track({ name: 'LCP', properties: { value: metric.value } }));
+    getTTFB((metric) => analytics.track({ name: 'TTFB', properties: { value: metric.value } }));
+  });
+}
+```
+
+### Cron Job Implementation
+```typescript
+// src/pages/api/cron/daily-cleanup.ts
+import type { APIRoute } from 'astro';
+import { vercelEnv } from '../../../lib/config/vercel-env';
+
+export const POST: APIRoute = async ({ request }) => {
+  // Verify the request is from Vercel Cron
+  const authHeader = request.headers.get('authorization');
+  const expectedAuth = `Bearer ${vercelEnv.CRON_SECRET}`;
+
+  if (authHeader !== expectedAuth) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    console.log('Starting daily cleanup job...');
+
+    // Perform cleanup tasks
+    await cleanupExpiredSessions();
+    await cleanupTempFiles();
+    await updateAnalytics();
+
+    console.log('Daily cleanup completed successfully');
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Daily cleanup completed',
+      timestamp: new Date().toISOString(),
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('Daily cleanup failed:', error);
+
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Cleanup failed',
+      timestamp: new Date().toISOString(),
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
+
+async function cleanupExpiredSessions(): Promise<void> {
+  // Implement session cleanup logic
+}
+
+async function cleanupTempFiles(): Promise<void> {
+  // Implement temporary file cleanup logic
+}
+
+async function updateAnalytics(): Promise<void> {
+  // Implement analytics update logic
+}
+```
+
+### Preview Deployment Configuration
+```typescript
+// lib/config/preview.ts
+import { isVercelPreview, vercelEnv } from './vercel-env';
+
+export const previewConfig = {
+  isPreview: isVercelPreview,
+  showDebugInfo: isVercelPreview,
+  enableAnalytics: false, // Disable analytics in preview
+  enableCaching: false, // Disable caching in preview
+  logLevel: isVercelPreview ? 'debug' : 'info',
+};
+
+// Preview-specific middleware
+export function withPreviewHeaders(response: Response): Response {
+  if (!isVercelPreview) return response;
+
+  // Add preview-specific headers
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  response.headers.set('X-Preview-Mode', 'true');
+  response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+  return response;
+}
+
+// Preview banner component data
+export const previewBanner = {
+  show: isVercelPreview,
+  message: 'This is a preview deployment',
+  deploymentUrl: vercelEnv.VERCEL_URL ? `https://${vercelEnv.VERCEL_URL}` : '',
+  branch: process.env.VERCEL_GIT_COMMIT_REF || 'unknown',
+  commit: process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) || 'unknown',
+};
+```
+
+### Deployment Health Check
+```typescript
+// src/pages/api/health.ts
+import type { APIRoute } from 'astro';
+import { vercelEnv, deploymentConfig } from '../../lib/config/vercel-env';
+
+export const GET: APIRoute = async () => {
+  const healthCheck = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    environment: vercelEnv.VERCEL_ENV || 'development',
+    region: vercelEnv.VERCEL_REGION || 'local',
+    version: process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) || 'unknown',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    checks: {
+      database: await checkDatabase(),
+      externalApi: await checkExternalServices(),
+      environment: checkEnvironmentVariables(),
+    },
+  };
+
+  const isHealthy = Object.values(healthCheck.checks).every(check => check.status === 'ok');
+
+  return new Response(JSON.stringify(healthCheck), {
+    status: isHealthy ? 200 : 503,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+    },
+  });
+};
+
+async function checkDatabase(): Promise<{ status: string; latency?: number }> {
+  try {
+    const start = Date.now();
+    // Perform a simple database query
+    // await db.query('SELECT 1');
+    const latency = Date.now() - start;
+    return { status: 'ok', latency };
+  } catch (error) {
+    return { status: 'error' };
+  }
+}
+
+async function checkExternalServices(): Promise<{ status: string }> {
+  try {
+    // Check external API availability
+    const response = await fetch('https://api.notion.com/v1/users/me', {
+      headers: { Authorization: `Bearer ${vercelEnv.NOTION_API_KEY}` },
+    });
+    return { status: response.ok ? 'ok' : 'error' };
+  } catch (error) {
+    return { status: 'error' };
+  }
+}
+
+function checkEnvironmentVariables(): { status: string } {
+  const requiredVars = ['NOTION_API_KEY', 'RESEND_API_KEY', 'JWT_SECRET'];
+  const missing = requiredVars.filter(varName => !process.env[varName]);
+  return { status: missing.length === 0 ? 'ok' : 'error' };
+}
+```
+
+## Deployment Checklist
+
+### Pre-Deployment
+- ✅ Environment variables configured in Vercel dashboard
+- ✅ Build scripts tested locally
+- ✅ TypeScript compilation passes
+- ✅ Tests passing
+- ✅ Security headers configured
+- ✅ Performance optimizations applied
+
+### Post-Deployment
+- ✅ Health check endpoint responding
+- ✅ Analytics tracking working
+- ✅ Error monitoring active
+- ✅ Performance metrics within targets
+- ✅ SSL certificate valid
+- ✅ Custom domain configured (if applicable)
+
+### Monitoring
+- Monitor deployment metrics in Vercel dashboard
+- Set up alerts for errors and performance issues
+- Review Web Vitals scores regularly
+- Monitor function execution times and memory usage

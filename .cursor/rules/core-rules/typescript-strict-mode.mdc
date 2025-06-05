@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Strict Mode Configuration
+
+## Rule
+Enable and maintain TypeScript strict mode with comprehensive type checking for maximum type safety.
+
+## Guidelines
+
+### Strict Mode Configuration
+- Set `"strict": true` in `tsconfig.json` to enable all strict type-checking options
+- Ensure these specific options are enabled:
+  - `"noImplicitAny": true`
+  - `"strictNullChecks": true`
+  - `"strictFunctionTypes": true`
+  - `"strictPropertyInitialization": true`
+
+### Type Safety Practices
+- Avoid using `any` type; prefer `unknown` for genuinely unknown values
+- Use type guards to narrow down `unknown` types
+- Explicitly type function parameters and return values
+- Type all component props with interfaces
+
+## Examples
+
+### Correct tsconfig.json Configuration
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
+```
+
+### Good Type Practices
+```typescript
+// ✅ Good - Explicit typing
+interface UserProps {
+  name: string;
+  age: number;
+  email?: string;
+}
+
+function processUser(user: UserProps): string {
+  return `${user.name} (${user.age})`;
+}
+
+// ✅ Good - Type guard for unknown
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+// ✅ Good - Handling nullable values
+function getName(user: UserProps | null): string {
+  return user?.name ?? 'Unknown';
+}
+```
+
+### Bad Practices
+```typescript
+// ❌ Bad - Using any
+function processData(data: any): any {
+  return data.whatever;
+}
+
+// ❌ Bad - No return type
+function calculate(a: number, b: number) {
+  return a + b;
+}
+
+// ❌ Bad - Implicit any parameters
+function handleEvent(event) {
+  console.log(event.target);
+}
+```
+
+## Benefits
+- Catch type errors at compile time
+- Improve code predictability and maintainability
+- Better IDE support and autocompletion
+- Reduce runtime errors
