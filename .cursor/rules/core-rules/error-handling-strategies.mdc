@@ -1,36 +1,38 @@
 ---
-description: 
-globs: 
-alwaysApply: true
+description:
+globs:
+alwaysApply: false
 ---
-# Error Handling Strategies for Astro Applications
+# Comprehensive Error Handling Strategies
 
 ## Rule
-Implement comprehensive error handling strategies that provide meaningful feedback to users while maintaining security and enabling effective debugging.
+Implement robust error handling throughout the application with consistent patterns for validation errors, runtime errors, and user feedback.
 
 ## Guidelines
 
-### Consistent Error Handling Strategy
-- Define a consistent approach for handling errors throughout the application
+### Error Handling Strategy
 - Separate validation errors from unexpected runtime errors
-- Provide clear, user-friendly error messages
-- Log detailed error information for debugging without exposing sensitive data
+- Use custom error classes for different types of application errors
+- Implement centralized error handling mechanisms
+- Provide meaningful user-friendly error messages while logging detailed information
 
-### Zod Integration for Validation Errors
-- Use Zod's error reporting for meaningful validation error messages
-- Transform Zod errors into user-friendly formats
-- Handle validation errors at API boundaries
+### TypeScript Error Handling
+- Enable `useUnknownInCatchVariables` in TypeScript config
+- Always check error types in catch blocks using type guards
+- Throw `Error` instances or custom error classes, never raw strings
+- Use Result pattern for expected failures where appropriate
 
 ### Client-Side Error Handling
-- Implement Error Boundaries in React components
+- Implement Error Boundaries for React components
 - Handle async operations with proper error states
 - Provide fallback UI for failed components
+- Never ignore errors; always acknowledge and handle them
 
 ## Examples
 
-### Centralized Error Handling Utilities
+### Custom Error Classes
 ```typescript
-// lib/errors/types.ts
+// src/lib/errors/types.ts
 export enum ErrorType {
   VALIDATION = 'VALIDATION',
   AUTHENTICATION = 'AUTHENTICATION',
@@ -93,7 +95,7 @@ export class CustomError extends Error {
 
 ### Error Factory Functions
 ```typescript
-// lib/errors/factory.ts
+// src/lib/errors/factory.ts
 import { CustomError, ErrorType } from './types';
 import { ZodError } from 'zod';
 
@@ -147,47 +149,6 @@ export function createAuthenticationError(
   );
 }
 
-export function createAuthorizationError(
-  action: string,
-  resource: string
-): CustomError {
-  return new CustomError(
-    ErrorType.AUTHORIZATION,
-    `Insufficient permissions to ${action} ${resource}`,
-    'You do not have permission to perform this action',
-    403,
-    'INSUFFICIENT_PERMISSIONS',
-    { action, resource }
-  );
-}
-
-export function createRateLimitError(
-  retryAfter: number
-): CustomError {
-  return new CustomError(
-    ErrorType.RATE_LIMIT,
-    'Rate limit exceeded',
-    'Too many requests. Please try again later.',
-    429,
-    'RATE_LIMIT_EXCEEDED',
-    { retryAfter }
-  );
-}
-
-export function createExternalApiError(
-  service: string,
-  originalError: Error
-): CustomError {
-  return new CustomError(
-    ErrorType.EXTERNAL_API,
-    `External API error from ${service}: ${originalError.message}`,
-    'A service we depend on is currently unavailable. Please try again later.',
-    502,
-    'EXTERNAL_SERVICE_ERROR',
-    { service, originalMessage: originalError.message }
-  );
-}
-
 export function createInternalError(
   message: string,
   originalError?: Error
@@ -203,116 +164,13 @@ export function createInternalError(
 }
 ```
 
-### Error Logging Service
+### API Error Handler
 ```typescript
-// lib/errors/logger.ts
-import { CustomError, AppError } from './types';
-
-export enum LogLevel {
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
-}
-
-interface LogEntry {
-  level: LogLevel;
-  message: string;
-  timestamp: string;
-  error?: AppError;
-  context?: Record<string, unknown>;
-  userId?: string;
-  requestId?: string;
-}
-
-class ErrorLogger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
-
-  log(entry: LogEntry): void {
-    const logData = {
-      ...entry,
-      timestamp: new Date().toISOString(),
-    };
-
-    if (this.isDevelopment) {
-      this.logToConsole(logData);
-    } else {
-      this.logToService(logData);
-    }
-  }
-
-  logError(
-    error: Error | CustomError,
-    context?: Record<string, unknown>,
-    userId?: string,
-    requestId?: string
-  ): void {
-    const isCustomError = error instanceof CustomError;
-    const level = isCustomError && error.statusCode < 500 ? LogLevel.WARN : LogLevel.ERROR;
-
-    this.log({
-      level,
-      message: error.message,
-      timestamp: new Date().toISOString(),
-      error: isCustomError ? error.toJSON() : {
-        type: 'UNKNOWN',
-        message: error.message,
-        statusCode: 500,
-        userMessage: 'An unexpected error occurred',
-        timestamp: new Date().toISOString(),
-      } as AppError,
-      context,
-      userId,
-      requestId,
-    });
-  }
-
-  private logToConsole(entry: LogEntry): void {
-    const { level, message, error, context } = entry;
-    
-    console[level](mdc:`[${entry.timestamp}] ${message}`);
-    
-    if (error) {
-      console[level](mdc:'Error details:', error);
-    }
-    
-    if (context) {
-      console[level](mdc:'Context:', context);
-    }
-  }
-
-  private logToService(entry: LogEntry): void {
-    // Send to external logging service (e.g., Sentry, LogRocket, etc.)
-    // This is where you'd integrate with your preferred logging service
-    
-    if (typeof window !== 'undefined' && window.Sentry) {
-      // Client-side error reporting
-      window.Sentry.captureException(new Error(entry.message), {
-        level: entry.level,
-        extra: {
-          error: entry.error,
-          context: entry.context,
-        },
-        user: entry.userId ? { id: entry.userId } : undefined,
-        tags: {
-          requestId: entry.requestId,
-        },
-      });
-    }
-  }
-}
-
-export const errorLogger = new ErrorLogger();
-```
-
-### API Error Handler Middleware
-```typescript
-// lib/errors/api-handler.ts
+// src/lib/errors/api-handler.ts
 import type { APIRoute } from 'astro';
 import { CustomError, ErrorType } from './types';
-import { errorLogger } from './logger';
-import { ZodError } from 'zod';
 import { createValidationError, createInternalError } from './factory';
+import { ZodError } from 'zod';
 
 export function withErrorHandler(handler: APIRoute): APIRoute {
   return async (context) => {
@@ -320,7 +178,7 @@ export function withErrorHandler(handler: APIRoute): APIRoute {
     
     try {
       return await handler(context);
-    } catch (error) {
+    } catch (error: unknown) {
       return handleApiError(error, context, requestId);
     }
   };
@@ -348,13 +206,12 @@ function handleApiError(
     );
   }
 
-  // Log the error
-  errorLogger.logError(customError, {
+  // Log the error (implement your logging strategy)
+  console.error(`[${requestId}] API Error:`, {
+    error: customError.toJSON(),
     url: context.url.toString(),
     method: context.request.method,
-    userAgent: context.request.headers.get('user-agent'),
-    clientAddress: context.clientAddress,
-  }, undefined, requestId);
+  });
 
   // Return appropriate response
   const responseBody = {
@@ -381,9 +238,8 @@ function handleApiError(
 
 ### React Error Boundary
 ```tsx
-// components/ErrorBoundary.tsx
+// src/components/ErrorBoundary.tsx
 import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { errorLogger } from '../lib/errors/logger';
 
 interface Props {
   children: ReactNode;
@@ -413,9 +269,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details
-    errorLogger.logError(error, {
+    console.error('Error caught by boundary:', {
+      error: error.message,
+      stack: error.stack,
       componentStack: errorInfo.componentStack,
-      errorBoundary: true,
+      errorId: this.state.errorId,
     });
 
     // Call custom error handler if provided
@@ -461,9 +319,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
 ### Async Error Handling Hook
 ```tsx
-// hooks/useAsyncError.ts
+// src/hooks/useAsyncError.ts
 import { useState, useCallback } from 'react';
-import { errorLogger } from '../lib/errors/logger';
 
 interface AsyncState<T> {
   data: T | null;
@@ -488,14 +345,14 @@ export function useAsyncError<T>() {
       const result = await asyncFunction();
       setState({ data: result, loading: false, error: null });
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : errorMessage;
       
       // Log the error
-      errorLogger.logError(
-        error instanceof Error ? error : new Error(errorMessage),
-        { asyncOperation: true }
-      );
+      console.error('Async operation failed:', {
+        error: errorMsg,
+        originalError: error,
+      });
 
       setState({ data: null, loading: false, error: errorMsg });
       throw error;
@@ -514,125 +371,25 @@ export function useAsyncError<T>() {
 }
 ```
 
-### Custom Error Pages
-```astro
----
-// src/pages/404.astro
-import Layout from '../layouts/Layout.astro';
----
-
-<Layout title="Page Not Found">
-  <main class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="max-w-md w-full text-center">
-      <div class="mb-8">
-        <h1 class="text-9xl font-bold text-gray-300">404</h1>
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-          Page Not Found
-        </h2>
-        <p class="text-gray-600 mb-8">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-      </div>
-      
-      <div class="space-y-4">
-        <a 
-          href="/"
-          class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Go Home
-        </a>
-        
-        <button
-          onclick="history.back()"
-          class="block w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Go Back
-        </button>
-      </div>
-    </div>
-  </main>
-</Layout>
-```
-
-### Error-Aware Data Fetching
-```typescript
-// lib/api/safe-fetch.ts
-import { CustomError, ErrorType } from '../errors/types';
-import { createExternalApiError, createNotFoundError } from '../errors/factory';
-
-interface FetchOptions extends RequestInit {
-  timeout?: number;
-  retries?: number;
-  retryDelay?: number;
-}
-
-export async function safeFetch<T>(
-  url: string,
-  options: FetchOptions = {}
-): Promise<T> {
-  const {
-    timeout = 10000,
-    retries = 3,
-    retryDelay = 1000,
-    ...fetchOptions
-  } = options;
-
-  let lastError: Error;
-
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      const response = await fetch(url, {
-        ...fetchOptions,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw createNotFoundError('Resource', url);
-        }
-        
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
-
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error('Unknown error');
-
-      if (attempt === retries) {
-        if (lastError.name === 'AbortError') {
-          throw createExternalApiError('API', new Error('Request timeout'));
-        }
-        throw createExternalApiError('API', lastError);
-      }
-
-      // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
-    }
-  }
-
-  throw lastError!;
-}
-```
-
-### Form Error Handling Component
+### Form Error Handling
 ```tsx
-// components/FormWithErrorHandling.tsx
+// src/components/FormWithErrorHandling.tsx
 import { useState } from 'react';
 import { useAsyncError } from '../hooks/useAsyncError';
-import { ContactFormSchema, type ContactFormData } from '../lib/schemas/forms';
+import { z } from 'zod';
+
+const ContactFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+type ContactFormData = z.infer<typeof ContactFormSchema>;
 
 export function ContactFormWithErrorHandling() {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
-    subject: '',
     message: '',
   });
   
@@ -666,9 +423,9 @@ export function ContactFormWithErrorHandling() {
       }, 'Failed to send your message. Please try again.');
 
       // Reset form on success
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', message: '' });
       
-    } catch (validationError) {
+    } catch (validationError: unknown) {
       if (validationError instanceof z.ZodError) {
         const errors: Record<string, string> = {};
         validationError.errors.forEach(err => {
@@ -706,7 +463,41 @@ export function ContactFormWithErrorHandling() {
         )}
       </div>
 
-      {/* Similar fields for email, subject, message */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.email ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.email && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+          Message
+        </label>
+        <textarea
+          id="message"
+          rows={4}
+          value={formData.message}
+          onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.message ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.message && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.message}</p>
+        )}
+      </div>
 
       <button
         type="submit"
@@ -720,7 +511,155 @@ export function ContactFormWithErrorHandling() {
 }
 ```
 
-## Error Handling Best Practices
+### API Route with Error Handling
+```typescript
+// src/pages/api/contact.ts
+import type { APIRoute } from 'astro';
+import { withErrorHandler } from '../../lib/errors/api-handler';
+import { createValidationError } from '../../lib/errors/factory';
+import { z } from 'zod';
+
+const ContactSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+export const POST: APIRoute = withErrorHandler(async ({ request }) => {
+  const body = await request.json();
+  
+  // Validate input
+  const validation = ContactSchema.safeParse(body);
+  if (!validation.success) {
+    throw createValidationError(validation.error);
+  }
+
+  const { name, email, message } = validation.data;
+
+  // Process the contact form (send email, save to database, etc.)
+  try {
+    await sendContactEmail({ name, email, message });
+    
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Message sent successfully'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error: unknown) {
+    // This will be caught by withErrorHandler
+    throw error;
+  }
+});
+
+async function sendContactEmail(data: { name: string; email: string; message: string }) {
+  // Implementation for sending email
+  // If this fails, it will throw an error that gets handled by the error handler
+}
+```
+
+### Result Pattern for Expected Failures
+```typescript
+// src/lib/result.ts
+export type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+export function createSuccess<T>(data: T): Result<T, never> {
+  return { success: true, data };
+}
+
+export function createFailure<E>(error: E): Result<never, E> {
+  return { success: false, error };
+}
+
+// Usage example
+async function fetchUserProfile(id: string): Promise<Result<UserProfile, string>> {
+  try {
+    const user = await getUserById(id);
+    if (!user) {
+      return createFailure('User not found');
+    }
+    return createSuccess(user);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return createFailure(message);
+  }
+}
+
+// Using the result
+const result = await fetchUserProfile('123');
+if (result.success) {
+  console.log('User:', result.data.name);
+} else {
+  console.error('Error:', result.error);
+}
+```
+
+### Safe Data Fetching
+```typescript
+// src/lib/safe-fetch.ts
+import { createExternalApiError } from './errors/factory';
+
+interface FetchOptions extends RequestInit {
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+}
+
+export async function safeFetch<T>(
+  url: string,
+  options: FetchOptions = {}
+): Promise<T> {
+  const {
+    timeout = 10000,
+    retries = 3,
+    retryDelay = 1000,
+    ...fetchOptions
+  } = options;
+
+  let lastError: Error;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error: unknown) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === retries) {
+        if (lastError.name === 'AbortError') {
+          throw createExternalApiError('API', new Error('Request timeout'));
+        }
+        throw createExternalApiError('API', lastError);
+      }
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+    }
+  }
+
+  throw lastError!;
+}
+```
+
+## Best Practices
 
 ### Do's
 - ✅ Provide meaningful error messages to users

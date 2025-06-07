@@ -1,0 +1,403 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Zod Data Validation Best Practices
+
+## Critical Rules
+
+- Define Zod schemas for all external data sources and user inputs
+- Use schema validation at application boundaries (API routes, form submissions, external APIs)
+- Leverage Zod's type inference to maintain type safety between runtime and compile time
+- Implement comprehensive error handling for validation failures
+- Create reusable, composable schemas for consistent validation patterns
+- Use Zod transforms and refinements for data sanitization and custom validation logic
+
+## Examples
+
+<example>
+**Good: Comprehensive Zod Schema Design**
+
+```typescript
+// src/lib/schemas/user.ts
+import { z } from 'zod';
+
+// Base schemas for reusability
+const EmailSchema = z
+  .string()
+  .email('Invalid email format')
+  .toLowerCase()
+  .trim();
+
+const PasswordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Password must contain uppercase, lowercase, number, and special character'
+  );
+
+// User profile schema with validation and transforms
+export const UserProfileSchema = z.object({
+  id: z.string().uuid('Invalid user ID format'),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name too long')
+    .regex(/^[a-zA-Z\s\-']+$/, 'Name contains invalid characters')
+    .transform(val => val.trim()),
+  
+  email: EmailSchema,
+  
+  age: z
+    .number()
+    .int('Age must be a whole number')
+    .min(13, 'Must be at least 13 years old')
+    .max(120, 'Invalid age')
+    .optional(),
+  
+  preferences: z.object({
+    theme: z.enum(['light', 'dark', 'auto']).default('light'),
+    notifications: z.boolean().default(true),
+    language: z.string().length(2, 'Invalid language code').default('en'),
+  }).default({}),
+  
+  createdAt: z.coerce.date(),
+  lastLogin: z.coerce.date().optional(),
+  
+  // Custom validation with refinement
+  website: z
+    .string()
+    .url('Invalid website URL')
+    .optional()
+    .refine(
+      (url) => !url || url.startsWith('https://'),
+      'Website must use HTTPS'
+    ),
+});
+
+// Infer TypeScript types from schemas
+export type UserProfile = z.infer<typeof UserProfileSchema>;
+export type UserPreferences = z.infer<typeof UserProfileSchema>['preferences'];
+
+// Schema for user creation (omit generated fields)
+export const CreateUserSchema = UserProfileSchema.omit({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+});
+
+export type CreateUserData = z.infer<typeof CreateUserSchema>;
+
+// Schema for user updates (make most fields optional)
+export const UpdateUserSchema = UserProfileSchema
+  .omit({ id: true, createdAt: true })
+  .partial();
+
+export type UpdateUserData = z.infer<typeof UpdateUserSchema>;
+```
+
+**API Route Validation:**
+```typescript
+// src/pages/api/users.ts
+import type { APIRoute } from 'astro';
+import { CreateUserSchema, UserProfileSchema } from '../../lib/schemas/user';
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json();
+    
+    // Validate input data
+    const validation = CreateUserSchema.safeParse(body);
+    
+    if (!validation.success) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Validation failed',
+        details: validation.error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+          code: err.code,
+        })),
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const userData = validation.data;
+    
+    // Create user in database
+    const newUser = await createUser(userData);
+    
+    // Validate response data
+    const responseValidation = UserProfileSchema.safeParse(newUser);
+    
+    if (!responseValidation.success) {
+      console.error('Database response validation failed:', responseValidation.error);
+      throw new Error('Invalid user data from database');
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      user: responseValidation.data,
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('User creation error:', error);
+    
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Internal server error',
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
+```
+
+**Form Validation with Error Handling:**
+```tsx
+// src/components/UserForm.tsx
+import { useState } from 'react';
+import { CreateUserSchema, type CreateUserData } from '../lib/schemas/user';
+import type { ZodError } from 'zod';
+
+interface FormErrors {
+  [key: string]: string;
+}
+
+export function UserForm() {
+  const [formData, setFormData] = useState<Partial<CreateUserData>>({
+    name: '',
+    email: '',
+    preferences: {
+      theme: 'light',
+      notifications: true,
+      language: 'en',
+    },
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateField = (name: string, value: any) => {
+    try {
+      // Validate individual field
+      const fieldSchema = CreateUserSchema.shape[name as keyof CreateUserData];
+      if (fieldSchema) {
+        fieldSchema.parse(value);
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
+    } catch (error) {
+      if (error instanceof ZodError) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: error.errors[0]?.message || 'Invalid value',
+        }));
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      // Validate entire form
+      const validatedData = CreateUserSchema.parse(formData);
+      
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validatedData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        if (result.details) {
+          // Handle validation errors from API
+          const newErrors: FormErrors = {};
+          result.details.forEach((error: any) => {
+            newErrors[error.field] = error.message;
+          });
+          setErrors(newErrors);
+        }
+      } else {
+        // Success - reset form
+        setFormData({
+          name: '',
+          email: '',
+          preferences: { theme: 'light', notifications: true, language: 'en' },
+        });
+      }
+
+    } catch (error) {
+      if (error instanceof ZodError) {
+        // Handle client-side validation errors
+        const newErrors: FormErrors = {};
+        error.errors.forEach(err => {
+          const field = err.path.join('.');
+          newErrors[field] = err.message;
+        });
+        setErrors(newErrors);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium">Name</label>
+        <input
+          type="text"
+          value={formData.name || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFormData(prev => ({ ...prev, name: value }));
+            validateField('name', value);
+          }}
+          className={`mt-1 block w-full rounded-md border ${
+            errors.name ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {errors.name && (
+          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Email</label>
+        <input
+          type="email"
+          value={formData.email || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFormData(prev => ({ ...prev, email: value }));
+            validateField('email', value);
+          }}
+          className={`mt-1 block w-full rounded-md border ${
+            errors.email ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md disabled:opacity-50"
+      >
+        {isSubmitting ? 'Creating User...' : 'Create User'}
+      </button>
+    </form>
+  );
+}
+```
+
+**External API Validation:**
+```typescript
+// src/lib/services/notion.ts
+import { z } from 'zod';
+
+const NotionPageSchema = z.object({
+  id: z.string(),
+  created_time: z.string().datetime(),
+  last_edited_time: z.string().datetime(),
+  properties: z.record(z.any()),
+  url: z.string().url(),
+});
+
+const NotionQueryResponseSchema = z.object({
+  results: z.array(NotionPageSchema),
+  next_cursor: z.string().nullable(),
+  has_more: z.boolean(),
+});
+
+export async function queryNotionDatabase(databaseId: string) {
+  try {
+    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.NOTION_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Notion API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Validate response against schema
+    const validatedData = NotionQueryResponseSchema.parse(data);
+    
+    return validatedData;
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Notion API response validation failed:', error.errors);
+      throw new Error('Invalid response format from Notion API');
+    }
+    throw error;
+  }
+}
+```
+</example>
+
+<example type="invalid">
+**Bad: Poor Validation Practices**
+
+```typescript
+// ❌ Bad - No validation
+export const POST: APIRoute = async ({ request }) => {
+  const body = await request.json();
+  // Direct use without validation
+  const user = await createUser(body);
+  return new Response(JSON.stringify(user));
+};
+
+// ❌ Bad - Weak validation
+const UserSchema = z.object({
+  name: z.string(), // No length limits or sanitization
+  email: z.string(), // Not validating email format
+  age: z.any(), // Using any defeats the purpose
+});
+
+// ❌ Bad - Ignoring validation errors
+const result = UserSchema.safeParse(data);
+if (result.success) {
+  // Only handling success case
+  processUser(result.data);
+}
+// Not handling validation failures
+
+// ❌ Bad - No type inference
+interface User {
+  name: string;
+  email: string;
+}
+// Separate interface instead of using z.infer<typeof UserSchema>
+
+// ❌ Bad - Validation in wrong place
+function processUser(userData: any) {
+  // Validating inside business logic instead of at boundaries
+  if (typeof userData.email !== 'string') {
+    throw new Error('Invalid email');
+  }
+}
+```
+</example>

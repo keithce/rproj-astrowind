@@ -1,0 +1,284 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Astro Islands Architecture - Zero JavaScript by Default
+
+## Rule
+Leverage Astro's Islands Architecture to ship minimal to zero client-side JavaScript, only hydrating interactive components when necessary.
+
+## Guidelines
+
+### Strategic Hydration
+- Use `client:load` only for critical interactive components that need immediate interactivity
+- Prefer `client:visible` for less critical interactive elements to improve initial page load
+- Use `client:idle` for non-essential components that can wait until the browser is idle
+- Avoid over-hydrating components that don't need client-side interactivity
+
+### Performance Optimization
+- Keep static content as pure HTML/CSS without JavaScript
+- Use server-side rendering for data fetching and initial content
+- Implement code splitting through Astro's modular approach
+- Minimize JavaScript bundle sizes by selective hydration
+
+## Examples
+
+### Strategic Client Directives Usage
+```astro
+---
+// pages/dashboard.astro
+import HeroSection from '../components/HeroSection.astro';
+import InteractiveChart from '../components/InteractiveChart.tsx';
+import ContactForm from '../components/ContactForm.tsx';
+import Newsletter from '../components/Newsletter.tsx';
+import LazyModal from '../components/LazyModal.tsx';
+
+const chartData = await fetch('/api/analytics').then(res => res.json());
+---
+
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <!-- Static hero - no hydration needed -->
+  <HeroSection title="Welcome to Dashboard" />
+  
+  <!-- Critical interactive content - load immediately -->
+  <section>
+    <InteractiveChart 
+      client:load 
+      data={chartData}
+      priority="high"
+    />
+  </section>
+  
+  <!-- Below-the-fold content - load when visible -->
+  <section>
+    <ContactForm client:visible />
+  </section>
+  
+  <!-- Non-critical - load when browser is idle -->
+  <Newsletter client:idle />
+  
+  <!-- Modal - only load when needed -->
+  <LazyModal client:only="react" />
+</body>
+</html>
+```
+
+### Static-First Component Design
+```astro
+---
+// components/ProductCard.astro
+interface Props {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    description: string;
+  };
+}
+
+const { product } = Astro.props;
+---
+
+<!-- Pure HTML/CSS card - no JavaScript needed -->
+<div class="product-card">
+  <img 
+    src={product.image} 
+    alt={product.name}
+    class="product-image"
+    loading="lazy"
+  />
+  
+  <div class="product-info">
+    <h3 class="product-name">{product.name}</h3>
+    <p class="product-description">{product.description}</p>
+    <div class="product-price">${product.price}</div>
+    
+    <!-- Use progressive enhancement for interactivity -->
+    <a href={`/products/${product.id}`} class="product-link">
+      View Details
+    </a>
+  </div>
+</div>
+
+<style>
+  .product-card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .product-image {
+    @apply w-full h-48 object-cover rounded-t-lg;
+  }
+
+  .product-info {
+    @apply p-4;
+  }
+
+  .product-name {
+    @apply text-lg font-semibold text-gray-900 mb-2;
+  }
+
+  .product-description {
+    @apply text-gray-600 text-sm mb-3 line-clamp-2;
+  }
+
+  .product-price {
+    @apply text-xl font-bold text-brand-primary mb-3;
+  }
+
+  .product-link {
+    @apply inline-block w-full text-center bg-brand-primary text-white py-2 px-4 rounded hover:bg-brand-primary/90 transition-colors;
+  }
+</style>
+```
+
+### Interactive Component with Selective Hydration
+```tsx
+// components/SearchableProductList.tsx
+import { useState, useMemo } from 'react';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+}
+
+interface Props {
+  products: Product[];
+  categories: string[];
+}
+
+export default function SearchableProductList({ products, categories }: Props) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, selectedCategory]);
+
+  return (
+    <div className="searchable-product-list">
+      <div className="filters mb-6 space-y-4 sm:space-y-0 sm:flex sm:gap-4">
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full sm:flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+        />
+        
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+        >
+          <option value="all">All Categories</option>
+          {categories.map(category => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProducts.map(product => (
+          <div key={product.id} className="product-item">
+            <h3 className="font-semibold">{product.name}</h3>
+            <p className="text-gray-600">{product.category}</p>
+            <p className="text-brand-primary font-bold">${product.price}</p>
+          </div>
+        ))}
+      </div>
+
+      {filteredProducts.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No products found matching your criteria.
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Using the Interactive Component
+```astro
+---
+// pages/products.astro
+import SearchableProductList from '../components/SearchableProductList.tsx';
+
+// Fetch data server-side
+const products = await fetch('https://api.example.com/products').then(res => res.json());
+const categories = [...new Set(products.map(p => p.category))];
+---
+
+<html>
+<head>
+  <title>Products</title>
+</head>
+<body>
+  <!-- Static header -->
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-gray-900">Our Products</h1>
+    </div>
+  </header>
+
+  <!-- Interactive content - only hydrate when visible -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <SearchableProductList 
+      client:visible
+      products={products}
+      categories={categories}
+    />
+  </main>
+
+  <!-- Static footer -->
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
+```
+
+### Bad Practices - Over-hydration
+```astro
+<!-- ❌ Bad - Hydrating everything unnecessarily -->
+<StaticHeader client:load />  <!-- Should be pure Astro -->
+<ProductCard client:load />   <!-- Should be pure Astro -->
+<Footer client:load />        <!-- Should be pure Astro -->
+
+<!-- ❌ Bad - Using client:load for non-critical content -->
+<Newsletter client:load />    <!-- Should use client:idle or client:visible -->
+<LazyModal client:load />     <!-- Should use client:only -->
+```
+
+### Good Practices - Selective Hydration
+```astro
+<!-- ✅ Good - Only hydrate what needs interactivity -->
+<StaticHeader />                           <!-- Pure Astro -->
+<InteractiveSearchForm client:load />      <!-- Critical interactivity -->
+<ProductGrid client:visible />             <!-- Load when visible -->
+<Newsletter client:idle />                 <!-- Non-critical -->
+<ContactModal client:only="react" />       <!-- Load only when triggered -->
+<StaticFooter />                          <!-- Pure Astro -->
+```
+
+## Benefits
+- Faster initial page loads with minimal JavaScript
+- Better Core Web Vitals scores
+- Improved SEO with server-rendered content
+- Reduced client-side complexity and bundle sizes
+- Better accessibility with HTML-first approach
