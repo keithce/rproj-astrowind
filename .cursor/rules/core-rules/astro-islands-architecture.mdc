@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: *.astro
 alwaysApply: false
 ---
 # Astro Islands Architecture - Zero JavaScript by Default

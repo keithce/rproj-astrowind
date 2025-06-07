@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: *.astro,*.ts,*.js,*.tsx
 alwaysApply: false
 ---
 # Tailwind CSS v4 Configuration Best Practices
