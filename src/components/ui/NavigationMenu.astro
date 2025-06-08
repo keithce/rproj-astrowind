@@ -1,0 +1,302 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Link {
+  text?: string;
+  href?: string;
+  ariaLabel?: string;
+  icon?: string;
+}
+
+interface MenuLink extends Link {
+  links?: Array<MenuLink>;
+}
+
+export interface Props {
+  links: Array<MenuLink>;
+  className?: string;
+  orientation?: 'horizontal' | 'vertical';
+  showChevrons?: boolean;
+}
+
+const { links = [], className = '', orientation = 'horizontal', showChevrons = true } = Astro.props as Props;
+
+const currentPath = new URL(Astro.url).pathname;
+---
+
+<nav class={`navigation-menu ${className}`} role="navigation" aria-label="Main navigation">
+  <ul class={`nav-list nav-list--${orientation}`}>
+    {
+      links.map((link) => (
+        <li class={`nav-item ${link.links?.length ? 'nav-item--dropdown' : ''}`}>
+          {link.links?.length ? (
+            <>
+              <button type="button" class="nav-link nav-link--dropdown" aria-expanded="false" aria-haspopup="true">
+                <span class="nav-link-text">{link.text}</span>
+                {showChevrons && <Icon name="tabler:chevron-down" class="nav-chevron" aria-hidden="true" />}
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {link.links.map((subLink) => (
+                  <li class="dropdown-item" role="none">
+                    <a
+                      href={subLink.href}
+                      class={`dropdown-link ${subLink.href === currentPath ? 'dropdown-link--active' : ''}`}
+                      role="menuitem"
+                      aria-label={subLink.ariaLabel}
+                    >
+                      {subLink.icon && <Icon name={subLink.icon} class="dropdown-icon" aria-hidden="true" />}
+                      {subLink.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <a
+              href={link.href}
+              class={`nav-link ${link.href === currentPath ? 'nav-link--active' : ''}`}
+              aria-label={link.ariaLabel}
+            >
+              {link.icon && <Icon name={link.icon} class="nav-icon" aria-hidden="true" />}
+              <span class="nav-link-text">{link.text}</span>
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .navigation-menu {
+    position: relative;
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+  }
+
+  .nav-list--horizontal {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .nav-list--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease-in-out;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--color-foreground);
+  }
+
+  .nav-link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .nav-link:focus-visible {
+    outline: 2px solid var(--color-outline);
+    outline-offset: 2px;
+  }
+
+  .nav-link--active {
+    color: var(--color-primary);
+    background-color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .nav-link--dropdown[aria-expanded='true'] {
+    color: var(--color-primary);
+    background-color: var(--color-accent);
+  }
+
+  .nav-link--dropdown[aria-expanded='true'] .nav-chevron {
+    transform: rotate(180deg);
+  }
+
+  .nav-icon,
+  .dropdown-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .nav-chevron {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease-in-out;
+    opacity: 0.7;
+  }
+
+  .nav-link-text {
+    font-family: var(--font-family-primary);
+  }
+
+  .nav-item--dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 50;
+    min-width: 12rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: all 0.2s ease-in-out;
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow:
+      0 10px 38px -10px rgba(22, 23, 24, 0.35),
+      0 10px 20px -15px rgba(22, 23, 24, 0.2);
+  }
+
+  :global(.dark) .dropdown-menu {
+    box-shadow:
+      0 10px 38px -10px rgba(0, 0, 0, 0.5),
+      0 10px 20px -15px rgba(0, 0, 0, 0.3);
+  }
+
+  .dropdown-item {
+    margin: 0;
+  }
+
+  .dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+    color: var(--color-card-foreground);
+  }
+
+  .dropdown-link:hover {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+
+  .dropdown-link:focus-visible {
+    outline: 2px solid var(--color-outline);
+    outline-offset: 2px;
+  }
+
+  .dropdown-link--active {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    font-weight: 600;
+  }
+
+  .dropdown-link--active:hover {
+    background-color: var(--color-primary);
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .nav-list--horizontal {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+    }
+
+    .dropdown-menu {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      padding-left: 1rem;
+      margin-top: 0.25rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out;
+    }
+
+    .nav-item--dropdown:hover .dropdown-menu {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .nav-item--dropdown .nav-link--dropdown[aria-expanded='true'] ~ .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      max-height: 500px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButtons = document.querySelectorAll('.nav-link--dropdown');
+
+    dropdownButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        dropdownButtons.forEach((otherButton) => {
+          if (otherButton !== button) {
+            otherButton.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        button.setAttribute('aria-expanded', (!isExpanded).toString());
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as Element;
+      if (!target.closest('.nav-item--dropdown')) {
+        dropdownButtons.forEach((button) => {
+          button.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        dropdownButtons.forEach((button) => {
+          button.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  });
+</script>

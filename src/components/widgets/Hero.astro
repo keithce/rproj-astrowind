@@ -21,14 +21,14 @@ const {
 ---
 
 <section
-  class="relative min-h-screen w-full flex items-center justify-center not-prose overflow-hidden"
+  class="relative flex items-center justify-center w-full min-h-screen overflow-hidden not-prose"
   {...id ? { id } : {}}
 >
   <!-- Gradient Background (when gradientBg is true) -->
   {
     gradientBg && (
-      <div class="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div class="w-full h-full bg-gradient-to-br from-myColor-100 via-myColor-300 to-myColor-200 dark:from-myColor-900 dark:via-[var(--aw-color-secondary)] dark:to-myColor-900" />
+      <div class="absolute inset-0 z-0 w-full h-full overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="w-full h-full bg-gradient-to-br from-accent via-primary to-muted dark:from-background dark:via-secondary dark:to-card" />
       </div>
     )
   }
@@ -36,18 +36,18 @@ const {
   <!-- Background Image Layer -->
   {
     image && (
-      <div class="absolute inset-0 w-full h-full z-1 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-1" aria-hidden="true">
         {typeof image === 'string' ? (
           <img
             src={image}
             alt=""
-            class="absolute left-1/2 bottom-0 min-w-full min-h-full object-cover object-bottom -translate-x-1/2 opacity-30"
+            class="absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30"
             loading="eager"
             decoding="async"
           />
         ) : (
           <Image
-            class="absolute left-1/2 bottom-0 min-w-full min-h-full object-cover object-bottom -translate-x-1/2 opacity-30"
+            class="absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30"
             widths={[400, 768, 1024, 2040]}
             sizes="100vw"
             loading="eager"
@@ -62,7 +62,7 @@ const {
   }
 
   <!-- Dark overlay for better text contrast when using images with gradient -->
-  {gradientBg && image && <div class="absolute inset-0 z-2 pointer-events-none bg-black/20" aria-hidden="true" />}
+  {gradientBg && image && <div class="absolute inset-0 pointer-events-none z-2 bg-black/20" aria-hidden="true" />}
 
   <!-- Gradient Overlay for Text Contrast (original behavior when not using gradientBg) -->
   {
@@ -84,17 +84,15 @@ const {
 
   <!-- Hero Content -->
   <div
-    class="relative z-10 w-full max-w-full sm:max-w-3xl md:max-w-5xl mx-auto px-4 sm:px-6 flex flex-col justify-center min-h-screen pt-20"
+    class="relative z-10 flex flex-col justify-center w-full max-w-full min-h-screen px-4 pt-20 mx-auto sm:max-w-3xl md:max-w-5xl sm:px-6"
   >
     <div class="flex flex-col items-center justify-center flex-grow">
-      <div class="text-center w-full">
+      <div class="w-full text-center">
         {
           tagline && (
             <p
-              class={`text-base font-bold tracking-wide uppercase intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade ${
-                gradientBg
-                  ? 'text-[var(--aw-color-accent)] dark:text-[var(--aw-color-accent)]'
-                  : 'text-secondary dark:text-blue-200'
+              class={`text-base font-bold tracking-wide uppercase animate-fade-in ${
+                gradientBg ? 'text-accent dark:text-accent' : 'text-secondary dark:text-secondary'
               }`}
               set:html={tagline}
             />
@@ -103,10 +101,8 @@ const {
         {
           title && (
             <h1
-              class={`break-words whitespace-normal font-bold leading-tight tracking-tighter mb-4 font-heading intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade ${
-                gradientBg
-                  ? 'text-5xl md:text-7xl text-myColor-800 dark:text-white'
-                  : 'text-xl sm:text-3xl md:text-5xl lg:text-6xl dark:text-gray-200'
+              class={`break-words whitespace-normal font-bold leading-tight tracking-tighter mb-4 font-heading animate-fade-in text-foreground ${
+                gradientBg ? 'text-5xl md:text-7xl' : 'text-xl sm:text-3xl md:text-5xl lg:text-6xl'
               }`}
               set:html={title}
             />
@@ -116,10 +112,8 @@ const {
           {
             subtitle && (
               <p
-                class={`mb-6 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade leading-relaxed ${
-                  gradientBg
-                    ? 'text-xl md:text-2xl text-myColor-600 dark:text-gray-200'
-                    : 'text-xl text-muted dark:text-muted-foreground'
+                class={`mb-6 animate-fade-in leading-relaxed text-muted-foreground ${
+                  gradientBg ? 'text-xl md:text-2xl' : 'text-xl'
                 }`}
                 set:html={subtitle}
               />
@@ -127,7 +121,7 @@ const {
           }
           {
             actions && (
-              <div class="max-w-xs sm:max-w-md m-auto flex flex-nowrap flex-col sm:flex-row sm:justify-center gap-4 intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade mb-8">
+              <div class="flex flex-col max-w-xs gap-4 m-auto mb-8 sm:max-w-md flex-nowrap sm:flex-row sm:justify-center animate-fade-in">
                 {Array.isArray(actions) ? (
                   actions.map((action) => (
                     <div class="flex w-full sm:w-auto">
@@ -149,13 +143,8 @@ const {
   <!-- Scroll Down Indicator -->
   {
     showScrollIndicator && (
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-20">
-        <svg
-          class={`w-6 h-6 ${gradientBg ? 'text-myColor-700 dark:text-white' : 'text-[var(--aw-color-text-default)] dark:text-white'}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+      <div class="absolute z-20 transform -translate-x-1/2 bottom-8 left-1/2 animate-bounce">
+        <svg class={`w-6 h-6 text-foreground`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
       </div>
