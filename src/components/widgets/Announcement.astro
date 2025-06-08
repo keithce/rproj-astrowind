@@ -3,17 +3,17 @@
 ---
 
 <div
-  class="text-muted text-sm bg-[var(--aw-color-bg-page)] dark:bg-[var(--aw-color-bg-page-dark)] border-b border-[var(--aw-color-secondary)] dark:border-[var(--aw-color-secondary)] text-[var(--aw-color-text-default)] dark:text-[var(--aw-color-text-default)] hidden md:flex gap-1 overflow-hidden px-3 py-2 relative text-ellipsis whitespace-nowrap"
+  class="relative hidden gap-1 px-3 py-2 overflow-hidden text-sm border-b md:flex text-ellipsis whitespace-nowrap bg-background border-border text-foreground"
 >
   <span
-    class="bg-[var(--aw-color-accent)] dark:bg-[var(--aw-color-secondary)] text-[var(--aw-color-primary)] dark:text-[var(--aw-color-accent)] font-semibold px-1 py-0.5 text-xs mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-block"
+    class="bg-accent text-accent-foreground font-semibold px-1 py-0.5 text-xs mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-block rounded-sm"
     >NEWSLETTER</span
   >
   <a
     href="https://newsletter.resonantprojects.art/"
     target="_blank"
     rel="noopener"
-    class="font-medium hover:underline focus:underline outline-none"
+    class="font-medium transition-colors outline-none hover:underline focus:underline text-foreground hover:text-accent"
     title="Sign up for the Resonant Projects newsletter"
   >
     Sign up for thoughtful observations on music, technology, and spiritual evolution!
@@ -22,7 +22,7 @@
     href="https://newsletter.resonantprojects.art/"
     target="_blank"
     rel="noopener"
-    class="ltr:ml-auto rtl:mr-auto w-auto h-[1.25rem] ml-auto px-3 py-0.5 rounded bg-[var(--aw-color-primary)] text-white hover:bg-[var(--aw-color-secondary)] transition-colors text-xs font-semibold flex items-center justify-center"
+    class="ltr:ml-auto rtl:mr-auto w-auto h-[1.25rem] ml-auto px-3 py-0.5 rounded bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground transition-colors text-xs font-semibold flex items-center justify-center"
     title="Sign up for the Resonant Projects newsletter"
   >
     Sign Up

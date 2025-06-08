@@ -78,7 +78,7 @@ export const headerData = {
       href: getPermalink('/about'),
     },
   ],
-  actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), target: '_blank' }],
+  actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), icon: 'tabler:input-spark' }],
 };
 
 export const footerData = {

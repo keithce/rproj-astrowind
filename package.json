@@ -22,7 +22,16 @@
     "fix:prettier": "prettier -w .",
     "lint": "eslint .",
     "format": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "visual-verify": "node scripts/visual-verification.js",
+    "visual-verify:ci": "node scripts/visual-verification.js --headless",
+    "test:contrast": "node scripts/contrast-checker.js",
+    "test:contrast:palette": "node scripts/contrast-checker.js --palette",
+    "validate:css": "node scripts/css-variable-validator.js",
+    "test:css-vars": "npm run validate:css",
+    "test:all": "npm run test:contrast && npm run validate:css && npm run visual-verify:ci",
+    "docs:css": "node scripts/generate-css-docs.js",
+    "docs:generate": "npm run docs:css"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
@@ -98,6 +107,8 @@
     "tailwindcss": "^4.1.6",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.30.1",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "puppeteer": "^23.5.0",
+    "@axe-core/cli": "^4.10.2"
   }
 }

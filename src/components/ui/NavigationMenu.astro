@@ -112,7 +112,7 @@ const currentPath = new URL(Astro.url).pathname;
   }
 
   .nav-link:hover {
-    color: var(--color-primary);
+    color: var(--color-accent-foreground);
     background-color: var(--color-accent);
     transform: translateY(-1px);
   }
@@ -123,13 +123,13 @@ const currentPath = new URL(Astro.url).pathname;
   }
 
   .nav-link--active {
-    color: var(--color-primary);
+    color: var(--color-accent-foreground);
     background-color: var(--color-accent);
     font-weight: 600;
   }
 
   .nav-link--dropdown[aria-expanded='true'] {
-    color: var(--color-primary);
+    color: var(--color-accent-foreground);
     background-color: var(--color-accent);
   }
 

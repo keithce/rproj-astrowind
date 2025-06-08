@@ -13,27 +13,27 @@ import '@fontsource-variable/raleway';
     /* Design System Variables */
     --radius: 0.5rem;
 
-    /* Light Theme Colors */
-    --color-background: hsl(var(--white));
-    --color-foreground: hsl(var(--gray-900));
-    --color-card: hsl(var(--white));
-    --color-card-foreground: hsl(var(--gray-900));
-    --color-popover: hsl(var(--white));
-    --color-popover-foreground: hsl(var(--gray-900));
-    --color-primary: hsl(var(--brand-600));
-    --color-primary-foreground: hsl(var(--brand-50));
-    --color-secondary: hsl(var(--gray-600));
-    --color-secondary-foreground: hsl(var(--gray-50));
-    --color-muted: hsl(var(--gray-200));
-    --color-muted-foreground: hsl(var(--gray-500));
-    --color-accent: hsl(var(--blue-600));
-    --color-accent-foreground: hsl(var(--blue-50));
-    --color-border: hsl(var(--gray-200));
-    --color-input: hsl(var(--gray-200));
-    --color-outline: #6e2765;
-    --color-ring: hsl(var(--brand-600));
+    /* Light Theme Colors - Migrated to use brand color variables with fallbacks */
+    --color-background: var(--color-brand-50, #faf9fb);
+    --color-foreground: var(--color-brand-900, #2c1028);
+    --color-card: var(--color-brand-50, #faf9fb);
+    --color-card-foreground: var(--color-brand-900, #2c1028);
+    --color-popover: var(--color-brand-50, #faf9fb);
+    --color-popover-foreground: var(--color-brand-900, #2c1028);
+    --color-primary: var(--color-brand-600, #6e2765);
+    --color-primary-foreground: var(--color-brand-50, #faf9fb);
+    --color-secondary: var(--color-brand-400, #a87da3);
+    --color-secondary-foreground: var(--color-brand-50, #faf9fb);
+    --color-muted: var(--color-brand-200, #e2d4e0);
+    --color-muted-foreground: var(--color-brand-700, #4a2c46);
+    --color-accent: var(--color-brand-500, #7e3775);
+    --color-accent-foreground: var(--color-brand-50, #faf9fb);
+    --color-border: var(--color-brand-200, #e2d4e0);
+    --color-input: var(--color-brand-200, #e2d4e0);
+    --color-outline: var(--color-brand-500, #7e3775);
+    --color-ring: var(--color-brand-600, #6e2765);
 
-    /* Status Colors */
+    /* Status Colors - Enhanced for better contrast */
     --color-info: #0ea5e9;
     --color-info-foreground: #0c4a6e;
     --color-success: #22c55e;
@@ -43,7 +43,7 @@ import '@fontsource-variable/raleway';
     --color-error: #dc2626;
     --color-error-foreground: #ffffff;
 
-    /* Legacy AstroWind Variables (for backward compatibility) */
+    /* Legacy AstroWind Variables (for backward compatibility) - Updated to use brand colors */
     --aw-font-sans: var(--font-family-primary);
     --aw-font-serif: var(--font-family-serif);
     --aw-font-heading: var(--font-family-heading);
@@ -51,41 +51,41 @@ import '@fontsource-variable/raleway';
     --aw-color-secondary: var(--color-secondary);
     --aw-color-accent: var(--color-accent);
     --aw-color-text-heading: var(--color-foreground);
-    --aw-color-text-default: #2c1028;
-    --aw-color-text-muted: rgba(44, 16, 40, 0.66);
-    --aw-color-text-page: #2c1028;
+    --aw-color-text-default: var(--color-brand-800, #3a1e36);
+    --aw-color-text-muted: var(--color-brand-600, #6e2765);
+    --aw-color-text-page: var(--color-brand-800, #3a1e36);
     --aw-color-bg-page: var(--color-background);
-    --aw-color-bg-page-dark: #160814;
+    --aw-color-bg-page-dark: var(--color-brand-900, #2c1028);
 
     /* Text Selection */
     ::selection {
       background-color: var(--color-accent);
-      color: var(--color-foreground);
+      color: var(--color-accent-foreground);
     }
   }
 
   .dark {
-    /* Dark Theme Colors */
-    --color-background: hsl(var(--black));
-    --color-foreground: hsl(var(--gray-50));
-    --color-card: hsl(var(--black));
-    --color-card-foreground: hsl(var(--gray-50));
-    --color-popover: hsl(var(--black));
-    --color-popover-foreground: hsl(var(--gray-50));
-    --color-primary: hsl(var(--brand-400));
-    --color-primary-foreground: hsl(var(--brand-950));
-    --color-secondary: hsl(var(--gray-400));
-    --color-secondary-foreground: hsl(var(--gray-950));
-    --color-muted: hsl(var(--gray-800));
-    --color-muted-foreground: hsl(var(--gray-400));
-    --color-accent: hsl(var(--blue-400));
-    --color-accent-foreground: hsl(var(--blue-950));
-    --color-border: hsl(var(--gray-800));
-    --color-input: hsl(var(--gray-800));
-    --color-outline: #a87da3;
-    --color-ring: hsl(var(--brand-400));
+    /* Dark Theme Colors - Migrated to use brand color variables with proper contrast and fallbacks */
+    --color-background: var(--color-brand-900, #2c1028);
+    --color-foreground: var(--color-brand-100, #f0e8ee);
+    --color-card: var(--color-brand-900, #2c1028);
+    --color-card-foreground: var(--color-brand-100, #f0e8ee);
+    --color-popover: var(--color-brand-900, #2c1028);
+    --color-popover-foreground: var(--color-brand-100, #f0e8ee);
+    --color-primary: var(--color-brand-300, #c4a1bf);
+    --color-primary-foreground: var(--color-brand-950, #160814);
+    --color-secondary: var(--color-brand-600, #6e2765);
+    --color-secondary-foreground: var(--color-brand-100, #f0e8ee);
+    --color-muted: var(--color-brand-800, #3a1e36);
+    --color-muted-foreground: var(--color-brand-300, #c4a1bf);
+    --color-accent: var(--color-brand-300, #c4a1bf);
+    --color-accent-foreground: var(--color-brand-950, #160814);
+    --color-border: var(--color-brand-800, #3a1e36);
+    --color-input: var(--color-brand-800, #3a1e36);
+    --color-outline: var(--color-brand-300, #c4a1bf);
+    --color-ring: var(--color-brand-400, #a87da3);
 
-    /* Status Colors (Dark) */
+    /* Status Colors (Dark) - Enhanced for better contrast */
     --color-info: #38bdf8;
     --color-info-foreground: #0c4a6e;
     --color-success: #4ade80;
@@ -95,16 +95,34 @@ import '@fontsource-variable/raleway';
     --color-error: #ef4444;
     --color-error-foreground: #ffffff;
 
-    /* Legacy AstroWind Variables (Dark Theme) */
+    /* Legacy AstroWind Variables (Dark Theme) - Updated to use brand colors */
     --aw-color-text-heading: var(--color-foreground);
-    --aw-color-text-default: #e2d4e0;
-    --aw-color-text-muted: rgba(226, 212, 224, 0.66);
+    --aw-color-text-default: var(--color-brand-100, #f0e8ee);
+    --aw-color-text-muted: var(--color-brand-400, #a87da3);
     --aw-color-bg-page: var(--color-background);
 
     /* Dark Text Selection */
     ::selection {
       background-color: var(--color-accent);
-      color: var(--color-foreground);
+      color: var(--color-accent-foreground);
+    }
+  }
+
+  /* CSS Custom Property Validation - Ensures brand colors are available */
+  @supports not (color: var(--color-brand-50)) {
+    :root {
+      /* Fallback brand color palette if not loaded */
+      --color-brand-50: #faf9fb;
+      --color-brand-100: #f0e8ee;
+      --color-brand-200: #e2d4e0;
+      --color-brand-300: #c4a1bf;
+      --color-brand-400: #a87da3;
+      --color-brand-500: #7e3775;
+      --color-brand-600: #6e2765;
+      --color-brand-700: #4a2c46;
+      --color-brand-800: #3a1e36;
+      --color-brand-900: #2c1028;
+      --color-brand-950: #160814;
     }
   }
 
@@ -124,6 +142,38 @@ import '@fontsource-variable/raleway';
   @media (min-width: 1536px) {
     :root {
       font-size: 18px;
+    }
+  }
+
+  /* Enhanced accessibility and contrast improvements */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --color-border: var(--color-brand-900, #2c1028);
+      --color-outline: var(--color-brand-900, #2c1028);
+    }
+    
+    .dark {
+      --color-border: var(--color-brand-100, #f0e8ee);
+      --color-outline: var(--color-brand-100, #f0e8ee);
+    }
+  }
+
+  /* Print styles optimization */
+  @media print {
+    :root {
+      --color-background: white;
+      --color-foreground: black;
+      --color-primary: black;
+      --color-secondary: #666;
     }
   }
 </style>
