@@ -2,7 +2,7 @@
 
 /**
  * CSS Variable Documentation Generator
- * 
+ *
  * This script automatically generates comprehensive documentation for all CSS variables
  * including usage examples, color swatches, and theme comparisons.
  */
@@ -20,24 +20,48 @@ const VARIABLE_DEFINITIONS = {
     title: 'Brand Colors',
     description: 'Core brand color palette with 11 shades from lightest to darkest',
     variables: {
-      '--color-brand-50': { description: 'Lightest brand color, used for subtle backgrounds', usage: 'Backgrounds, cards' },
-      '--color-brand-100': { description: 'Very light brand color, used for text on dark backgrounds', usage: 'Text on dark themes' },
-      '--color-brand-200': { description: 'Light brand color, used for borders and inputs', usage: 'Borders, input backgrounds' },
-      '--color-brand-300': { description: 'Medium-light brand color, used for accents in dark theme', usage: 'Dark theme accents, outlines' },
-      '--color-brand-400': { description: 'Medium brand color, used for secondary elements', usage: 'Secondary buttons, muted text' },
+      '--color-brand-50': {
+        description: 'Lightest brand color, used for subtle backgrounds',
+        usage: 'Backgrounds, cards',
+      },
+      '--color-brand-100': {
+        description: 'Very light brand color, used for text on dark backgrounds',
+        usage: 'Text on dark themes',
+      },
+      '--color-brand-200': {
+        description: 'Light brand color, used for borders and inputs',
+        usage: 'Borders, input backgrounds',
+      },
+      '--color-brand-300': {
+        description: 'Medium-light brand color, used for accents in dark theme',
+        usage: 'Dark theme accents, outlines',
+      },
+      '--color-brand-400': {
+        description: 'Medium brand color, used for secondary elements',
+        usage: 'Secondary buttons, muted text',
+      },
       '--color-brand-500': { description: 'Core brand color, primary accent', usage: 'Primary accents, outlines' },
       '--color-brand-600': { description: 'Medium-dark brand color, primary buttons', usage: 'Primary buttons, links' },
       '--color-brand-700': { description: 'Dark brand color, used for text', usage: 'Text, headings' },
       '--color-brand-800': { description: 'Very dark brand color, body text', usage: 'Body text, default text' },
-      '--color-brand-900': { description: 'Darkest brand color, high contrast text', usage: 'High contrast text, dark backgrounds' },
-      '--color-brand-950': { description: 'Deepest brand color, dark theme backgrounds', usage: 'Dark theme backgrounds' }
-    }
+      '--color-brand-900': {
+        description: 'Darkest brand color, high contrast text',
+        usage: 'High contrast text, dark backgrounds',
+      },
+      '--color-brand-950': {
+        description: 'Deepest brand color, dark theme backgrounds',
+        usage: 'Dark theme backgrounds',
+      },
+    },
   },
   semantic: {
     title: 'Semantic Colors',
     description: 'Theme-aware semantic colors that adapt to light/dark modes',
     variables: {
-      '--color-background': { description: 'Main page background color', usage: 'Page backgrounds, main content areas' },
+      '--color-background': {
+        description: 'Main page background color',
+        usage: 'Page backgrounds, main content areas',
+      },
       '--color-foreground': { description: 'Primary text color', usage: 'Headings, primary text' },
       '--color-card': { description: 'Card background color', usage: 'Card components, elevated surfaces' },
       '--color-card-foreground': { description: 'Text color on cards', usage: 'Text within card components' },
@@ -45,17 +69,26 @@ const VARIABLE_DEFINITIONS = {
       '--color-popover-foreground': { description: 'Text color in popovers', usage: 'Text in tooltips and dropdowns' },
       '--color-primary': { description: 'Primary action color', usage: 'Primary buttons, key actions' },
       '--color-primary-foreground': { description: 'Text color on primary elements', usage: 'Text on primary buttons' },
-      '--color-secondary': { description: 'Secondary action color', usage: 'Secondary buttons, less important actions' },
-      '--color-secondary-foreground': { description: 'Text color on secondary elements', usage: 'Text on secondary buttons' },
+      '--color-secondary': {
+        description: 'Secondary action color',
+        usage: 'Secondary buttons, less important actions',
+      },
+      '--color-secondary-foreground': {
+        description: 'Text color on secondary elements',
+        usage: 'Text on secondary buttons',
+      },
       '--color-muted': { description: 'Muted background color', usage: 'Disabled states, subtle backgrounds' },
       '--color-muted-foreground': { description: 'Muted text color', usage: 'Secondary text, captions' },
       '--color-accent': { description: 'Accent color for highlights', usage: 'Highlights, badges, notifications' },
-      '--color-accent-foreground': { description: 'Text color on accent elements', usage: 'Text on highlighted elements' },
+      '--color-accent-foreground': {
+        description: 'Text color on accent elements',
+        usage: 'Text on highlighted elements',
+      },
       '--color-border': { description: 'Default border color', usage: 'Component borders, dividers' },
       '--color-input': { description: 'Input field background', usage: 'Form inputs, text areas' },
       '--color-outline': { description: 'Focus outline color', usage: 'Focus states, accessibility outlines' },
-      '--color-ring': { description: 'Focus ring color', usage: 'Focus rings, selection indicators' }
-    }
+      '--color-ring': { description: 'Focus ring color', usage: 'Focus rings, selection indicators' },
+    },
   },
   status: {
     title: 'Status Colors',
@@ -68,8 +101,8 @@ const VARIABLE_DEFINITIONS = {
       '--color-warning': { description: 'Warning message color', usage: 'Warning alerts, caution indicators' },
       '--color-warning-foreground': { description: 'Text color for warning messages', usage: 'Text in warning alerts' },
       '--color-error': { description: 'Error message color', usage: 'Error alerts, validation errors' },
-      '--color-error-foreground': { description: 'Text color for error messages', usage: 'Text in error alerts' }
-    }
+      '--color-error-foreground': { description: 'Text color for error messages', usage: 'Text in error alerts' },
+    },
   },
   legacy: {
     title: 'Legacy Variables',
@@ -86,9 +119,12 @@ const VARIABLE_DEFINITIONS = {
       '--aw-color-text-muted': { description: 'Legacy muted text color', usage: 'Existing secondary text' },
       '--aw-color-text-page': { description: 'Legacy page text color', usage: 'Existing page content' },
       '--aw-color-bg-page': { description: 'Legacy page background color', usage: 'Existing page backgrounds' },
-      '--aw-color-bg-page-dark': { description: 'Legacy dark page background', usage: 'Existing dark theme backgrounds' }
-    }
-  }
+      '--aw-color-bg-page-dark': {
+        description: 'Legacy dark page background',
+        usage: 'Existing dark theme backgrounds',
+      },
+    },
+  },
 };
 
 class CSSDocumentationGenerator {
@@ -146,7 +182,7 @@ class CSSDocumentationGenerator {
       '--color-brand-700': '#4a2c46',
       '--color-brand-800': '#3a1e36',
       '--color-brand-900': '#2c1028',
-      '--color-brand-950': '#160814'
+      '--color-brand-950': '#160814',
     };
 
     const darkValues = {
@@ -155,7 +191,7 @@ class CSSDocumentationGenerator {
       '--color-primary': '#c4a1bf',
       '--color-secondary': '#6e2765',
       '--color-muted': '#3a1e36',
-      '--color-border': '#3a1e36'
+      '--color-border': '#3a1e36',
     };
 
     return `
@@ -164,17 +200,21 @@ class CSSDocumentationGenerator {
         <div class="comparison-grid">
           <div class="theme-column">
             <h4>Light Theme</h4>
-            ${Object.entries(variables).map(([variable, config]) => {
-              const value = lightValues[variable] || 'var(' + variable + ')';
-              return this.generateColorSwatch(variable, value);
-            }).join('')}
+            ${Object.entries(variables)
+              .map(([variable]) => {
+                const value = lightValues[variable] || 'var(' + variable + ')';
+                return this.generateColorSwatch(variable, value);
+              })
+              .join('')}
           </div>
           <div class="theme-column">
             <h4>Dark Theme</h4>
-            ${Object.entries(variables).map(([variable, config]) => {
-              const value = darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
-              return this.generateColorSwatch(variable, value);
-            }).join('')}
+            ${Object.entries(variables)
+              .map(([variable]) => {
+                const value = darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
+                return this.generateColorSwatch(variable, value);
+              })
+              .join('')}
           </div>
         </div>
       </div>
@@ -186,7 +226,7 @@ class CSSDocumentationGenerator {
    */
   generateDocumentation() {
     const currentDate = new Date().toLocaleDateString();
-    
+
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -467,19 +507,23 @@ class CSSDocumentationGenerator {
     <div class="toc">
       <h3>Table of Contents</h3>
       <ul>
-        ${Object.entries(VARIABLE_DEFINITIONS).map(([key, section]) => 
-          `<li><a href="#${key}">${section.title}</a></li>`
-        ).join('')}
+        ${Object.entries(VARIABLE_DEFINITIONS)
+          .map(([key, section]) => `<li><a href="#${key}">${section.title}</a></li>`)
+          .join('')}
       </ul>
     </div>
 
-    ${Object.entries(VARIABLE_DEFINITIONS).map(([sectionKey, section]) => `
+    ${Object.entries(VARIABLE_DEFINITIONS)
+      .map(
+        ([sectionKey, section]) => `
       <div class="section" id="${sectionKey}">
         <h2>${section.title}</h2>
         <p>${section.description}</p>
         
         <div class="variable-grid">
-          ${Object.entries(section.variables).map(([variable, config]) => `
+          ${Object.entries(section.variables)
+            .map(
+              ([variable, config]) => `
             <div class="variable-item">
               <div class="variable-header">
                 <span class="variable-name">${variable}</span>
@@ -488,12 +532,16 @@ class CSSDocumentationGenerator {
               ${sectionKey === 'brand' ? this.generateColorSwatch(variable, 'var(' + variable + ')') : ''}
               ${this.generateUsageExample(variable, config.description, config.usage)}
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
         
         ${sectionKey === 'brand' ? this.generateThemeComparison(section.variables) : ''}
       </div>
-    `).join('')}
+    `
+      )
+      .join('')}
 
     <div class="section">
       <h2>Migration Guide</h2>
@@ -535,7 +583,7 @@ class CSSDocumentationGenerator {
    */
   generateMarkdownDocs() {
     const currentDate = new Date().toLocaleDateString();
-    
+
     return `# CSS Variables Documentation
 
 *Generated on ${currentDate}*
@@ -555,16 +603,20 @@ The CSS variable system is organized into four main categories:
 
 | Category | Variables | Description |
 |----------|-----------|-------------|
-${Object.entries(VARIABLE_DEFINITIONS).map(([key, section]) => 
-  `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`
-).join('\n')}
+${Object.entries(VARIABLE_DEFINITIONS)
+  .map(([section]) => `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`)
+  .join('\n')}
 
-${Object.entries(VARIABLE_DEFINITIONS).map(([sectionKey, section]) => `
+${Object.entries(VARIABLE_DEFINITIONS)
+  .map(
+    ([section]) => `
 ## ${section.title}
 
 ${section.description}
 
-${Object.entries(section.variables).map(([variable, config]) => `
+${Object.entries(section.variables)
+  .map(
+    ([variable, config]) => `
 ### \`${variable}\`
 
 **Description:** ${config.description}
@@ -577,8 +629,12 @@ ${Object.entries(section.variables).map(([variable, config]) => `
   color: var(${variable});
 }
 \`\`\`
-`).join('')}
-`).join('')}
+`
+  )
+  .join('')}
+`
+  )
+  .join('')}
 
 ## Migration Examples
 
@@ -644,24 +700,18 @@ CSS custom properties are supported in all modern browsers. Fallback values are 
    */
   async generate() {
     console.log('📚 Generating CSS variable documentation...');
-    
+
     // Create output directory
     await fs.mkdir(this.outputDir, { recursive: true });
-    
+
     // Generate HTML documentation
     const htmlDocs = this.generateDocumentation();
-    await fs.writeFile(
-      path.join(this.outputDir, 'index.html'),
-      htmlDocs
-    );
-    
+    await fs.writeFile(path.join(this.outputDir, 'index.html'), htmlDocs);
+
     // Generate Markdown documentation
     const markdownDocs = this.generateMarkdownDocs();
-    await fs.writeFile(
-      path.join(this.outputDir, 'README.md'),
-      markdownDocs
-    );
-    
+    await fs.writeFile(path.join(this.outputDir, 'README.md'), markdownDocs);
+
     console.log('✅ Documentation generated successfully!');
     console.log(`📄 HTML: ${path.join(this.outputDir, 'index.html')}`);
     console.log(`📄 Markdown: ${path.join(this.outputDir, 'README.md')}`);
@@ -690,4 +740,4 @@ including usage examples, color swatches, and migration guides.
 
 // Run the generator
 const generator = new CSSDocumentationGenerator();
-generator.generate().catch(console.error); 
+generator.generate().catch(console.error);

@@ -2,7 +2,7 @@
 
 /**
  * CSS Variable Validation Utility
- * 
+ *
  * This script validates that all CSS custom properties are properly defined
  * and accessible across different themes and contexts.
  */
@@ -28,7 +28,7 @@ const EXPECTED_VARIABLES = {
     '--color-brand-700',
     '--color-brand-800',
     '--color-brand-900',
-    '--color-brand-950'
+    '--color-brand-950',
   ],
   semantic: [
     '--color-background',
@@ -48,7 +48,7 @@ const EXPECTED_VARIABLES = {
     '--color-border',
     '--color-input',
     '--color-outline',
-    '--color-ring'
+    '--color-ring',
   ],
   status: [
     '--color-info',
@@ -58,7 +58,7 @@ const EXPECTED_VARIABLES = {
     '--color-warning',
     '--color-warning-foreground',
     '--color-error',
-    '--color-error-foreground'
+    '--color-error-foreground',
   ],
   legacy: [
     '--aw-font-sans',
@@ -72,8 +72,8 @@ const EXPECTED_VARIABLES = {
     '--aw-color-text-muted',
     '--aw-color-text-page',
     '--aw-color-bg-page',
-    '--aw-color-bg-page-dark'
-  ]
+    '--aw-color-bg-page-dark',
+  ],
 };
 
 class CSSVariableValidator {
@@ -83,16 +83,16 @@ class CSSVariableValidator {
       defined: [],
       undefined: [],
       fallbacks: [],
-      themes: {}
+      themes: {},
     };
   }
 
   async init() {
     console.log('🔍 Initializing CSS Variable Validator...');
-    
+
     this.browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     console.log('✅ Browser launched successfully');
@@ -118,7 +118,7 @@ class CSSVariableValidator {
 
       const computedStyle = getComputedStyle(document.documentElement);
       const variables = {};
-      
+
       // Get all CSS custom properties
       for (let i = 0; i < computedStyle.length; i++) {
         const property = computedStyle[i];
@@ -151,7 +151,7 @@ class CSSVariableValidator {
       document.body.appendChild(testElement);
 
       const computedColor = getComputedStyle(testElement).color;
-      
+
       // Clean up
       document.head.removeChild(style);
       document.body.removeChild(testElement);
@@ -165,12 +165,12 @@ class CSSVariableValidator {
    */
   async validateTheme(page, theme) {
     console.log(`🎨 Validating ${theme} theme variables...`);
-    
+
     const variables = await this.extractCSSVariables(page, theme);
     const themeResults = {
       defined: [],
       undefined: [],
-      values: {}
+      values: {},
     };
 
     // Check all expected variables
@@ -178,7 +178,7 @@ class CSSVariableValidator {
       ...EXPECTED_VARIABLES.brand,
       ...EXPECTED_VARIABLES.semantic,
       ...EXPECTED_VARIABLES.status,
-      ...EXPECTED_VARIABLES.legacy
+      ...EXPECTED_VARIABLES.legacy,
     ];
 
     for (const variable of allExpected) {
@@ -191,7 +191,7 @@ class CSSVariableValidator {
     }
 
     this.results.themes[theme] = themeResults;
-    
+
     console.log(`  ✅ ${themeResults.defined.length} variables defined`);
     if (themeResults.undefined.length > 0) {
       console.log(`  ⚠️  ${themeResults.undefined.length} variables undefined`);
@@ -205,12 +205,12 @@ class CSSVariableValidator {
    */
   async testInheritance(page) {
     console.log('🔗 Testing CSS variable inheritance...');
-    
+
     return await page.evaluate(() => {
       // Create nested elements to test inheritance
       const parent = document.createElement('div');
       parent.style.setProperty('--test-inherit', '#parent');
-      
+
       const child = document.createElement('div');
       parent.appendChild(child);
       document.body.appendChild(parent);
@@ -224,7 +224,7 @@ class CSSVariableValidator {
       return {
         parentValue: parentValue.trim(),
         childValue: childValue.trim(),
-        inherits: parentValue.trim() === childValue.trim()
+        inherits: parentValue.trim() === childValue.trim(),
       };
     });
   }
@@ -240,10 +240,10 @@ class CSSVariableValidator {
         lightThemeDefined: this.results.themes.light?.defined.length || 0,
         darkThemeDefined: this.results.themes.dark?.defined.length || 0,
         lightThemeUndefined: this.results.themes.light?.undefined.length || 0,
-        darkThemeUndefined: this.results.themes.dark?.undefined.length || 0
+        darkThemeUndefined: this.results.themes.dark?.undefined.length || 0,
       },
       themes: this.results.themes,
-      recommendations: []
+      recommendations: [],
     };
 
     // Generate recommendations
@@ -251,7 +251,7 @@ class CSSVariableValidator {
       report.recommendations.push({
         type: 'warning',
         message: `${report.summary.lightThemeUndefined} variables undefined in light theme`,
-        variables: this.results.themes.light?.undefined || []
+        variables: this.results.themes.light?.undefined || [],
       });
     }
 
@@ -259,22 +259,22 @@ class CSSVariableValidator {
       report.recommendations.push({
         type: 'warning',
         message: `${report.summary.darkThemeUndefined} variables undefined in dark theme`,
-        variables: this.results.themes.dark?.undefined || []
+        variables: this.results.themes.dark?.undefined || [],
       });
     }
 
     // Check for consistency between themes
     const lightDefined = new Set(this.results.themes.light?.defined || []);
     const darkDefined = new Set(this.results.themes.dark?.defined || []);
-    
-    const onlyInLight = [...lightDefined].filter(v => !darkDefined.has(v));
-    const onlyInDark = [...darkDefined].filter(v => !lightDefined.has(v));
+
+    const onlyInLight = [...lightDefined].filter((v) => !darkDefined.has(v));
+    const onlyInDark = [...darkDefined].filter((v) => !lightDefined.has(v));
 
     if (onlyInLight.length > 0) {
       report.recommendations.push({
         type: 'error',
         message: 'Variables defined only in light theme',
-        variables: onlyInLight
+        variables: onlyInLight,
       });
     }
 
@@ -282,7 +282,7 @@ class CSSVariableValidator {
       report.recommendations.push({
         type: 'error',
         message: 'Variables defined only in dark theme',
-        variables: onlyInDark
+        variables: onlyInDark,
       });
     }
 
@@ -344,50 +344,78 @@ class CSSVariableValidator {
     </div>
   </div>
 
-  ${report.recommendations.length > 0 ? `
+  ${
+    report.recommendations.length > 0
+      ? `
   <div class="section">
     <h2>Recommendations</h2>
-    ${report.recommendations.map(rec => `
+    ${report.recommendations
+      .map(
+        (rec) => `
       <div class="recommendation ${rec.type}">
         <strong>${rec.message}</strong>
-        ${rec.variables ? `
+        ${
+          rec.variables
+            ? `
           <div class="variable-list" style="margin-top: 0.5rem;">
-            ${rec.variables.map(v => `<div class="variable-item">${v}</div>`).join('')}
+            ${rec.variables.map((v) => `<div class="variable-item">${v}</div>`).join('')}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
-    `).join('')}
+    `
+      )
+      .join('')}
   </div>
-  ` : ''}
+  `
+      : ''
+  }
 
   <div class="section">
     <h2>Theme Details</h2>
-    ${Object.entries(report.themes).map(([theme, data]) => `
+    ${Object.entries(report.themes)
+      .map(
+        ([theme, data]) => `
       <div class="theme-section">
         <h3>${theme.charAt(0).toUpperCase() + theme.slice(1)} Theme</h3>
         <p><strong>Defined:</strong> ${data.defined.length} variables</p>
         <p><strong>Undefined:</strong> ${data.undefined.length} variables</p>
         
-        ${data.defined.length > 0 ? `
+        ${
+          data.defined.length > 0
+            ? `
           <h4>Defined Variables</h4>
           <div class="variable-list">
-            ${data.defined.map(v => `
+            ${data.defined
+              .map(
+                (v) => `
               <div class="variable-item">
                 ${v}
                 <span class="variable-value">${data.values[v] || ''}</span>
               </div>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
         
-        ${data.undefined.length > 0 ? `
+        ${
+          data.undefined.length > 0
+            ? `
           <h4>Undefined Variables</h4>
           <div class="variable-list">
-            ${data.undefined.map(v => `<div class="variable-item" style="background: #fee2e2;">${v}</div>`).join('')}
+            ${data.undefined.map((v) => `<div class="variable-item" style="background: #fee2e2;">${v}</div>`).join('')}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
-    `).join('')}
+    `
+      )
+      .join('')}
   </div>
 </body>
 </html>
@@ -400,7 +428,7 @@ class CSSVariableValidator {
   async run() {
     try {
       await this.init();
-      
+
       const page = await this.browser.newPage();
       await page.goto('http://localhost:4321', { waitUntil: 'networkidle0' });
 
@@ -420,25 +448,19 @@ class CSSVariableValidator {
       const outputDir = path.join(__dirname, '../css-validation-results');
       await fs.mkdir(outputDir, { recursive: true });
 
-      await fs.writeFile(
-        path.join(outputDir, 'validation-report.json'),
-        JSON.stringify(report, null, 2)
-      );
+      await fs.writeFile(path.join(outputDir, 'validation-report.json'), JSON.stringify(report, null, 2));
 
-      await fs.writeFile(
-        path.join(outputDir, 'validation-report.html'),
-        htmlReport
-      );
+      await fs.writeFile(path.join(outputDir, 'validation-report.html'), htmlReport);
 
       // Console summary
       console.log('\n📊 Validation Summary:');
       console.log(`  Total Expected: ${report.summary.totalExpected}`);
       console.log(`  Light Theme: ${report.summary.lightThemeDefined}/${report.summary.totalExpected} defined`);
       console.log(`  Dark Theme: ${report.summary.darkThemeDefined}/${report.summary.totalExpected} defined`);
-      
+
       if (report.recommendations.length > 0) {
         console.log(`\n⚠️  ${report.recommendations.length} recommendations found`);
-        report.recommendations.forEach(rec => {
+        report.recommendations.forEach((rec) => {
           console.log(`  ${rec.type.toUpperCase()}: ${rec.message}`);
         });
       } else {
@@ -446,7 +468,6 @@ class CSSVariableValidator {
       }
 
       console.log(`\n📄 Reports saved to: ${outputDir}`);
-
     } catch (error) {
       console.error('❌ Validation failed:', error);
       process.exit(1);
@@ -478,4 +499,4 @@ defined and accessible across light and dark themes.
 
 // Run the validator
 const validator = new CSSVariableValidator();
-validator.run().catch(console.error); 
+validator.run().catch(console.error);

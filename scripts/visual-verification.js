@@ -2,7 +2,7 @@
 
 /**
  * Visual Verification Script for CSS Variable Migration
- * 
+ *
  * This script performs comprehensive testing of the brand color migration:
  * - Screenshots key UI components in both themes
  * - Validates contrast ratios using WCAG 2.1 standards
@@ -26,14 +26,14 @@ const CONFIG = {
   viewports: [
     { name: 'desktop', width: 1920, height: 1080 },
     { name: 'tablet', width: 768, height: 1024 },
-    { name: 'mobile', width: 375, height: 667 }
+    { name: 'mobile', width: 375, height: 667 },
   ],
   testPages: [
     { path: '/', name: 'homepage' },
     { path: '/services/color', name: 'color-service' },
-    { path: '/demo/landing/startup', name: 'startup-landing' }
+    { path: '/demo/landing/startup', name: 'startup-landing' },
   ],
-  themes: ['light', 'dark']
+  themes: ['light', 'dark'],
 };
 
 // WCAG contrast ratio thresholds
@@ -41,7 +41,7 @@ const CONTRAST_THRESHOLDS = {
   AA_NORMAL: 4.5,
   AA_LARGE: 3.0,
   AAA_NORMAL: 7.0,
-  AAA_LARGE: 4.5
+  AAA_LARGE: 4.5,
 };
 
 class VisualVerificationTester {
@@ -51,21 +51,21 @@ class VisualVerificationTester {
       screenshots: [],
       contrastTests: [],
       interactionTests: [],
-      errors: []
+      errors: [],
     };
   }
 
   async init() {
     console.log('🚀 Initializing Visual Verification Tester...');
-    
+
     // Create output directory
     await fs.mkdir(CONFIG.outputDir, { recursive: true });
-    
+
     // Launch browser
     this.browser = await puppeteer.launch({
       headless: false, // Set to true for CI
       defaultViewport: null,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     console.log('✅ Browser launched successfully');
@@ -82,7 +82,7 @@ class VisualVerificationTester {
    */
   calculateContrastRatio(color1, color2) {
     const getLuminance = (r, g, b) => {
-      const [rs, gs, bs] = [r, g, b].map(c => {
+      const [rs, gs, bs] = [r, g, b].map((c) => {
         c = c / 255;
         return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
       });
@@ -91,22 +91,18 @@ class VisualVerificationTester {
 
     const parseColor = (color) => {
       const hex = color.replace('#', '');
-      return [
-        parseInt(hex.substr(0, 2), 16),
-        parseInt(hex.substr(2, 2), 16),
-        parseInt(hex.substr(4, 2), 16)
-      ];
+      return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
     };
 
     const [r1, g1, b1] = parseColor(color1);
     const [r2, g2, b2] = parseColor(color2);
-    
+
     const lum1 = getLuminance(r1, g1, b1);
     const lum2 = getLuminance(r2, g2, b2);
-    
+
     const brightest = Math.max(lum1, lum2);
     const darkest = Math.min(lum1, lum2);
-    
+
     return (brightest + 0.05) / (darkest + 0.05);
   }
 
@@ -118,14 +114,14 @@ class VisualVerificationTester {
       const getComputedColor = (element, property) => {
         const computed = window.getComputedStyle(element);
         const color = computed.getPropertyValue(property);
-        
+
         // Convert rgb/rgba to hex
         const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
         if (rgbMatch) {
           const [, r, g, b] = rgbMatch;
-          return '#' + [r, g, b].map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+          return '#' + [r, g, b].map((x) => parseInt(x).toString(16).padStart(2, '0')).join('');
         }
-        
+
         return color;
       };
 
@@ -134,17 +130,17 @@ class VisualVerificationTester {
         heading: document.querySelector('h1, h2, h3'),
         button: document.querySelector('button, .btn'),
         link: document.querySelector('a'),
-        card: document.querySelector('.card, [class*="card"]')
+        card: document.querySelector('.card, [class*="card"]'),
       };
 
       const colors = {};
-      
+
       Object.entries(elements).forEach(([name, element]) => {
         if (element) {
           colors[name] = {
             background: getComputedColor(element, 'background-color'),
             color: getComputedColor(element, 'color'),
-            border: getComputedColor(element, 'border-color')
+            border: getComputedColor(element, 'border-color'),
           };
         }
       });
@@ -158,14 +154,14 @@ class VisualVerificationTester {
    */
   async testContrast(page, theme, pageName) {
     console.log(`🔍 Testing contrast ratios for ${pageName} (${theme} theme)...`);
-    
+
     const colors = await this.extractColors(page);
     const contrastResults = [];
 
     Object.entries(colors).forEach(([elementName, elementColors]) => {
       if (elementColors.background && elementColors.color) {
         const ratio = this.calculateContrastRatio(elementColors.background, elementColors.color);
-        
+
         const result = {
           element: elementName,
           theme,
@@ -177,12 +173,12 @@ class VisualVerificationTester {
             AA_NORMAL: ratio >= CONTRAST_THRESHOLDS.AA_NORMAL,
             AA_LARGE: ratio >= CONTRAST_THRESHOLDS.AA_LARGE,
             AAA_NORMAL: ratio >= CONTRAST_THRESHOLDS.AAA_NORMAL,
-            AAA_LARGE: ratio >= CONTRAST_THRESHOLDS.AAA_LARGE
-          }
+            AAA_LARGE: ratio >= CONTRAST_THRESHOLDS.AAA_LARGE,
+          },
         };
 
         contrastResults.push(result);
-        
+
         if (!result.passes.AA_NORMAL) {
           console.warn(`⚠️  Low contrast detected: ${elementName} (${ratio.toFixed(2)}:1)`);
         }
@@ -198,23 +194,24 @@ class VisualVerificationTester {
    */
   async testInteractiveStates(page, theme, pageName) {
     console.log(`🎯 Testing interactive states for ${pageName} (${theme} theme)...`);
-    
+
     const interactiveElements = await page.$$('button, a, input, [tabindex]');
     const stateResults = [];
 
-    for (const element of interactiveElements.slice(0, 5)) { // Test first 5 elements
+    for (const element of interactiveElements.slice(0, 5)) {
+      // Test first 5 elements
       try {
         // Get element info
-        const elementInfo = await element.evaluate(el => ({
+        const elementInfo = await element.evaluate((el) => ({
           tagName: el.tagName,
           className: el.className,
-          id: el.id
+          id: el.id,
         }));
 
         // Test hover state
         await element.hover();
         await page.waitForTimeout(100);
-        
+
         const hoverScreenshot = await element.screenshot();
         const hoverPath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${elementInfo.tagName}-hover.png`);
         await fs.writeFile(hoverPath, hoverScreenshot);
@@ -222,7 +219,7 @@ class VisualVerificationTester {
         // Test focus state
         await element.focus();
         await page.waitForTimeout(100);
-        
+
         const focusScreenshot = await element.screenshot();
         const focusPath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${elementInfo.tagName}-focus.png`);
         await fs.writeFile(focusPath, focusScreenshot);
@@ -232,9 +229,8 @@ class VisualVerificationTester {
           theme,
           page: pageName,
           hoverScreenshot: hoverPath,
-          focusScreenshot: focusPath
+          focusScreenshot: focusPath,
         });
-
       } catch (error) {
         console.warn(`⚠️  Could not test interactive state: ${error.message}`);
       }
@@ -257,7 +253,7 @@ class VisualVerificationTester {
         localStorage.setItem('theme', 'light');
       }
     }, theme);
-    
+
     // Wait for theme transition
     await page.waitForTimeout(500);
   }
@@ -267,19 +263,19 @@ class VisualVerificationTester {
    */
   async takeScreenshots(page, theme, pageName, viewport) {
     console.log(`📸 Taking screenshots for ${pageName} (${theme} theme, ${viewport.name})...`);
-    
+
     // Full page screenshot
     const fullPagePath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${viewport.name}-full.png`);
     await page.screenshot({
       path: fullPagePath,
-      fullPage: true
+      fullPage: true,
     });
 
     // Above-the-fold screenshot
     const foldPath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${viewport.name}-fold.png`);
     await page.screenshot({
       path: foldPath,
-      clip: { x: 0, y: 0, width: viewport.width, height: viewport.height }
+      clip: { x: 0, y: 0, width: viewport.width, height: viewport.height },
     });
 
     this.results.screenshots.push({
@@ -287,7 +283,7 @@ class VisualVerificationTester {
       theme,
       viewport: viewport.name,
       fullPage: fullPagePath,
-      aboveTheFold: foldPath
+      aboveTheFold: foldPath,
     });
 
     return { fullPagePath, foldPath };
@@ -298,19 +294,19 @@ class VisualVerificationTester {
    */
   async testPage(pageConfig) {
     const page = await this.browser.newPage();
-    
+
     try {
       console.log(`\n🔄 Testing page: ${pageConfig.name}`);
-      
+
       for (const viewport of CONFIG.viewports) {
         await page.setViewport(viewport);
-        
+
         for (const theme of CONFIG.themes) {
           console.log(`\n  📱 ${viewport.name} - ${theme} theme`);
-          
+
           // Navigate to page
           await page.goto(`${CONFIG.baseUrl}${pageConfig.path}`, {
-            waitUntil: 'networkidle0'
+            waitUntil: 'networkidle0',
           });
 
           // Switch theme
@@ -326,12 +322,11 @@ class VisualVerificationTester {
           }
         }
       }
-      
     } catch (error) {
       console.error(`❌ Error testing page ${pageConfig.name}:`, error);
       this.results.errors.push({
         page: pageConfig.name,
-        error: error.message
+        error: error.message,
       });
     } finally {
       await page.close();
@@ -343,23 +338,23 @@ class VisualVerificationTester {
    */
   async generateReport() {
     console.log('\n📊 Generating comprehensive report...');
-    
+
     const report = {
       timestamp: new Date().toISOString(),
       summary: {
         totalScreenshots: this.results.screenshots.length,
         totalContrastTests: this.results.contrastTests.length,
         totalInteractionTests: this.results.interactionTests.length,
-        totalErrors: this.results.errors.length
+        totalErrors: this.results.errors.length,
       },
       contrastAnalysis: {
-        passed: this.results.contrastTests.filter(t => t.passes.AA_NORMAL).length,
-        failed: this.results.contrastTests.filter(t => !t.passes.AA_NORMAL).length,
-        details: this.results.contrastTests
+        passed: this.results.contrastTests.filter((t) => t.passes.AA_NORMAL).length,
+        failed: this.results.contrastTests.filter((t) => !t.passes.AA_NORMAL).length,
+        details: this.results.contrastTests,
       },
       screenshots: this.results.screenshots,
       interactionTests: this.results.interactionTests,
-      errors: this.results.errors
+      errors: this.results.errors,
     };
 
     // Write JSON report
@@ -433,7 +428,9 @@ class VisualVerificationTester {
 
     <div class="section">
         <h2>🔍 Contrast Analysis</h2>
-        ${report.contrastAnalysis.details.map(test => `
+        ${report.contrastAnalysis.details
+          .map(
+            (test) => `
             <div class="contrast-test ${test.passes.AA_NORMAL ? 'pass' : 'fail'}">
                 <h4>${test.element} - ${test.page} (${test.theme})</h4>
                 <p>
@@ -451,25 +448,37 @@ class VisualVerificationTester {
                     AAA Large: ${test.passes.AAA_LARGE ? '✅' : '❌'}
                 </p>
             </div>
-        `).join('')}
+        `
+          )
+          .join('')}
     </div>
 
-    ${report.errors.length > 0 ? `
+    ${
+      report.errors.length > 0
+        ? `
     <div class="section">
         <h2>❌ Errors</h2>
-        ${report.errors.map(error => `
+        ${report.errors
+          .map(
+            (error) => `
             <div class="error">
                 <h4>Page: ${error.page}</h4>
                 <p>${error.error}</p>
             </div>
-        `).join('')}
+        `
+          )
+          .join('')}
     </div>
-    ` : ''}
+    `
+        : ''
+    }
 
     <div class="section">
         <h2>📸 Screenshots</h2>
         <div class="screenshot-grid">
-            ${report.screenshots.map(screenshot => `
+            ${report.screenshots
+              .map(
+                (screenshot) => `
                 <div class="screenshot-item">
                     <img src="${path.basename(screenshot.aboveTheFold)}" alt="${screenshot.page} - ${screenshot.theme} - ${screenshot.viewport}">
                     <div class="screenshot-meta">
@@ -477,7 +486,9 @@ class VisualVerificationTester {
                         ${screenshot.theme} theme - ${screenshot.viewport}
                     </div>
                 </div>
-            `).join('')}
+            `
+              )
+              .join('')}
         </div>
     </div>
 </body>
@@ -492,7 +503,9 @@ class VisualVerificationTester {
       await this.init();
 
       console.log('\n🎨 Starting Visual Verification Suite...');
-      console.log(`Testing ${CONFIG.testPages.length} pages across ${CONFIG.themes.length} themes and ${CONFIG.viewports.length} viewports`);
+      console.log(
+        `Testing ${CONFIG.testPages.length} pages across ${CONFIG.themes.length} themes and ${CONFIG.viewports.length} viewports`
+      );
 
       // Test each page
       for (const pageConfig of CONFIG.testPages) {
@@ -513,7 +526,6 @@ class VisualVerificationTester {
       }
 
       console.log(`\n✅ Visual verification complete! Report: ${CONFIG.outputDir}/visual-verification-report.html`);
-
     } catch (error) {
       console.error('❌ Visual verification failed:', error);
       throw error;
@@ -526,11 +538,11 @@ class VisualVerificationTester {
 // Run the verification if this script is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new VisualVerificationTester();
-  
-  tester.run().catch(error => {
+
+  tester.run().catch((error) => {
     console.error('Fatal error:', error);
     process.exit(1);
   });
 }
 
-export default VisualVerificationTester; 
+export default VisualVerificationTester;

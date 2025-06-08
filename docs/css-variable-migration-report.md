@@ -18,41 +18,43 @@ Successfully migrated CSS variables in `CustomStyles.astro` to use the `--color-
 
 ### Light Theme Mappings
 
-| Semantic Variable | Previous Value | New Brand Variable | Hex Value |
-|-------------------|----------------|-------------------|-----------|
-| `--color-background` | `hsl(var(--white))` | `var(--color-brand-50)` | `#f1e9f0` |
-| `--color-foreground` | `hsl(var(--gray-900))` | `var(--color-brand-900)` | `#160814` |
-| `--color-primary` | `hsl(var(--brand-600))` | `var(--color-brand-600)` | `#581f51` |
-| `--color-secondary` | `hsl(var(--gray-600))` | `var(--color-brand-400)` | `#8b5284` |
-| `--color-muted` | `hsl(var(--gray-200))` | `var(--color-brand-200)` | `#c5a9c1` |
-| `--color-accent` | `hsl(var(--blue-600))` | `var(--color-brand-500)` | `#6e2765` |
-| `--color-border` | `hsl(var(--gray-200))` | `var(--color-brand-200)` | `#c5a9c1` |
-| `--color-outline` | `#6e2765` | `var(--color-brand-500)` | `#6e2765` |
+| Semantic Variable    | Previous Value          | New Brand Variable       | Hex Value |
+| -------------------- | ----------------------- | ------------------------ | --------- |
+| `--color-background` | `hsl(var(--white))`     | `var(--color-brand-50)`  | `#f1e9f0` |
+| `--color-foreground` | `hsl(var(--gray-900))`  | `var(--color-brand-900)` | `#160814` |
+| `--color-primary`    | `hsl(var(--brand-600))` | `var(--color-brand-600)` | `#581f51` |
+| `--color-secondary`  | `hsl(var(--gray-600))`  | `var(--color-brand-400)` | `#8b5284` |
+| `--color-muted`      | `hsl(var(--gray-200))`  | `var(--color-brand-200)` | `#c5a9c1` |
+| `--color-accent`     | `hsl(var(--blue-600))`  | `var(--color-brand-500)` | `#6e2765` |
+| `--color-border`     | `hsl(var(--gray-200))`  | `var(--color-brand-200)` | `#c5a9c1` |
+| `--color-outline`    | `#6e2765`               | `var(--color-brand-500)` | `#6e2765` |
 
 ### Dark Theme Mappings
 
-| Semantic Variable | Previous Value | New Brand Variable | Hex Value |
-|-------------------|----------------|-------------------|-----------|
-| `--color-background` | `hsl(var(--black))` | `var(--color-brand-950)` | `#0a040a` |
-| `--color-foreground` | `hsl(var(--gray-50))` | `var(--color-brand-100)` | `#e2d4e0` |
-| `--color-primary` | `hsl(var(--brand-400))` | `var(--color-brand-400)` | `#8b5284` |
-| `--color-secondary` | `hsl(var(--gray-400))` | `var(--color-brand-600)` | `#581f51` |
-| `--color-muted` | `hsl(var(--gray-800))` | `var(--color-brand-800)` | `#2c1028` |
-| `--color-accent` | `hsl(var(--blue-400))` | `var(--color-brand-300)` | `#a87da3` |
-| `--color-border` | `hsl(var(--gray-800))` | `var(--color-brand-800)` | `#2c1028` |
-| `--color-outline` | `#a87da3` | `var(--color-brand-300)` | `#a87da3` |
+| Semantic Variable    | Previous Value          | New Brand Variable       | Hex Value |
+| -------------------- | ----------------------- | ------------------------ | --------- |
+| `--color-background` | `hsl(var(--black))`     | `var(--color-brand-950)` | `#0a040a` |
+| `--color-foreground` | `hsl(var(--gray-50))`   | `var(--color-brand-100)` | `#e2d4e0` |
+| `--color-primary`    | `hsl(var(--brand-400))` | `var(--color-brand-400)` | `#8b5284` |
+| `--color-secondary`  | `hsl(var(--gray-400))`  | `var(--color-brand-600)` | `#581f51` |
+| `--color-muted`      | `hsl(var(--gray-800))`  | `var(--color-brand-800)` | `#2c1028` |
+| `--color-accent`     | `hsl(var(--blue-400))`  | `var(--color-brand-300)` | `#a87da3` |
+| `--color-border`     | `hsl(var(--gray-800))`  | `var(--color-brand-800)` | `#2c1028` |
+| `--color-outline`    | `#a87da3`               | `var(--color-brand-300)` | `#a87da3` |
 
 ## Contrast Ratio Analysis
 
 ### WCAG 2.1 Compliance Results
 
 #### Light Theme
+
 - **Background/Foreground**: `#f1e9f0` / `#160814` = **13.8:1** ✅ AAA
 - **Primary/Primary Foreground**: `#581f51` / `#f1e9f0` = **8.2:1** ✅ AAA
 - **Secondary/Secondary Foreground**: `#8b5284` / `#f1e9f0` = **4.9:1** ✅ AA
 - **Muted/Muted Foreground**: `#c5a9c1` / `#42173d` = **5.1:1** ✅ AA
 
 #### Dark Theme
+
 - **Background/Foreground**: `#0a040a` / `#e2d4e0` = **14.2:1** ✅ AAA
 - **Primary/Primary Foreground**: `#8b5284` / `#0a040a` = **4.8:1** ✅ AA
 - **Secondary/Secondary Foreground**: `#581f51` / `#e2d4e0` = **7.9:1** ✅ AAA
@@ -70,11 +72,13 @@ Successfully migrated CSS variables in `CustomStyles.astro` to use the `--color-
 ### Files Modified
 
 1. **`src/components/CustomStyles.astro`**
+
    - Migrated all color variables to use brand palette
    - Enhanced accessibility features
    - Maintained backward compatibility
 
 2. **`scripts/visual-verification.js`** (New)
+
    - Comprehensive Puppeteer testing suite
    - Automated contrast ratio validation
    - Visual regression testing
@@ -89,17 +93,17 @@ Successfully migrated CSS variables in `CustomStyles.astro` to use the `--color-
 The complete brand color palette now available:
 
 ```css
---color-brand-50: #f1e9f0;   /* Lightest - backgrounds */
---color-brand-100: #e2d4e0;  /* Very light - text on dark */
---color-brand-200: #c5a9c1;  /* Light - borders, muted */
---color-brand-300: #a87da3;  /* Light-medium - accents */
---color-brand-400: #8b5284;  /* Medium - secondary */
---color-brand-500: #6e2765;  /* Base brand - primary accent */
---color-brand-600: #581f51;  /* Medium-dark - primary */
---color-brand-700: #42173d;  /* Dark - muted text */
---color-brand-800: #2c1028;  /* Very dark - text, borders */
---color-brand-900: #160814;  /* Darkest - text on light */
---color-brand-950: #0a040a;  /* Deepest - dark backgrounds */
+--color-brand-50: #f1e9f0; /* Lightest - backgrounds */
+--color-brand-100: #e2d4e0; /* Very light - text on dark */
+--color-brand-200: #c5a9c1; /* Light - borders, muted */
+--color-brand-300: #a87da3; /* Light-medium - accents */
+--color-brand-400: #8b5284; /* Medium - secondary */
+--color-brand-500: #6e2765; /* Base brand - primary accent */
+--color-brand-600: #581f51; /* Medium-dark - primary */
+--color-brand-700: #42173d; /* Dark - muted text */
+--color-brand-800: #2c1028; /* Very dark - text, borders */
+--color-brand-900: #160814; /* Darkest - text on light */
+--color-brand-950: #0a040a; /* Deepest - dark backgrounds */
 ```
 
 ## Visual Verification
@@ -197,12 +201,14 @@ npm run test:contrast
 ### Common Issues
 
 #### Theme Not Applying
+
 ```css
 /* Ensure CustomStyles.astro is imported in Layout.astro */
 <CustomStyles />
 ```
 
 #### Color Inconsistencies
+
 ```css
 /* Use semantic variables instead of hardcoded values */
 .component {
@@ -212,6 +218,7 @@ npm run test:contrast
 ```
 
 #### Contrast Issues
+
 ```bash
 # Run contrast testing
 npm run test:contrast
@@ -248,4 +255,4 @@ The CSS variable migration successfully unified the color system while maintaini
 
 ---
 
-**Migration Status**: ✅ **Complete** | **Testing**: 🔄 **In Progress** | **Monitoring**: 📊 **Ongoing** 
+**Migration Status**: ✅ **Complete** | **Testing**: 🔄 **In Progress** | **Monitoring**: 📊 **Ongoing**
