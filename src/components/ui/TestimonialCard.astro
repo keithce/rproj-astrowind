@@ -13,14 +13,14 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
 
 <div class={`testimonial-card ${className}`}>
   <div
-    class="bg-white dark:bg-[var(--aw-color-bg-page-dark)] p-6 rounded-lg shadow-lg h-full border border-[var(--aw-color-accent)]/10"
+    class="bg-[var(--color-card)] p-6 rounded-lg shadow-lg h-full border border-[var(--color-border)] hover:shadow-xl transition-shadow duration-200"
   >
     <!-- Rating Stars -->
     <div class="flex mb-4">
       {
         Array.from({ length: 5 }, (_, i) => (
           <svg
-            class={`w-5 h-5 ${i < rating ? 'text-[var(--aw-color-accent)]' : 'text-gray-300 dark:text-gray-600'}`}
+            class={`w-5 h-5 ${i < rating ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -31,24 +31,34 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
     </div>
 
     <!-- Testimonial Text -->
-    <blockquote class="text-[var(--aw-color-text-default)] dark:text-[var(--aw-color-text-default)] mb-6 italic">
+    <blockquote class="text-[var(--color-foreground)] mb-6 italic leading-relaxed">
       "{testimonial}"
     </blockquote>
 
     <!-- Client Information -->
     <div class="flex items-center">
-      {clientImage && <img src={clientImage} alt={clientName} class="w-12 h-12 rounded-full object-cover mr-4" />}
+      {clientImage && (
+        <img 
+          src={clientImage} 
+          alt={clientName} 
+          class="w-12 h-12 rounded-full object-cover mr-4 border-2 border-[var(--color-border)]" 
+        />
+      )}
       <div>
-        <div class="font-semibold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)]">
+        <div class="font-semibold text-[var(--color-foreground)]">
           {clientName}
         </div>
-        {clientTitle && <div class="text-sm text-[var(--aw-color-text-muted)]">{clientTitle}</div>}
+        {clientTitle && (
+          <div class="text-sm text-[var(--color-muted-foreground)]">
+            {clientTitle}
+          </div>
+        )}
       </div>
     </div>
 
     <!-- Quote Icon -->
-    <div class="absolute top-4 right-4 opacity-10 dark:opacity-20">
-      <svg class="w-8 h-8 text-[var(--aw-color-accent)]" fill="currentColor" viewBox="0 0 32 32">
+    <div class="absolute top-4 right-4 opacity-10">
+      <svg class="w-8 h-8 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 32 32">
         <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm16 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"
         ></path>
       </svg>
@@ -72,7 +82,27 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
     top: 0;
     width: 4px;
     height: 100%;
-    background: linear-gradient(to bottom, var(--aw-color-primary), var(--aw-color-accent));
-    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-accent));
+    border-radius: var(--radius);
+  }
+
+  /* Enhanced hover effects */
+  .testimonial-card:hover .testimonial-card blockquote::before {
+    background: linear-gradient(to bottom, var(--color-accent), var(--color-secondary));
+  }
+
+  /* Smooth transitions for interactive elements */
+  .testimonial-card {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Focus styles for accessibility */
+  .testimonial-card:focus-within {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
   }
 </style>

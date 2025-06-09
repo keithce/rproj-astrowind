@@ -28,7 +28,7 @@ const {
   {
     gradientBg && (
       <div class="absolute inset-0 z-0 w-full h-full overflow-hidden pointer-events-none" aria-hidden="true">
-        <div class="w-full h-full bg-gradient-to-br from-accent via-primary to-muted dark:from-background dark:via-secondary dark:to-card" />
+        <div class="w-full h-full bg-gradient-to-br from-accent via-muted to-background dark:from-background dark:via-secondary dark:to-card" />
       </div>
     )
   }
@@ -62,18 +62,7 @@ const {
   }
 
   <!-- Dark overlay for better text contrast when using images with gradient -->
-  {gradientBg && image && <div class="absolute inset-0 pointer-events-none z-2 bg-black/20" aria-hidden="true" />}
-
-  <!-- Gradient Overlay for Text Contrast (original behavior when not using gradientBg) -->
-  {
-    !gradientBg && (
-      <div
-        class="absolute inset-0 z-3 pointer-events-none \
-          bg-gradient-to-b from-white/60 via-white/20 to-transparent\
-          dark:from-black/50 dark:via-black/20 dark:to-transparent"
-      />
-    )
-  }
+  {gradientBg && image && <div class="absolute inset-0 pointer-events-none z-2 bg-white/20 dark:bg-black/20" aria-hidden="true" />}
 
   <!-- Optional BG slot (e.g., overlays, gradients) -->
   <div class="absolute inset-0 pointer-events-none z-4" aria-hidden="true">

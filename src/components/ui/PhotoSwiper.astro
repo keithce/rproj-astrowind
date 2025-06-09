@@ -62,11 +62,11 @@ function getPlaceholderImage(category: string, index: number): string {
 ---
 
 <div class={`photo-swiper-container ${className}`}>
-  <div class="mb-6">
-    <h3 class="text-2xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-2">
+  <div class="swiper-header">
+    <h3 class="swiper-title">
       {title}
     </h3>
-    <p class="text-[var(--aw-color-text-muted)]">Explore our {category} photography collection</p>
+    <p class="swiper-description">Explore our {category} photography collection</p>
   </div>
 
   <div class="swiper-wrapper-container">
@@ -75,18 +75,18 @@ function getPlaceholderImage(category: string, index: number): string {
         {
           images.map((image, index) => (
             <div class="swiper-slide">
-              <div class="relative aspect-[4/3] overflow-hidden rounded-lg shadow-lg">
+              <div class="slide-content">
                 <img
                   src={getPlaceholderImage(category, index)}
                   alt={image.alt}
                   width={800}
                   height={600}
                   loading="lazy"
-                  class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  class="slide-image"
                 />
                 {image.title && (
-                  <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <p class="text-white text-sm font-medium">{image.title}</p>
+                  <div class="slide-overlay">
+                    <p class="slide-title">{image.title}</p>
                   </div>
                 )}
               </div>
@@ -104,66 +104,241 @@ function getPlaceholderImage(category: string, index: number): string {
 <style>
   .photo-swiper-container {
     position: relative;
-    padding: 1rem 0;
+    padding: 2rem 0;
+    background: var(--aw-color-bg-page);
+    border-radius: var(--radius);
+  }
+
+  .swiper-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .swiper-title {
+    font-family: var(--aw-font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--aw-color-text-heading);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .swiper-description {
+    font-family: var(--aw-font-sans);
+    font-size: 1.125rem;
+    color: var(--aw-color-text-muted);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .swiper-wrapper-container {
+    position: relative;
   }
 
   .swiper {
     width: 100%;
-    height: 400px;
-    padding: 0 50px 40px 50px;
+    height: 450px;
+    padding: 0 60px 50px 60px;
+    overflow: hidden;
   }
 
   .swiper-slide {
-    text-align: center;
-    font-size: 18px;
-    background: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: transparent;
   }
 
+  .slide-content {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--color-border);
+  }
+
+  .slide-content:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide-content:hover .slide-image {
+    transform: scale(1.05);
+  }
+
+  .slide-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      transparent 100%
+    );
+    padding: 1.5rem;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide-content:hover .slide-overlay {
+    transform: translateY(0);
+  }
+
+  .slide-title {
+    color: white;
+    font-family: var(--aw-font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Navigation Buttons */
   .swiper-button-next,
   .swiper-button-prev {
-    color: #ffffff;
+    color: white;
     background: var(--aw-color-primary);
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    margin-top: -22px;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
     opacity: 0.9;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 2px solid var(--color-border);
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
     background: var(--aw-color-secondary);
     opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .swiper-button-next:after,
   .swiper-button-prev:after {
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* Pagination */
+  .swiper-pagination {
+    bottom: 15px;
   }
 
   .swiper-pagination-bullet {
     background: var(--aw-color-accent);
-    opacity: 0.7;
+    opacity: 0.6;
+    width: 12px;
+    height: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .swiper-pagination-bullet-active {
     background: var(--aw-color-primary);
     opacity: 1;
+    transform: scale(1.2);
   }
 
-  .swiper-pagination {
-    bottom: 10px;
+  .swiper-pagination-bullet:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .swiper {
+      height: 400px;
+      padding: 0 50px 50px 50px;
+    }
+
+    .slide-content {
+      height: 300px;
+    }
+
+    .swiper-title {
+      font-size: 1.75rem;
+    }
   }
 
   @media (max-width: 768px) {
+    .photo-swiper-container {
+      padding: 1.5rem 0;
+    }
+
+    .swiper-header {
+      margin-bottom: 1.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .swiper-title {
+      font-size: 1.5rem;
+    }
+
+    .swiper-description {
+      font-size: 1rem;
+    }
+
     .swiper {
-      height: 300px;
+      height: 350px;
+      padding: 0 30px 45px 30px;
+    }
+
+    .slide-content {
+      height: 250px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+    }
+
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 16px;
+    }
+
+    .slide-overlay {
+      padding: 1rem;
+    }
+
+    .slide-title {
+      font-size: 0.875rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .swiper {
       padding: 0 20px 40px 20px;
+      height: 300px;
+    }
+
+    .slide-content {
+      height: 200px;
     }
 
     .swiper-button-next,
@@ -176,6 +351,65 @@ function getPlaceholderImage(category: string, index: number): string {
     .swiper-button-next:after,
     .swiper-button-prev:after {
       font-size: 14px;
+    }
+
+    .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  /* Dark mode support */
+  .dark .slide-content {
+    border-color: var(--color-border);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .slide-content:hover {
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.4),
+      0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .swiper-button-next,
+  .dark .swiper-button-prev {
+    border-color: var(--color-border);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .slide-content,
+    .slide-image,
+    .slide-overlay,
+    .swiper-button-next,
+    .swiper-button-prev,
+    .swiper-pagination-bullet {
+      transition: none;
+    }
+
+    .slide-content:hover .slide-image {
+      transform: none;
+    }
+
+    .slide-content:hover {
+      transform: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .slide-content {
+      border-width: 2px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      border-width: 3px;
     }
   }
 </style>
@@ -207,6 +441,7 @@ function getPlaceholderImage(category: string, index: number): string {
         loop: true,
         spaceBetween: 30,
         slidesPerView: 1,
+        centeredSlides: true,
         breakpoints: {
           640: {
             slidesPerView: 1,
@@ -215,10 +450,12 @@ function getPlaceholderImage(category: string, index: number): string {
           768: {
             slidesPerView: 2,
             spaceBetween: 30,
+            centeredSlides: false,
           },
           1024: {
             slidesPerView: 3,
             spaceBetween: 30,
+            centeredSlides: false,
           },
         },
       });

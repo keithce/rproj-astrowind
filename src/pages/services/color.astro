@@ -5,6 +5,7 @@ import TestimonialCard from '~/components/ui/TestimonialCard.astro';
 import CategoryHero from '~/components/widgets/CategoryHero.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
 import Hero from '~/components/widgets/Hero.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
 
 const metadata = {
   title: "Photography Portfolio - Capturing Life's Beautiful Moments",
@@ -164,7 +165,7 @@ const testimonials = [
 <Layout metadata={metadata}>
   <!-- Hero Section -->
   <Hero
-    title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--aw-color-accent)] to-[var(--aw-color-primary)]">Beautiful Moments</span>`}
+    title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)]">Beautiful Moments</span>`}
     subtitle="Professional photographer specializing in creating timeless memories through artistic vision, technical excellence, and a passion for storytelling."
     actions={[
       {
@@ -172,14 +173,14 @@ const testimonials = [
         text: 'View Portfolio',
         href: '#portfolio',
         class:
-          'bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105',
+          'bg-white text-[var(--color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105',
       },
       {
         variant: 'secondary',
         text: 'Book Session',
         href: '#contact',
         class:
-          'border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105',
+          'border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--color-primary)] transition-all duration-200 transform hover:scale-105',
       },
     ]}
     gradientBg={true}
@@ -187,15 +188,15 @@ const testimonials = [
   />
 
   <!-- Portfolio Section -->
-  <section id="portfolio" class="py-20 bg-[var(--aw-color-bg-page)] dark:bg-[var(--aw-color-bg-page-dark)]">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="text-center mb-16">
+  <section id="portfolio" class="py-20 bg-[var(--color-background)] dark:bg-[var(--color-background)]">
+    <div class="px-4 mx-auto max-w-7xl">
+      <div class="mb-16 text-center">
         <h2
-          class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+          class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
         >
           Photography Portfolio
         </h2>
-        <p class="text-xl text-[var(--aw-color-text-muted)] max-w-3xl mx-auto">
+        <p class="text-xl text-[var(--color-muted-foreground)] max-w-3xl mx-auto">
           Explore our diverse collection of photography services, each crafted with artistic vision and professional
           expertise.
         </p>
@@ -209,11 +210,11 @@ const testimonials = [
           description="Capturing the raw beauty and grandeur of nature's most spectacular moments. From mountain vistas to ocean shores, each landscape tells a story of natural wonder."
         />
         <div class="mt-12">
-          <PhotoSwiper images={landscapeImages} title="Nature's Masterpieces" category="landscape" className="mb-8" />
+          <PhotoSwiper images={landscapeImages} title="Nature's Masterpieces" category="landscape" className="mb-8" client:visible />
           <div class="text-center">
             <a
               href="/gallery/landscapes"
-              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+              class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               View Full Landscape Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,11 +233,11 @@ const testimonials = [
           description="Professional portraits that capture personality, emotion, and the unique essence of each individual. From corporate headshots to artistic expressions."
         />
         <div class="mt-12">
-          <PhotoSwiper images={portraitImages} title="Capturing Character" category="portrait" className="mb-8" />
+          <PhotoSwiper images={portraitImages} title="Capturing Character" category="portrait" className="mb-8" client:visible />
           <div class="text-center">
             <a
               href="/gallery/portraits"
-              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+              class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               View Full Portrait Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,11 +256,11 @@ const testimonials = [
           description="Elegant and tasteful intimate photography that celebrates confidence, beauty, and self-expression in a comfortable, professional environment."
         />
         <div class="mt-12">
-          <PhotoSwiper images={boudoirImages} title="Celebrating You" category="boudoir" className="mb-8" />
+          <PhotoSwiper images={boudoirImages} title="Celebrating You" category="boudoir" className="mb-8" client:visible />
           <div class="text-center">
             <a
               href="/gallery/boudoir"
-              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+              class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               View Full Boudoir Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,11 +284,12 @@ const testimonials = [
             title="Growing Families"
             category="maternity-children"
             className="mb-8"
+            client:visible
           />
           <div class="text-center">
             <a
               href="/gallery/family"
-              class="inline-flex items-center bg-[var(--aw-color-primary)] hover:bg-[var(--aw-color-secondary)] text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200"
+              class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               View Full Family Gallery
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,20 +303,20 @@ const testimonials = [
   </section>
 
   <!-- Testimonials Section -->
-  <section class="py-20 bg-white dark:bg-[var(--aw-color-bg-page-dark)]">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="text-center mb-16">
+  <section class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
+    <div class="px-4 mx-auto max-w-7xl">
+      <div class="mb-16 text-center">
         <h2
-          class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+          class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
         >
           Client Testimonials
         </h2>
-        <p class="text-xl text-[var(--aw-color-text-muted)] max-w-3xl mx-auto">
+        <p class="text-xl text-[var(--color-muted-foreground)] max-w-3xl mx-auto">
           Don't just take our word for it. Here's what our clients say about their photography experience.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {
           testimonials.map((testimonial) => (
             <TestimonialCard
@@ -329,17 +331,35 @@ const testimonials = [
     </div>
   </section>
 
+  <!-- Call to Action -->
+  <CallToAction
+    title="Ready to Create Something Beautiful?"
+    subtitle="Let's work together to capture your vision and create memories that will last a lifetime."
+    actions={[
+      {
+        text: "Get Started Today",
+        href: "#contact",
+        variant: "primary"
+      },
+      {
+        text: "Call Now",
+        href: "tel:+15551234567",
+        variant: "secondary"
+      }
+    ]}
+  />
+
   <!-- About Section -->
-  <section class="py-20 bg-[var(--aw-color-bg-page)] dark:bg-[var(--aw-color-bg-page-dark)]">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+  <section class="py-20 bg-[var(--color-background)] dark:bg-[var(--color-background)]">
+    <div class="px-4 mx-auto max-w-7xl">
+      <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
         <div>
           <h2
-            class="text-4xl md:text-5xl font-bold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-6"
+            class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
           >
             About the Artist
           </h2>
-          <div class="space-y-6 text-lg text-[var(--aw-color-text-default)] dark:text-[var(--aw-color-text-default)]">
+          <div class="space-y-6 text-lg text-[var(--color-foreground)]">
             <p>
               With over a decade of experience in professional photography, I specialize in creating visual stories that
               capture the essence of life's most meaningful moments. My approach combines technical expertise with
@@ -358,11 +378,11 @@ const testimonials = [
 
           <div class="mt-8">
             <h3
-              class="text-xl font-semibold text-[var(--aw-color-text-heading)] dark:text-[var(--aw-color-text-heading)] mb-4"
+              class="text-xl font-semibold text-[var(--color-foreground)] mb-4"
             >
               Achievements & Recognition
             </h3>
-            <ul class="space-y-2 text-[var(--aw-color-text-muted)]">
+            <ul class="space-y-2 text-[var(--color-muted-foreground)]">
               <li>• Featured in Photography Magazine (2023)</li>
               <li>• Winner - Bay Area Photography Awards (2022)</li>
               <li>• 500+ satisfied clients and counting</li>
@@ -376,14 +396,14 @@ const testimonials = [
             <img
               src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80"
               alt="Professional photographer at work"
-              class="w-full h-full object-cover"
+              class="object-cover w-full h-full"
             />
           </div>
           <div
-            class="absolute -bottom-6 -right-6 bg-white dark:bg-[var(--aw-color-bg-page-dark)] p-6 rounded-lg shadow-lg border border-[var(--aw-color-accent)]/20"
+            class="absolute -bottom-6 -right-6 bg-[var(--color-card)] p-6 rounded-lg shadow-lg border border-[var(--color-border)]"
           >
-            <p class="text-2xl font-bold text-[var(--aw-color-primary)]">10+</p>
-            <p class="text-[var(--aw-color-text-muted)]">Years Experience</p>
+            <p class="text-2xl font-bold text-[var(--color-primary)]">10+</p>
+            <p class="text-[var(--color-muted-foreground)]">Years Experience</p>
           </div>
         </div>
       </div>
@@ -391,32 +411,8 @@ const testimonials = [
   </section>
 
   <!-- Contact Section -->
-  <section id="contact" class="py-20 bg-white dark:bg-[var(--aw-color-bg-page-dark)]">
+  <section id="contact" class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
     <NotionContact service="color" />
-  </section>
-
-  <!-- Call to Action -->
-  <section class="py-16 bg-gradient-to-r from-[var(--aw-color-primary)] to-[var(--aw-color-secondary)]">
-    <div class="max-w-4xl mx-auto text-center px-4">
-      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Create Something Beautiful?</h2>
-      <p class="text-xl text-[var(--aw-color-accent)] mb-8 max-w-2xl mx-auto">
-        Let's work together to capture your vision and create memories that will last a lifetime.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a
-          href="#contact"
-          class="bg-white text-[var(--aw-color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105"
-        >
-          Get Started Today
-        </a>
-        <a
-          href="tel:+15551234567"
-          class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--aw-color-primary)] transition-all duration-200 transform hover:scale-105"
-        >
-          Call Now
-        </a>
-      </div>
-    </div>
   </section>
 </Layout>
 
@@ -425,33 +421,42 @@ const testimonials = [
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar for better UX */
+  /* Custom scrollbar using design system colors */
   ::-webkit-scrollbar {
     width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--aw-color-bg-page);
+    background: var(--color-background);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--aw-color-accent);
-    border-radius: 4px;
+    background: var(--color-accent);
+    border-radius: var(--radius);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--aw-color-primary);
+    background: var(--color-primary);
   }
 
-  .dark ::-webkit-scrollbar-track {
-    background: var(--aw-color-bg-page-dark);
+  /* Enhanced focus styles for accessibility */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
   }
 
-  .dark ::-webkit-scrollbar-thumb {
-    background: var(--aw-color-accent);
+  /* Smooth transitions for interactive elements */
+  a,
+  button {
+    transition: all 0.2s ease-in-out;
   }
 
-  .dark ::-webkit-scrollbar-thumb:hover {
-    background: var(--aw-color-primary);
+  /* Ensure proper contrast for text over gradients */
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 </style>

@@ -5,6 +5,7 @@ import PageLayout from '~/layouts/PageLayout.astro';
 import Headline from '~/components/ui/Headline.astro';
 import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import Button from '~/components/ui/Button.astro';
+import ItemGrid from '~/components/ui/ItemGrid.astro';
 import BookACall from '~/utils/book-a-call';
 ---
 
@@ -16,48 +17,62 @@ import BookACall from '~/utils/book-a-call';
       tagline="You're in good company."
       classes={{
         container: 'mb-8 md:mb-12 text-center',
-        title: 'text-4xl md:text-5xl font-bold tracking-tighter mb-4 font-heading',
-        subtitle: 'text-xl text-muted dark:text-myColor-400',
+        title: 'text-4xl md:text-5xl font-bold tracking-tighter mb-4 font-heading text-foreground',
+        subtitle: 'text-xl text-muted-foreground',
       }}
     />
-    <div
-      class="bg-white/50 dark:bg-myColor-800/50 backdrop-blur-sm rounded-xl p-8 mb-12 border border-myColor-200/50 dark:border-myColor-700/50 shadow-sm"
-    >
-      <div class="text-lg text-muted dark:text-myColor-400 text-center">
-        <p class="mb-6 text-xl leading-relaxed max-w-2xl mx-auto">
-          We've received your message and will get back to you soon. In the meantime, here are your next steps:
-        </p>
-        <ul class="list-none text-left mx-auto max-w-lg space-y-4">
-          <li class="flex items-start">
-            <span class="text-primary mr-3 mt-1">•</span>
-            <span class="text-lg leading-relaxed"
-              ><a href="#book-call" class="text-primary hover:text-secondary underline transition-colors">Book</a> a free
-              discovery call to discuss your project and vision.</span
-            >
-          </li>
-          <li class="flex items-start">
-            <span class="text-primary mr-3 mt-1">•</span>
-            <span class="text-lg leading-relaxed"
-              >Follow our <a href="#newsletter" class="text-primary hover:text-secondary underline transition-colors"
-                >newsletter</a
-              > for thoughtful insights on music, technology, and spiritual evolution.</span
-            >
-          </li>
-        </ul>
-      </div>
+
+    <div class="mb-12 border-accent-foreground">
+      <p class="mx-auto mb-8 text-xl leading-relaxed text-foreground">
+        We've received your message and will get back to you soon. In the meantime, here are your next steps:
+      </p>
+
+      <ItemGrid
+        items={[
+          {
+            title: 'Book a free discovery call to discuss your project and vision.',
+            icon: 'tabler:phone',
+            callToAction: {
+              text: 'Book Call',
+              href: '#book-call',
+              variant: 'link',
+            },
+          },
+          {
+            title: 'Follow our newsletter for thoughtful insights on music, technology, and spiritual evolution.',
+            icon: 'tabler:mail',
+            callToAction: {
+              text: 'Join Newsletter',
+              href: '#newsletter',
+              variant: 'link',
+            },
+          },
+        ]}
+        columns={1}
+        classes={{
+          container: 'mx-auto gap-6',
+          panel: 'p-6 rounded-lg border border-accent-foreground/50 bg-accent/20',
+          title: 'text-lg font-medium leading-relaxed',
+          icon: 'w-8 h-8 text-primary pr-2',
+        }}
+      />
     </div>
-    <div id="book-call" class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+
+    <div id="book-call" class="flex flex-col justify-center gap-4 mb-8 sm:flex-row">
       <div class="w-full">
         <BookACall client:only="react" />
       </div>
     </div>
+
     <div id="newsletter" class="flex justify-center mb-8">
       <div
-        class="w-full max-w-md flex flex-col justify-center items-center p-6 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg border border-primary/20"
+        class="flex flex-col items-center justify-center w-full max-w-md p-6 border rounded-lg shadow-md backdrop-blur-sm border-accent bg-accent/15"
       >
-        <div class="text-center mb-4">
-          <h3 class="text-xl font-semibold text-primary mb-2">Stay Connected</h3>
-          <p class="text-muted text-sm">Get thoughtful insights on music, technology, and spiritual evolution.</p>
+        <div class="mb-4 text-center">
+          <h3 class="mb-2 text-xl font-semibold text-primary">Stay Connected</h3>
+          <p class="text-sm text-muted-foreground">
+            Get thoughtful insights on music, technology, and spiritual evolution.
+          </p>
         </div>
         <Button
           variant="primary"
@@ -69,7 +84,8 @@ import BookACall from '~/utils/book-a-call';
         />
       </div>
     </div>
-    <div class="text-center text-sm text-muted dark:text-myColor-500">
+
+    <div class="text-sm text-center text-muted-foreground">
       <span>We look forward to connecting with you!<br />— The Resonant Projects Team</span>
     </div>
   </WidgetWrapper>
