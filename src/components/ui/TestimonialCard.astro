@@ -37,22 +37,20 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
 
     <!-- Client Information -->
     <div class="flex items-center">
-      {clientImage && (
-        <img 
-          src={clientImage} 
-          alt={clientName} 
-          class="w-12 h-12 rounded-full object-cover mr-4 border-2 border-[var(--color-border)]" 
-        />
-      )}
+      {
+        clientImage && (
+          <img
+            src={clientImage}
+            alt={clientName}
+            class="w-12 h-12 rounded-full object-cover mr-4 border-2 border-[var(--color-border)]"
+          />
+        )
+      }
       <div>
         <div class="font-semibold text-[var(--color-foreground)]">
           {clientName}
         </div>
-        {clientTitle && (
-          <div class="text-sm text-[var(--color-muted-foreground)]">
-            {clientTitle}
-          </div>
-        )}
+        {clientTitle && <div class="text-sm text-[var(--color-muted-foreground)]">{clientTitle}</div>}
       </div>
     </div>
 

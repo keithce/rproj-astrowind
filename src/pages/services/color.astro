@@ -191,11 +191,7 @@ const testimonials = [
   <section id="portfolio" class="py-20 bg-[var(--color-background)] dark:bg-[var(--color-background)]">
     <div class="px-4 mx-auto max-w-7xl">
       <div class="mb-16 text-center">
-        <h2
-          class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
-        >
-          Photography Portfolio
-        </h2>
+        <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6">Photography Portfolio</h2>
         <p class="text-xl text-[var(--color-muted-foreground)] max-w-3xl mx-auto">
           Explore our diverse collection of photography services, each crafted with artistic vision and professional
           expertise.
@@ -210,7 +206,12 @@ const testimonials = [
           description="Capturing the raw beauty and grandeur of nature's most spectacular moments. From mountain vistas to ocean shores, each landscape tells a story of natural wonder."
         />
         <div class="mt-12">
-          <PhotoSwiper images={landscapeImages} title="Nature's Masterpieces" category="landscape" className="mb-8" client:visible />
+          <PhotoSwiper
+            images={landscapeImages}
+            title="Nature's Masterpieces"
+            category="landscape"
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/landscapes"
@@ -233,7 +234,12 @@ const testimonials = [
           description="Professional portraits that capture personality, emotion, and the unique essence of each individual. From corporate headshots to artistic expressions."
         />
         <div class="mt-12">
-          <PhotoSwiper images={portraitImages} title="Capturing Character" category="portrait" className="mb-8" client:visible />
+          <PhotoSwiper
+            images={portraitImages}
+            title="Capturing Character"
+            category="portrait"
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/portraits"
@@ -256,7 +262,12 @@ const testimonials = [
           description="Elegant and tasteful intimate photography that celebrates confidence, beauty, and self-expression in a comfortable, professional environment."
         />
         <div class="mt-12">
-          <PhotoSwiper images={boudoirImages} title="Celebrating You" category="boudoir" className="mb-8" client:visible />
+          <PhotoSwiper
+            images={boudoirImages}
+            title="Celebrating You"
+            category="boudoir"
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/boudoir"
@@ -284,7 +295,6 @@ const testimonials = [
             title="Growing Families"
             category="maternity-children"
             className="mb-8"
-            client:visible
           />
           <div class="text-center">
             <a
@@ -306,11 +316,7 @@ const testimonials = [
   <section class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
     <div class="px-4 mx-auto max-w-7xl">
       <div class="mb-16 text-center">
-        <h2
-          class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
-        >
-          Client Testimonials
-        </h2>
+        <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6">Client Testimonials</h2>
         <p class="text-xl text-[var(--color-muted-foreground)] max-w-3xl mx-auto">
           Don't just take our word for it. Here's what our clients say about their photography experience.
         </p>
@@ -337,15 +343,15 @@ const testimonials = [
     subtitle="Let's work together to capture your vision and create memories that will last a lifetime."
     actions={[
       {
-        text: "Get Started Today",
-        href: "#contact",
-        variant: "primary"
+        text: 'Get Started Today',
+        href: '#contact',
+        variant: 'primary',
       },
       {
-        text: "Call Now",
-        href: "tel:+15551234567",
-        variant: "secondary"
-      }
+        text: 'Call Now',
+        href: 'tel:+15551234567',
+        variant: 'secondary',
+      },
     ]}
   />
 
@@ -354,11 +360,7 @@ const testimonials = [
     <div class="px-4 mx-auto max-w-7xl">
       <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
         <div>
-          <h2
-            class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6"
-          >
-            About the Artist
-          </h2>
+          <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6">About the Artist</h2>
           <div class="space-y-6 text-lg text-[var(--color-foreground)]">
             <p>
               With over a decade of experience in professional photography, I specialize in creating visual stories that
@@ -377,11 +379,7 @@ const testimonials = [
           </div>
 
           <div class="mt-8">
-            <h3
-              class="text-xl font-semibold text-[var(--color-foreground)] mb-4"
-            >
-              Achievements & Recognition
-            </h3>
+            <h3 class="text-xl font-semibold text-[var(--color-foreground)] mb-4">Achievements & Recognition</h3>
             <ul class="space-y-2 text-[var(--color-muted-foreground)]">
               <li>• Featured in Photography Magazine (2023)</li>
               <li>• Winner - Bay Area Photography Awards (2022)</li>

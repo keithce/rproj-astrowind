@@ -62,7 +62,11 @@ const {
   }
 
   <!-- Dark overlay for better text contrast when using images with gradient -->
-  {gradientBg && image && <div class="absolute inset-0 pointer-events-none z-2 bg-white/20 dark:bg-black/20" aria-hidden="true" />}
+  {
+    gradientBg && image && (
+      <div class="absolute inset-0 pointer-events-none z-2 bg-white/20 dark:bg-black/20" aria-hidden="true" />
+    )
+  }
 
   <!-- Optional BG slot (e.g., overlays, gradients) -->
   <div class="absolute inset-0 pointer-events-none z-4" aria-hidden="true">
