@@ -1,0 +1,77 @@
+---
+description: 
+globs: *.astro,*.ts,*.js,*.tsx
+alwaysApply: false
+---
+# Tailwind CSS v4 Configuration Best Practices
+
+## Rule
+Configure Tailwind CSS v4 as the single source of truth for design system with TypeScript support and proper theme extension.
+
+## Guidelines
+
+### Single Source Configuration
+- Use `tailwind.config.ts` as the only place for CSS-related settings
+- Leverage TypeScript for autocompletion and type safety
+- Place all customizations inside `theme.extend` to preserve defaults
+- Utilize the new CSS-first configuration approach
+
+### Performance Optimization
+- Embrace automatic content detection for template files
+- Leverage the new Oxide engine for faster builds
+- Use Lightning CSS integration for optimized output
+
+## Examples
+
+### Proper TypeScript Configuration
+```typescript
+// tailwind.config.ts
+import type { Config } from "tailwindcss";
+
+export default {
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          primary: "#0052FF",
+          secondary: "#FFC107",
+          accent: "#10B981",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        serif: ["Source Serif Pro", "serif"],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config;
+```
+
+### CSS Variables Integration
+```css
+/* Access theme values in CSS */
+.custom-element {
+  /* New v4 way using @theme */
+  border-color: theme(colors.brand.secondary);
+  padding: theme(spacing.4);
+  
+  /* Alternative using CSS variables */
+  background-color: var(--tw-color-brand-primary);
+}
+```
+
+## Benefits
+- Single source of truth for design tokens
+- TypeScript autocompletion and type safety
+- Better performance with Oxide engine
+- Unified toolchain with Lightning CSS

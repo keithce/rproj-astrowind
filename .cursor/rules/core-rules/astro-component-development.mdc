@@ -1,0 +1,210 @@
+---
+description: 
+globs: *.astro
+alwaysApply: false
+---
+# Astro Component Development
+
+## Rule
+Develop Astro components following best practices for performance, maintainability, and proper hydration.
+
+## Guidelines
+
+### Astro Component Structure
+- Keep component logic in the frontmatter script section
+- Use scoped styles (`<style>`) by default for encapsulation
+- Leverage Astro's partial hydration directives judiciously
+- Utilize slots for content projection and flexible layouts
+
+### Hydration Strategy
+- Use `client:load` only for components that need immediate interactivity
+- Use `client:idle` for components that can wait until the browser is idle
+- Use `client:visible` for components that should hydrate when they enter the viewport
+- Use `client:media` for responsive components
+- Avoid over-hydration to maintain performance benefits
+
+### Props and Typing
+- Always define and type component props with interfaces
+- Use descriptive prop names
+- Leverage Astro's `HTMLAttributes` type for HTML attribute validation
+
+## Examples
+
+### Good Astro Component Structure
+```astro
+---
+// Component frontmatter - server-side logic
+interface Props {
+  title: string;
+  description?: string;
+  variant?: 'primary' | 'secondary';
+}
+
+const { title, description, variant = 'primary' } = Astro.props;
+
+// Server-side data fetching
+const data = await fetch('/api/data').then(res => res.json());
+---
+
+<div class={`card card--${variant}`}>
+  <h2>{title}</h2>
+  {description && <p>{description}</p>}
+  
+  <!-- Slot for flexible content -->
+  <div class="card__content">
+    <slot />
+  </div>
+  
+  <!-- Conditional slot -->
+  <footer class="card__footer">
+    <slot name="footer">
+      <p>Default footer content</p>
+    </slot>
+  </footer>
+</div>
+
+<style>
+  .card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  
+  .card--primary {
+    border-color: #007acc;
+  }
+  
+  .card--secondary {
+    border-color: #6c757d;
+  }
+</style>
+```
+
+### Proper Hydration Usage
+```astro
+---
+// Interactive components only when needed
+import InteractiveButton from '../components/InteractiveButton.tsx';
+import LazyChart from '../components/LazyChart.tsx';
+import ResponsiveNav from '../components/ResponsiveNav.tsx';
+---
+
+<!-- Hydrate immediately for critical interactivity -->
+<InteractiveButton client:load>
+  Click me!
+</InteractiveButton>
+
+<!-- Hydrate when visible for performance -->
+<LazyChart client:visible data={chartData} />
+
+<!-- Hydrate based on media query -->
+<ResponsiveNav client:media="(max-width: 768px)" />
+
+<!-- Static content - no hydration needed -->
+<div class="static-content">
+  <h1>This is static content</h1>
+  <p>No JavaScript needed here</p>
+</div>
+```
+
+### Props with HTML Attributes
+```astro
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'button'> {
+  variant: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+}
+
+const { 
+  variant, 
+  size = 'md', 
+  loading = false, 
+  class: className,
+  ...rest 
+} = Astro.props;
+
+const buttonClass = [
+  'btn',
+  `btn--${variant}`,
+  `btn--${size}`,
+  loading && 'btn--loading',
+  className
+].filter(Boolean).join(' ');
+---
+
+<button class={buttonClass} disabled={loading} {...rest}>
+  {loading && <span class="spinner" aria-hidden="true"></span>}
+  <slot />
+</button>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn--primary {
+    background: #007acc;
+    color: white;
+  }
+  
+  .btn--loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+```
+
+### Bad Practices
+```astro
+---
+// ❌ Bad - No prop typing
+const { title, description } = Astro.props;
+
+// ❌ Bad - Client-side logic in frontmatter
+const handleClick = () => {
+  console.log('This won\'t work in frontmatter');
+};
+---
+
+<!-- ❌ Bad - Over-hydration -->
+<div client:load>
+  <h1>{title}</h1>
+  <p>This static content doesn't need hydration</p>
+</div>
+
+<!-- ❌ Bad - No scoped styles -->
+<style is:global>
+  h1 {
+    color: red; /* This affects all h1 elements globally */
+  }
+</style>
+```
+
+## Performance Benefits
+- Zero JavaScript by default
+- Selective hydration reduces bundle size
+- Server-side rendering improves initial load times
+- Scoped styles prevent CSS conflicts

@@ -1,0 +1,165 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Utility-First with Strategic @apply Usage
+
+## Rule
+Use utility classes directly in markup for layouts and one-offs, while leveraging scoped @apply for complex, reusable UI components.
+
+## Guidelines
+
+### When to Use Utilities
+- Apply utility classes directly for layout, spacing, and unique styles
+- Use utilities for component structure and positioning
+- Prefer utilities for simple, one-time styling needs
+
+### When to Use @apply
+- Use @apply within component's scoped `<style>` tag for complex, reusable elements
+- Apply to components like buttons, cards, or form inputs that appear frequently
+- Use to avoid long, repetitive utility strings in markup
+
+### Best Practices
+- Keep styles close to markup for better maintainability
+- Use @apply sparingly to maintain utility-first benefits
+- Group related utilities logically for better readability
+
+## Examples
+
+### Good: Direct Utility Usage
+```astro
+---
+// Simple layout component
+---
+<div class="max-w-4xl px-4 py-8 mx-auto">
+  <h1 class="mb-6 text-3xl font-bold text-gray-900">
+    {title}
+  </h1>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <slot />
+  </div>
+</div>
+```
+
+### Good: @apply for Reusable Components
+```astro
+---
+// src/components/ui/Button.astro
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { variant = 'primary', size = 'md' } = Astro.props;
+---
+
+<button class={`btn btn-${variant} btn-${size}`}>
+  <slot />
+</button>
+
+<style>
+  .btn {
+    @apply inline-flex items-center justify-center font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-brand-primary text-white hover:bg-blue-700 focus:ring-brand-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-brand-primary;
+  }
+
+  .btn-sm {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+</style>
+```
+
+### Good: Form Components with @apply
+```astro
+---
+// src/components/ui/Input.astro
+interface Props {
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  error?: string;
+}
+
+const { type = 'text', placeholder, required, error } = Astro.props;
+---
+
+<div class="form-group">
+  <input 
+    type={type}
+    placeholder={placeholder}
+    required={required}
+    class={`form-input ${error ? 'form-input-error' : ''}`}
+  />
+  {error && <span class="form-error">{error}</span>}
+</div>
+
+<style>
+  .form-group {
+    @apply space-y-1;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors;
+  }
+
+  .form-input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .form-error {
+    @apply text-sm text-red-600;
+  }
+</style>
+```
+
+### Bad: Excessive Utilities in Markup
+```astro
+<!-- ❌ Bad - Too many utilities, hard to read -->
+<button class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+  Click me
+</button>
+```
+
+### Bad: Overusing @apply
+```astro
+<!-- ❌ Bad - Using @apply for simple, one-off styling -->
+<div class="hero-section">
+  <h1 class="hero-title">Welcome</h1>
+</div>
+
+<style>
+  .hero-section {
+    @apply max-w-4xl mx-auto px-4 py-8; /* Should use utilities directly */
+  }
+
+  .hero-title {
+    @apply text-3xl font-bold; /* Should use utilities directly */
+  }
+</style>
+```
+
+## Benefits
+- Maintains utility-first methodology advantages
+- Improves readability for complex components
+- Reduces repetition in frequently used patterns
+- Keeps styles maintainable and discoverable

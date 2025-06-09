@@ -1,0 +1,155 @@
+---
+description: Related to vercel, deployment or hosting
+globs: 
+alwaysApply: false
+---
+# Vercel Deployment Best Practices for Astro
+
+## Critical Rules
+
+- Configure proper build settings and environment variables in Vercel dashboard
+- Use preview deployments for testing changes before production
+- Implement proper caching strategies and edge optimization
+- Secure environment variables and API keys using Vercel's environment management
+- Set up custom domains with proper SSL and DNS configuration
+- Monitor deployment performance and implement error tracking
+
+## Examples
+
+<example>
+**Good: Proper Vercel Configuration**
+
+```json
+// vercel.json
+{
+  "framework": "astro",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm ci",
+  "functions": {
+    "src/pages/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old-path",
+      "destination": "/new-path",
+      "permanent": true
+    }
+  ]
+}
+```
+
+**Environment Variables Setup:**
+```typescript
+// src/env.ts
+import { z } from 'zod';
+
+const EnvSchema = z.object({
+  // Public vars (accessible in browser)
+  PUBLIC_SITE_URL: z.string().url(),
+  PUBLIC_ANALYTICS_ID: z.string().optional(),
+  
+  // Private vars (server-only)
+  NOTION_API_KEY: z.string().min(1),
+  RESEND_API_KEY: z.string().min(1),
+  DATABASE_URL: z.string().url(),
+});
+
+export const env = EnvSchema.parse(process.env);
+```
+
+**Astro Config for Vercel:**
+```typescript
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless';
+import tailwind from '@astrojs/tailwind';
+
+export default defineConfig({
+  output: 'hybrid', // or 'server' for full SSR
+  adapter: vercel({
+    webAnalytics: { enabled: true },
+    speedInsights: { enabled: true },
+    imageService: true,
+    imagesConfig: {
+      sizes: [320, 640, 768, 1024, 1280, 1600],
+      formats: ['image/webp', 'image/avif'],
+    },
+  }),
+  integrations: [tailwind()],
+  vite: {
+    define: {
+      __VERCEL_ENV__: JSON.stringify(process.env.VERCEL_ENV),
+    },
+  },
+});
+```
+
+**API Route with Vercel Edge:**
+```typescript
+// src/pages/api/edge-example.ts
+export const config = {
+  runtime: 'edge',
+};
+
+export async function GET({ request }: { request: Request }) {
+  const response = await fetch('https://api.external.com/data', {
+    headers: {
+      'Authorization': `Bearer ${process.env.API_TOKEN}`,
+    },
+  });
+  
+  return new Response(JSON.stringify(await response.json()), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 's-maxage=60, stale-while-revalidate',
+    },
+  });
+}
+```
+</example>
+
+<example type="invalid">
+**Bad: Poor Vercel Configuration**
+
+```typescript
+// ❌ Bad - Hardcoded secrets in code
+const API_KEY = 'sk-1234567890abcdef';
+
+// ❌ Bad - No build optimization
+// astro.config.mjs with no adapter specified
+
+// ❌ Bad - Missing security headers
+// No security configuration in vercel.json
+
+// ❌ Bad - No environment validation
+const apiUrl = process.env.API_URL; // Could be undefined
+
+// ❌ Bad - Inefficient API routes
+export async function GET() {
+  // No caching, runs on every request
+  const data = await expensiveOperation();
+  return new Response(JSON.stringify(data));
+}
+
+// ❌ Bad - No error handling in deployment
+// Missing try-catch in API routes and build scripts
+```
+</example>

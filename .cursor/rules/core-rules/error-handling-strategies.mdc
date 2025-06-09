@@ -1,0 +1,678 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Comprehensive Error Handling Strategies
+
+## Rule
+Implement robust error handling throughout the application with consistent patterns for validation errors, runtime errors, and user feedback.
+
+## Guidelines
+
+### Error Handling Strategy
+- Separate validation errors from unexpected runtime errors
+- Use custom error classes for different types of application errors
+- Implement centralized error handling mechanisms
+- Provide meaningful user-friendly error messages while logging detailed information
+
+### TypeScript Error Handling
+- Enable `useUnknownInCatchVariables` in TypeScript config
+- Always check error types in catch blocks using type guards
+- Throw `Error` instances or custom error classes, never raw strings
+- Use Result pattern for expected failures where appropriate
+
+### Client-Side Error Handling
+- Implement Error Boundaries for React components
+- Handle async operations with proper error states
+- Provide fallback UI for failed components
+- Never ignore errors; always acknowledge and handle them
+
+## Examples
+
+### Custom Error Classes
+```typescript
+// src/lib/errors/types.ts
+export enum ErrorType {
+  VALIDATION = 'VALIDATION',
+  AUTHENTICATION = 'AUTHENTICATION',
+  AUTHORIZATION = 'AUTHORIZATION',
+  NOT_FOUND = 'NOT_FOUND',
+  RATE_LIMIT = 'RATE_LIMIT',
+  EXTERNAL_API = 'EXTERNAL_API',
+  INTERNAL = 'INTERNAL',
+}
+
+export interface AppError {
+  type: ErrorType;
+  message: string;
+  code?: string;
+  details?: Record<string, unknown>;
+  statusCode: number;
+  userMessage: string;
+  timestamp: string;
+}
+
+export class CustomError extends Error {
+  public readonly type: ErrorType;
+  public readonly code?: string;
+  public readonly details?: Record<string, unknown>;
+  public readonly statusCode: number;
+  public readonly userMessage: string;
+  public readonly timestamp: string;
+
+  constructor(
+    type: ErrorType,
+    message: string,
+    userMessage: string,
+    statusCode: number = 500,
+    code?: string,
+    details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'CustomError';
+    this.type = type;
+    this.code = code;
+    this.details = details;
+    this.statusCode = statusCode;
+    this.userMessage = userMessage;
+    this.timestamp = new Date().toISOString();
+  }
+
+  toJSON(): AppError {
+    return {
+      type: this.type,
+      message: this.message,
+      code: this.code,
+      details: this.details,
+      statusCode: this.statusCode,
+      userMessage: this.userMessage,
+      timestamp: this.timestamp,
+    };
+  }
+}
+```
+
+### Error Factory Functions
+```typescript
+// src/lib/errors/factory.ts
+import { CustomError, ErrorType } from './types';
+import { ZodError } from 'zod';
+
+export function createValidationError(
+  zodError: ZodError,
+  userMessage: string = 'Please check your input and try again'
+): CustomError {
+  const details = zodError.errors.reduce((acc, err) => {
+    const path = err.path.join('.');
+    acc[path] = err.message;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return new CustomError(
+    ErrorType.VALIDATION,
+    `Validation failed: ${zodError.errors.map(e => e.message).join(', ')}`,
+    userMessage,
+    400,
+    'VALIDATION_FAILED',
+    details
+  );
+}
+
+export function createNotFoundError(
+  resource: string,
+  identifier?: string
+): CustomError {
+  const message = identifier 
+    ? `${resource} with identifier '${identifier}' not found`
+    : `${resource} not found`;
+
+  return new CustomError(
+    ErrorType.NOT_FOUND,
+    message,
+    'The requested resource could not be found',
+    404,
+    'RESOURCE_NOT_FOUND',
+    { resource, identifier }
+  );
+}
+
+export function createAuthenticationError(
+  message: string = 'Authentication failed'
+): CustomError {
+  return new CustomError(
+    ErrorType.AUTHENTICATION,
+    message,
+    'Please log in to access this resource',
+    401,
+    'AUTHENTICATION_REQUIRED'
+  );
+}
+
+export function createInternalError(
+  message: string,
+  originalError?: Error
+): CustomError {
+  return new CustomError(
+    ErrorType.INTERNAL,
+    message,
+    'An unexpected error occurred. Please try again later.',
+    500,
+    'INTERNAL_SERVER_ERROR',
+    originalError ? { originalMessage: originalError.message } : undefined
+  );
+}
+```
+
+### API Error Handler
+```typescript
+// src/lib/errors/api-handler.ts
+import type { APIRoute } from 'astro';
+import { CustomError, ErrorType } from './types';
+import { createValidationError, createInternalError } from './factory';
+import { ZodError } from 'zod';
+
+export function withErrorHandler(handler: APIRoute): APIRoute {
+  return async (context) => {
+    const requestId = crypto.randomUUID();
+    
+    try {
+      return await handler(context);
+    } catch (error: unknown) {
+      return handleApiError(error, context, requestId);
+    }
+  };
+}
+
+function handleApiError(
+  error: unknown,
+  context: Parameters<APIRoute>[0],
+  requestId: string
+): Response {
+  let customError: CustomError;
+
+  if (error instanceof CustomError) {
+    customError = error;
+  } else if (error instanceof ZodError) {
+    customError = createValidationError(error);
+  } else if (error instanceof Error) {
+    customError = createInternalError(
+      'Unexpected error in API handler',
+      error
+    );
+  } else {
+    customError = createInternalError(
+      'Unknown error in API handler'
+    );
+  }
+
+  // Log the error (implement your logging strategy)
+  console.error(`[${requestId}] API Error:`, {
+    error: customError.toJSON(),
+    url: context.url.toString(),
+    method: context.request.method,
+  });
+
+  // Return appropriate response
+  const responseBody = {
+    success: false,
+    error: {
+      type: customError.type,
+      message: customError.userMessage,
+      code: customError.code,
+      ...(customError.type === ErrorType.VALIDATION && { 
+        details: customError.details 
+      }),
+    },
+    requestId,
+  };
+
+  return new Response(JSON.stringify(responseBody), {
+    status: customError.statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+```
+
+### React Error Boundary
+```tsx
+// src/components/ErrorBoundary.tsx
+import { Component, type ReactNode, type ErrorInfo } from 'react';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+  errorId?: string;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { 
+      hasError: true, 
+      error,
+      errorId: crypto.randomUUID(),
+    };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log error details
+    console.error('Error caught by boundary:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      errorId: this.state.errorId,
+    });
+
+    // Call custom error handler if provided
+    this.props.onError?.(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
+        <div className="error-boundary p-6 bg-red-50 border border-red-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-red-600 mb-4">
+            We're sorry, but something unexpected happened. Please try refreshing the page.
+          </p>
+          <details className="text-sm text-red-700">
+            <summary className="cursor-pointer font-medium">
+              Error Details (ID: {this.state.errorId})
+            </summary>
+            <pre className="mt-2 p-2 bg-red-100 rounded text-xs overflow-auto">
+              {this.state.error?.message}
+            </pre>
+          </details>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+### Async Error Handling Hook
+```tsx
+// src/hooks/useAsyncError.ts
+import { useState, useCallback } from 'react';
+
+interface AsyncState<T> {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useAsyncError<T>() {
+  const [state, setState] = useState<AsyncState<T>>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+
+  const execute = useCallback(async (
+    asyncFunction: () => Promise<T>,
+    errorMessage: string = 'An error occurred'
+  ) => {
+    setState({ data: null, loading: true, error: null });
+
+    try {
+      const result = await asyncFunction();
+      setState({ data: result, loading: false, error: null });
+      return result;
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : errorMessage;
+      
+      // Log the error
+      console.error('Async operation failed:', {
+        error: errorMsg,
+        originalError: error,
+      });
+
+      setState({ data: null, loading: false, error: errorMsg });
+      throw error;
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setState({ data: null, loading: false, error: null });
+  }, []);
+
+  return {
+    ...state,
+    execute,
+    reset,
+  };
+}
+```
+
+### Form Error Handling
+```tsx
+// src/components/FormWithErrorHandling.tsx
+import { useState } from 'react';
+import { useAsyncError } from '../hooks/useAsyncError';
+import { z } from 'zod';
+
+const ContactFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+type ContactFormData = z.infer<typeof ContactFormSchema>;
+
+export function ContactFormWithErrorHandling() {
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    message: '',
+  });
+  
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const { loading, error, execute } = useAsyncError<void>();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFieldErrors({});
+
+    try {
+      // Validate form data
+      const validatedData = ContactFormSchema.parse(formData);
+
+      await execute(async () => {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validatedData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          if (errorData.error?.details) {
+            setFieldErrors(errorData.error.details);
+          }
+          
+          throw new Error(errorData.error?.message || 'Failed to send message');
+        }
+      }, 'Failed to send your message. Please try again.');
+
+      // Reset form on success
+      setFormData({ name: '', email: '', message: '' });
+      
+    } catch (validationError: unknown) {
+      if (validationError instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        validationError.errors.forEach(err => {
+          const path = err.path.join('.');
+          errors[path] = err.message;
+        });
+        setFieldErrors(errors);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.name ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.name && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.email ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.email && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+          Message
+        </label>
+        <textarea
+          id="message"
+          rows={4}
+          value={formData.message}
+          onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm ${
+            fieldErrors.message ? 'border-red-500' : ''
+          }`}
+        />
+        {fieldErrors.message && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors.message}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      >
+        {loading ? 'Sending...' : 'Send Message'}
+      </button>
+    </form>
+  );
+}
+```
+
+### API Route with Error Handling
+```typescript
+// src/pages/api/contact.ts
+import type { APIRoute } from 'astro';
+import { withErrorHandler } from '../../lib/errors/api-handler';
+import { createValidationError } from '../../lib/errors/factory';
+import { z } from 'zod';
+
+const ContactSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+export const POST: APIRoute = withErrorHandler(async ({ request }) => {
+  const body = await request.json();
+  
+  // Validate input
+  const validation = ContactSchema.safeParse(body);
+  if (!validation.success) {
+    throw createValidationError(validation.error);
+  }
+
+  const { name, email, message } = validation.data;
+
+  // Process the contact form (send email, save to database, etc.)
+  try {
+    await sendContactEmail({ name, email, message });
+    
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Message sent successfully'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error: unknown) {
+    // This will be caught by withErrorHandler
+    throw error;
+  }
+});
+
+async function sendContactEmail(data: { name: string; email: string; message: string }) {
+  // Implementation for sending email
+  // If this fails, it will throw an error that gets handled by the error handler
+}
+```
+
+### Result Pattern for Expected Failures
+```typescript
+// src/lib/result.ts
+export type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+export function createSuccess<T>(data: T): Result<T, never> {
+  return { success: true, data };
+}
+
+export function createFailure<E>(error: E): Result<never, E> {
+  return { success: false, error };
+}
+
+// Usage example
+async function fetchUserProfile(id: string): Promise<Result<UserProfile, string>> {
+  try {
+    const user = await getUserById(id);
+    if (!user) {
+      return createFailure('User not found');
+    }
+    return createSuccess(user);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return createFailure(message);
+  }
+}
+
+// Using the result
+const result = await fetchUserProfile('123');
+if (result.success) {
+  console.log('User:', result.data.name);
+} else {
+  console.error('Error:', result.error);
+}
+```
+
+### Safe Data Fetching
+```typescript
+// src/lib/safe-fetch.ts
+import { createExternalApiError } from './errors/factory';
+
+interface FetchOptions extends RequestInit {
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+}
+
+export async function safeFetch<T>(
+  url: string,
+  options: FetchOptions = {}
+): Promise<T> {
+  const {
+    timeout = 10000,
+    retries = 3,
+    retryDelay = 1000,
+    ...fetchOptions
+  } = options;
+
+  let lastError: Error;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error: unknown) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === retries) {
+        if (lastError.name === 'AbortError') {
+          throw createExternalApiError('API', new Error('Request timeout'));
+        }
+        throw createExternalApiError('API', lastError);
+      }
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+    }
+  }
+
+  throw lastError!;
+}
+```
+
+## Best Practices
+
+### Do's
+- ✅ Provide meaningful error messages to users
+- ✅ Log detailed error information for debugging
+- ✅ Use consistent error handling patterns
+- ✅ Implement proper fallback UI
+- ✅ Validate input at boundaries
+- ✅ Handle async operations gracefully
+
+### Don'ts
+- ❌ Expose sensitive information in error messages
+- ❌ Ignore or silently swallow errors
+- ❌ Show technical error details to end users
+- ❌ Use generic error messages without context
+- ❌ Forget to log errors for debugging
+- ❌ Let errors crash the entire application

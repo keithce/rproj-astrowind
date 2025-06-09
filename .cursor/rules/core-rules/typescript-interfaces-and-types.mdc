@@ -1,0 +1,147 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Interfaces and Type Definitions
+
+## Rule
+Use proper TypeScript interfaces, types, and naming conventions for consistent and maintainable code.
+
+## Guidelines
+
+### Interface vs Type Usage
+- Prefer interfaces over type aliases for defining object shapes
+- Use interfaces when you expect extension or implementation
+- Use type aliases for unions, primitives, and computed types
+
+### Naming Conventions
+- Use `PascalCase` for types, interfaces, enums, and class names
+- Use `camelCase` for variables, function names, and interface members
+- Use descriptive names that clearly indicate purpose
+
+### Utility Types
+- Leverage TypeScript's built-in utility types: `Partial<T>`, `Readonly<T>`, `Pick<T, K>`, `Omit<T, K>`
+- Use `readonly` modifiers and `ReadonlyArray<T>` for immutability
+- Implement type guards for runtime type checking
+
+## Examples
+
+### Good Interface Definitions
+```typescript
+// ✅ Good - Clear interface for object shape
+interface UserProfile {
+  readonly id: string;
+  name: string;
+  email: string;
+  preferences?: UserPreferences;
+}
+
+interface UserPreferences {
+  theme: 'light' | 'dark';
+  notifications: boolean;
+}
+
+// ✅ Good - Extending interfaces
+interface AdminUser extends UserProfile {
+  permissions: readonly string[];
+  lastLogin: Date;
+}
+```
+
+### Utility Types Usage
+```typescript
+// ✅ Good - Using utility types
+type PartialUser = Partial<UserProfile>;
+type UserEmail = Pick<UserProfile, 'email'>;
+type UserWithoutId = Omit<UserProfile, 'id'>;
+
+// ✅ Good - Readonly arrays
+interface ApiResponse {
+  data: ReadonlyArray<UserProfile>;
+  meta: Readonly<{
+    total: number;
+    page: number;
+  }>;
+}
+```
+
+### Type Guards
+```typescript
+// ✅ Good - Type guard implementation
+function isUserProfile(value: unknown): value is UserProfile {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'name' in value &&
+    'email' in value
+  );
+}
+
+// ✅ Good - Using type guard
+function processUserData(data: unknown): UserProfile | null {
+  if (isUserProfile(data)) {
+    return data; // TypeScript knows this is UserProfile
+  }
+  return null;
+}
+```
+
+### Enums for Constants
+```typescript
+// ✅ Good - Enum for named constants
+enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+  MODERATOR = 'moderator'
+}
+
+enum HttpStatus {
+  OK = 200,
+  NOT_FOUND = 404,
+  INTERNAL_ERROR = 500
+}
+```
+
+### Bad Practices
+```typescript
+// ❌ Bad - Using any
+interface BadUser {
+  data: any;
+}
+
+// ❌ Bad - Poor naming
+interface u {
+  n: string;
+  e: string;
+}
+
+// ❌ Bad - Type alias for simple object
+type UserData = {
+  name: string;
+  email: string;
+}; // Should be interface
+
+// ❌ Bad - Mutable when should be readonly
+interface Config {
+  apiKeys: string[]; // Should be readonly
+}
+```
+
+## Astro-Specific Types
+```typescript
+// ✅ Good - Astro component props
+interface AstroComponentProps {
+  title: string;
+  description?: string;
+}
+
+// ✅ Good - Using Astro's HTMLAttributes
+import type { HTMLAttributes } from 'astro/types';
+
+interface ButtonProps extends HTMLAttributes<'button'> {
+  variant: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+}
+```

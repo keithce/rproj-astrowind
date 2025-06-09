@@ -1,0 +1,459 @@
+---
+export interface Props {
+  images: Array<{
+    src: string;
+    alt: string;
+    title?: string;
+  }>;
+  title: string;
+  category: string;
+  className?: string;
+}
+
+const { images, title, category, className = '' } = Astro.props;
+
+// Function to generate different placeholder images based on category and index
+function getPlaceholderImage(category: string, index: number): string {
+  const baseUrl = 'https://images.unsplash.com';
+  const imageIds = {
+    landscape: [
+      'photo-1506905925346-21bda4d32df4', // mountain landscape
+      'photo-1518837695005-2083093ee35b', // ocean waves
+      'photo-1441974231531-c6227db76b6e', // forest
+      'photo-1439066615861-d1af74d74000', // lake
+      'photo-1506905925346-21bda4d32df4', // mountain sunset
+      'photo-1441974231531-c6227db76b6e', // forest path
+      'photo-1439066615861-d1af74d74000', // serene lake
+      'photo-1518837695005-2083093ee35b', // coastline
+    ],
+    portrait: [
+      'photo-1507003211169-0a1dd7228f2d', // business portrait
+      'photo-1500648767791-00dcc994a43e', // artistic portrait
+      'photo-1535713875002-d1d0cf377fde', // professional headshot
+      'photo-1608844881716-d8c27503bec8', // senior portrait
+      'photo-1522075469751-3847ae348b73', // couple portrait
+      'photo-1619380061814-58f03707f082', // musician portrait
+      'photo-1567515004624-219c11d31f2e', // lifestyle portrait
+    ],
+    boudoir: [
+      'photo-1594736797933-d0401ba2fe65', // elegant silhouette
+      'photo-1512316731086-0d19b8a0f04e', // artistic portrait
+      'photo-1567515004624-219c11d31f2e', // natural light
+      'photo-1550639524-b70982e95e75', // dramatic lighting
+      'photo-1609256646376-daa5e21021c7', // intimate portrait
+      'photo-1596728113430-ce1d9b65b498', // elegant pose
+    ],
+    'maternity-children': [
+      'photo-1555532538-dcdbd01d373d', // maternity portrait
+      'photo-1515488042361-ee00e0ddd4e4', // newborn
+      'photo-1519689680058-324335c77eba', // children playing
+      'photo-1581726690015-c9861fa5057f', // expecting couple
+      'photo-1595123550441-d377e017de6a', // siblings
+      'photo-1554089845-5e0e0b22e6b7', // baby portrait
+      'photo-1545558014-8692077e9b5c', // family moment
+    ],
+  };
+
+  const categoryImages = imageIds[category as keyof typeof imageIds] || imageIds.landscape;
+  const imageId = categoryImages[index % categoryImages.length];
+
+  return `${baseUrl}/${imageId}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80`;
+}
+---
+
+<div class={`photo-swiper-container ${className}`}>
+  <div class="swiper-header">
+    <h3 class="swiper-title">
+      {title}
+    </h3>
+    <p class="swiper-description">Explore our {category} photography collection</p>
+  </div>
+
+  <div class="swiper-wrapper-container">
+    <div class="swiper mySwiper" data-category={category}>
+      <div class="swiper-wrapper">
+        {
+          images.map((image, index) => (
+            <div class="swiper-slide">
+              <div class="slide-content">
+                <img
+                  src={getPlaceholderImage(category, index)}
+                  alt={image.alt}
+                  width={800}
+                  height={600}
+                  loading="lazy"
+                  class="slide-image"
+                />
+                {image.title && (
+                  <div class="slide-overlay">
+                    <p class="slide-title">{image.title}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .photo-swiper-container {
+    position: relative;
+    padding: 2rem 0;
+    background: var(--aw-color-bg-page);
+    border-radius: var(--radius);
+  }
+
+  .swiper-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .swiper-title {
+    font-family: var(--aw-font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--aw-color-text-heading);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .swiper-description {
+    font-family: var(--aw-font-sans);
+    font-size: 1.125rem;
+    color: var(--aw-color-text-muted);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .swiper-wrapper-container {
+    position: relative;
+  }
+
+  .swiper {
+    width: 100%;
+    height: 450px;
+    padding: 0 60px 50px 60px;
+    overflow: hidden;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+  }
+
+  .slide-content {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--color-border);
+  }
+
+  .slide-content:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide-content:hover .slide-image {
+    transform: scale(1.05);
+  }
+
+  .slide-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    padding: 1.5rem;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide-content:hover .slide-overlay {
+    transform: translateY(0);
+  }
+
+  .slide-title {
+    color: white;
+    font-family: var(--aw-font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Navigation Buttons */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: white;
+    background: var(--aw-color-primary);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    opacity: 0.9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 2px solid var(--color-border);
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background: var(--aw-color-secondary);
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* Pagination */
+  .swiper-pagination {
+    bottom: 15px;
+  }
+
+  .swiper-pagination-bullet {
+    background: var(--aw-color-accent);
+    opacity: 0.6;
+    width: 12px;
+    height: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .swiper-pagination-bullet-active {
+    background: var(--aw-color-primary);
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  .swiper-pagination-bullet:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .swiper {
+      height: 400px;
+      padding: 0 50px 50px 50px;
+    }
+
+    .slide-content {
+      height: 300px;
+    }
+
+    .swiper-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .photo-swiper-container {
+      padding: 1.5rem 0;
+    }
+
+    .swiper-header {
+      margin-bottom: 1.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .swiper-title {
+      font-size: 1.5rem;
+    }
+
+    .swiper-description {
+      font-size: 1rem;
+    }
+
+    .swiper {
+      height: 350px;
+      padding: 0 30px 45px 30px;
+    }
+
+    .slide-content {
+      height: 250px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+    }
+
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 16px;
+    }
+
+    .slide-overlay {
+      padding: 1rem;
+    }
+
+    .slide-title {
+      font-size: 0.875rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .swiper {
+      padding: 0 20px 40px 20px;
+      height: 300px;
+    }
+
+    .slide-content {
+      height: 200px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      width: 36px;
+      height: 36px;
+      margin-top: -18px;
+    }
+
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 14px;
+    }
+
+    .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  /* Dark mode support */
+  .dark .slide-content {
+    border-color: var(--color-border);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .slide-content:hover {
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.4),
+      0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .swiper-button-next,
+  .dark .swiper-button-prev {
+    border-color: var(--color-border);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .slide-content,
+    .slide-image,
+    .slide-overlay,
+    .swiper-button-next,
+    .swiper-button-prev,
+    .swiper-pagination-bullet {
+      transition: none;
+    }
+
+    .slide-content:hover .slide-image {
+      transform: none;
+    }
+
+    .slide-content:hover {
+      transform: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .slide-content {
+      border-width: 2px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      border-width: 3px;
+    }
+  }
+</style>
+
+<script>
+  import { Swiper } from 'swiper';
+  import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/navigation';
+  import 'swiper/css/pagination';
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const swipers = document.querySelectorAll('.mySwiper');
+
+    swipers.forEach((swiperElement) => {
+      new Swiper(swiperElement as HTMLElement, {
+        cssMode: true,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        mousewheel: true,
+        keyboard: true,
+        modules: [Navigation, Pagination, Mousewheel, Keyboard],
+        loop: true,
+        spaceBetween: 30,
+        slidesPerView: 1,
+        centeredSlides: true,
+        breakpoints: {
+          640: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+            centeredSlides: false,
+          },
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            centeredSlides: false,
+          },
+        },
+      });
+    });
+  });
+</script>

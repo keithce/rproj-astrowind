@@ -1,7 +1,7 @@
 ---
 publishDate: 2025-02-01
 title: Newsletter - January 2025
-exerpt: This month has been filled with exploration, tech adventures, and some unexpected challenges.
+excerpt: This month has been filled with exploration, tech adventures, and some unexpected challenges.
 image: ~/assets/images/newsletter-metatron-cube.svg
 tags:
   - newsletter

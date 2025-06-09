@@ -1,7 +1,7 @@
 ---
 publishDate: 2025-04-02
 title: Mastering Light - Adventures with Speed Lights and On-Camera Flash
-exerpt: There's something magical about that moment when you finally understand how to shape light.
+excerpt: There's something magical about that moment when you finally understand how to shape light.
 image: /src/assets/images/bobbi-lane-FCCC.jpg
 tags:
   - photography

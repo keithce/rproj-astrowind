@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Astro Project Structure Organization
+
+## Rule
+Follow Astro's recommended project structure and organization patterns for maintainable codebases.
+
+## Guidelines
+
+### Directory Structure
+- Use standard Astro directories: `src/pages`, `src/layouts`, `src/components`, `src/assets`, `public`
+- Create `src/lib` or `src/utils` for shared logic, helper functions, and constants
+- Store custom type definitions in `src/types` or within relevant feature directories
+- Keep configuration files at project root (`astro.config.mjs`, `tailwind.config.cjs`, `tsconfig.json`)
+
+### Component Organization
+- Break down UI into small, reusable components
+- Consider Atomic Design principles (atoms, molecules, organisms, templates) for larger applications
+- For larger projects, group related components, pages, and utilities by feature or domain
+
+### Import Management
+- Use `index.ts` files within directories to simplify import paths (barrel exports)
+- Configure path aliases in `tsconfig.json` for cleaner imports (e.g., `@components/`, `@lib/`)
+
+## Examples
+
+### Good Structure
+```
+src/
+├── components/
+│   ├── ui/
+│   │   ├── Button/
+│   │   │   ├── index.ts
+│   │   │   └── Button.astro
+│   │   └── Card/
+│   └── features/
+├── layouts/
+├── pages/
+├── lib/
+│   ├── utils.ts
+│   └── constants.ts
+├── types/
+└── assets/
+```
+
+### Path Aliases Configuration
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@lib/*": ["src/lib/*"],
+      "@types/*": ["src/types/*"]
+    }
+  }
+}
+```
+
+## Anti-patterns
+- Placing all components in a single flat directory
+- Missing barrel exports for complex directory structures
+- Configuration files scattered throughout the project
+- No clear separation between utilities and components

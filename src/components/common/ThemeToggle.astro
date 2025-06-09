@@ -1,0 +1,159 @@
+---
+// Enhanced Theme Toggle Component
+interface Props {
+  iconClass?: string;
+  class?: string;
+}
+
+const { iconClass = 'w-5 h-5', class: className = '' } = Astro.props;
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class={`p-2 rounded-full transition-colors duration-200 relative overflow-hidden ${className}`}
+  aria-label="Toggle theme"
+  aria-pressed="false"
+  title="Toggle between light, dark, and system theme"
+>
+  <svg
+    class="theme-icon theme-icon-light"
+    class:list={[iconClass]}
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z"
+    ></path>
+  </svg>
+  <svg
+    class="theme-icon theme-icon-dark"
+    class:list={[iconClass]}
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+  <svg
+    class="theme-icon theme-icon-system"
+    class:list={[iconClass]}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86zm2-15.86c1.03.13 2 .45 2.87.93H13v-1.8zM13 7h5.24c.25.31.48.65.68 1H13V7zm0 3h6.74c.08.33.15.66.19 1H13v-2zm0 4h6.93c-.07.35-.16.7-.26 1H13v-1.8zm0 3.93v-1.8h2.87c-.87.48-1.84.8-2.87.93z"
+    ></path>
+  </svg>
+</button>
+
+<style>
+  .theme-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
+  }
+
+  /* Initial states */
+  .theme-icon-dark,
+  .theme-icon-system {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  html[data-theme='light'] .theme-icon-light {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  html[data-theme='dark'] .theme-icon-dark {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  html:not([data-theme]) .theme-icon-system,
+  html[data-theme='system'] .theme-icon-system {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Hide other icons when one is active */
+  html[data-theme='light'] .theme-icon-dark,
+  html[data-theme='light'] .theme-icon-system {
+    opacity: 0;
+  }
+  html[data-theme='dark'] .theme-icon-light,
+  html[data-theme='dark'] .theme-icon-system {
+    opacity: 0;
+  }
+  html:not([data-theme]) .theme-icon-light,
+  html:not([data-theme]) .theme-icon-dark,
+  html[data-theme='system'] .theme-icon-light,
+  html[data-theme='system'] .theme-icon-dark {
+    opacity: 0;
+  }
+</style>
+
+<script is:inline>
+  const themeManager = {
+    themes: ['light', 'dark', 'system'],
+    currentThemeIndex: 0,
+
+    getSystemTheme: () => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+
+    applyTheme: (theme) => {
+      let effectiveTheme = theme;
+      if (theme === 'system' || !theme) {
+        effectiveTheme = themeManager.getSystemTheme();
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+
+      document.documentElement.classList.toggle('dark', effectiveTheme === 'dark');
+    },
+
+    setTheme: (theme) => {
+      localStorage.setItem('theme', theme);
+      themeManager.applyTheme(theme);
+
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) {
+        toggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
+        toggle.setAttribute('title', `Current theme: ${theme}. Toggle to next.`);
+      }
+    },
+
+    cycleTheme: () => {
+      themeManager.currentThemeIndex = (themeManager.currentThemeIndex + 1) % themeManager.themes.length;
+      const nextTheme = themeManager.themes[themeManager.currentThemeIndex];
+      themeManager.setTheme(nextTheme);
+    },
+
+    init: () => {
+      const savedTheme = localStorage.getItem('theme') || 'system';
+      themeManager.currentThemeIndex = themeManager.themes.indexOf(savedTheme);
+      themeManager.setTheme(savedTheme);
+
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', themeManager.cycleTheme);
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (localStorage.getItem('theme') === 'system') {
+          themeManager.applyTheme('system');
+        }
+      });
+    },
+  };
+
+  document.addEventListener('DOMContentLoaded', themeManager.init);
+</script>

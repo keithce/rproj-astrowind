@@ -1,13 +1,14 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import plugin from 'tailwindcss/plugin';
 import typographyPlugin from '@tailwindcss/typography';
 
+/** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,json,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      // Semantic color tokens for theme switching
       colors: {
-        myColor: {
+        // Brand color palette (preserved from existing myColor)
+        brand: {
           50: '#f1e9f0',
           100: '#e2d4e0',
           200: '#c5a9c1',
@@ -18,36 +19,63 @@ export default {
           700: '#42173d',
           800: '#2c1028',
           900: '#160814',
+          950: '#0a040a',
         },
-        primary: 'var(--aw-color-primary)',
-        secondary: 'var(--aw-color-secondary)',
-        accent: 'var(--aw-color-accent)',
+        // Semantic design tokens
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        accent: 'var(--color-accent)',
+        muted: 'var(--color-muted)',
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        card: 'var(--color-card)',
+        'card-foreground': 'var(--color-card-foreground)',
+        border: 'var(--color-border)',
+        input: 'var(--color-input)',
+        // Legacy compatibility (for gradual migration)
         default: 'var(--aw-color-text-default)',
-        muted: 'var(--aw-color-text-muted)',
+        'text-heading': 'var(--aw-color-text-heading)',
+        'text-muted': 'var(--aw-color-text-muted)',
+        page: 'var(--aw-color-bg-page)',
       },
       fontFamily: {
-        sans: ['var(--aw-font-sans, ui-sans-serif)', ...defaultTheme.fontFamily.sans],
-        serif: ['var(--aw-font-serif, ui-serif)', ...defaultTheme.fontFamily.serif],
-        heading: ['var(--aw-font-heading, ui-sans-serif)', ...defaultTheme.fontFamily.sans],
+        sans: ['var(--font-family-primary, "Raleway Variable")', 'ui-sans-serif', 'system-ui'],
+        serif: ['var(--font-family-serif, "Raleway Variable")', 'ui-serif', 'Georgia'],
+        heading: ['var(--font-family-heading, "Raleway Variable")', 'ui-sans-serif', 'system-ui'],
       },
-
       animation: {
         fade: 'fadeInUp 1s both',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
-
       keyframes: {
         fadeInUp: {
-          '0%': { opacity: 0, transform: 'translateY(2rem)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(2rem)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--starwind-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--starwind-accordion-content-height)' },
+          to: { height: '0' },
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
     },
   },
   plugins: [
     typographyPlugin,
-    plugin(({ addVariant }) => {
+    // Custom intersect variant for animations
+    function ({ addVariant }) {
       addVariant('intersect', '&:not([no-intersect])');
-    }),
+    },
   ],
-  darkMode: 'class',
+  // V4 dark mode configuration
+  darkMode: ['class'],
 };
