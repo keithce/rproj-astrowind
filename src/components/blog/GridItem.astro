@@ -39,7 +39,7 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
         ) : (
           <Image
             src={image}
-            class="w-full rounded-sm shadow-lg md:h-full bg-muted dark:bg-muted"
+            class="w-full rounded-sm shadow-lg md:h-full bg-muted"
             widths={[400, 900]}
             width={400}
             sizes="(max-width: 900px) 400px, 900px"
@@ -56,7 +56,7 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
   <h3 class="mb-2 text-xl font-bold leading-tight sm:text-2xl font-heading dark:text-foreground">
     {
       link ? (
-        <a class="inline-block transition duration-200 ease-in hover:text-primary dark:hover:text-blue-700" href={link}>
+        <a class="inline-block transition duration-200 ease-in hover:text-accent" href={link}>
           {post.title}
         </a>
       ) : (
@@ -65,5 +65,5 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
     }
   </h3>
 
-  <p class="text-lg text-muted-foreground dark:text-muted-foreground">{post.excerpt}</p>
+  <p class="text-lg text-foreground/70">{post.excerpt}</p>
 </article>

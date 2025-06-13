@@ -61,13 +61,6 @@ const {
     )
   }
 
-  <!-- Dark overlay for better text contrast when using images with gradient -->
-  {
-    gradientBg && image && (
-      <div class="absolute inset-0 pointer-events-none z-2 bg-white/20 dark:bg-black/20" aria-hidden="true" />
-    )
-  }
-
   <!-- Optional BG slot (e.g., overlays, gradients) -->
   <div class="absolute inset-0 pointer-events-none z-4" aria-hidden="true">
     <slot name="bg">
@@ -85,7 +78,7 @@ const {
           tagline && (
             <p
               class={`text-base font-bold tracking-wide uppercase animate-fade-in ${
-                gradientBg ? 'text-accent dark:text-accent' : 'text-secondary dark:text-secondary'
+                gradientBg ? 'text-accent' : 'text-secondary'
               }`}
               set:html={tagline}
             />
@@ -105,7 +98,7 @@ const {
           {
             subtitle && (
               <p
-                class={`mb-6 animate-fade-in leading-relaxed text-muted-foreground ${
+                class={`mb-6 animate-fade-in leading-relaxed text-foreground/80 ${
                   gradientBg ? 'text-xl md:text-2xl' : 'text-xl'
                 }`}
                 set:html={subtitle}

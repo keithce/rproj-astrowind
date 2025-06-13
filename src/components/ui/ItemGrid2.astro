@@ -40,7 +40,7 @@ const {
           <div class={twMerge('text-xl font-bold', titleClass, itemClasses?.title)}>{title}</div>
           {description && (
             <div
-              class={twMerge('text-muted mt-2', descriptionClass, itemClasses?.description)}
+              class={twMerge('text-foreground/70 mt-2', descriptionClass, itemClasses?.description)}
               set:html={description}
             />
           )}

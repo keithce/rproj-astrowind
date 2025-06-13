@@ -30,7 +30,7 @@ const {
         classes={{
           container: 'text-center md:text-left md:rtl:text-right mb-4 md:mb-8',
           title: 'mb-4 text-3xl lg:text-4xl font-bold font-heading',
-          subtitle: 'mb-8 text-xl text-muted dark:text-myColor-400',
+          subtitle: 'mb-8 text-xl text-muted',
           // ...((classes?.headline as {}) ?? {}),
         }}
       />
@@ -42,19 +42,19 @@ const {
           ) : (
             callToAction &&
             callToAction.text &&
-            callToAction.href && <Button variant="primary" {...callToAction} class="mb-12 w-auto" />
+            callToAction.href && <Button variant="primary" {...callToAction} class="w-auto mb-12" />
           )
         }
       </div>
     </div>
-    <div class="w-full lg:w-1/2 px-0">
+    <div class="w-full px-0 lg:w-1/2">
       <ul class="space-y-10">
         {
           items && items.length
             ? items.map(({ title: title2, description, icon }, index) => (
                 <li class="flex md:-mx-4">
                   <div class="pr-4 sm:pl-4 rtl:pr-0 rtl:pl-4 sm:rtl:pl-0 sm:rtl:pr-4">
-                    <span class="flex w-16 h-16 mx-auto items-center justify-center text-2xl font-bold rounded-full bg-blue-100 text-primary">
+                    <span class="flex items-center justify-center w-16 h-16 mx-auto text-2xl font-bold rounded-full bg-muted/50 text-primary">
                       {icon ? <Icon name={icon} class="w-6 h-6 icon-bold" /> : index + 1}
                     </span>
                   </div>

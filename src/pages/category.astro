@@ -1,0 +1,77 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Headline from '~/components/blog/Headline.astro';
+
+import { blogCategoryRobots, findCategories } from '~/utils/blog';
+import { getBlogCategoryPermalink } from '~/utils/permalinks';
+
+export const prerender = true;
+
+const allCategories = await findCategories();
+
+const metadata = {
+  title: 'Browse By Category',
+  description: 'Explore all blog categories and discover content organized by topics',
+  robots: {
+    index: blogCategoryRobots?.index,
+    follow: blogCategoryRobots?.follow,
+  },
+  openGraph: {
+    type: 'website',
+  },
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="max-w-4xl px-6 py-12 mx-auto sm:px-6 sm:py-16 lg:py-20">
+    <Headline
+      subtitle="Discover content organized by topic and explore what interests you most"
+    >
+      Browse By Category
+    </Headline>
+    
+    {allCategories.length > 0 ? (
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 animate-fade-in-up">
+        {allCategories.map((category) => (
+          <article class="relative overflow-hidden transition-all border rounded-lg shadow-sm group hover:shadow-md">
+            <div class="flex flex-col h-full">
+              <h3 class="mb-3 heading-md text-foreground group-hover:text-primary">
+                <a 
+                  href={`${getBlogCategoryPermalink()}/${category.slug}`}
+                  class="stretched-link focus-ring"
+                >
+                  {category.title}
+                </a>
+              </h3>
+              
+              <div class="mt-auto">
+                <div class="flex items-center text-sm text-muted-foreground">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  View articles in this category
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="py-12 text-center flex-center">
+        <p class="text-lg text-muted-foreground">No categories found</p>
+      </div>
+    )}
+  </section>
+</Layout>
+
+<style>
+  .stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    content: "";
+  }
+</style> 
