@@ -9,7 +9,6 @@ import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
 import icon from 'astro-icon';
 import compress from 'astro-compress';
-import type { AstroIntegration } from 'astro';
 import react from '@astrojs/react';
 
 import astrowind from './vendor/integration';
@@ -22,11 +21,10 @@ import mcp from 'astro-mcp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const hasExternalScripts = false;
-const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroIntegration)[] = []) =>
-  hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];
-
 export default defineConfig({
+  experimental: {
+    csp: true,
+  },
   output: 'server',
   adapter: vercelServerless({
     webAnalytics: {
@@ -69,11 +67,9 @@ export default defineConfig({
         ],
       },
     }),
-    ...whenExternalScripts(() =>
-      partytown({
-        config: { forward: ['dataLayer.push'] },
-      })
-    ),
+    partytown({
+      config: { forward: ['dataLayer.push'] },
+    }),
     compress({
       CSS: true,
       HTML: {

@@ -92,6 +92,10 @@ export const getHomePermalink = (): string => getPermalink('/');
 /** */
 export const getBlogPermalink = (): string => getPermalink(BLOG_BASE);
 
+export const getBlogCategoryPermalink = (): string => getPermalink(CATEGORY_BASE);
+
+export const getBlogTagPermalink = (): string => getPermalink(TAG_BASE);
+
 /** */
 export const getAsset = (path: string): string =>
   '/' +

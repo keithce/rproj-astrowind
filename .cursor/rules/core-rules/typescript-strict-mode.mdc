@@ -1,0 +1,411 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Strict Mode and Type Safety
+
+## Rule
+Enable TypeScript strict mode with comprehensive type checking for maximum type safety and error prevention.
+
+## Guidelines
+
+### Strict Mode Configuration
+- Set `"strict": true` in `tsconfig.json` to enable all strict type-checking options
+- Enable additional strict options: `"noImplicitAny"`, `"strictNullChecks"`, `"strictFunctionTypes"`
+- Use `"noUnusedLocals"` and `"noUnusedParameters"` to catch unused code
+- Enable `"useUnknownInCatchVariables"` for safer error handling
+
+### Type Safety Practices
+- Avoid using `any` type; prefer `unknown` for genuinely unknown values
+- Use type guards to narrow down `unknown` types
+- Explicitly type function parameters and return values
+- Use utility types to transform existing types and reduce boilerplate
+
+## Examples
+
+### Proper tsconfig.json Configuration
+```json
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    
+    // Strict type checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    
+    // Additional checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
+    
+    // Performance optimizations
+    "incremental": true,
+    "skipLibCheck": true,
+    
+    // Path mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  }
+}
+```
+
+### Good Type Practices
+```typescript
+// ✅ Good - Explicit interface definitions
+interface UserProfile {
+  readonly id: string;
+  name: string;
+  email: string;
+  preferences?: UserPreferences;
+  createdAt: Date;
+}
+
+interface UserPreferences {
+  theme: 'light' | 'dark';
+  notifications: boolean;
+  language: string;
+}
+
+// ✅ Good - Explicit function typing
+function processUser(user: UserProfile): string {
+  return `${user.name} (${user.email})`;
+}
+
+// ✅ Good - Type guard for unknown values
+function isUserProfile(value: unknown): value is UserProfile {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'name' in value &&
+    'email' in value &&
+    typeof (value as UserProfile).id === 'string' &&
+    typeof (value as UserProfile).name === 'string' &&
+    typeof (value as UserProfile).email === 'string'
+  );
+}
+
+// ✅ Good - Handling nullable values with strict null checks
+function getUserDisplayName(user: UserProfile | null): string {
+  return user?.name ?? 'Unknown User';
+}
+
+// ✅ Good - Using utility types
+type PartialUser = Partial<UserProfile>;
+type UserEmail = Pick<UserProfile, 'email'>;
+type UserWithoutId = Omit<UserProfile, 'id'>;
+type ReadonlyUser = Readonly<UserProfile>;
+```
+
+### Astro Component Type Safety
+```astro
+---
+// src/components/UserCard.astro
+interface Props {
+  user: UserProfile;
+  showPreferences?: boolean;
+  className?: string;
+}
+
+const { user, showPreferences = false, className } = Astro.props;
+
+// ✅ Good - Type-safe data processing
+const displayName: string = user.name || 'Anonymous';
+const memberSince: string = user.createdAt.toLocaleDateString();
+---
+
+<div class={`user-card ${className || ''}`}>
+  <h3 class="user-name">{displayName}</h3>
+  <p class="user-email">{user.email}</p>
+  <p class="member-since">Member since {memberSince}</p>
+  
+  {showPreferences && user.preferences && (
+    <div class="preferences">
+      <p>Theme: {user.preferences.theme}</p>
+      <p>Notifications: {user.preferences.notifications ? 'On' : 'Off'}</p>
+    </div>
+  )}
+</div>
+```
+
+### API Route Type Safety
+```typescript
+// src/pages/api/users/[id].ts
+import type { APIRoute } from 'astro';
+
+interface GetUserParams {
+  id: string;
+}
+
+interface APIResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export const GET: APIRoute = async ({ params }): Promise<Response> => {
+  try {
+    const { id } = params as GetUserParams;
+    
+    if (!id || typeof id !== 'string') {
+      const response: APIResponse<never> = {
+        success: false,
+        error: 'Invalid user ID'
+      };
+      return new Response(JSON.stringify(response), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const user = await getUserById(id);
+    
+    if (!user) {
+      const response: APIResponse<never> = {
+        success: false,
+        error: 'User not found'
+      };
+      return new Response(JSON.stringify(response), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const response: APIResponse<UserProfile> = {
+      success: true,
+      data: user
+    };
+
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+  } catch (error: unknown) {
+    // ✅ Good - Safe error handling with unknown type
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    const response: APIResponse<never> = {
+      success: false,
+      error: errorMessage
+    };
+
+    return new Response(JSON.stringify(response), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+};
+
+// ✅ Good - Type-safe database function
+async function getUserById(id: string): Promise<UserProfile | null> {
+  // Implementation would go here
+  return null;
+}
+```
+
+### React Component Type Safety
+```tsx
+// src/components/UserForm.tsx
+import { useState, type FormEvent } from 'react';
+
+interface UserFormData {
+  name: string;
+  email: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+  };
+}
+
+interface UserFormProps {
+  initialData?: Partial<UserFormData>;
+  onSubmit: (data: UserFormData) => Promise<void>;
+  onCancel?: () => void;
+}
+
+export default function UserForm({ initialData, onSubmit, onCancel }: UserFormProps) {
+  const [formData, setFormData] = useState<UserFormData>({
+    name: initialData?.name ?? '',
+    email: initialData?.email ?? '',
+    preferences: {
+      theme: initialData?.preferences?.theme ?? 'light',
+      notifications: initialData?.preferences?.notifications ?? true,
+    }
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await onSubmit(formData);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Submission failed';
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium">
+          Name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          required
+          className="mt-1 block w-full rounded-md border-gray-300"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          required
+          className="mt-1 block w-full rounded-md border-gray-300"
+        />
+      </div>
+
+      {error && (
+        <div className="text-red-600 text-sm">
+          {error}
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        >
+          {isSubmitting ? 'Saving...' : 'Save'}
+        </button>
+        
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
+  );
+}
+```
+
+### Bad Practices to Avoid
+```typescript
+// ❌ Bad - Using any type
+function processData(data: any): any {
+  return data.whatever;
+}
+
+// ❌ Bad - No return type annotation
+function calculate(a: number, b: number) {
+  return a + b; // Should specify `: number`
+}
+
+// ❌ Bad - Implicit any parameters
+function handleEvent(event) { // Should type event parameter
+  console.log(event.target);
+}
+
+// ❌ Bad - No error type handling
+try {
+  riskyOperation();
+} catch (error) {
+  console.log(error.message); // error is any, might not have message
+}
+
+// ❌ Bad - Loose type checking
+function getUser(id?: string) {
+  if (id) {
+    // id could be empty string, should check for truthy length
+    return fetchUser(id);
+  }
+}
+```
+
+### Type Guard Examples
+```typescript
+// ✅ Good - Type guards for runtime safety
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && !isNaN(value);
+}
+
+function isUserProfile(value: unknown): value is UserProfile {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const obj = value as Record<string, unknown>;
+  
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.email === 'string' &&
+    obj.createdAt instanceof Date
+  );
+}
+
+// Usage with type guards
+function processUnknownData(data: unknown): string {
+  if (isUserProfile(data)) {
+    // TypeScript now knows data is UserProfile
+    return `Processing user: ${data.name}`;
+  }
+  
+  if (isString(data)) {
+    // TypeScript now knows data is string
+    return `Processing string: ${data}`;
+  }
+  
+  return 'Unknown data type';
+}
+```
+
+## Benefits
+- Catch type errors at compile time instead of runtime
+- Improved code predictability and maintainability
+- Better IDE support with autocompletion and refactoring
+- Reduced debugging time and production errors
+- Enhanced team collaboration with clear type contracts

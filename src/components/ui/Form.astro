@@ -22,7 +22,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           name && (
             <div class="mb-6">
               {label && (
-                <label for={name} class="block text-sm font-medium">
+                <label for={name} class="block mb-2 text-sm font-medium text-foreground">
                   {label}
                 </label>
               )}
@@ -31,7 +31,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   name={name}
                   id={name}
                   required={required}
-                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                  class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   {options.map(({ value, label }) => (
                     <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
@@ -47,7 +47,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   autocomplete={autocomplete}
                   placeholder={placeholder}
                   required={required}
-                  class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                  class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
             </div>
@@ -57,8 +57,8 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
 
   {
     textarea && (
-      <div>
-        <label for="textarea" class="block text-sm font-medium">
+      <div class="mb-6">
+        <label for="textarea" class="block mb-2 text-sm font-medium text-foreground">
           {textarea.label}
         </label>
         <textarea
@@ -67,7 +67,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           rows={textarea.rows ? textarea.rows : 4}
           placeholder={textarea.placeholder}
           required={textarea.required}
-          class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+          class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
         />
       </div>
     )
@@ -75,17 +75,17 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
 
   {
     disclaimer && (
-      <div class="mt-3 flex items-start">
+      <div class="flex items-start mt-3 mb-6">
         <div class="flex mt-0.5">
           <input
             id="disclaimer"
             name="disclaimer"
             type="checkbox"
-            class="cursor-pointer mt-1 py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+            class="w-4 h-4 mt-1 transition-colors border rounded cursor-pointer border-border text-primary bg-background focus:ring-2 focus:ring-primary focus:ring-offset-2"
           />
         </div>
         <div class="ml-3">
-          <label for="disclaimer" class="cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400">
+          <label for="disclaimer" class="text-sm cursor-pointer select-none text-muted-foreground">
             {disclaimer.label}
           </label>
         </div>
@@ -95,7 +95,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
 
   {
     button && (
-      <div class="mt-10 grid">
+      <div class="grid mt-10">
         <Button variant="primary" type="submit">
           {button}
         </Button>
@@ -106,7 +106,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     description && (
       <div class="mt-3 text-center">
-        <p class="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+        <p class="text-sm text-muted-foreground">{description}</p>
       </div>
     )
   }

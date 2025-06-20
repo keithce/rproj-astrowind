@@ -1,0 +1,312 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Tailwind CSS Styling Best Practices
+
+## Rule
+Use Tailwind CSS effectively with proper configuration, organization, and maintainable utility patterns.
+
+## Guidelines
+
+### Utility-First Approach
+- Embrace Tailwind's utility-first methodology for styling directly in markup
+- Group related utility classes for better readability
+- Use consistent spacing and sizing scales from Tailwind's design system
+
+### Configuration and Customization
+- Customize theme in `tailwind.config.js` to maintain design consistency
+- Define CSS Variables in `CustomStyles.astro` to be used within themes
+- Use `theme.extend` for adding custom utilities without overriding defaults
+- Configure proper purging to remove unused styles in production
+
+### Organization and Maintainability
+- Use Prettier plugins for Tailwind CSS to automatically sort classes
+- Extract complex utility combinations into component classes sparingly using `@apply`
+- Maintain global styles in a dedicated CSS file for base styles and CSS variables
+
+## Examples
+
+### Proper Tailwind Configuration
+```javascript
+// tailwind.config.cjs
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#eff6ff',
+          500: '#3b82f6',
+          900: '#1e3a8a',
+        },
+        gray: {
+          50: '#f9fafb',
+          900: '#111827',
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+      }
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+}
+```
+
+### Well-Organized Component Styling
+```astro
+---
+// components/Card.astro
+interface Props {
+  title: string;
+  description?: string;
+  variant?: 'default' | 'featured' | 'compact';
+  className?: string;
+}
+
+const { title, description, variant = 'default', className } = Astro.props;
+
+const cardVariants = {
+  default: 'p-6 bg-white border border-gray-200 rounded-lg shadow-sm',
+  featured: 'p-8 bg-gradient-to-br from-brand-50 to-white border-2 border-brand-200 rounded-xl shadow-lg',
+  compact: 'p-4 bg-gray-50 border border-gray-100 rounded-md'
+};
+---
+
+<div class={`${cardVariants[variant]} ${className || ''}`}>
+  <h3 class="mb-2 text-xl font-semibold text-gray-900">
+    {title}
+  </h3>
+  
+  {description && (
+    <p class="leading-relaxed text-gray-600">
+      {description}
+    </p>
+  )}
+  
+  <div class="flex items-center justify-between mt-4">
+    <slot name="actions" />
+    <slot name="meta" />
+  </div>
+</div>
+```
+
+### Responsive Design Patterns
+```astro
+---
+// components/Hero.astro
+interface Props {
+  title: string;
+  subtitle?: string;
+  backgroundImage?: string;
+}
+
+const { title, subtitle, backgroundImage } = Astro.props;
+---
+
+<section class="relative flex items-center justify-center min-h-screen overflow-hidden">
+  <!-- Background -->
+  {backgroundImage && (
+    <div 
+      class="absolute inset-0 bg-center bg-no-repeat bg-cover"
+      style={`background-image: url(${backgroundImage})`}
+    >
+      <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+  )}
+  
+  <!-- Content -->
+  <div class="relative z-10 max-w-4xl px-4 mx-auto text-center sm:px-6 lg:px-8">
+    <h1 class="mb-6 text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+      {title}
+    </h1>
+    
+    {subtitle && (
+      <p class="max-w-2xl mx-auto mb-8 text-lg leading-relaxed text-gray-200 sm:text-xl md:text-2xl">
+        {subtitle}
+      </p>
+    )}
+    
+    <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <slot name="primary-action" />
+      <slot name="secondary-action" />
+    </div>
+  </div>
+</section>
+```
+
+### Form Styling with Accessibility
+```astro
+---
+// components/ContactForm.astro
+---
+
+<form class="max-w-lg p-6 mx-auto space-y-6 bg-white rounded-lg shadow-md">
+  <div class="space-y-2">
+    <label 
+      for="name" 
+      class="block text-sm font-medium text-gray-700"
+    >
+      Full Name *
+    </label>
+    <input
+      id="name"
+      type="text"
+      required
+      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-50 disabled:text-gray-500 invalid:border-red-500 invalid:ring-red-500"
+      placeholder="Enter your full name"
+    />
+  </div>
+
+  <div class="space-y-2">
+    <label 
+      for="email" 
+      class="block text-sm font-medium text-gray-700"
+    >
+      Email Address *
+    </label>
+    <input
+      id="email"
+      type="email"
+      required
+      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-50 disabled:text-gray-500 invalid:border-red-500 invalid:ring-red-500"
+      placeholder="your.email@example.com"
+    />
+  </div>
+
+  <div class="space-y-2">
+    <label 
+      for="message" 
+      class="block text-sm font-medium text-gray-700"
+    >
+      Message *
+    </label>
+    <textarea
+      id="message"
+      rows="4"
+      required
+      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-50 disabled:text-gray-500 invalid:border-red-500 invalid:ring-red-500 resize-vertical"
+      placeholder="Tell us about your project..."
+    ></textarea>
+  </div>
+
+  <button
+    type="submit"
+    class="w-full px-4 py-2 font-medium text-white transition-colors duration-200 rounded-md bg-brand-500 hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    Send Message
+  </button>
+</form>
+```
+
+### Global Styles Setup
+```css
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Custom CSS variables */
+  :root {
+    --color-brand-primary: theme('colors.brand.500');
+    --color-brand-secondary: theme('colors.brand.100');
+    --font-family-primary: theme('fontFamily.sans');
+  }
+
+  /* Base typography */
+  html {
+    font-family: var(--font-family-primary);
+    scroll-behavior: smooth;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Reusable component classes */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  }
+
+  .prose-custom {
+    @apply prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-brand-500 hover:prose-a:text-brand-600;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+}
+```
+
+### Bad Practices
+```astro
+<!-- ❌ Bad - Unorganized classes -->
+<div class="flex items-center justify-between w-full max-w-md p-4 mx-auto mt-8 mb-4 text-white transition-colors duration-200 bg-blue-500 rounded shadow-lg hover:bg-blue-600">
+
+<!-- ❌ Bad - Overusing @apply -->
+<style>
+  .everything {
+    @apply bg-blue-500 text-white p-4 rounded shadow-lg hover:bg-blue-600 transition-colors duration-200 flex items-center justify-between w-full max-w-md mx-auto mt-8 mb-4 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+</style>
+
+<!-- ❌ Bad - Inconsistent spacing -->
+<div class="p-3 mb-5 ml-2 mr-4 mt-7">
+
+<!-- ❌ Bad - No responsive considerations -->
+<div class="p-8 text-2xl w-96">
+```
+
+### Good Practices
+```astro
+<!-- ✅ Good - Well-organized and grouped classes -->
+<div class="flex items-center justify-between w-full max-w-md p-4 mx-auto mt-8 mb-4 text-white transition-colors duration-200 bg-blue-500 rounded shadow-lg hover:bg-blue-600">
+
+<!-- ✅ Good - Responsive and consistent -->
+<div class="w-full max-w-sm p-4 mx-auto space-y-4 text-base sm:max-w-md lg:max-w-lg sm:p-6 lg:p-8 sm:text-lg lg:text-xl">
+```
+
+## Benefits
+- Consistent design system
+- Faster development with utility classes
+- Smaller CSS bundle sizes with purging
+- Better maintainability with configuration
+- Responsive design made simple

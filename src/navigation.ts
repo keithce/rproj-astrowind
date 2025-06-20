@@ -1,4 +1,10 @@
-import { getAsset, getBlogPermalink, getPermalink } from './utils/permalinks';
+import {
+  getAsset,
+  getBlogCategoryPermalink,
+  getBlogPermalink,
+  getBlogTagPermalink,
+  getPermalink,
+} from './utils/permalinks';
 
 export const headerData = {
   links: [
@@ -65,11 +71,11 @@ export const headerData = {
         },
         {
           text: 'Browse By Category',
-          href: getPermalink('tutorials', 'category'),
+          href: getBlogCategoryPermalink(),
         },
         {
           text: 'Browse By Tag',
-          href: getPermalink('astro', 'tag'),
+          href: getBlogTagPermalink(),
         },
       ],
     },
@@ -78,7 +84,7 @@ export const headerData = {
       href: getPermalink('/about'),
     },
   ],
-  actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), target: '_blank' }],
+  actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), icon: 'tabler:input-spark' }],
 };
 
 export const footerData = {

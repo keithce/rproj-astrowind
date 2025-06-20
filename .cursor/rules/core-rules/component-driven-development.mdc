@@ -1,0 +1,621 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Component-Driven Development with Atomic Design
+
+## Rule
+Organize UI into reusable, self-contained components following Atomic Design methodology for maintainable and scalable architecture.
+
+## Guidelines
+
+### Atomic Design Hierarchy
+- **Atoms**: Basic building blocks (buttons, inputs, labels, icons)
+- **Molecules**: Simple groups of atoms (search form, card header)
+- **Organisms**: Complex UI sections (header, product grid, footer)
+- **Templates**: Page-level structure without content
+- **Pages**: Specific instances of templates with real content
+
+### Component Organization
+- Group components by their atomic level in `src/components/`
+- Use index files for clean imports and barrel exports
+- Follow consistent naming conventions (PascalCase for components)
+- Keep components focused on a single responsibility
+
+### Reusability and Composition
+- Design components to be composable and flexible
+- Use slots and props for customization
+- Avoid hard-coded content; make components data-driven
+- Implement variant patterns for different component states
+
+## Examples
+
+### Directory Structure
+```
+src/
+├── components/
+│   ├── atoms/
+│   │   ├── Button/
+│   │   │   ├── index.ts
+│   │   │   ├── Button.astro
+│   │   │   └── Button.stories.ts
+│   │   ├── Input/
+│   │   ├── Label/
+│   │   └── Icon/
+│   ├── molecules/
+│   │   ├── SearchForm/
+│   │   ├── ProductCard/
+│   │   └── Navigation/
+│   ├── organisms/
+│   │   ├── Header/
+│   │   ├── ProductGrid/
+│   │   └── Footer/
+│   ├── templates/
+│   │   ├── PageLayout/
+│   │   └── ProductLayout/
+│   └── index.ts
+```
+
+### Atom: Button Component
+```astro
+---
+// src/components/atoms/Button/Button.astro
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  loading?: boolean;
+  href?: string;
+  target?: string;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  disabled = false,
+  loading = false,
+  href,
+  target,
+  class: className
+} = Astro.props;
+
+const baseClasses = 'btn';
+const variantClasses = `btn-${variant}`;
+const sizeClasses = `btn-${size}`;
+const stateClasses = `${disabled || loading ? 'btn-disabled' : ''} ${loading ? 'btn-loading' : ''}`;
+const allClasses = [baseClasses, variantClasses, sizeClasses, stateClasses, className]
+  .filter(Boolean)
+  .join(' ');
+
+const Element = href ? 'a' : 'button';
+---
+
+<Element
+  class={allClasses}
+  type={href ? undefined : type}
+  href={href}
+  target={target}
+  disabled={disabled || loading}
+  aria-busy={loading}
+>
+  {loading && (
+    <span class="btn-spinner" aria-hidden="true">
+      <svg class="animate-spin" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+      </svg>
+    </span>
+  )}
+  <slot />
+</Element>
+
+<style>
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-brand-primary text-white hover:bg-brand-primary/90 focus:ring-brand-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-brand-primary;
+  }
+
+  .btn-ghost {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .btn-loading {
+    @apply cursor-wait;
+  }
+
+  .btn-spinner {
+    @apply w-4 h-4;
+  }
+</style>
+```
+
+### Atom: Input Component
+```astro
+---
+// src/components/atoms/Input/Input.astro
+interface Props {
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+  placeholder?: string;
+  value?: string;
+  name?: string;
+  id?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  error?: boolean;
+  class?: string;
+}
+
+const {
+  type = 'text',
+  placeholder,
+  value,
+  name,
+  id,
+  required = false,
+  disabled = false,
+  readonly = false,
+  error = false,
+  class: className
+} = Astro.props;
+
+const baseClasses = 'input';
+const stateClasses = `${error ? 'input-error' : ''} ${disabled ? 'input-disabled' : ''}`;
+const allClasses = [baseClasses, stateClasses, className].filter(Boolean).join(' ');
+---
+
+<input
+  type={type}
+  placeholder={placeholder}
+  value={value}
+  name={name}
+  id={id}
+  required={required}
+  disabled={disabled}
+  readonly={readonly}
+  class={allClasses}
+  aria-invalid={error}
+/>
+
+<style>
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .input-disabled {
+    @apply bg-gray-50 text-gray-500 cursor-not-allowed;
+  }
+
+  .input:disabled {
+    @apply bg-gray-50 text-gray-500 cursor-not-allowed;
+  }
+</style>
+```
+
+### Molecule: Search Form
+```astro
+---
+// src/components/molecules/SearchForm/SearchForm.astro
+import Button from '../../atoms/Button/Button.astro';
+import Input from '../../atoms/Input/Input.astro';
+import Icon from '../../atoms/Icon/Icon.astro';
+
+interface Props {
+  placeholder?: string;
+  buttonText?: string;
+  action?: string;
+  method?: 'get' | 'post';
+  class?: string;
+}
+
+const {
+  placeholder = 'Search...',
+  buttonText = 'Search',
+  action,
+  method = 'get',
+  class: className
+} = Astro.props;
+---
+
+<form class={`search-form ${className || ''}`} action={action} method={method}>
+  <div class="search-input-wrapper">
+    <Icon name="search" class="search-icon" />
+    <Input
+      type="text"
+      name="q"
+      placeholder={placeholder}
+      class="search-input"
+      required
+    />
+  </div>
+  
+  <Button type="submit" variant="primary">
+    {buttonText}
+  </Button>
+</form>
+
+<style>
+  .search-form {
+    @apply flex gap-2 items-end;
+  }
+
+  .search-input-wrapper {
+    @apply relative flex-1;
+  }
+
+  .search-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none;
+  }
+
+  .search-input {
+    @apply pl-10;
+  }
+
+  @screen sm {
+    .search-form {
+      @apply flex-row;
+    }
+  }
+
+  @screen max-sm {
+    .search-form {
+      @apply flex-col gap-3;
+    }
+  }
+</style>
+```
+
+### Molecule: Product Card
+```astro
+---
+// src/components/molecules/ProductCard/ProductCard.astro
+import Button from '../../atoms/Button/Button.astro';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  category: string;
+  inStock: boolean;
+}
+
+interface Props {
+  product: Product;
+  showCategory?: boolean;
+  actionText?: string;
+  class?: string;
+}
+
+const {
+  product,
+  showCategory = true,
+  actionText = 'View Details',
+  class: className
+} = Astro.props;
+
+const formattedPrice = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+}).format(product.price);
+---
+
+<article class={`product-card ${className || ''}`}>
+  <div class="product-image-wrapper">
+    <img
+      src={product.image}
+      alt={product.name}
+      class="product-image"
+      loading="lazy"
+    />
+    {!product.inStock && (
+      <div class="stock-badge">Out of Stock</div>
+    )}
+  </div>
+
+  <div class="product-content">
+    {showCategory && (
+      <span class="product-category">{product.category}</span>
+    )}
+    
+    <h3 class="product-name">{product.name}</h3>
+    <p class="product-description">{product.description}</p>
+    
+    <div class="product-footer">
+      <span class="product-price">{formattedPrice}</span>
+      
+      <Button
+        href={`/products/${product.id}`}
+        variant={product.inStock ? 'primary' : 'outline'}
+        size="sm"
+        disabled={!product.inStock}
+      >
+        {actionText}
+      </Button>
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden;
+  }
+
+  .product-image-wrapper {
+    @apply relative aspect-square overflow-hidden;
+  }
+
+  .product-image {
+    @apply w-full h-full object-cover;
+  }
+
+  .stock-badge {
+    @apply absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded;
+  }
+
+  .product-content {
+    @apply p-4 space-y-2;
+  }
+
+  .product-category {
+    @apply text-xs text-gray-500 uppercase tracking-wide font-medium;
+  }
+
+  .product-name {
+    @apply text-lg font-semibold text-gray-900 line-clamp-2;
+  }
+
+  .product-description {
+    @apply text-gray-600 text-sm line-clamp-3;
+  }
+
+  .product-footer {
+    @apply flex items-center justify-between pt-2;
+  }
+
+  .product-price {
+    @apply text-xl font-bold text-brand-primary;
+  }
+</style>
+```
+
+### Organism: Product Grid
+```astro
+---
+// src/components/organisms/ProductGrid/ProductGrid.astro
+import ProductCard from '../../molecules/ProductCard/ProductCard.astro';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  category: string;
+  inStock: boolean;
+}
+
+interface Props {
+  products: Product[];
+  title?: string;
+  showCategory?: boolean;
+  columns?: 2 | 3 | 4;
+  class?: string;
+}
+
+const {
+  products,
+  title,
+  showCategory = true,
+  columns = 3,
+  class: className
+} = Astro.props;
+
+const gridClasses = {
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+};
+---
+
+<section class={`product-grid-section ${className || ''}`}>
+  {title && (
+    <header class="section-header">
+      <h2 class="section-title">{title}</h2>
+    </header>
+  )}
+
+  {products.length > 0 ? (
+    <div class={`product-grid ${gridClasses[columns]}`}>
+      {products.map(product => (
+        <ProductCard
+          product={product}
+          showCategory={showCategory}
+        />
+      ))}
+    </div>
+  ) : (
+    <div class="empty-state">
+      <p class="empty-message">No products found</p>
+    </div>
+  )}
+</section>
+
+<style>
+  .product-grid-section {
+    @apply space-y-6;
+  }
+
+  .section-header {
+    @apply text-center;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold text-gray-900;
+  }
+
+  .product-grid {
+    @apply grid gap-6;
+  }
+
+  .empty-state {
+    @apply text-center py-12;
+  }
+
+  .empty-message {
+    @apply text-gray-500 text-lg;
+  }
+</style>
+```
+
+### Template: Page Layout
+```astro
+---
+// src/components/templates/PageLayout/PageLayout.astro
+import Header from '../../organisms/Header/Header.astro';
+import Footer from '../../organisms/Footer/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  showHeader = true,
+  showFooter = true,
+  class: className
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  {description && <meta name="description" content={description}>}
+  <slot name="head" />
+</head>
+<body class={`page-layout ${className || ''}`}>
+  {showHeader && <Header />}
+  
+  <main class="main-content">
+    <slot />
+  </main>
+  
+  {showFooter && <Footer />}
+  
+  <slot name="scripts" />
+</body>
+</html>
+
+<style is:global>
+  .page-layout {
+    @apply min-h-screen flex flex-col;
+  }
+
+  .main-content {
+    @apply flex-1;
+  }
+</style>
+```
+
+### Barrel Exports
+```typescript
+// src/components/atoms/index.ts
+export { default as Button } from './Button/Button.astro';
+export { default as Input } from './Input/Input.astro';
+export { default as Label } from './Label/Label.astro';
+export { default as Icon } from './Icon/Icon.astro';
+
+// src/components/molecules/index.ts
+export { default as SearchForm } from './SearchForm/SearchForm.astro';
+export { default as ProductCard } from './ProductCard/ProductCard.astro';
+export { default as Navigation } from './Navigation/Navigation.astro';
+
+// src/components/organisms/index.ts
+export { default as Header } from './Header/Header.astro';
+export { default as ProductGrid } from './ProductGrid/ProductGrid.astro';
+export { default as Footer } from './Footer/Footer.astro';
+
+// src/components/index.ts
+export * from './atoms';
+export * from './molecules';
+export * from './organisms';
+export * from './templates';
+```
+
+### Usage in Pages
+```astro
+---
+// src/pages/products.astro
+import PageLayout from '../components/templates/PageLayout/PageLayout.astro';
+import { ProductGrid, SearchForm } from '../components';
+
+const products = await fetch('/api/products').then(res => res.json());
+---
+
+<PageLayout title="Products" description="Browse our product catalog">
+  <div class="container mx-auto px-4 py-8 space-y-8">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
+      <SearchForm placeholder="Search products..." />
+    </div>
+
+    <ProductGrid
+      products={products}
+      columns={3}
+      showCategory={true}
+    />
+  </div>
+</PageLayout>
+```
+
+## Benefits
+- Consistent UI patterns across the application
+- Improved code reusability and maintainability
+- Easier testing and documentation of components
+- Better collaboration between team members
+- Scalable architecture that grows with your application
+- Clear separation of concerns and responsibilities
