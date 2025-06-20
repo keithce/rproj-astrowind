@@ -51,7 +51,7 @@
     "@fontsource-variable/raleway": "^5.2.6",
     "@notionhq/client": "^3.1.3",
     "@pagefind/default-ui": "^1.3.0",
-    "@react-email/components": "^0.0.41",
+    "@react-email/components": "^0.1.0",
     "@react-email/render": "^1.1.2",
     "@tabler/icons": "^3.34.0",
     "@tailwindcss/forms": "^0.5.10",
@@ -62,7 +62,7 @@
     "astro-cloudinary": "^1.3.2",
     "astro-embed": "^0.9.0",
     "astro-icon": "^1.1.5",
-    "astro-mcp": "^0.3.2",
+    "astro-mcp": "^0.4.0",
     "autoprefixer": "^10.4.21",
     "limax": "4.1.0",
     "lodash.merge": "^4.6.2",
@@ -76,7 +76,7 @@
     "tailwind-variants": "^1.0.0",
     "tw-animate-css": "^1.3.4",
     "unpic": "^4.1.2",
-    "vercel": "^42.3.0"
+    "vercel": "^43.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -92,7 +92,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/lodash.merge": "^4.6.9",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^22.15.32",
+    "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
