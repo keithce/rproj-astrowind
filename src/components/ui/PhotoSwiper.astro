@@ -416,10 +416,15 @@ function getPlaceholderImage(category: string, index: number): string {
   import 'swiper/css/navigation';
   import 'swiper/css/pagination';
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function initializeSwiper() {
     const swipers = document.querySelectorAll('.mySwiper');
 
     swipers.forEach((swiperElement) => {
+      // Skip if already initialized
+      if (swiperElement.hasAttribute('data-swiper-initialized')) {
+        return;
+      }
+
       new Swiper(swiperElement as HTMLElement, {
         cssMode: true,
         navigation: {
@@ -454,6 +459,20 @@ function getPlaceholderImage(category: string, index: number): string {
           },
         },
       });
+
+      // Mark as initialized
+      swiperElement.setAttribute('data-swiper-initialized', 'true');
     });
-  });
+  }
+
+  // Initialize immediately if DOM is ready, otherwise wait
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSwiper);
+  } else {
+    // DOM is already loaded, initialize immediately
+    initializeSwiper();
+  }
+
+  // Also initialize when the script loads (fallback)
+  setTimeout(initializeSwiper, 0);
 </script>

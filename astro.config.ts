@@ -22,9 +22,6 @@ import mcp from 'astro-mcp';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  experimental: {
-    csp: true,
-  },
   output: 'server',
   adapter: vercelServerless({
     webAnalytics: {
@@ -89,7 +86,9 @@ export default defineConfig({
   ],
 
   image: {
-    domains: ['cdn.pixabay.com'],
+    domains: ['cdn.pixabay.com', 'images.unsplash.com', 'images.pexels.com'],
+    responsiveStyles: true,
+    layout: 'constrained',
   },
 
   markdown: {
