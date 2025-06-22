@@ -113,9 +113,7 @@ export default function PhotoSwiperClient({ images, title, category, className =
   return (
     <div className={`photo-swiper-container ${className}`}>
       <div className="swiper-header">
-        <h3 className="swiper-title">
-          {title}
-        </h3>
+        <h3 className="swiper-title">{title}</h3>
         <p className="swiper-description">Explore our {category} photography collection</p>
       </div>
 
@@ -149,4 +147,4 @@ export default function PhotoSwiperClient({ images, title, category, className =
       </div>
     </div>
   );
-} 
+}

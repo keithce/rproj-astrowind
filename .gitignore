@@ -25,3 +25,4 @@ pnpm-debug.log*
 .idea
 .vercel
 .vscode/
+.cursor/rules/isolation_rules/
