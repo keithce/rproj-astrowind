@@ -57,24 +57,28 @@ portfolio/
 The integration includes several optimization presets:
 
 ### Portfolio Preset
+
 - **Size**: 800x600px
 - **Crop**: Fill
 - **Quality**: Auto
 - **Format**: Auto (WebP when supported)
 
 ### Thumbnail Preset
+
 - **Size**: 400x300px
 - **Crop**: Fill
 - **Quality**: Auto
 - **Format**: Auto
 
 ### Hero Preset
+
 - **Size**: 1920x1080px
 - **Crop**: Fill
 - **Quality**: Auto
 - **Format**: Auto
 
 ### Portrait Preset
+
 - **Size**: 400x400px
 - **Crop**: Fill with face detection
 - **Quality**: Auto
@@ -89,7 +93,7 @@ import { getCloudinaryImageUrl } from '~/utils/cloudinary';
 
 // Generate a portfolio image URL
 const imageUrl = getCloudinaryImageUrl('portfolio/landscape/mountain-sunset-vista', {
-  preset: 'portfolio'
+  preset: 'portfolio',
 });
 
 // Generate a custom sized image
@@ -97,7 +101,7 @@ const customUrl = getCloudinaryImageUrl('portfolio/portrait/business-headshot', 
   width: 600,
   height: 400,
   crop: 'fill',
-  gravity: 'face'
+  gravity: 'face',
 });
 ```
 
@@ -109,7 +113,7 @@ import { getResponsiveImageUrls } from '~/utils/cloudinary';
 // Generate responsive URLs for different screen sizes
 const responsiveUrls = getResponsiveImageUrls('portfolio/landscape/mountain-sunset-vista', {
   preset: 'responsive',
-  aspectRatio: '16:9'
+  aspectRatio: '16:9',
 });
 
 // Returns array of { width: number, url: string }
@@ -143,10 +147,9 @@ The utility includes a helper for migrating from existing image services:
 import { transformLegacyImageUrl } from '~/utils/cloudinary';
 
 // Transform an Unsplash URL to Cloudinary
-const cloudinaryUrl = transformLegacyImageUrl(
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
-  { preset: 'portfolio' }
-);
+const cloudinaryUrl = transformLegacyImageUrl('https://images.unsplash.com/photo-1506905925346-21bda4d32df4', {
+  preset: 'portfolio',
+});
 ```
 
 ## Configuration Validation
@@ -165,21 +168,25 @@ if (!validation.isValid) {
 ## Best Practices
 
 ### Image Naming
+
 - Use descriptive, SEO-friendly filenames
 - Use hyphens instead of spaces
 - Include category context in the filename
 
 ### Folder Organization
+
 - Keep images organized by category
 - Use consistent naming conventions
 - Consider using subfolders for large collections
 
 ### Performance
+
 - Use appropriate presets for different use cases
 - Leverage responsive images for mobile optimization
 - Consider lazy loading for below-the-fold images
 
 ### SEO
+
 - Always provide meaningful alt text
 - Use descriptive filenames
 - Optimize for Core Web Vitals
@@ -209,12 +216,7 @@ Update your `astro.config.ts` to include Cloudinary domains:
 ```typescript
 export default defineConfig({
   image: {
-    domains: [
-      'res.cloudinary.com',
-      'cdn.pixabay.com', 
-      'images.unsplash.com', 
-      'images.pexels.com'
-    ],
+    domains: ['res.cloudinary.com', 'cdn.pixabay.com', 'images.unsplash.com', 'images.pexels.com'],
     // ... other config
   },
   // ... rest of config
@@ -232,4 +234,4 @@ For issues with the Cloudinary integration:
 1. Check the [Cloudinary Documentation](https://cloudinary.com/documentation)
 2. Verify environment variables are set correctly
 3. Check browser console for error messages
-4. Ensure images exist in your Cloudinary account 
+4. Ensure images exist in your Cloudinary account

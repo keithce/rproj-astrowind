@@ -20,14 +20,14 @@ function getImageUrl(_category: string, image: { src: string }): string {
   if (image.src.startsWith('http://') || image.src.startsWith('https://')) {
     return image.src;
   }
-  
+
   // If src starts with 'samples/', it's a legacy path - convert to Cloudinary
   if (image.src.startsWith('samples/')) {
     // Remove 'samples/' prefix and use the rest as the public ID
     const publicId = image.src.replace('samples/', 'portfolio/');
     return getCloudinaryImageUrl(publicId, { preset: 'portfolio' });
   }
-  
+
   // Otherwise, assume it's already a proper Cloudinary public ID
   return getCloudinaryImageUrl(image.src, { preset: 'portfolio' });
 }
@@ -334,7 +334,7 @@ function getImageUrl(_category: string, image: { src: string }): string {
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof window !== 'undefined' && window.Swiper) {
       const swipers = document.querySelectorAll('.mySwiper');
-      
+
       swipers.forEach((swiperElement) => {
         new window.Swiper!(swiperElement, {
           slidesPerView: 1,

@@ -103,10 +103,10 @@ export function getCloudinaryImageUrl(
   } = {}
 ): string {
   const { preset, ...customOptions } = options;
-  
+
   // Start with preset if provided
   const baseOptions = preset ? { ...CLOUDINARY_PRESETS[preset] } : {};
-  
+
   // Merge with custom options (custom options override preset)
   const finalOptions = { ...baseOptions, ...customOptions };
 
@@ -137,10 +137,10 @@ export function getResponsiveImageUrls(
   } = {}
 ): Array<{ width: number; url: string }> {
   const { preset = 'responsive', aspectRatio, ...baseOptions } = options;
-  
-  return RESPONSIVE_BREAKPOINTS.map(width => {
+
+  return RESPONSIVE_BREAKPOINTS.map((width) => {
     const height = aspectRatio ? Math.round(width / parseFloat(aspectRatio.replace(':', '/'))) : undefined;
-    
+
     return {
       width,
       url: getCloudinaryImageUrl(publicId, {
@@ -159,22 +159,58 @@ export function getResponsiveImageUrls(
 function generateSampleImageData(category: ImageCategory, count: number): ImageData[] {
   const sampleData: Record<ImageCategory, ImageData[]> = {
     landscape: [
-      { filename: 'mountain-sunset-vista', alt: 'Golden hour mountain vista with dramatic clouds', title: 'Mountain Sunset Vista' },
-      { filename: 'ocean-waves-coast', alt: 'Powerful ocean waves crashing against rocky coastline', title: 'Coastal Symphony' },
-      { filename: 'forest-mist-sunbeams', alt: 'Misty forest with sunbeams filtering through trees', title: 'Enchanted Forest' },
+      {
+        filename: 'mountain-sunset-vista',
+        alt: 'Golden hour mountain vista with dramatic clouds',
+        title: 'Mountain Sunset Vista',
+      },
+      {
+        filename: 'ocean-waves-coast',
+        alt: 'Powerful ocean waves crashing against rocky coastline',
+        title: 'Coastal Symphony',
+      },
+      {
+        filename: 'forest-mist-sunbeams',
+        alt: 'Misty forest with sunbeams filtering through trees',
+        title: 'Enchanted Forest',
+      },
       { filename: 'desert-dunes-sunrise', alt: 'Sand dunes with rippling patterns at sunrise', title: 'Desert Dreams' },
       { filename: 'city-skyline-twilight', alt: 'Urban skyline at twilight with city lights', title: 'Urban Twilight' },
-      { filename: 'lake-mountain-reflection', alt: 'Perfect mountain reflection in crystal clear lake', title: 'Mirror Lake' },
+      {
+        filename: 'lake-mountain-reflection',
+        alt: 'Perfect mountain reflection in crystal clear lake',
+        title: 'Mirror Lake',
+      },
       { filename: 'waterfall-canyon', alt: 'Cascading waterfall in lush green canyon', title: "Nature's Power" },
-      { filename: 'aurora-northern-lights', alt: 'Aurora borealis dancing across starry sky', title: 'Celestial Dance' },
+      {
+        filename: 'aurora-northern-lights',
+        alt: 'Aurora borealis dancing across starry sky',
+        title: 'Celestial Dance',
+      },
     ],
     portrait: [
-      { filename: 'business-headshot', alt: 'Professional business headshot with confident expression', title: 'Executive Portrait' },
-      { filename: 'artistic-portrait', alt: 'Creative artistic portrait with dramatic lighting', title: 'Artistic Vision' },
-      { filename: 'senior-portrait', alt: 'High school senior portrait in natural setting', title: 'Senior Celebration' },
+      {
+        filename: 'business-headshot',
+        alt: 'Professional business headshot with confident expression',
+        title: 'Executive Portrait',
+      },
+      {
+        filename: 'artistic-portrait',
+        alt: 'Creative artistic portrait with dramatic lighting',
+        title: 'Artistic Vision',
+      },
+      {
+        filename: 'senior-portrait',
+        alt: 'High school senior portrait in natural setting',
+        title: 'Senior Celebration',
+      },
       { filename: 'couple-portrait', alt: 'Romantic couple portrait during golden hour', title: 'Love Story' },
       { filename: 'musician-portrait', alt: 'Musician portrait with instrument in studio', title: 'Artist Expression' },
-      { filename: 'lifestyle-portrait', alt: 'Natural lifestyle portrait in urban environment', title: 'Urban Lifestyle' },
+      {
+        filename: 'lifestyle-portrait',
+        alt: 'Natural lifestyle portrait in urban environment',
+        title: 'Urban Lifestyle',
+      },
       { filename: 'family-portrait', alt: 'Multi-generational family portrait outdoors', title: 'Family Legacy' },
     ],
     boudoir: [
@@ -192,7 +228,11 @@ function generateSampleImageData(category: ImageCategory, count: number): ImageD
       { filename: 'couple-expecting', alt: 'Expecting couple in intimate maternity session', title: 'Growing Love' },
       { filename: 'siblings-bond', alt: 'Sweet sibling portrait showing their bond', title: 'Sibling Bond' },
       { filename: 'first-birthday', alt: 'First birthday celebration cake smash session', title: 'Milestone Moment' },
-      { filename: 'maternity-nature', alt: 'Maternity portrait in beautiful natural setting', title: "Nature's Blessing" },
+      {
+        filename: 'maternity-nature',
+        alt: 'Maternity portrait in beautiful natural setting',
+        title: "Nature's Blessing",
+      },
     ],
     general: [
       { filename: 'sample-1', alt: 'Sample image 1', title: 'Sample 1' },
@@ -213,18 +253,15 @@ function generateSampleImageData(category: ImageCategory, count: number): ImageD
 /**
  * Generate image URLs for a specific category with sample images
  */
-export function getCategoryImages(
-  category: ImageCategory,
-  count: number = 8
-): ProcessedImage[] {
+export function getCategoryImages(category: ImageCategory, count: number = 8): ProcessedImage[] {
   const categoryFolder = IMAGE_CATEGORIES[category];
-  
+
   // Sample image data - in production, this would come from your CMS or database
   const sampleImages = generateSampleImageData(category, count);
-  
+
   return sampleImages.map((image) => {
     const publicId = `${categoryFolder}/${image.filename}`;
-    
+
     return {
       src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
       alt: image.alt,
@@ -241,11 +278,7 @@ export function getCategoryImages(
 /**
  * Generate OG image URL for social media sharing
  */
-export function getOgImageUrl(
-  title: string,
-  subtitle?: string,
-  backgroundImage?: string
-): string {
+export function getOgImageUrl(title: string, subtitle?: string, backgroundImage?: string): string {
   try {
     return getCldOgImageUrl({
       src: backgroundImage || 'og-background',
@@ -263,18 +296,22 @@ export function getOgImageUrl(
             y: 100,
           },
         },
-        ...(subtitle ? [{
-          text: {
-            text: subtitle,
-            fontFamily: 'Inter',
-            fontSize: 40,
-            color: 'white',
-          },
-          position: {
-            gravity: 'center',
-            y: 50,
-          },
-        }] : []),
+        ...(subtitle
+          ? [
+              {
+                text: {
+                  text: subtitle,
+                  fontFamily: 'Inter',
+                  fontSize: 40,
+                  color: 'white',
+                },
+                position: {
+                  gravity: 'center',
+                  y: 50,
+                },
+              },
+            ]
+          : []),
       ],
       width: 1200,
       height: 630,
@@ -302,7 +339,7 @@ export function transformLegacyImageUrl(
   // Extract filename from legacy URL
   const filename = legacyUrl.split('/').pop()?.split('?')[0] || 'fallback';
   const publicId = `migrated/${filename}`;
-  
+
   return getCloudinaryImageUrl(publicId, options);
 }
 
@@ -316,19 +353,19 @@ export function validateCloudinaryConfig(): {
 } {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   if (!CLOUDINARY_CLOUD_NAME) {
     errors.push('PUBLIC_CLOUDINARY_CLOUD_NAME is required');
   }
-  
+
   if (!CLOUDINARY_API_KEY) {
     warnings.push('PUBLIC_CLOUDINARY_API_KEY is not set (required for upload functionality)');
   }
-  
+
   if (!CLOUDINARY_API_SECRET) {
     warnings.push('CLOUDINARY_API_SECRET is not set (required for server-side operations)');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -341,4 +378,4 @@ export const cloudinaryConfig = {
   cloudName: CLOUDINARY_CLOUD_NAME,
   apiKey: CLOUDINARY_API_KEY,
   apiSecret: CLOUDINARY_API_SECRET,
-}; 
+};
