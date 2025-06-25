@@ -1,4 +1,6 @@
 ---
+import { getCloudinaryImageUrl } from '~/utils/cloudinary';
+
 export interface Props {
   images: Array<{
     src: string;
@@ -12,52 +14,22 @@ export interface Props {
 
 const { images, title, category, className = '' } = Astro.props;
 
-// Function to generate different placeholder images based on category and index
-function getPlaceholderImage(category: string, index: number): string {
-  const baseUrl = 'https://images.unsplash.com';
-  const imageIds = {
-    landscape: [
-      'photo-1506905925346-21bda4d32df4', // mountain landscape
-      'photo-1518837695005-2083093ee35b', // ocean waves
-      'photo-1441974231531-c6227db76b6e', // forest
-      'photo-1439066615861-d1af74d74000', // lake
-      'photo-1506905925346-21bda4d32df4', // mountain sunset
-      'photo-1441974231531-c6227db76b6e', // forest path
-      'photo-1439066615861-d1af74d74000', // serene lake
-      'photo-1518837695005-2083093ee35b', // coastline
-    ],
-    portrait: [
-      'photo-1507003211169-0a1dd7228f2d', // business portrait
-      'photo-1500648767791-00dcc994a43e', // artistic portrait
-      'photo-1535713875002-d1d0cf377fde', // professional headshot
-      'photo-1608844881716-d8c27503bec8', // senior portrait
-      'photo-1522075469751-3847ae348b73', // couple portrait
-      'photo-1619380061814-58f03707f082', // musician portrait
-      'photo-1567515004624-219c11d31f2e', // lifestyle portrait
-    ],
-    boudoir: [
-      'photo-1594736797933-d0401ba2fe65', // elegant silhouette
-      'photo-1512316731086-0d19b8a0f04e', // artistic portrait
-      'photo-1567515004624-219c11d31f2e', // natural light
-      'photo-1550639524-b70982e95e75', // dramatic lighting
-      'photo-1609256646376-daa5e21021c7', // intimate portrait
-      'photo-1596728113430-ce1d9b65b498', // elegant pose
-    ],
-    'maternity-children': [
-      'photo-1555532538-dcdbd01d373d', // maternity portrait
-      'photo-1515488042361-ee00e0ddd4e4', // newborn
-      'photo-1519689680058-324335c77eba', // children playing
-      'photo-1581726690015-c9861fa5057f', // expecting couple
-      'photo-1595123550441-d377e017de6a', // siblings
-      'photo-1554089845-5e0e0b22e6b7', // baby portrait
-      'photo-1545558014-8692077e9b5c', // family moment
-    ],
-  };
-
-  const categoryImages = imageIds[category as keyof typeof imageIds] || imageIds.landscape;
-  const imageId = categoryImages[index % categoryImages.length];
-
-  return `${baseUrl}/${imageId}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80`;
+// Function to get Cloudinary image URL for the given category and image data
+function getImageUrl(_category: string, image: { src: string }): string {
+  // If src already contains a full URL (http/https), use it as-is
+  if (image.src.startsWith('http://') || image.src.startsWith('https://')) {
+    return image.src;
+  }
+  
+  // If src starts with 'samples/', it's a legacy path - convert to Cloudinary
+  if (image.src.startsWith('samples/')) {
+    // Remove 'samples/' prefix and use the rest as the public ID
+    const publicId = image.src.replace('samples/', 'portfolio/');
+    return getCloudinaryImageUrl(publicId, { preset: 'portfolio' });
+  }
+  
+  // Otherwise, assume it's already a proper Cloudinary public ID
+  return getCloudinaryImageUrl(image.src, { preset: 'portfolio' });
 }
 ---
 
@@ -73,11 +45,11 @@ function getPlaceholderImage(category: string, index: number): string {
     <div class="swiper mySwiper" data-category={category}>
       <div class="swiper-wrapper">
         {
-          images.map((image, index) => (
+          images.map((image) => (
             <div class="swiper-slide">
               <div class="slide-content">
                 <img
-                  src={getPlaceholderImage(category, index)}
+                  src={getImageUrl(category, image)}
                   alt={image.alt}
                   width={800}
                   height={600}
@@ -198,57 +170,58 @@ function getPlaceholderImage(category: string, index: number): string {
 
   .slide-title {
     color: white;
-    font-family: var(--aw-font-sans);
-    font-size: 1rem;
+    font-family: var(--aw-font-heading);
+    font-size: 1.125rem;
     font-weight: 600;
     margin: 0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 
-  /* Navigation Buttons */
+  /* Swiper navigation buttons */
   .swiper-button-next,
   .swiper-button-prev {
-    color: white;
-    background: var(--aw-color-primary);
+    color: var(--aw-color-text-heading);
+    background: rgba(255, 255, 255, 0.9);
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    margin-top: -24px;
-    opacity: 0.9;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border: 2px solid var(--color-border);
-  }
-
-  .swiper-button-next:hover,
-  .swiper-button-prev:hover {
-    background: var(--aw-color-secondary);
-    opacity: 1;
-    transform: scale(1.1);
-    box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
   }
 
   .swiper-button-next:after,
   .swiper-button-prev:after {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
   }
 
-  /* Pagination */
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  /* Swiper pagination */
   .swiper-pagination {
-    bottom: 15px;
+    bottom: 10px;
   }
 
   .swiper-pagination-bullet {
-    background: var(--aw-color-accent);
-    opacity: 0.6;
     width: 12px;
     height: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--aw-color-text-muted);
+    opacity: 0.5;
+    transition: all 0.3s ease;
   }
 
   .swiper-pagination-bullet-active {
@@ -257,83 +230,15 @@ function getPlaceholderImage(category: string, index: number): string {
     transform: scale(1.2);
   }
 
-  .swiper-pagination-bullet:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .swiper {
-      height: 400px;
-      padding: 0 50px 50px 50px;
-    }
-
-    .slide-content {
-      height: 300px;
-    }
-
-    .swiper-title {
-      font-size: 1.75rem;
-    }
-  }
-
+  /* Responsive adjustments */
   @media (max-width: 768px) {
-    .photo-swiper-container {
-      padding: 1.5rem 0;
-    }
-
-    .swiper-header {
-      margin-bottom: 1.5rem;
-      padding: 0 0.5rem;
-    }
-
-    .swiper-title {
-      font-size: 1.5rem;
-    }
-
-    .swiper-description {
-      font-size: 1rem;
-    }
-
     .swiper {
-      height: 350px;
-      padding: 0 30px 45px 30px;
+      padding: 0 40px 50px 40px;
+      height: 400px;
     }
 
     .slide-content {
-      height: 250px;
-    }
-
-    .swiper-button-next,
-    .swiper-button-prev {
-      width: 40px;
-      height: 40px;
-      margin-top: -20px;
-    }
-
-    .swiper-button-next:after,
-    .swiper-button-prev:after {
-      font-size: 16px;
-    }
-
-    .slide-overlay {
-      padding: 1rem;
-    }
-
-    .slide-title {
-      font-size: 0.875rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .swiper {
-      padding: 0 20px 40px 20px;
       height: 300px;
-    }
-
-    .slide-content {
-      height: 200px;
     }
 
     .swiper-button-next,
@@ -348,131 +253,117 @@ function getPlaceholderImage(category: string, index: number): string {
       font-size: 14px;
     }
 
-    .swiper-pagination-bullet {
-      width: 10px;
-      height: 10px;
+    .swiper-title {
+      font-size: 1.5rem;
+    }
+
+    .swiper-description {
+      font-size: 1rem;
     }
   }
 
-  /* Dark mode support */
-  .dark .slide-content {
-    border-color: var(--color-border);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  }
-
-  .dark .slide-content:hover {
-    box-shadow:
-      0 20px 25px -5px rgba(0, 0, 0, 0.4),
-      0 10px 10px -5px rgba(0, 0, 0, 0.3);
-  }
-
-  .dark .swiper-button-next,
-  .dark .swiper-button-prev {
-    border-color: var(--color-border);
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Accessibility improvements */
-  @media (prefers-reduced-motion: reduce) {
-    .slide-content,
-    .slide-image,
-    .slide-overlay,
-    .swiper-button-next,
-    .swiper-button-prev,
-    .swiper-pagination-bullet {
-      transition: none;
+  @media (max-width: 480px) {
+    .swiper {
+      padding: 0 20px 50px 20px;
+      height: 350px;
     }
 
-    .slide-content:hover .slide-image {
-      transform: none;
-    }
-
-    .slide-content:hover {
-      transform: none;
-    }
-  }
-
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
     .slide-content {
-      border-width: 2px;
+      height: 250px;
     }
 
     .swiper-button-next,
     .swiper-button-prev {
-      border-width: 3px;
+      display: none;
+    }
+
+    .photo-swiper-container {
+      padding: 1rem 0;
+    }
+
+    .swiper-header {
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .swiper-button-next,
+    .swiper-button-prev {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+    }
+
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+      background: rgba(0, 0, 0, 0.9);
     }
   }
 </style>
 
+<!-- Swiper will be initialized by external script -->
 <script>
-  import { Swiper } from 'swiper';
-  import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
-  import 'swiper/css';
-  import 'swiper/css/navigation';
-  import 'swiper/css/pagination';
+  // Define Swiper interface for type safety
+  interface SwiperInstance {
+    new (element: Element, options: SwiperOptions): void;
+  }
 
-  function initializeSwiper() {
-    const swipers = document.querySelectorAll('.mySwiper');
+  interface SwiperOptions {
+    slidesPerView: number;
+    spaceBetween: number;
+    loop: boolean;
+    navigation: {
+      nextEl: string;
+      prevEl: string;
+    };
+    pagination: {
+      el: string;
+      clickable: boolean;
+    };
+    breakpoints: Record<number, { slidesPerView: number; spaceBetween: number }>;
+  }
 
-    swipers.forEach((swiperElement) => {
-      // Skip if already initialized
-      if (swiperElement.hasAttribute('data-swiper-initialized')) {
-        return;
-      }
+  // Extend window interface to include Swiper
+  declare global {
+    interface Window {
+      Swiper?: SwiperInstance;
+    }
+  }
 
-      new Swiper(swiperElement as HTMLElement, {
-        cssMode: true,
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-        },
-        mousewheel: true,
-        keyboard: true,
-        modules: [Navigation, Pagination, Mousewheel, Keyboard],
-        loop: true,
-        spaceBetween: 30,
-        slidesPerView: 1,
-        centeredSlides: true,
-        breakpoints: {
-          640: {
-            slidesPerView: 1,
-            spaceBetween: 20,
+  // Simple fallback initialization if Swiper is available globally
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof window !== 'undefined' && window.Swiper) {
+      const swipers = document.querySelectorAll('.mySwiper');
+      
+      swipers.forEach((swiperElement) => {
+        new window.Swiper!(swiperElement, {
+          slidesPerView: 1,
+          spaceBetween: 20,
+          loop: true,
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
           },
-          768: {
-            slidesPerView: 2,
-            spaceBetween: 30,
-            centeredSlides: false,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
           },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 30,
-            centeredSlides: false,
+          breakpoints: {
+            640: {
+              slidesPerView: 1.2,
+              spaceBetween: 20,
+            },
+            768: {
+              slidesPerView: 1.5,
+              spaceBetween: 30,
+            },
+            1024: {
+              slidesPerView: 2,
+              spaceBetween: 30,
+            },
           },
-        },
+        });
       });
-
-      // Mark as initialized
-      swiperElement.setAttribute('data-swiper-initialized', 'true');
-    });
-  }
-
-  // Initialize immediately if DOM is ready, otherwise wait
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeSwiper);
-  } else {
-    // DOM is already loaded, initialize immediately
-    initializeSwiper();
-  }
-
-  // Also initialize when the script loads (fallback)
-  setTimeout(initializeSwiper, 0);
+    }
+  });
 </script>
