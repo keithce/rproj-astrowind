@@ -19,6 +19,7 @@ interface Props {
 export default function PhotoSwiper({ images, className = '' }: Props) {
   const swiperRef = useRef<HTMLDivElement>(null);
   const [modalSrc, setModalSrc] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!swiperRef.current) return;
@@ -52,6 +53,7 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
     const handler = (e: Event) => {
       const t = e.target as HTMLElement;
       if (t instanceof HTMLImageElement && t.dataset.fullSrc) {
+        setIsLoading(true);
         setModalSrc(t.dataset.fullSrc);
       }
     };
@@ -85,8 +87,15 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
 
       {/* Modal */}
       {modalSrc && (
-        <div className="modal active" onClick={() => setModalSrc(null)}>
-          <img src={modalSrc} className="modal-content" alt="Full resolution" />
+        <div
+          className="modal active"
+          onClick={() => {
+            setModalSrc(null);
+            setIsLoading(false);
+          }}
+        >
+          {isLoading && <div className="modal-preloader"></div>}
+          <img src={modalSrc} className="modal-content" alt="Full resolution" onLoad={() => setIsLoading(false)} />
         </div>
       )}
 
@@ -100,6 +109,7 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
         /* swiper lazy preloader default */
         .swiper-lazy-preloader{width:42px;height:42px;position:absolute;left:50%;top:50%;margin-left:-21px;margin-top:-21px;z-index:10;box-sizing:border-box;border:4px solid #fff;border-radius:50%;border-top-color:transparent;animation:swiper-preloader-spin 1s linear infinite;}
         @keyframes swiper-preloader-spin{100%{transform:rotate(360deg)}}
+        .modal-preloader{width:48px;height:48px;border:5px solid #fff;border-top-color:transparent;border-radius:50%;position:absolute;left:50%;top:50%;margin:-24px 0 0 -24px;animation:swiper-preloader-spin 1s linear infinite;z-index:1001;}
       `}</style>
     </>
   );

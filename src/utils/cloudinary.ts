@@ -97,6 +97,7 @@ interface CloudinaryResource {
 
 // Interface for processed image with URLs
 export interface ProcessedImage {
+  publicId: string;
   src: string;
   alt: string;
   title: string;
@@ -205,6 +206,7 @@ export async function getCategoryImages(category: ImageCategory, count: number =
       const filename = resource.filename || publicId.split('/').pop() || 'image';
 
       return {
+        publicId,
         src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
         alt: `${category} photography - ${filename}`,
         title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
@@ -233,6 +235,7 @@ function generateFallbackImages(category: ImageCategory, count: number): Process
     const publicId = `${categoryFolder}/sample-${imageNumber}`;
 
     return {
+      publicId,
       src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
       alt: `${category} photography sample ${imageNumber}`,
       title: `${category.charAt(0).toUpperCase() + category.slice(1)} Sample ${imageNumber}`,

@@ -112,7 +112,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         <div class="mt-12">
           <PhotoSwiper
             client:visible
-            images={landscapeImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            images={landscapeImages.map((i) => ({
+              src: i.src,
+              fullSrc: getCloudinaryImageUrl(i.publicId, {
+                quality: 'auto',
+                format: 'auto',
+              }),
+              alt: i.alt,
+            }))}
             className="mb-8"
           />
           <div class="text-center">
@@ -139,7 +146,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         <div class="mt-12">
           <PhotoSwiper
             client:visible
-            images={portraitImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            images={portraitImages.map((i) => ({
+              src: i.src,
+              fullSrc: getCloudinaryImageUrl(i.publicId, {
+                quality: 'auto',
+                format: 'auto',
+              }),
+              alt: i.alt,
+            }))}
             className="mb-8"
           />
           <div class="text-center">
@@ -166,7 +180,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         <div class="mt-12">
           <PhotoSwiper
             client:visible
-            images={boudoirImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            images={boudoirImages.map((i) => ({
+              src: i.src,
+              fullSrc: getCloudinaryImageUrl(i.publicId, {
+                quality: 'auto',
+                format: 'auto',
+              }),
+              alt: i.alt,
+            }))}
             className="mb-8"
           />
           <div class="text-center">
@@ -193,7 +214,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         <div class="mt-12">
           <PhotoSwiper
             client:visible
-            images={maternityChildrenImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            images={maternityChildrenImages.map((i) => ({
+              src: i.src,
+              fullSrc: getCloudinaryImageUrl(i.publicId, {
+                quality: 'auto',
+                format: 'auto',
+              }),
+              alt: i.alt,
+            }))}
             className="mb-8"
           />
           <div class="text-center">
