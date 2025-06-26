@@ -20,7 +20,7 @@ const schema = z.object({
 
 export const POST: APIRoute = async ({ request }) => {
   const verification = await checkBotId();
- 
+
   if (verification.isBot) {
     return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
   }
@@ -86,34 +86,33 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-
     const redirectUrl = new URL('/thank-you', request.url);
-    const headers = new Headers({ location: redirectUrl.toString() });
-    console.log('Headers extensible?', Object.isExtensible(headers));
-    console.log('Headers frozen?', Object.isFrozen(headers));
-    
-    try {
-      headers.set('x-debug', 'test');
-      console.log('Header mutation successful');
-    } catch (e) {
-      console.error('Header mutation failed:', e.message);
-    }
-    
-    return new Response(null, {
+    const response = new Response(null, {
       status: 303,
-      headers: headers,
+      headers: new Headers({
+        location: redirectUrl.toString(),
+        'x-debug-timestamp': Date.now().toString(),
+        'x-debug-original-status': '303',
+      }),
     });
 
+    console.log('🚀 Creating response with status:', response.status);
+    console.log('🚀 Response headers before return:', [...response.headers.entries()]);
+
+    // Set a timer to see if we can detect the mutation
+    setTimeout(() => {
+      console.log('⚠️ Response status after 0ms:', response.status);
+      console.log('⚠️ Response headers after 0ms:', [...response.headers.entries()]);
+    }, 0);
+
+    return response;
 
     // Redirect to thank you page (must be absolute for undici Response.redirect)
-    
+
     return new Response(null, {
-      status: 303,
+      status: 302,
       headers: new Headers({ Location: redirectUrl.toString() }),
     });
-
-
-
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
