@@ -17,10 +17,10 @@ const metadata = {
 };
 
 // Get optimized images from Cloudinary for each category
-const landscapeImages = getCategoryImages('landscape', 8);
-const portraitImages = getCategoryImages('portrait', 7);
-const boudoirImages = getCategoryImages('boudoir', 6);
-const maternityChildrenImages = getCategoryImages('maternity-children', 7);
+const landscapeImages = await getCategoryImages('landscape', 8);
+const portraitImages = await getCategoryImages('portrait', 7);
+const boudoirImages = await getCategoryImages('boudoir', 6);
+const maternityChildrenImages = await getCategoryImages('maternity', 7);
 
 // Testimonials data
 const testimonials = [

@@ -1,4 +1,5 @@
 import { getCldImageUrl, getCldOgImageUrl } from 'astro-cloudinary/helpers';
+import { v2 as cloudinary } from 'cloudinary';
 
 // Environment variables with validation
 const CLOUDINARY_CLOUD_NAME = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -61,11 +62,12 @@ export const RESPONSIVE_BREAKPOINTS = [320, 640, 768, 1024, 1280, 1600] as const
 
 // Image categories mapping to Cloudinary folders
 export const IMAGE_CATEGORIES = {
-  landscape: 'portfolio/landscape',
-  portrait: 'portfolio/portrait',
-  boudoir: 'portfolio/boudoir',
-  'maternity-children': 'portfolio/maternity-children',
-  general: 'portfolio/general',
+  landscape: 'landscape',
+  portrait: 'portrait',
+  boudoir: 'boudoir',
+  maternity: 'maternity',
+  children: 'children',
+  general: 'general',
 } as const;
 
 export type PresetName = keyof typeof CLOUDINARY_PRESETS;
@@ -76,6 +78,21 @@ export interface ImageData {
   filename: string;
   alt: string;
   title: string;
+}
+
+// Interface for Cloudinary search result resource
+interface CloudinaryResource {
+  public_id: string;
+  filename?: string;
+  format: string;
+  resource_type: string;
+  type: string;
+  created_at: string;
+  bytes: number;
+  width: number;
+  height: number;
+  url: string;
+  secure_url: string;
 }
 
 // Interface for processed image with URLs
@@ -154,118 +171,72 @@ export function getResponsiveImageUrls(
 }
 
 /**
- * Generate sample image data for a category
+ * Generate image URLs for a specific category by searching Cloudinary folder
  */
-function generateSampleImageData(category: ImageCategory, count: number): ImageData[] {
-  const sampleData: Record<ImageCategory, ImageData[]> = {
-    landscape: [
-      {
-        filename: 'mountain-sunset-vista',
-        alt: 'Golden hour mountain vista with dramatic clouds',
-        title: 'Mountain Sunset Vista',
-      },
-      {
-        filename: 'ocean-waves-coast',
-        alt: 'Powerful ocean waves crashing against rocky coastline',
-        title: 'Coastal Symphony',
-      },
-      {
-        filename: 'forest-mist-sunbeams',
-        alt: 'Misty forest with sunbeams filtering through trees',
-        title: 'Enchanted Forest',
-      },
-      { filename: 'desert-dunes-sunrise', alt: 'Sand dunes with rippling patterns at sunrise', title: 'Desert Dreams' },
-      { filename: 'city-skyline-twilight', alt: 'Urban skyline at twilight with city lights', title: 'Urban Twilight' },
-      {
-        filename: 'lake-mountain-reflection',
-        alt: 'Perfect mountain reflection in crystal clear lake',
-        title: 'Mirror Lake',
-      },
-      { filename: 'waterfall-canyon', alt: 'Cascading waterfall in lush green canyon', title: "Nature's Power" },
-      {
-        filename: 'aurora-northern-lights',
-        alt: 'Aurora borealis dancing across starry sky',
-        title: 'Celestial Dance',
-      },
-    ],
-    portrait: [
-      {
-        filename: 'business-headshot',
-        alt: 'Professional business headshot with confident expression',
-        title: 'Executive Portrait',
-      },
-      {
-        filename: 'artistic-portrait',
-        alt: 'Creative artistic portrait with dramatic lighting',
-        title: 'Artistic Vision',
-      },
-      {
-        filename: 'senior-portrait',
-        alt: 'High school senior portrait in natural setting',
-        title: 'Senior Celebration',
-      },
-      { filename: 'couple-portrait', alt: 'Romantic couple portrait during golden hour', title: 'Love Story' },
-      { filename: 'musician-portrait', alt: 'Musician portrait with instrument in studio', title: 'Artist Expression' },
-      {
-        filename: 'lifestyle-portrait',
-        alt: 'Natural lifestyle portrait in urban environment',
-        title: 'Urban Lifestyle',
-      },
-      { filename: 'family-portrait', alt: 'Multi-generational family portrait outdoors', title: 'Family Legacy' },
-    ],
-    boudoir: [
-      { filename: 'elegant-silhouette', alt: 'Elegant boudoir silhouette with soft lighting', title: 'Elegant Grace' },
-      { filename: 'vintage-style', alt: 'Vintage-inspired boudoir photography', title: 'Vintage Romance' },
-      { filename: 'modern-artistic', alt: 'Modern artistic boudoir with creative composition', title: 'Modern Art' },
-      { filename: 'natural-light', alt: 'Natural light boudoir with soft shadows', title: 'Natural Beauty' },
-      { filename: 'dramatic-lighting', alt: 'Dramatic lighting creating mood and atmosphere', title: 'Dramatic Mood' },
-      { filename: 'intimate-portrait', alt: 'Intimate portrait celebrating femininity', title: 'Celebration' },
-    ],
-    'maternity-children': [
-      { filename: 'pregnancy-glow', alt: 'Beautiful maternity portrait celebrating pregnancy', title: 'Expecting Joy' },
-      { filename: 'newborn-peaceful', alt: 'Peaceful sleeping newborn in soft wrapping', title: 'New Beginning' },
-      { filename: 'toddler-playful', alt: 'Playful toddler portrait with genuine smile', title: 'Pure Joy' },
-      { filename: 'couple-expecting', alt: 'Expecting couple in intimate maternity session', title: 'Growing Love' },
-      { filename: 'siblings-bond', alt: 'Sweet sibling portrait showing their bond', title: 'Sibling Bond' },
-      { filename: 'first-birthday', alt: 'First birthday celebration cake smash session', title: 'Milestone Moment' },
-      {
-        filename: 'maternity-nature',
-        alt: 'Maternity portrait in beautiful natural setting',
-        title: "Nature's Blessing",
-      },
-    ],
-    general: [
-      { filename: 'sample-1', alt: 'Sample image 1', title: 'Sample 1' },
-      { filename: 'sample-2', alt: 'Sample image 2', title: 'Sample 2' },
-      { filename: 'sample-3', alt: 'Sample image 3', title: 'Sample 3' },
-      { filename: 'sample-4', alt: 'Sample image 4', title: 'Sample 4' },
-      { filename: 'sample-5', alt: 'Sample image 5', title: 'Sample 5' },
-      { filename: 'sample-6', alt: 'Sample image 6', title: 'Sample 6' },
-      { filename: 'sample-7', alt: 'Sample image 7', title: 'Sample 7' },
-      { filename: 'sample-8', alt: 'Sample image 8', title: 'Sample 8' },
-    ],
-  };
+export async function getCategoryImages(category: ImageCategory, count: number = 8): Promise<ProcessedImage[]> {
+  const categoryFolder = IMAGE_CATEGORIES[category];
 
-  const categoryData = sampleData[category] || sampleData.general;
-  return categoryData.slice(0, count);
+  try {
+    // Configure Cloudinary if not already configured
+    if (!cloudinary.config().cloud_name) {
+      cloudinary.config({
+        cloud_name: CLOUDINARY_CLOUD_NAME,
+        api_key: CLOUDINARY_API_KEY,
+        api_secret: CLOUDINARY_API_SECRET,
+      });
+    }
+
+    // Search for images in the specified folder
+    const searchResult = await cloudinary.search
+      .expression(`resource_type:image AND asset_folder:${categoryFolder}`)
+      .sort_by('public_id', 'asc')
+      .max_results(count)
+      .execute();
+
+    // If no images found in the folder, return sample data
+    if (!searchResult.resources || searchResult.resources.length === 0) {
+      console.warn(`No images found in Cloudinary folder: ${categoryFolder}`);
+      return generateFallbackImages(category, count);
+    }
+
+    // Process found images
+    return searchResult.resources.map((resource: CloudinaryResource) => {
+      const publicId = resource.public_id;
+      const filename = resource.filename || publicId.split('/').pop() || 'image';
+      
+      return {
+        src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
+        alt: `${category} photography - ${filename}`,
+        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        thumbnail: getCloudinaryImageUrl(publicId, { preset: 'thumbnail' }),
+        responsive: getResponsiveImageUrls(publicId, {
+          preset: 'responsive',
+          aspectRatio: '4:3',
+        }),
+      };
+    });
+
+  } catch (error) {
+    console.error(`Error fetching images from Cloudinary for category ${category}:`, error);
+    // Return fallback images if search fails
+    return generateFallbackImages(category, count);
+  }
 }
 
 /**
- * Generate image URLs for a specific category with sample images
+ * Generate fallback images when Cloudinary search fails or returns no results
  */
-export function getCategoryImages(category: ImageCategory, count: number = 8): ProcessedImage[] {
+function generateFallbackImages(category: ImageCategory, count: number): ProcessedImage[] {
   const categoryFolder = IMAGE_CATEGORIES[category];
-
-  // Sample image data - in production, this would come from your CMS or database
-  const sampleImages = generateSampleImageData(category, count);
-
-  return sampleImages.map((image) => {
-    const publicId = `${categoryFolder}/${image.filename}`;
-
+  
+  return Array.from({ length: count }, (_, index) => {
+    const imageNumber = index + 1;
+    const publicId = `${categoryFolder}/sample-${imageNumber}`;
+    
     return {
       src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
-      alt: image.alt,
-      title: image.title,
+      alt: `${category} photography sample ${imageNumber}`,
+      title: `${category.charAt(0).toUpperCase() + category.slice(1)} Sample ${imageNumber}`,
       thumbnail: getCloudinaryImageUrl(publicId, { preset: 'thumbnail' }),
       responsive: getResponsiveImageUrls(publicId, {
         preset: 'responsive',
