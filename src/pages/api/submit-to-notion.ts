@@ -7,7 +7,6 @@ import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
 import { checkBotId } from 'botid/server';
 
-console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
@@ -89,7 +88,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Redirect to thank you page (must be absolute for undici Response.redirect)
     const redirectUrl = new URL('/thank-you', request.url);
-    return Response.redirect(redirectUrl.toString(), 303);
+    return new Response(null, {
+      status: 303,
+      headers: new Headers({ Location: redirectUrl.toString() }),
+    });
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
@@ -112,6 +114,9 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Even on error we redirect to thank-you; use absolute URL
     const redirectUrlErr = new URL('/thank-you', request.url);
-    return Response.redirect(redirectUrlErr.toString(), 303);
+    return new Response(null, {
+      status: 303,
+      headers: new Headers({ Location: redirectUrlErr.toString() }),
+    });
   }
 };
