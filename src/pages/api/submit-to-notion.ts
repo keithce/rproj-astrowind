@@ -88,10 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
     console.log('Welcome email sent to:', email);
 
     // Redirect to thank you page with success param
-    return new Response(null, {
-      status: 303,
-      headers: { Location: '/thank-you' },
-    });
+    return Response.redirect('/thank-you', 303);
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
@@ -115,7 +112,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Redirect to thank you page
     return new Response(null, {
       status: 303,
-      headers: { Location: '/thank-you' },
+      headers: new Headers({ Location: '/thank-you' }),
     });
   }
 };
