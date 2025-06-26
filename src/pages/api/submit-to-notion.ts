@@ -86,12 +86,34 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-    // Redirect to thank you page (must be absolute for undici Response.redirect)
+
     const redirectUrl = new URL('/thank-you', request.url);
+    const headers = new Headers({ location: redirectUrl.toString() });
+    console.log('Headers extensible?', Object.isExtensible(headers));
+    console.log('Headers frozen?', Object.isFrozen(headers));
+    
+    try {
+      headers.set('x-debug', 'test');
+      console.log('Header mutation successful');
+    } catch (e) {
+      console.error('Header mutation failed:', e.message);
+    }
+    
+    return new Response(null, {
+      status: 303,
+      headers: headers,
+    });
+
+
+    // Redirect to thank you page (must be absolute for undici Response.redirect)
+    
     return new Response(null, {
       status: 303,
       headers: new Headers({ Location: redirectUrl.toString() }),
     });
+
+
+
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
