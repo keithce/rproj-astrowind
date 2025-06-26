@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
+import { checkBotId } from 'botid/server';
 
 console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
@@ -19,6 +20,12 @@ const schema = z.object({
 });
 
 export const POST: APIRoute = async ({ request }) => {
+  const verification = await checkBotId();
+ 
+  if (verification.isBot) {
+    return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
+  }
+
   const formData = await request.formData();
   try {
     const data = Object.fromEntries(formData.entries());

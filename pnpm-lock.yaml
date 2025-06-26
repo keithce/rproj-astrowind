@@ -82,6 +82,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
+      botid:
+        specifier: ^1.4.0
+        version: 1.4.0(react@19.1.0)
       limax:
         specifier: 4.1.0
         version: 4.1.0
@@ -2087,6 +2090,15 @@ packages:
   boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
 
+  botid@1.4.0:
+    resolution: {integrity: sha512-FVx4m7eEbLIGnFq/3MlSBRtxJAzACLuuSZ4K9VpZ4kzHzDmh03HK1BkhyE+D/qJaU2uktprorxsgJ9T0AKxk7A==}
+    peerDependencies:
+      next: '*'
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      next:
+        optional: true
+
   boxen@8.0.1:
     resolution: {integrity: sha512-F3PH5k5juxom4xktynS7MoFY+NUWH5LC4CnH11YB8NPew+HLpmBLCybSAEyb2F+4pRXhuhWqFesoQd6DAyc2hw==}
     engines: {node: '>=18'}
@@ -2204,8 +2216,8 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  chromedriver@137.0.4:
-    resolution: {integrity: sha512-IxipIe0AnoQhWvG6eSTOLhVf1Tt586LA1IH4RdhGhXrrK6nZx8+VcKdjtlyZIV60S0CttUij/YnYuHAI+7qzWg==}
+  chromedriver@138.0.0:
+    resolution: {integrity: sha512-bJ/DNm5Y0TbqM71ARaAohTWVwcQ2SsWciYC5Q9Ul7DC/oTxm6B1vI2h6WscFCOOi49ul4tXZVjA/LOruljjmjA==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -5651,7 +5663,7 @@ snapshots:
     dependencies:
       '@axe-core/webdriverjs': 4.10.2(selenium-webdriver@4.22.0)
       axe-core: 4.10.3
-      chromedriver: 137.0.4
+      chromedriver: 138.0.0
       colors: 1.4.0
       commander: 9.5.0
       dotenv: 16.5.0
@@ -7696,6 +7708,10 @@ snapshots:
 
   boolbase@1.0.0: {}
 
+  botid@1.4.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+
   boxen@8.0.1:
     dependencies:
       ansi-align: 3.0.1
@@ -7821,7 +7837,7 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chromedriver@137.0.4:
+  chromedriver@138.0.0:
     dependencies:
       '@testim/chrome-version': 1.1.4
       axios: 1.10.0

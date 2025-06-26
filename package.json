@@ -64,6 +64,7 @@
     "astro-icon": "^1.1.5",
     "astro-mcp": "^0.4.1",
     "autoprefixer": "^10.4.21",
+    "botid": "^1.4.0",
     "limax": "4.1.0",
     "lodash.merge": "^4.6.2",
     "notion-client": "^7.4.2",
