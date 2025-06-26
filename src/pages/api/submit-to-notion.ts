@@ -119,3 +119,10 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 };
+
+export const GET: APIRoute = async () => {
+  return new Response(null, {
+    status: 303,
+    headers: { Location: '/thank-you' },
+  });
+};
