@@ -87,8 +87,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-    // Redirect to thank you page with success param
-    return Response.redirect('/thank-you', 303);
+    // Redirect to thank you page (must be absolute for undici Response.redirect)
+    const redirectUrl = new URL('/thank-you', request.url);
+    return Response.redirect(redirectUrl.toString(), 303);
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
@@ -109,10 +110,8 @@ export const POST: APIRoute = async ({ request }) => {
       `,
     });
 
-    // Redirect to thank you page
-    return new Response(null, {
-      status: 303,
-      headers: new Headers({ Location: '/thank-you' }),
-    });
+    // Even on error we redirect to thank-you; use absolute URL
+    const redirectUrlErr = new URL('/thank-you', request.url);
+    return Response.redirect(redirectUrlErr.toString(), 303);
   }
 };
