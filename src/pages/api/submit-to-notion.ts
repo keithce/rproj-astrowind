@@ -5,8 +5,8 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
+import { checkBotId } from 'botid/server';
 
-console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
@@ -19,6 +19,12 @@ const schema = z.object({
 });
 
 export const POST: APIRoute = async ({ request }) => {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
+  }
+
   const formData = await request.formData();
   try {
     const data = Object.fromEntries(formData.entries());
@@ -80,11 +86,17 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-    // Redirect to thank you page with success param
-    return new Response(null, {
+    const redirectUrl = new URL('/thank-you', request.url);
+    const response = new Response(null, {
       status: 303,
-      headers: { Location: '/thank-you' },
+      headers: new Headers({
+        location: redirectUrl.toString(),
+        'x-debug-timestamp': Date.now().toString(),
+        'x-debug-original-status': '303',
+      }),
     });
+
+    return response;
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
@@ -105,10 +117,11 @@ export const POST: APIRoute = async ({ request }) => {
       `,
     });
 
-    // Redirect to thank you page
+    // Even on error we redirect to thank-you; use absolute URL
+    const redirectUrlErr = new URL('/thank-you', request.url);
     return new Response(null, {
       status: 303,
-      headers: { Location: '/thank-you' },
+      headers: new Headers({ Location: redirectUrlErr.toString() }),
     });
   }
 };
