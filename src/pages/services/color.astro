@@ -1,6 +1,6 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import PhotoSwiper from '~/components/ui/PhotoSwiper.astro';
+import PhotoSwiper from '~/components/ui/PhotoSwiper.tsx';
 import TestimonialCard from '~/components/ui/TestimonialCard.astro';
 import CategoryHero from '~/components/widgets/CategoryHero.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
@@ -110,7 +110,11 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
           description="Capturing the raw beauty and grandeur of nature's most spectacular moments. From mountain vistas to ocean shores, each landscape tells a story of natural wonder."
         />
         <div class="mt-12">
-          <PhotoSwiper images={landscapeImages} title="Nature's Masterpieces" category="landscape" className="mb-8" />
+          <PhotoSwiper
+            client:visible
+            images={landscapeImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/landscapes"
@@ -133,7 +137,11 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
           description="Professional portraits that capture personality, emotion, and the unique essence of each individual. From corporate headshots to artistic expressions."
         />
         <div class="mt-12">
-          <PhotoSwiper images={portraitImages} title="Capturing Character" category="portrait" className="mb-8" />
+          <PhotoSwiper
+            client:visible
+            images={portraitImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/portraits"
@@ -156,7 +164,11 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
           description="Elegant and tasteful intimate photography that celebrates confidence, beauty, and self-expression in a comfortable, professional environment."
         />
         <div class="mt-12">
-          <PhotoSwiper images={boudoirImages} title="Celebrating You" category="boudoir" className="mb-8" />
+          <PhotoSwiper
+            client:visible
+            images={boudoirImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
+            className="mb-8"
+          />
           <div class="text-center">
             <a
               href="/gallery/boudoir"
@@ -180,9 +192,8 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         />
         <div class="mt-12">
           <PhotoSwiper
-            images={maternityChildrenImages}
-            title="Growing Families"
-            category="maternity-children"
+            client:visible
+            images={maternityChildrenImages.map((i) => ({ src: i.src, fullSrc: i.src, alt: i.alt }))}
             className="mb-8"
           />
           <div class="text-center">

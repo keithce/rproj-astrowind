@@ -203,11 +203,11 @@ export async function getCategoryImages(category: ImageCategory, count: number =
     return searchResult.resources.map((resource: CloudinaryResource) => {
       const publicId = resource.public_id;
       const filename = resource.filename || publicId.split('/').pop() || 'image';
-      
+
       return {
         src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
         alt: `${category} photography - ${filename}`,
-        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
         thumbnail: getCloudinaryImageUrl(publicId, { preset: 'thumbnail' }),
         responsive: getResponsiveImageUrls(publicId, {
           preset: 'responsive',
@@ -215,7 +215,6 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         }),
       };
     });
-
   } catch (error) {
     console.error(`Error fetching images from Cloudinary for category ${category}:`, error);
     // Return fallback images if search fails
@@ -228,11 +227,11 @@ export async function getCategoryImages(category: ImageCategory, count: number =
  */
 function generateFallbackImages(category: ImageCategory, count: number): ProcessedImage[] {
   const categoryFolder = IMAGE_CATEGORIES[category];
-  
+
   return Array.from({ length: count }, (_, index) => {
     const imageNumber = index + 1;
     const publicId = `${categoryFolder}/sample-${imageNumber}`;
-    
+
     return {
       src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
       alt: `${category} photography sample ${imageNumber}`,

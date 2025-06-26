@@ -9,6 +9,7 @@ The `getCategoryImages()` function has been enhanced to dynamically find and loa
 ### 1. Dynamic Image Discovery
 
 The function now uses Cloudinary's Search API to:
+
 - Search for all images in a specific folder
 - Sort them by public ID
 - Limit results to the requested count
@@ -17,6 +18,7 @@ The function now uses Cloudinary's Search API to:
 ### 2. Fallback System
 
 If the search fails or no images are found:
+
 - Generates sample/placeholder images
 - Logs warnings for debugging
 - Ensures the application continues to work
@@ -24,6 +26,7 @@ If the search fails or no images are found:
 ### 3. Folder Structure
 
 Images are organized in Cloudinary folders based on categories:
+
 ```
 cloudinary-root/
 ├── landscape/          # Landscape photography
@@ -47,27 +50,26 @@ const portraitImages = await getCategoryImages('portrait', 6);
 ### Function Signature
 
 ```typescript
-async function getCategoryImages(
-  category: ImageCategory, 
-  count: number = 8
-): Promise<ProcessedImage[]>
+async function getCategoryImages(category: ImageCategory, count: number = 8): Promise<ProcessedImage[]>;
 ```
 
 **Parameters:**
+
 - `category`: One of 'landscape', 'portrait', 'boudoir', 'maternity', 'children', 'general'
 - `count`: Maximum number of images to return (default: 8)
 
 **Returns:**
+
 - Array of `ProcessedImage` objects with optimized URLs
 
 ### ProcessedImage Interface
 
 ```typescript
 interface ProcessedImage {
-  src: string;                                    // Main optimized image URL
-  alt: string;                                    // Alt text for accessibility
-  title: string;                                  // Image title
-  thumbnail: string;                              // Thumbnail URL
+  src: string; // Main optimized image URL
+  alt: string; // Alt text for accessibility
+  title: string; // Image title
+  thumbnail: string; // Thumbnail URL
   responsive: Array<{ width: number; url: string }>; // Responsive image URLs
 }
 ```
@@ -86,6 +88,7 @@ CLOUDINARY_API_SECRET=your_api_secret
 ### Cloudinary Setup
 
 1. **Upload Images to Folders**
+
    ```bash
    # Example folder structure in Cloudinary
    /landscape/sunset-beach.jpg
@@ -104,11 +107,13 @@ CLOUDINARY_API_SECRET=your_api_secret
 ### Search Expression
 
 The function uses this Cloudinary search expression:
+
 ```javascript
-`resource_type:image AND asset_folder:${categoryFolder}`
+`resource_type:image AND asset_folder:${categoryFolder}`;
 ```
 
 This finds:
+
 - All resources of type "image"
 - Located in the specified asset folder
 - Sorted by public_id in ascending order
@@ -125,6 +130,7 @@ This finds:
 ### Search Failures
 
 If the Cloudinary search fails:
+
 1. Error is logged to console
 2. Fallback images are generated
 3. Application continues to function
@@ -132,6 +138,7 @@ If the Cloudinary search fails:
 ### No Images Found
 
 If a folder is empty:
+
 1. Warning is logged
 2. Sample placeholder images are created
 3. User sees consistent layout
@@ -139,6 +146,7 @@ If a folder is empty:
 ### Fallback Images
 
 Generated with this pattern:
+
 ```
 /{category}/sample-1
 /{category}/sample-2
@@ -162,6 +170,7 @@ Generated with this pattern:
 ## Migration from Static Images
 
 ### Before (Static)
+
 ```typescript
 const landscapeImages = [
   { src: 'landscape/image1.jpg', alt: 'Sunset', title: 'Beautiful Sunset' },
@@ -170,6 +179,7 @@ const landscapeImages = [
 ```
 
 ### After (Dynamic)
+
 ```typescript
 // Automatically finds all images in the landscape folder
 const landscapeImages = await getCategoryImages('landscape', 8);
@@ -178,21 +188,25 @@ const landscapeImages = await getCategoryImages('landscape', 8);
 ## Best Practices
 
 ### 1. Folder Organization
+
 - Use consistent folder naming
 - Keep folders organized by category
 - Use descriptive filenames
 
 ### 2. Image Naming
+
 - Use descriptive filenames (they become titles)
 - Avoid special characters
 - Use hyphens or underscores for spaces
 
 ### 3. Error Monitoring
+
 - Monitor console for search warnings
 - Set up Cloudinary webhook notifications
 - Track API usage and limits
 
 ### 4. Performance
+
 - Consider caching search results
 - Monitor API usage
 - Use appropriate image counts per category
@@ -202,11 +216,13 @@ const landscapeImages = await getCategoryImages('landscape', 8);
 ### Common Issues
 
 1. **No Images Found**
+
    - Check folder names match `IMAGE_CATEGORIES`
    - Verify images are uploaded to correct folders
    - Check Cloudinary dashboard
 
 2. **Search API Errors**
+
    - Verify API credentials are correct
    - Check API key permissions
    - Monitor rate limits
@@ -219,6 +235,7 @@ const landscapeImages = await getCategoryImages('landscape', 8);
 ### Debug Mode
 
 Enable debug logging:
+
 ```typescript
 // Add to your component
 console.log('Category images loaded:', landscapeImages.length);
@@ -229,16 +246,19 @@ console.log('Category images loaded:', landscapeImages.length);
 ### Potential Improvements
 
 1. **Metadata Integration**
+
    - Use Cloudinary tags for categorization
    - Extract EXIF data for image information
    - Implement custom metadata fields
 
 2. **Advanced Filtering**
+
    - Filter by upload date
    - Filter by image dimensions
    - Filter by tags or metadata
 
 3. **Caching Layer**
+
    - Implement Redis caching
    - Add cache invalidation
    - Background refresh of image lists
@@ -259,10 +279,7 @@ console.log('Category images loaded:', landscapeImages.length);
  * @param count - Maximum number of images to return
  * @returns Promise<ProcessedImage[]> - Array of processed images with URLs
  */
-export async function getCategoryImages(
-  category: ImageCategory, 
-  count: number = 8
-): Promise<ProcessedImage[]>
+export async function getCategoryImages(category: ImageCategory, count: number = 8): Promise<ProcessedImage[]>;
 ```
 
 ### generateFallbackImages()
@@ -274,15 +291,13 @@ export async function getCategoryImages(
  * @param count - Number of fallback images to generate
  * @returns ProcessedImage[] - Array of fallback images
  */
-function generateFallbackImages(
-  category: ImageCategory, 
-  count: number
-): ProcessedImage[]
+function generateFallbackImages(category: ImageCategory, count: number): ProcessedImage[];
 ```
 
 ## Support
 
 For issues or questions:
+
 1. Check Cloudinary dashboard for folder structure
 2. Verify environment variables are set
 3. Monitor console for error messages
@@ -290,4 +305,4 @@ For issues or questions:
 
 ---
 
-*This documentation covers the dynamic image loading system. For general Cloudinary integration, see `cloudinary-integration-summary.md`.* 
+_This documentation covers the dynamic image loading system. For general Cloudinary integration, see `cloudinary-integration-summary.md`._
