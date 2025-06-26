@@ -5,7 +5,7 @@ import Button from '~/components/ui/Button.astro';
 const { inputs, textarea, disclaimer, button = 'Contact us', description = '', formAction } = Astro.props;
 ---
 
-<form action={formAction ? formAction : undefined} method="POST">
+<form action={formAction ? formAction : undefined} method="POST" data-astro-reload>
   {
     inputs &&
       inputs.map(
@@ -31,7 +31,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   name={name}
                   id={name}
                   required={required}
-                  class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   {options.map(({ value, label }) => (
                     <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
@@ -47,7 +47,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   autocomplete={autocomplete}
                   placeholder={placeholder}
                   required={required}
-                  class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
             </div>
@@ -67,7 +67,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           rows={textarea.rows ? textarea.rows : 4}
           placeholder={textarea.placeholder}
           required={textarea.required}
-          class="block w-full px-4 py-3 transition-colors border rounded-lg border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
+          class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
         />
       </div>
     )
@@ -81,7 +81,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
             id="disclaimer"
             name="disclaimer"
             type="checkbox"
-            class="w-4 h-4 mt-1 transition-colors border rounded cursor-pointer border-border text-primary bg-background focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            class="mt-1 w-4 h-4 rounded border transition-colors cursor-pointer border-border text-primary bg-background focus:ring-2 focus:ring-primary focus:ring-offset-2"
           />
         </div>
         <div class="ml-3">
