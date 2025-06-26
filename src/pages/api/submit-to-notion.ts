@@ -96,23 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
       }),
     });
 
-    console.log('🚀 Creating response with status:', response.status);
-    console.log('🚀 Response headers before return:', [...response.headers.entries()]);
-
-    // Set a timer to see if we can detect the mutation
-    setTimeout(() => {
-      console.log('⚠️ Response status after 0ms:', response.status);
-      console.log('⚠️ Response headers after 0ms:', [...response.headers.entries()]);
-    }, 0);
-
     return response;
-
-    // Redirect to thank you page (must be absolute for undici Response.redirect)
-
-    return new Response(null, {
-      status: 302,
-      headers: new Headers({ Location: redirectUrl.toString() }),
-    });
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     const message =
