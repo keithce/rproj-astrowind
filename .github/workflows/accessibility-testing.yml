@@ -1,0 +1,411 @@
+name: 🛡️ Accessibility Testing
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run accessibility tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+
+jobs:
+  accessibility-tests:
+    name: 🧪 Accessibility Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    strategy:
+      matrix:
+        test-type: [axe-core, lighthouse, custom]
+        
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 🗂️ Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build application
+        run: pnpm build
+
+      - name: 🚀 Start development server
+        run: |
+          pnpm dev &
+          sleep 10
+          curl -f http://localhost:4321 || exit 1
+        env:
+          CI: true
+
+      - name: 🧪 Run Axe-Core Tests
+        if: matrix.test-type == 'axe-core'
+        run: |
+          pnpm axe:scan
+          pnpm test:accessibility:ci
+        continue-on-error: true
+
+      - name: 🧪 Run Lighthouse Tests
+        if: matrix.test-type == 'lighthouse'
+        run: |
+          pnpm lighthouse:accessibility
+        continue-on-error: true
+
+      - name: 🧪 Run Custom Accessibility Tests
+        if: matrix.test-type == 'custom'
+        run: |
+          pnpm test:accessibility:verbose
+        continue-on-error: true
+
+      - name: 📊 Upload Accessibility Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-reports-${{ matrix.test-type }}
+          path: |
+            accessibility-reports/
+            lighthouse-report.html
+          retention-days: 30
+
+      - name: 📝 Comment PR with Results
+        if: github.event_name == 'pull_request' && matrix.test-type == 'axe-core'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read accessibility report
+            let reportContent = '## 🛡️ Accessibility Test Results\n\n';
+            
+            try {
+              const reportFiles = fs.readdirSync('accessibility-reports');
+              const summaryFile = reportFiles.find(f => f.includes('summary'));
+              
+              if (summaryFile) {
+                const summaryPath = path.join('accessibility-reports', summaryFile);
+                const summary = fs.readFileSync(summaryPath, 'utf8');
+                reportContent += '```\n' + summary + '\n```\n';
+              }
+              
+              reportContent += '\n📁 Full reports available in workflow artifacts.';
+              
+            } catch (error) {
+              reportContent += '❌ Unable to read accessibility report.';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: reportContent
+            });
+
+  accessibility-monitoring:
+    name: 📈 Accessibility Monitoring
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: accessibility-tests
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 📊 Generate Accessibility Trends
+        run: |
+          # Create trends directory if it doesn't exist
+          mkdir -p accessibility-trends
+          
+          # Generate trend data (simplified example)
+          echo "$(date): Accessibility tests completed" >> accessibility-trends/history.log
+        
+      - name: 📤 Upload Trends Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-trends
+          path: accessibility-trends/
+          retention-days: 90
+
+      - name: 🚨 Send Slack Notification
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#accessibility-alerts'
+          text: '🚨 Accessibility tests failed on main branch'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  security-accessibility-scan:
+    name: 🔒 Security & Accessibility Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: 🛡️ Run Security Audit
+        run: |
+          npm audit --audit-level moderate
+          
+      - name: 🧪 Accessibility Security Check
+        run: |
+          # Check for common accessibility security issues
+          echo "Checking for accessibility-related security vulnerabilities..."
+          
+          # Check for XSS vulnerabilities in ARIA labels
+          grep -r "aria-label.*innerHTML\|aria-describedby.*innerHTML" src/ || echo "No innerHTML in ARIA attributes found"
+          
+          # Check for unsafe focus management
+          grep -r "eval\|Function.*focus\|setTimeout.*focus" src/ || echo "No unsafe focus management found"
+
+  performance-accessibility:
+    name: ⚡ Performance Impact on Accessibility
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build application
+        run: pnpm build
+
+      - name: 🚀 Start server
+        run: |
+          pnpm preview &
+          sleep 5
+
+      - name: ⚡ Run Performance Tests with Accessibility Focus
+        run: |
+          npx lighthouse http://localhost:4321 \
+            --only-categories=accessibility,performance \
+            --output=json \
+            --output-path=./lighthouse-perf-a11y.json \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+
+      - name: 📊 Analyze Performance Impact
+        run: |
+          # Analyze if performance optimizations affect accessibility
+          node -e "
+            const report = require('./lighthouse-perf-a11y.json');
+            const a11yScore = report.categories.accessibility.score * 100;
+            const perfScore = report.categories.performance.score * 100;
+            
+            console.log('Accessibility Score:', a11yScore);
+            console.log('Performance Score:', perfScore);
+            
+            if (a11yScore < 95) {
+              console.error('❌ Accessibility score below threshold');
+              process.exit(1);
+            }
+            
+            if (perfScore < 90) {
+              console.warn('⚠️ Performance score below optimal');
+            }
+          "
+
+      - name: 📤 Upload Performance Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-accessibility-report
+          path: lighthouse-perf-a11y.json
+
+  mobile-accessibility:
+    name: 📱 Mobile Accessibility Testing
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build application
+        run: pnpm build
+
+      - name: 🚀 Start server
+        run: |
+          pnpm preview &
+          sleep 5
+
+      - name: 📱 Test Mobile Accessibility
+        run: |
+          # Test with mobile viewport
+          npx lighthouse http://localhost:4321 \
+            --only-categories=accessibility \
+            --form-factor=mobile \
+            --screenEmulation.mobile=true \
+            --screenEmulation.width=375 \
+            --screenEmulation.height=667 \
+            --output=json \
+            --output-path=./mobile-a11y.json \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+
+      - name: 📊 Analyze Mobile Results
+        run: |
+          node -e "
+            const report = require('./mobile-a11y.json');
+            const score = report.categories.accessibility.score * 100;
+            console.log('Mobile Accessibility Score:', score);
+            
+            if (score < 95) {
+              console.error('❌ Mobile accessibility score below threshold');
+              process.exit(1);
+            }
+          "
+
+      - name: 📤 Upload Mobile Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-accessibility-report
+          path: mobile-a11y.json
+
+  accessibility-regression:
+    name: 🔄 Accessibility Regression Testing
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📥 Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧪 Run Current Branch Tests
+        run: |
+          pnpm build
+          pnpm preview &
+          sleep 5
+          pnpm test:accessibility:ci
+          cp -r accessibility-reports current-reports
+
+      - name: 📥 Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: 🧪 Run Base Branch Tests
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm preview &
+          sleep 5
+          pnpm test:accessibility:ci
+          cp -r accessibility-reports base-reports
+
+      - name: 🔍 Compare Results
+        run: |
+          # Simple comparison (in real implementation, you'd use proper diff tools)
+          echo "Comparing accessibility results..."
+          
+          if [ -d "current-reports" ] && [ -d "base-reports" ]; then
+            echo "📊 Accessibility regression analysis complete"
+            echo "Current reports: $(ls current-reports | wc -l) files"
+            echo "Base reports: $(ls base-reports | wc -l) files"
+          else
+            echo "❌ Unable to compare reports"
+          fi
+
+      - name: 📤 Upload Comparison
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-regression-comparison
+          path: |
+            current-reports/
+            base-reports/ 

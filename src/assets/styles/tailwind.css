@@ -123,6 +123,128 @@
     color: var(--color-accent-foreground);
   }
 
+  /* Button Loading States - Enhanced Integration */
+  .btn-loading {
+    @apply relative overflow-hidden;
+    pointer-events: none;
+    cursor: not-allowed;
+    will-change: opacity;
+  }
+
+  .btn-loading .btn-text {
+    @apply opacity-0 transition-opacity duration-200;
+    will-change: opacity;
+  }
+
+  .btn-loading .loading-spinner {
+    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    transform: translate(-50%, -50%) translateZ(0);
+    will-change: transform;
+  }
+
+  /* Primary button loading state */
+  .btn-primary.btn-loading {
+    background-color: var(--color-accent);
+    opacity: 0.8;
+  }
+
+  .btn-primary.btn-loading .loading-spinner {
+    @apply border-white border-t-transparent;
+  }
+
+  /* Secondary button loading state */
+  .btn-secondary.btn-loading {
+    background-color: var(--color-muted);
+    opacity: 0.8;
+  }
+
+  .btn-secondary.btn-loading .loading-spinner {
+    border-color: var(--color-foreground);
+    border-top-color: transparent;
+  }
+
+  /* Tertiary button loading state */
+  .btn-tertiary.btn-loading {
+    background-color: var(--color-accent);
+    opacity: 0.8;
+  }
+
+  .btn-tertiary.btn-loading .loading-spinner {
+    @apply border-white border-t-transparent;
+  }
+
+  /* Loading state text transitions */
+  .btn-loading::before {
+    content: attr(data-loading-text);
+    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200;
+    color: currentColor;
+  }
+
+  .btn-loading.show-loading-text::before {
+    @apply opacity-100;
+  }
+
+  .btn-loading.show-loading-text .loading-spinner {
+    @apply ml-2 relative transform-none left-auto top-auto;
+  }
+
+  /* Button loading size variants */
+  .btn-loading--sm .loading-spinner {
+    @apply w-3 h-3 border;
+  }
+
+  .btn-loading--lg .loading-spinner {
+    @apply w-5 h-5 border-2;
+  }
+
+  /* Loading progress indicator (optional enhancement) */
+  .btn-loading.with-progress::after {
+    content: '';
+    @apply absolute bottom-0 left-0 h-1 bg-current opacity-30;
+    width: var(--loading-progress, 0%);
+    transition: width 0.3s ease;
+  }
+
+  /* Button Success States */
+  .btn-success {
+    @apply relative overflow-hidden;
+    background-color: var(--color-success) !important;
+    color: var(--color-success-foreground) !important;
+    border-color: var(--color-success) !important;
+  }
+
+  .btn-success .success-icon {
+    @apply text-xl font-bold;
+  }
+
+  /* Button Error States */
+  .btn-error {
+    @apply relative overflow-hidden;
+    background-color: var(--color-error) !important;
+    color: var(--color-error-foreground) !important;
+    border-color: var(--color-error) !important;
+  }
+
+  .btn-error:hover {
+    background-color: var(--color-error) !important;
+    opacity: 0.9;
+  }
+
+  /* Form Error States */
+  .form-error {
+    position: relative;
+  }
+
+  .form-error::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--color-error);
+    border-radius: 0.5rem;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
   /* Enhanced patterns for common component styles */
   .card {
     @apply rounded-lg shadow-sm p-6 transition-all duration-200;
@@ -336,6 +458,18 @@
   .text-foreground {
     color: var(--color-foreground);
   }
+  .text-error {
+    color: var(--color-error);
+  }
+  .text-error-foreground {
+    color: var(--color-error-foreground);
+  }
+  .text-success {
+    color: var(--color-success);
+  }
+  .text-success-foreground {
+    color: var(--color-success-foreground);
+  }
 
   /* Semantic background color utilities */
   .bg-primary {
@@ -359,6 +493,12 @@
   .bg-background {
     background-color: var(--color-background);
   }
+  .bg-error {
+    background-color: var(--color-error);
+  }
+  .bg-success {
+    background-color: var(--color-success);
+  }
 
   /* Semantic border color utilities */
   .border-primary {
@@ -378,6 +518,12 @@
   }
   .border-input {
     border-color: var(--color-input);
+  }
+  .border-error {
+    border-color: var(--color-error);
+  }
+  .border-success {
+    border-color: var(--color-success);
   }
 
   /* Semantic ring color utilities */
@@ -402,6 +548,12 @@
   .ring-ring {
     --tw-ring-color: var(--color-ring);
   }
+  .ring-error {
+    --tw-ring-color: var(--color-error);
+  }
+  .ring-success {
+    --tw-ring-color: var(--color-success);
+  }
 
   /* Semantic shadow color utilities */
   .shadow-primary {
@@ -420,21 +572,489 @@
   /* Animation utilities for enhanced UX */
   .fade-in {
     animation: fadeIn 0.5s ease-in-out;
+    will-change: opacity;
+    transform: translateZ(0);
   }
   .slide-up {
-    animation: slideUp 0.5s ease-out forwards;
+    animation: slideUp 0.3s ease-out;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  /* Success component styling enhancements */
+  .form-success-replaced {
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .success-replacement-container {
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .success-checkmark {
+    animation: checkmark-scale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  .progress-fill {
+    animation: progress-fill 2s ease-in-out;
+    will-change: width;
+    transform: translateZ(0);
+  }
+
+  /* Form state management classes */
+  .error-message {
+    @apply hidden p-3 text-sm rounded-md border text-red-700 bg-red-50 border-red-200 transition-all duration-300;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .error-message.show {
+    @apply block;
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  .success-message {
+    @apply hidden p-3 text-sm rounded-md border text-green-700 bg-green-50 border-green-200 transition-all duration-300;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .success-message.show {
+    @apply block;
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  /* Loading message styling */
+  .loading-message {
+    @apply hidden p-3 text-sm rounded-md border text-blue-700 bg-blue-50 border-blue-200 transition-all duration-300;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .loading-message.show {
+    @apply flex items-center gap-2;
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  .loading-message.show::before {
+    content: '';
+    @apply w-4 h-4 border-2 border-blue-300 rounded-full;
+    border-top-color: var(--color-primary);
+    animation: spin 1s linear infinite;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Field-specific error messages */
+  .field-error-message {
+    @apply hidden mt-1 text-sm text-red-600;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+  }
+
+  .field-error-message.show {
+    @apply block;
+    animation: fadeInUp 0.2s ease-out;
+  }
+
+  /* Field help text styling */
+  .field-help-text {
+    @apply text-xs text-gray-500 mt-1;
+  }
+
+  /* Enhanced form messages region */
+  #form-messages {
+    min-height: 0;
+    transition: min-height 0.3s ease;
+  }
+
+  #form-messages:not(:empty) {
+    min-height: 3rem;
+  }
+
+  /* Screen reader only utility for live regions */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Skip Links Styling */
+  .skip-links {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+
+  .skip-link {
+    @apply inline-block px-6 py-3 text-sm font-medium text-white bg-primary rounded-md shadow-lg;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: top 0.3s ease-in-out;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: 20px;
+    outline: 3px solid #fbbf24;
+    outline-offset: 2px;
+  }
+
+  .skip-link:hover:focus {
+    @apply bg-primary/90;
+  }
+
+  /* Focus Management Styles */
+  .keyboard-navigation *:focus {
+    outline: 2px solid var(--color-primary, #0052FF) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+  }
+
+  .keyboard-focused {
+    outline: 2px solid var(--color-primary, #0052FF) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+    box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1) !important;
+  }
+
+  /* Skip target focus indicator */
+  .skip-target-focused {
+    outline: 3px solid #fbbf24 !important;
+    outline-offset: 4px !important;
+    background-color: rgba(251, 191, 36, 0.1) !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  /* Enhanced focus indicators for form elements */
+  .keyboard-navigation input:focus,
+  .keyboard-navigation textarea:focus,
+  .keyboard-navigation select:focus,
+  .keyboard-navigation button:focus {
+    @apply ring-2 ring-primary ring-offset-2;
+    outline: none;
+  }
+
+  /* Focus trap container */
+  #focus-trap-container:focus {
+    outline: none;
+  }
+
+  /* Menu navigation styles */
+  [role="menu"] [role="menuitem"]:focus,
+  [role="menubar"] [role="menuitem"]:focus {
+    @apply bg-primary/10 text-primary;
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: -2px;
+  }
+
+  /* Modal focus management */
+  [role="dialog"] {
+    outline: none;
+  }
+
+  [role="dialog"]:focus-within {
+    box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.2);
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .skip-link:focus {
+      outline: 4px solid #000;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .keyboard-focused {
+      outline: 3px solid #000 !important;
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+  }
+
+  /* Reduced motion support for focus animations */
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link {
+      transition: none;
+    }
+
+    .skip-target-focused {
+      transition: none;
+    }
+
+    .keyboard-focused {
+      animation: none;
+    }
+  }
+
+  /* Focus visible polyfill for older browsers */
+  .js-focus-visible :focus:not(.focus-visible) {
+    outline: none;
+  }
+
+  .js-focus-visible .focus-visible {
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: 2px;
+  }
+
+  /* Advanced Focus Management Styles */
+
+  /* Nested interactive containers */
+  [data-nested-interactive] {
+    position: relative;
+  }
+
+  [data-nested-interactive][data-active-nested="true"] {
+    z-index: 10;
+  }
+
+  [data-nested-interactive][data-active-nested="true"]::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 2px solid var(--color-primary, #0052FF);
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  /* Roving tabindex pattern styles */
+  [data-roving-tabindex] {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  [data-roving-item] {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+  }
+
+  [data-roving-item]:focus {
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: 2px;
+    background-color: rgba(0, 82, 255, 0.1);
+  }
+
+  /* Complex navigation components */
+  [data-complex-navigation="grid"] {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  [data-complex-navigation="grid"] [role="gridcell"],
+  [data-complex-navigation="grid"] [data-grid-cell] {
+    @apply p-2 border border-gray-200 rounded cursor-pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-complex-navigation="grid"] [role="gridcell"]:focus,
+  [data-complex-navigation="grid"] [data-grid-cell]:focus {
+    @apply border-primary bg-primary/10;
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: 2px;
+  }
+
+  /* Tab list navigation */
+  [data-complex-navigation="tab-list"] {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  [data-complex-navigation="tab-list"] [role="tab"] {
+    @apply px-4 py-2 border-b-2 border-transparent cursor-pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-complex-navigation="tab-list"] [role="tab"]:focus {
+    @apply border-primary bg-primary/5;
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: 2px;
+  }
+
+  [data-complex-navigation="tab-list"] [role="tab"][aria-selected="true"] {
+    @apply border-primary text-primary font-medium;
+  }
+
+  /* Tree navigation */
+  [data-complex-navigation="tree"] {
+    @apply space-y-1;
+  }
+
+  [data-complex-navigation="tree"] [role="treeitem"] {
+    @apply block p-2 rounded cursor-pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-complex-navigation="tree"] [role="treeitem"]:focus {
+    @apply bg-primary/10 text-primary;
+    outline: 2px solid var(--color-primary, #0052FF);
+    outline-offset: 2px;
+  }
+
+  [data-complex-navigation="tree"] [role="treeitem"][aria-expanded="true"] > .tree-icon::before {
+    content: '▼';
+  }
+
+  [data-complex-navigation="tree"] [role="treeitem"][aria-expanded="false"] > .tree-icon::before {
+    content: '▶';
+  }
+
+  /* Dynamic content focus indicators */
+  [data-auto-focus] {
+    animation: focusSlideIn 0.3s ease-out;
+  }
+
+  [data-focus-target] {
+    position: relative;
+  }
+
+  [data-focus-target]::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px dashed var(--color-primary, #0052FF);
+    border-radius: 8px;
+    opacity: 0;
+    animation: focusPulse 2s ease-in-out;
+  }
+
+  @keyframes focusSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes focusPulse {
+    0%, 100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  /* Modal stacking support */
+  [role="dialog"] {
+    z-index: 1000;
+  }
+
+  [role="dialog"] + [role="dialog"] {
+    z-index: 1010;
+  }
+
+  [role="dialog"] + [role="dialog"] + [role="dialog"] {
+    z-index: 1020;
+  }
+
+  /* Focus debugging styles */
+  .debug-focus [data-focusable] {
+    position: relative;
+  }
+
+  .debug-focus [data-focusable]::before {
+    content: attr(data-focus-order);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    @apply bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center;
+    font-weight: bold;
+    z-index: 9999;
+  }
+
+  /* Enhanced focus indicators for complex interactions */
+  .keyboard-navigation [data-roving-item]:focus,
+  .keyboard-navigation [role="gridcell"]:focus,
+  .keyboard-navigation [role="tab"]:focus,
+  .keyboard-navigation [role="treeitem"]:focus {
+    box-shadow: 
+      0 0 0 2px var(--color-primary, #0052FF),
+      0 0 0 4px rgba(0, 82, 255, 0.2);
+  }
+
+  /* Accessibility announcements styling */
+  .focus-announcement {
+    @apply fixed top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-2 rounded-md shadow-lg z-50;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -100%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+
+  /* High contrast mode enhancements for advanced features */
+  @media (prefers-contrast: high) {
+    [data-nested-interactive][data-active-nested="true"]::before {
+      border-color: #000;
+      opacity: 1;
+    }
+
+    [data-roving-item]:focus,
+    [role="gridcell"]:focus,
+    [role="tab"]:focus,
+    [role="treeitem"]:focus {
+      outline: 3px solid #000 !important;
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+  }
+
+  /* Reduced motion support for advanced features */
+  @media (prefers-reduced-motion: reduce) {
+    [data-auto-focus] {
+      animation: none;
+    }
+
+    [data-focus-target]::after {
+      animation: none;
+      opacity: 0.6;
+    }
+
+    .focus-announcement {
+      animation: none;
+    }
   }
 }
 
-/* Keyframes have to be defined at the root */
+/* Performance-optimized keyframes with reduced motion support */
+@keyframes spin {
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(2rem);
+    transform: translateY(2rem) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
@@ -450,62 +1070,154 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(2rem);
+    transform: translateY(1rem) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
   }
 }
 
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-2rem);
+    transform: translateX(-1rem) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
   }
 }
 
 @keyframes fadeInRight {
   from {
     opacity: 0;
-    transform: translateX(2rem);
+    transform: translateX(1rem) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
   }
 }
 
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.95) translateZ(0);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
 }
 
 @keyframes bounceIn {
   0% {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.3) translateZ(0);
   }
   50% {
     opacity: 0.9;
-    transform: scale(1.1);
+    transform: scale(1.1) translateZ(0);
   }
   80% {
     opacity: 1;
-    transform: scale(0.89);
+    transform: scale(0.89) translateZ(0);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
+  }
+}
+
+/* Success form replacement animations */
+@keyframes checkmark-scale {
+  0% { 
+    transform: scale(0) translateZ(0);
+    opacity: 0;
+  }
+  50% { 
+    transform: scale(1.2) translateZ(0);
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes progress-fill {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.02) translateZ(0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(0.98) translateZ(0);
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .loading::before,
+  .btn-loading .loading-spinner {
+    animation: none;
+  }
+  
+  .fade-in,
+  .slide-up,
+  .error-message.show,
+  .success-message.show,
+  .success-checkmark {
+    animation: none;
+    transition: opacity 0.2s ease;
+  }
+  
+  .field-error {
+    transition: border-color 0.1s ease, box-shadow 0.1s ease;
+  }
+  
+  .form-loading,
+  .form-disabled input,
+  .form-disabled select,
+  .form-disabled textarea,
+  .form-disabled button {
+    transition: opacity 0.1s ease;
+  }
+  
+  /* Provide alternative visual feedback when animations are disabled */
+  .spinner,
+  .loading::before,
+  .btn-loading .loading-spinner {
+    opacity: 0.7;
+    transform: translateZ(0);
   }
 }

@@ -202,4 +202,131 @@
       transform: translateY(0);
     }
   }
+
+  /* Loading Spinner Animation for Form Submissions */
+  .loading-spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-spinner--sm {
+    @apply w-3 h-3 border;
+  }
+
+  .loading-spinner--lg {
+    @apply w-5 h-5 border-2;
+  }
+
+  .loading-spinner--white {
+    @apply border-white border-t-transparent;
+  }
+
+  .loading-spinner--primary {
+    @apply border-primary border-t-transparent;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Button Loading States */
+  .btn-loading {
+    @apply opacity-75 cursor-not-allowed pointer-events-none;
+    position: relative;
+  }
+
+  .btn-loading .btn-text {
+    @apply opacity-0;
+  }
+
+  .btn-loading .loading-spinner {
+    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  }
+
+  /* Form Loading States */
+  .form-loading .form-field {
+    @apply opacity-50 pointer-events-none;
+  }
+
+  .form-loading input,
+  .form-loading textarea,
+  .form-loading select {
+    @apply cursor-not-allowed;
+  }
+
+  /* Enhanced Form Field Disabled States */
+  .form-disabled,
+  .form-disabled * {
+    @apply pointer-events-none;
+  }
+
+  .field-disabled,
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    @apply opacity-60 cursor-not-allowed bg-muted/30 border-border/50;
+    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .field-disabled:focus,
+  input:disabled:focus,
+  textarea:disabled:focus,
+  select:disabled:focus {
+    @apply ring-0 border-border/50;
+  }
+
+  /* Disabled state for custom elements */
+  .field-disabled label,
+  input:disabled + label,
+  textarea:disabled + label,
+  select:disabled + label {
+    @apply opacity-60 cursor-not-allowed;
+  }
+
+  /* Checkbox and radio disabled states */
+  input[type="checkbox"]:disabled,
+  input[type="radio"]:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  input[type="checkbox"]:disabled + label,
+  input[type="radio"]:disabled + label {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Button disabled states for forms */
+  .form-disabled button,
+  .form-disabled .btn,
+  button:disabled,
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  /* Visual indicator for disabled form sections */
+  .form-disabled::before {
+    content: '';
+    @apply absolute inset-0 bg-background/50 z-10 pointer-events-none;
+    backdrop-filter: blur(1px);
+  }
+
+  .form-disabled {
+    @apply relative;
+  }
+
+  /* Accessibility - Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .loading-spinner {
+      animation: none;
+    }
+    
+    .loading-spinner::before {
+      content: "⏳";
+      @apply text-sm;
+    }
+  }
 }
