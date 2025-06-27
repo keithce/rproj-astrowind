@@ -698,7 +698,8 @@
   }
 
   .skip-link {
-    @apply inline-block px-6 py-3 text-sm font-medium text-white bg-primary rounded-md shadow-lg;
+    @apply inline-block px-6 py-3 text-sm font-medium text-white rounded-md shadow-lg;
+    background-color: var(--color-primary);
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -713,7 +714,7 @@
   }
 
   .skip-link:hover:focus {
-    @apply bg-primary/90;
+    background-color: color-mix(in srgb, var(--color-primary) 90%, transparent);
   }
 
   /* Focus Management Styles */
@@ -744,7 +745,8 @@
   .keyboard-navigation textarea:focus,
   .keyboard-navigation select:focus,
   .keyboard-navigation button:focus {
-    @apply ring-2 ring-primary ring-offset-2;
+    @apply ring-2 ring-offset-2;
+    --tw-ring-color: var(--color-primary);
     outline: none;
   }
 
@@ -756,7 +758,8 @@
   /* Menu navigation styles */
   [role="menu"] [role="menuitem"]:focus,
   [role="menubar"] [role="menuitem"]:focus {
-    @apply bg-primary/10 text-primary;
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
     outline: 2px solid var(--color-primary, #0052FF);
     outline-offset: -2px;
   }
@@ -862,7 +865,8 @@
 
   [data-complex-navigation="grid"] [role="gridcell"]:focus,
   [data-complex-navigation="grid"] [data-grid-cell]:focus {
-    @apply border-primary bg-primary/10;
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
     outline: 2px solid var(--color-primary, #0052FF);
     outline-offset: 2px;
   }
@@ -879,13 +883,16 @@
   }
 
   [data-complex-navigation="tab-list"] [role="tab"]:focus {
-    @apply border-primary bg-primary/5;
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
     outline: 2px solid var(--color-primary, #0052FF);
     outline-offset: 2px;
   }
 
   [data-complex-navigation="tab-list"] [role="tab"][aria-selected="true"] {
-    @apply border-primary text-primary font-medium;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 500;
   }
 
   /* Tree navigation */
@@ -899,7 +906,8 @@
   }
 
   [data-complex-navigation="tree"] [role="treeitem"]:focus {
-    @apply bg-primary/10 text-primary;
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
     outline: 2px solid var(--color-primary, #0052FF);
     outline-offset: 2px;
   }
@@ -991,7 +999,8 @@
 
   /* Accessibility announcements styling */
   .focus-announcement {
-    @apply fixed top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-2 rounded-md shadow-lg z-50;
+    @apply fixed top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-2 rounded-md shadow-lg z-50;
+    background-color: var(--color-primary);
     animation: slideDown 0.3s ease-out;
   }
 
