@@ -22,7 +22,8 @@ export const POST: APIRoute = async ({ request }) => {
   const verification = await checkBotId();
 
   if (verification.isBot) {
-    return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
+    console.log('BotID: Access denied');
+    // return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
   }
 
   const formData = await request.formData();
