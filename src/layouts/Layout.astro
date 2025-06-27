@@ -11,6 +11,7 @@ import Metadata from '~/components/common/Metadata.astro';
 import SiteVerification from '~/components/common/SiteVerification.astro';
 import Analytics from '~/components/common/Analytics.astro';
 import BasicScripts from '~/components/common/BasicScripts.astro';
+import { BotIdClient } from 'botid/client';
 
 // Comment the line below to disable View Transitions
 import { ClientRouter } from 'astro:transitions';
@@ -23,6 +24,17 @@ export interface Props {
 
 const { metadata = {} } = Astro.props;
 const { language, textDirection } = I18N;
+
+const protectedRoutes = [
+  {
+    path: '/api/submit-to-notion',
+    method: 'POST',
+  },
+  {
+    path: '/api/response-test',
+    method: 'POST',
+  },
+];
 ---
 
 <!doctype html>
@@ -34,6 +46,7 @@ const { language, textDirection } = I18N;
     <Metadata {...metadata} />
     <SiteVerification />
     <Analytics />
+    <BotIdClient protect={protectedRoutes} />
 
     <!-- Comment the line below to disable View Transitions -->
     <ClientRouter fallback="swap" />

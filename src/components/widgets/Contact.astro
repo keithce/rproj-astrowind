@@ -3,7 +3,7 @@ import FormContainer from '~/components/ui/Form.astro';
 import Headline from '~/components/ui/Headline.astro';
 import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import type { Contact as Props } from '~/types';
-import { BotIdClient } from 'botid/client';
+
 
 const {
   title = await Astro.slots.render('title'),
@@ -21,17 +21,6 @@ const {
   classes = {},
   bg = await Astro.slots.render('bg'),
 } = Astro.props;
-
-const protectedRoutes = [
-  {
-    path: '/api/submit-to-notion',
-    method: 'POST',
-  },
-  {
-    path: '/api/response-test',
-    method: 'POST',
-  },
-] satisfies Array<{ path: string; method: string }>;
 ---
 
 <WidgetWrapper id={id} isDark={isDark} containerClass={`max-w-7xl mx-auto ${classes?.container ?? ''}`} bg={bg}>
@@ -51,5 +40,5 @@ const protectedRoutes = [
       </div>
     )
   }
-  <BotIdClient protect={protectedRoutes} />
+  
 </WidgetWrapper>
