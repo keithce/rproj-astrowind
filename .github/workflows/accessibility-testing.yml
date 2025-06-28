@@ -189,6 +189,15 @@ jobs:
       - name: 🔍 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
+      # Ensure Node.js and pnpm are available for the security audit step
+      - name: 📦 Setup Node.js for Security Scan
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Install pnpm
+        run: npm install -g pnpm@10.11.0
+
       - name: 🛡️ Run Security Audit
         run: |
           pnpm audit --audit-level moderate
