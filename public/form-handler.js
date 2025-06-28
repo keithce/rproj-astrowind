@@ -112,6 +112,9 @@ class SimpleFormHandler {
       if (response.status >= 300 && response.status < 400) {
         // Handle redirects manually when fetch keeps the original 3xx response (e.g., 303)
         const locationHeader = response.headers.get('Location');
+        console.log('✅ Form submitted: redirect received to location header:', locationHeader);
+        console.log('✅ Form submitted: redirect received to response url:', response.url);
+        
         const redirectTo = response.redirected ? response.url : locationHeader;
         if (redirectTo) {
           console.log('✅ Form submitted – redirecting to thank-you page:', redirectTo);
