@@ -124,16 +124,40 @@ class SimpleFormHandler {
       }
       if (response.ok) {
         console.log('✅ Form submitted successfully');
-        const redirectTo = response.redirected ? response.url : response.headers.get('X-Redirect-URL');
-        console.log('✅ Form submitted: redirect received to location header:', response.headers.get('X-Redirect-URL'));
-        console.log('✅ Form submitted: redirect received to response url:', response.url);
-        
+
+        // Try to determine redirect destination
+        let redirectTo = response.redirected ? response.url : response.headers.get('X-Redirect-URL');
+
+        // If not available in headers, attempt to read JSON body for { data: { redirect: "..." } }
+        if (!redirectTo) {
+          try {
+            const cloned = response.clone(); // clone so body can be read without locking
+            const json = await cloned.json();
+            if (
+              json &&
+              json.success === true &&
+              json.data &&
+              typeof json.data.redirect === 'string'
+            ) {
+              redirectTo = json.data.redirect;
+            }
+          } catch (jsonErr) {
+            // Ignore JSON parse errors—logging for debug only
+            console.warn('ℹ️ Unable to parse JSON response for redirect:', jsonErr);
+          }
+        }
+
+        console.log('✅ Form submitted: resolved redirectTo =>', redirectTo);
+
         if (redirectTo) {
-          console.log('✅ Form submitted – redirecting to thank-you page:', redirectTo);
+          console.log('🚀 Redirecting browser to:', redirectTo);
           window.location.href = redirectTo;
           return; // Stop further processing
         }
+
+        // Fallback: just show success message without redirect
         this.showSuccess();
+
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Submission failed' }));
         console.error('❌ Server error:', errorData);
