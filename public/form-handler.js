@@ -53,8 +53,8 @@ class SimpleFormHandler {
         return;
       }
 
-      // Store original button text
-      this.originalButtonText = this.submitButton.textContent || 'Submit';
+      // Store original button HTML
+      this.originalButtonHTML = this.submitButton.innerHTML;
       
       // Add single event listener to form
       this.form.addEventListener('submit', (event) => {
@@ -109,10 +109,17 @@ class SimpleFormHandler {
       
       console.log('📡 Server response received:', response.status);
       
-      if (response.redirected) {
-        console.log('✅ Form submitted successfully, redirecting...');
-        window.location.href = response.url;
-      } else if (response.ok) {
+      if (response.status >= 300 && response.status < 400) {
+        // Handle redirects manually when fetch keeps the original 3xx response (e.g., 303)
+        const locationHeader = response.headers.get('Location');
+        const redirectTo = response.redirected ? response.url : locationHeader;
+        if (redirectTo) {
+          console.log('✅ Form submitted – redirecting to thank-you page:', redirectTo);
+          window.location.href = redirectTo;
+          return; // Stop further processing
+        }
+      }
+      if (response.ok) {
         console.log('✅ Form submitted successfully');
         this.showSuccess();
       } else {
@@ -208,12 +215,12 @@ class SimpleFormHandler {
     
     if (isLoading) {
       this.submitButton.disabled = true;
-      this.submitButton.textContent = 'Sending...';
+      this.submitButton.innerHTML = 'Sending...';
       this.submitButton.classList.add('btn-loading');
       console.log('⏳ Loading state enabled');
     } else {
       this.submitButton.disabled = false;
-      this.submitButton.textContent = this.originalButtonText;
+      this.submitButton.innerHTML = this.originalButtonHTML;
       this.submitButton.classList.remove('btn-loading');
       console.log('✅ Loading state disabled');
     }
@@ -271,10 +278,10 @@ class SimpleFormHandler {
     console.log('❌ Showing error message:', message);
     
     const errorElement = document.createElement('div');
-    errorElement.className = 'px-4 py-3 mb-4 text-red-700 bg-red-50 rounded border border-red-200 form-error';
+    errorElement.className = 'px-4 py-2 mb-4 text-sm text-red-800 bg-red-100 rounded-md border border-red-200 form-error';
     errorElement.innerHTML = `
-      <div class="flex">
-        <span class="mr-2">⚠️</span>
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14M9 21h6a2 2 0 002-2V9l-3-3H7a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         <span>${message}</span>
       </div>
     `;
