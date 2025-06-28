@@ -6,12 +6,12 @@ import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
 import { checkBotId } from 'botid/server';
-import { 
-  ApiErrors, 
-  jsonResponse, 
-  classifyError, 
+import {
+  ApiErrors,
+  jsonResponse,
+  classifyError,
   createValidationErrorResponse,
-  createSuccessResponse
+  createSuccessResponse,
 } from '../../utils/api-responses';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
@@ -38,33 +38,33 @@ export const POST: APIRoute = async ({ request }) => {
     const data = Object.fromEntries(formData.entries());
     const result = schema.safeParse(data);
     if (!result.success) {
-      return jsonResponse(
-        createValidationErrorResponse(result.error.flatten().fieldErrors),
-        400
-      );
+      return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
 
     // Business logic validation (422 Unprocessable Entity)
     if (message.length > 5000) {
       return jsonResponse(
-        ApiErrors.unprocessableEntity(
-          'Message is too long. Please keep it under 5000 characters.',
-          { field: 'message', limit: 5000, current: message.length }
-        ),
+        ApiErrors.unprocessableEntity('Message is too long. Please keep it under 5000 characters.', {
+          field: 'message',
+          limit: 5000,
+          current: message.length,
+        }),
         422
       );
     }
 
     // Additional business logic checks
     const prohibitedWords = ['spam', 'test123', 'dummy'];
-    const hasProhibitedContent = prohibitedWords.some(word => 
-      message.toLowerCase().includes(word) || name.toLowerCase().includes(word)
+    const hasProhibitedContent = prohibitedWords.some(
+      (word) => message.toLowerCase().includes(word) || name.toLowerCase().includes(word)
     );
-    
+
     if (hasProhibitedContent) {
       return jsonResponse(
-        ApiErrors.contentValidation('Your submission contains content that cannot be processed. Please revise and try again.'),
+        ApiErrors.contentValidation(
+          'Your submission contains content that cannot be processed. Please revise and try again.'
+        ),
         422
       );
     }
@@ -120,12 +120,12 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify(body), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
-    
+
     // Use standardized error classification
     const { type, status, message: errorMessage } = classifyError(error);
 
@@ -155,7 +155,7 @@ export const POST: APIRoute = async ({ request }) => {
         error: type,
         message: errorMessage,
         status: status,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       status
     );

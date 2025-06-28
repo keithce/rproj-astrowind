@@ -5,10 +5,10 @@ import Button from '~/components/ui/Button.astro';
 const { inputs, textarea, disclaimer, button = 'Contact us', description = '', formAction } = Astro.props;
 ---
 
-<form 
-  id="notion-contact-form" 
-  action={formAction ? formAction : undefined} 
-  method="POST" 
+<form
+  id="notion-contact-form"
+  action={formAction ? formAction : undefined}
+  method="POST"
   data-astro-reload
   novalidate
   role="form"
@@ -18,36 +18,16 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   <!-- ARIA Live Regions for Dynamic Feedback -->
   <div class="sr-only">
     <!-- Status announcements for form state changes -->
-    <div 
-      id="form-status" 
-      aria-live="polite" 
-      aria-atomic="true"
-      class="sr-only"
-    ></div>
-    
+    <div id="form-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
     <!-- Error announcements for validation feedback -->
-    <div 
-      id="form-errors" 
-      aria-live="assertive" 
-      aria-atomic="false"
-      class="sr-only"
-    ></div>
-    
+    <div id="form-errors" aria-live="assertive" aria-atomic="false" class="sr-only"></div>
+
     <!-- Success announcements for completion feedback -->
-    <div 
-      id="form-success" 
-      aria-live="polite" 
-      aria-atomic="true"
-      class="sr-only"
-    ></div>
-    
+    <div id="form-success" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
     <!-- Loading state announcements -->
-    <div 
-      id="form-loading" 
-      aria-live="polite" 
-      aria-atomic="true"
-      class="sr-only"
-    ></div>
+    <div id="form-loading" aria-live="polite" aria-atomic="true" class="sr-only"></div>
   </div>
 
   {
@@ -68,7 +48,11 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
               {label && (
                 <label for={name} class="block mb-2 text-sm font-medium text-foreground">
                   {label}
-                  {required && <span class="ml-1 text-red-500" aria-label="required">*</span>}
+                  {required && (
+                    <span class="ml-1 text-red-500" aria-label="required">
+                      *
+                    </span>
+                  )}
                 </label>
               )}
               {type === 'select' ? (
@@ -101,21 +85,16 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
-              
-              <!-- Individual field error container -->
-              <div 
-                id={`${name}-error`} 
-                class="field-error-message" 
+
+              <div
+                id={`${name}-error`}
+                class="field-error-message"
                 role="alert"
                 aria-live="assertive"
                 style="display: none;"
-              ></div>
-              
-              <!-- Individual field help text -->
-              <div 
-                id={`${name}-help`} 
-                class="sr-only field-help-text"
-              >
+              />
+
+              <div id={`${name}-help`} class="sr-only field-help-text">
                 {required ? `${label} is required` : `${label} is optional`}
               </div>
             </div>
@@ -128,7 +107,11 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
       <div class="mb-6">
         <label for="textarea" class="block mb-2 text-sm font-medium text-foreground">
           {textarea.label}
-          {textarea.required && <span class="ml-1 text-red-500" aria-label="required">*</span>}
+          {textarea.required && (
+            <span class="ml-1 text-red-500" aria-label="required">
+              *
+            </span>
+          )}
         </label>
         <textarea
           id="textarea"
@@ -141,21 +124,16 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           aria-describedby="textarea-error textarea-help"
           class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
         />
-        
-        <!-- Textarea error container -->
-        <div 
-          id="textarea-error" 
-          class="field-error-message" 
+
+        <div
+          id="textarea-error"
+          class="field-error-message"
           role="alert"
           aria-live="assertive"
           style="display: none;"
-        ></div>
-        
-        <!-- Textarea help text -->
-        <div 
-          id="textarea-help" 
-          class="sr-only field-help-text"
-        >
+        />
+
+        <div id="textarea-help" class="sr-only field-help-text">
           {textarea.required ? `${textarea.label} is required` : `${textarea.label} is optional`}
         </div>
       </div>
@@ -192,13 +170,8 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
         <Button variant="primary" type="submit" aria-describedby="submit-status">
           {button}
         </Button>
-        
-        <!-- Submit button status -->
-        <div 
-          id="submit-status" 
-          class="sr-only" 
-          aria-live="polite"
-        ></div>
+
+        <div id="submit-status" class="sr-only" aria-live="polite" />
       </div>
     )
   }
@@ -206,7 +179,9 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     description && (
       <div class="mt-3 text-center">
-        <p id="form-description" class="text-sm text-muted-foreground">{description}</p>
+        <p id="form-description" class="text-sm text-muted-foreground">
+          {description}
+        </p>
       </div>
     )
   }

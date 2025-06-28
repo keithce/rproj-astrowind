@@ -270,7 +270,10 @@
   textarea:disabled,
   select:disabled {
     @apply opacity-60 cursor-not-allowed bg-muted/30 border-border/50;
-    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .field-disabled:focus,
@@ -289,13 +292,13 @@
   }
 
   /* Checkbox and radio disabled states */
-  input[type="checkbox"]:disabled,
-  input[type="radio"]:disabled {
+  input[type='checkbox']:disabled,
+  input[type='radio']:disabled {
     @apply opacity-50 cursor-not-allowed;
   }
 
-  input[type="checkbox"]:disabled + label,
-  input[type="radio"]:disabled + label {
+  input[type='checkbox']:disabled + label,
+  input[type='radio']:disabled + label {
     @apply opacity-50 cursor-not-allowed;
   }
 
@@ -323,9 +326,9 @@
     .loading-spinner {
       animation: none;
     }
-    
+
     .loading-spinner::before {
-      content: "⏳";
+      content: '⏳';
       @apply text-sm;
     }
   }

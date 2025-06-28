@@ -30,6 +30,7 @@ This project implements comprehensive accessibility features that meet and excee
 **Location**: `src/components/ui/Form.astro`
 
 **Features**:
+
 - Status announcements (`aria-live="polite"`)
 - Error announcements (`aria-live="assertive"`)
 - Success confirmations (`aria-live="polite"`)
@@ -37,6 +38,7 @@ This project implements comprehensive accessibility features that meet and excee
 - Field-specific error containers
 
 **Usage**:
+
 ```html
 <!-- Status updates -->
 <div id="form-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
@@ -50,6 +52,7 @@ This project implements comprehensive accessibility features that meet and excee
 **Location**: `src/layouts/Layout.astro`
 
 **Features**:
+
 - Skip to main content
 - Skip to navigation
 - Skip to footer
@@ -57,6 +60,7 @@ This project implements comprehensive accessibility features that meet and excee
 - Proper landmark roles
 
 **Usage**:
+
 ```html
 <div class="skip-links">
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -71,6 +75,7 @@ This project implements comprehensive accessibility features that meet and excee
 **Location**: `src/layouts/Layout.astro` (FocusManager class)
 
 **Features**:
+
 - Modal focus trapping with stacking support
 - Keyboard navigation patterns (grid, tree, tab-list)
 - Roving tabindex implementation
@@ -81,6 +86,7 @@ This project implements comprehensive accessibility features that meet and excee
 **Usage Examples**:
 
 #### Grid Navigation
+
 ```html
 <div data-complex-navigation="grid" data-grid-columns="3">
   <div role="gridcell" tabindex="0">Item 1</div>
@@ -90,6 +96,7 @@ This project implements comprehensive accessibility features that meet and excee
 ```
 
 #### Roving Tabindex
+
 ```html
 <div data-roving-tabindex>
   <button data-roving-item tabindex="0">Button 1</button>
@@ -99,6 +106,7 @@ This project implements comprehensive accessibility features that meet and excee
 ```
 
 #### Auto-Focus Dynamic Content
+
 ```html
 <div data-auto-focus data-announce="New content loaded">
   <input data-focus-target type="text" />
@@ -110,6 +118,7 @@ This project implements comprehensive accessibility features that meet and excee
 **Location**: `src/assets/styles/tailwind.css`
 
 **Features**:
+
 - Advanced focus indicators with box-shadow effects
 - High contrast mode support
 - Reduced motion compliance
@@ -117,6 +126,7 @@ This project implements comprehensive accessibility features that meet and excee
 - Complex navigation component styling
 
 **Key Classes**:
+
 ```css
 .skip-link:focus {
   top: 20px;
@@ -124,7 +134,7 @@ This project implements comprehensive accessibility features that meet and excee
 }
 
 .keyboard-focused {
-  outline: 2px solid var(--color-primary, #0052FF) !important;
+  outline: 2px solid var(--color-primary, #0052ff) !important;
   box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1) !important;
 }
 ```
@@ -134,11 +144,13 @@ This project implements comprehensive accessibility features that meet and excee
 ### Automated Testing
 
 #### Run All Accessibility Tests
+
 ```bash
 npm run test:accessibility
 ```
 
 #### Run Specific Test Types
+
 ```bash
 # Axe-core tests
 npm run axe:scan
@@ -154,6 +166,7 @@ npm run test:a11y:full
 ```
 
 #### Environment-Specific Testing
+
 ```bash
 # Development environment
 npm run test:accessibility:ci
@@ -168,18 +181,21 @@ npm run test:accessibility:production
 ### Manual Testing
 
 #### Screen Reader Testing
+
 1. **NVDA (Windows)**: Test with NVDA screen reader
 2. **JAWS (Windows)**: Verify JAWS compatibility
 3. **VoiceOver (macOS)**: Test with VoiceOver
 4. **Orca (Linux)**: Validate with Orca screen reader
 
 #### Keyboard Navigation Testing
+
 1. **Tab Navigation**: Verify all interactive elements are reachable
 2. **Skip Links**: Test skip link functionality (Tab → Enter)
 3. **Modal Focus**: Verify focus trapping in modals
 4. **Arrow Key Navigation**: Test grid and menu navigation
 
 #### Visual Testing
+
 1. **High Contrast Mode**: Test with high contrast enabled
 2. **Zoom Testing**: Verify functionality at 200% zoom
 3. **Color Contrast**: Use tools like WebAIM Color Contrast Checker
@@ -188,11 +204,13 @@ npm run test:accessibility:production
 ### Debug Mode
 
 Enable focus debugging by adding `?debug-focus` to any URL:
+
 ```
 http://localhost:4321/contact?debug-focus
 ```
 
 This will:
+
 - Log focus movements to console
 - Show visual focus indicators
 - Display focus order numbers
@@ -204,6 +222,7 @@ This will:
 When creating new components, follow these accessibility guidelines:
 
 #### 1. Semantic HTML
+
 ```astro
 <!-- Good -->
 <button type="button" aria-label="Close dialog">×</button>
@@ -213,15 +232,10 @@ When creating new components, follow these accessibility guidelines:
 ```
 
 #### 2. ARIA Labels and Descriptions
+
 ```astro
 <!-- Form inputs -->
-<input
-  type="email"
-  id="email"
-  aria-label="Email address"
-  aria-describedby="email-help"
-  aria-required="true"
-/>
+<input type="email" id="email" aria-label="Email address" aria-describedby="email-help" aria-required="true" />
 <div id="email-help">We'll never share your email</div>
 
 <!-- Buttons -->
@@ -229,6 +243,7 @@ When creating new components, follow these accessibility guidelines:
 ```
 
 #### 3. Focus Management
+
 ```astro
 <!-- Modal with proper focus management -->
 <div role="dialog" aria-labelledby="modal-title" aria-modal="true">
@@ -240,6 +255,7 @@ When creating new components, follow these accessibility guidelines:
 ```
 
 #### 4. Live Regions for Dynamic Content
+
 ```javascript
 // Announce dynamic changes
 function announceToScreenReader(message) {
@@ -248,7 +264,7 @@ function announceToScreenReader(message) {
   announcement.className = 'sr-only';
   announcement.textContent = message;
   document.body.appendChild(announcement);
-  
+
   setTimeout(() => {
     document.body.removeChild(announcement);
   }, 2000);
@@ -258,6 +274,7 @@ function announceToScreenReader(message) {
 ### CSS Guidelines
 
 #### Focus Indicators
+
 ```css
 /* Always provide visible focus indicators */
 .interactive-element:focus {
@@ -276,6 +293,7 @@ function announceToScreenReader(message) {
 ```
 
 #### Motion Accessibility
+
 ```css
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
@@ -289,12 +307,11 @@ function announceToScreenReader(message) {
 ### JavaScript Guidelines
 
 #### Event Handling
+
 ```javascript
 // Support both mouse and keyboard interactions
 function handleInteraction(event) {
-  if (event.type === 'click' || 
-      (event.type === 'keydown' && 
-       (event.key === 'Enter' || event.key === ' '))) {
+  if (event.type === 'click' || (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))) {
     // Handle interaction
   }
 }
@@ -304,21 +321,22 @@ element.addEventListener('keydown', handleInteraction);
 ```
 
 #### Focus Management
+
 ```javascript
 // Manage focus properly
 function openModal(modal) {
   // Store current focus
   const previousFocus = document.activeElement;
-  
+
   // Show modal
   modal.style.display = 'block';
-  
+
   // Focus first element in modal
   const firstFocusable = modal.querySelector('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
   if (firstFocusable) {
     firstFocusable.focus();
   }
-  
+
   // Restore focus when modal closes
   modal.addEventListener('close', () => {
     previousFocus.focus();
@@ -331,8 +349,10 @@ function openModal(modal) {
 ### Common Issues
 
 #### 1. Skip Links Not Working
+
 **Problem**: Skip links don't navigate to target elements
 **Solution**: Ensure target elements have proper IDs and tabindex="-1"
+
 ```html
 <main id="main-content" tabindex="-1">
   <!-- content -->
@@ -340,15 +360,19 @@ function openModal(modal) {
 ```
 
 #### 2. Screen Reader Not Announcing Changes
+
 **Problem**: Dynamic content changes aren't announced
 **Solution**: Use proper ARIA live regions
+
 ```html
 <div aria-live="polite" id="status-updates"></div>
 ```
 
 #### 3. Focus Trapped in Modal
+
 **Problem**: Can't escape modal with keyboard
 **Solution**: Implement proper escape key handling
+
 ```javascript
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalOpen) {
@@ -358,8 +382,10 @@ document.addEventListener('keydown', (e) => {
 ```
 
 #### 4. Poor Color Contrast
+
 **Problem**: Text doesn't meet contrast requirements
 **Solution**: Use tools to verify contrast ratios
+
 ```bash
 npm run test:contrast
 ```
@@ -367,20 +393,26 @@ npm run test:contrast
 ### Testing Issues
 
 #### 1. Automated Tests Failing
+
 **Check**:
+
 - Server is running on correct port
 - All dependencies are installed
 - Browser can access the application
 
 #### 2. Lighthouse Scores Low
+
 **Common Causes**:
+
 - Missing alt text on images
 - Poor color contrast
 - Missing form labels
 - Improper heading hierarchy
 
 #### 3. Axe Violations
+
 **Review**:
+
 - ARIA attributes are correctly used
 - All interactive elements have accessible names
 - Focus management is properly implemented
@@ -388,22 +420,26 @@ npm run test:contrast
 ## 📚 Resources
 
 ### Standards and Guidelines
+
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - [WebAIM Resources](https://webaim.org/)
 
 ### Testing Tools
+
 - [axe DevTools](https://www.deque.com/axe/devtools/)
 - [WAVE Web Accessibility Evaluator](https://wave.webaim.org/)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 - [Color Contrast Analyzer](https://www.tpgi.com/color-contrast-checker/)
 
 ### Screen Readers
+
 - [NVDA (Free)](https://www.nvaccess.org/download/)
 - [JAWS (Commercial)](https://www.freedomscientific.com/products/software/jaws/)
 - [VoiceOver (macOS/iOS)](https://support.apple.com/guide/voiceover/)
 
 ### Browser Extensions
+
 - [axe DevTools](https://chrome.google.com/webstore/detail/axe-devtools-web-accessib/lhdoppojpmngadmnindnejefpokejbdd)
 - [WAVE Evaluation Tool](https://chrome.google.com/webstore/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh)
 - [Accessibility Insights](https://accessibilityinsights.io/)
@@ -419,6 +455,7 @@ When contributing to this project:
 5. **Update documentation** when adding new accessibility features
 
 ### Pre-commit Checklist
+
 - [ ] All accessibility tests pass
 - [ ] Keyboard navigation works properly
 - [ ] Screen reader announcements are appropriate
@@ -435,4 +472,4 @@ For accessibility-related questions or issues:
 3. Review the troubleshooting section
 4. Create an issue with accessibility testing results
 
-Remember: Accessibility is not a feature to be added later—it should be considered from the beginning of the development process. 
+Remember: Accessibility is not a feature to be added later—it should be considered from the beginning of the development process.

@@ -62,7 +62,9 @@ const description = "We love connecting with creative minds! Reach out and let's
 <noscript>
   <style>
     /* Hide JS-only UI elements when JavaScript is disabled */
-    .js-only { display: none !important; }
+    .js-only {
+      display: none !important;
+    }
   </style>
 </noscript>
 
@@ -71,7 +73,7 @@ const description = "We love connecting with creative minds! Reach out and let's
 <script>
   // Progressive enhancement marker - signals that JS is available
   document.documentElement.classList.add('js-enabled');
-  
+
   // Verify form handler integration
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('notion-contact-form');

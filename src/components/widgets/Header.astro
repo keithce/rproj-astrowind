@@ -80,9 +80,9 @@ const {
         <ToggleMenu />
       </div>
     </div>
-    <nav 
-      id="navigation" 
-      role="navigation" 
+    <nav
+      id="navigation"
+      role="navigation"
       aria-label="Main navigation"
       class="hidden items-center w-full md:flex md:w-auto md:mx-5 text-foreground md:justify-self-center"
     >
@@ -96,19 +96,21 @@ const {
     >
       <div class="flex justify-between items-center w-full md:w-auto">
         <div class="flex gap-2 items-center">
-          {showSearch && (
-            <div id="search" role="search" aria-label="Site search">
-              <Search 
-                id="header-search" 
-                className="w-64 hidden lg:block" 
-                uiOptions={{
-                  placeholder: "Search...",
-                  showImages: false,
-                  excerptLength: 15
-                }}
-              />
-            </div>
-          )}
+          {
+            showSearch && (
+              <div id="search" role="search" aria-label="Site search">
+                <Search
+                  id="header-search"
+                  className="w-64 hidden lg:block"
+                  uiOptions={{
+                    placeholder: 'Search...',
+                    showImages: false,
+                    excerptLength: 15,
+                  }}
+                />
+              </div>
+            )
+          }
           {showToggleTheme && <ToggleTheme iconClass="w-6 h-6 md:w-5 md:h-5 md:inline-block" />}
           {
             showRssFeed && (
@@ -126,7 +128,10 @@ const {
           actions?.length ? (
             <span class="ml-4 rtl:ml-0 rtl:mr-4">
               {actions.map((btnProps) => (
-                <Button {...btnProps} class="py-2.5 ml-2 w-auto text-sm font-semibold whitespace-nowrap shadow-none px-5.5 md:px-6" />
+                <Button
+                  {...btnProps}
+                  class="py-2.5 ml-2 w-auto text-sm font-semibold whitespace-nowrap shadow-none px-5.5 md:px-6"
+                />
               ))}
             </span>
           ) : (

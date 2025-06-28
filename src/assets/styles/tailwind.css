@@ -719,13 +719,13 @@
 
   /* Focus Management Styles */
   .keyboard-navigation *:focus {
-    outline: 2px solid var(--color-primary, #0052FF) !important;
+    outline: 2px solid var(--color-primary, #0052ff) !important;
     outline-offset: 2px !important;
     border-radius: 4px;
   }
 
   .keyboard-focused {
-    outline: 2px solid var(--color-primary, #0052FF) !important;
+    outline: 2px solid var(--color-primary, #0052ff) !important;
     outline-offset: 2px !important;
     border-radius: 4px;
     box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1) !important;
@@ -754,20 +754,20 @@
   }
 
   /* Menu navigation styles */
-  [role="menu"] [role="menuitem"]:focus,
-  [role="menubar"] [role="menuitem"]:focus {
+  [role='menu'] [role='menuitem']:focus,
+  [role='menubar'] [role='menuitem']:focus {
     background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
     color: var(--color-primary);
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: -2px;
   }
 
   /* Modal focus management */
-  [role="dialog"] {
+  [role='dialog'] {
     outline: none;
   }
 
-  [role="dialog"]:focus-within {
+  [role='dialog']:focus-within {
     box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.2);
   }
 
@@ -807,7 +807,7 @@
   }
 
   .js-focus-visible .focus-visible {
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: 2px;
   }
 
@@ -818,15 +818,15 @@
     position: relative;
   }
 
-  [data-nested-interactive][data-active-nested="true"] {
+  [data-nested-interactive][data-active-nested='true'] {
     z-index: 10;
   }
 
-  [data-nested-interactive][data-active-nested="true"]::before {
+  [data-nested-interactive][data-active-nested='true']::before {
     content: '';
     position: absolute;
     inset: -2px;
-    border: 2px solid var(--color-primary, #0052FF);
+    border: 2px solid var(--color-primary, #0052ff);
     border-radius: 6px;
     pointer-events: none;
     opacity: 0.3;
@@ -844,77 +844,77 @@
   }
 
   [data-roving-item]:focus {
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: 2px;
     background-color: rgba(0, 82, 255, 0.1);
   }
 
   /* Complex navigation components */
-  [data-complex-navigation="grid"] {
+  [data-complex-navigation='grid'] {
     display: grid;
     gap: 0.5rem;
   }
 
-  [data-complex-navigation="grid"] [role="gridcell"],
-  [data-complex-navigation="grid"] [data-grid-cell] {
+  [data-complex-navigation='grid'] [role='gridcell'],
+  [data-complex-navigation='grid'] [data-grid-cell] {
     @apply p-2 border border-gray-200 rounded cursor-pointer;
     transition: all 0.2s ease;
   }
 
-  [data-complex-navigation="grid"] [role="gridcell"]:focus,
-  [data-complex-navigation="grid"] [data-grid-cell]:focus {
+  [data-complex-navigation='grid'] [role='gridcell']:focus,
+  [data-complex-navigation='grid'] [data-grid-cell]:focus {
     border-color: var(--color-primary);
     background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: 2px;
   }
 
   /* Tab list navigation */
-  [data-complex-navigation="tab-list"] {
+  [data-complex-navigation='tab-list'] {
     display: flex;
     border-bottom: 1px solid #e5e7eb;
   }
 
-  [data-complex-navigation="tab-list"] [role="tab"] {
+  [data-complex-navigation='tab-list'] [role='tab'] {
     @apply px-4 py-2 border-b-2 border-transparent cursor-pointer;
     transition: all 0.2s ease;
   }
 
-  [data-complex-navigation="tab-list"] [role="tab"]:focus {
+  [data-complex-navigation='tab-list'] [role='tab']:focus {
     border-color: var(--color-primary);
     background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: 2px;
   }
 
-  [data-complex-navigation="tab-list"] [role="tab"][aria-selected="true"] {
+  [data-complex-navigation='tab-list'] [role='tab'][aria-selected='true'] {
     border-color: var(--color-primary);
     color: var(--color-primary);
     font-weight: 500;
   }
 
   /* Tree navigation */
-  [data-complex-navigation="tree"] {
+  [data-complex-navigation='tree'] {
     @apply space-y-1;
   }
 
-  [data-complex-navigation="tree"] [role="treeitem"] {
+  [data-complex-navigation='tree'] [role='treeitem'] {
     @apply block p-2 rounded cursor-pointer;
     transition: all 0.2s ease;
   }
 
-  [data-complex-navigation="tree"] [role="treeitem"]:focus {
+  [data-complex-navigation='tree'] [role='treeitem']:focus {
     background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
     color: var(--color-primary);
-    outline: 2px solid var(--color-primary, #0052FF);
+    outline: 2px solid var(--color-primary, #0052ff);
     outline-offset: 2px;
   }
 
-  [data-complex-navigation="tree"] [role="treeitem"][aria-expanded="true"] > .tree-icon::before {
+  [data-complex-navigation='tree'] [role='treeitem'][aria-expanded='true'] > .tree-icon::before {
     content: '▼';
   }
 
-  [data-complex-navigation="tree"] [role="treeitem"][aria-expanded="false"] > .tree-icon::before {
+  [data-complex-navigation='tree'] [role='treeitem'][aria-expanded='false'] > .tree-icon::before {
     content: '▶';
   }
 
@@ -950,7 +950,8 @@
   }
 
   @keyframes focusPulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0;
     }
     50% {
@@ -959,15 +960,15 @@
   }
 
   /* Modal stacking support */
-  [role="dialog"] {
+  [role='dialog'] {
     z-index: 1000;
   }
 
-  [role="dialog"] + [role="dialog"] {
+  [role='dialog'] + [role='dialog'] {
     z-index: 1010;
   }
 
-  [role="dialog"] + [role="dialog"] + [role="dialog"] {
+  [role='dialog'] + [role='dialog'] + [role='dialog'] {
     z-index: 1020;
   }
 
@@ -988,11 +989,11 @@
 
   /* Enhanced focus indicators for complex interactions */
   .keyboard-navigation [data-roving-item]:focus,
-  .keyboard-navigation [role="gridcell"]:focus,
-  .keyboard-navigation [role="tab"]:focus,
-  .keyboard-navigation [role="treeitem"]:focus {
-    box-shadow: 
-      0 0 0 2px var(--color-primary, #0052FF),
+  .keyboard-navigation [role='gridcell']:focus,
+  .keyboard-navigation [role='tab']:focus,
+  .keyboard-navigation [role='treeitem']:focus {
+    box-shadow:
+      0 0 0 2px var(--color-primary, #0052ff),
       0 0 0 4px rgba(0, 82, 255, 0.2);
   }
 
@@ -1016,15 +1017,15 @@
 
   /* High contrast mode enhancements for advanced features */
   @media (prefers-contrast: high) {
-    [data-nested-interactive][data-active-nested="true"]::before {
+    [data-nested-interactive][data-active-nested='true']::before {
       border-color: #000;
       opacity: 1;
     }
 
     [data-roving-item]:focus,
-    [role="gridcell"]:focus,
-    [role="tab"]:focus,
-    [role="treeitem"]:focus {
+    [role='gridcell']:focus,
+    [role='tab']:focus,
+    [role='treeitem']:focus {
       outline: 3px solid #000 !important;
       background-color: #fff !important;
       color: #000 !important;
@@ -1050,8 +1051,8 @@
 
 /* Performance-optimized keyframes with reduced motion support */
 @keyframes spin {
-  to { 
-    transform: rotate(360deg); 
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -1140,15 +1141,15 @@
 
 /* Success form replacement animations */
 @keyframes checkmark-scale {
-  0% { 
+  0% {
     transform: scale(0) translateZ(0);
     opacity: 0;
   }
-  50% { 
+  50% {
     transform: scale(1.2) translateZ(0);
     opacity: 1;
   }
-  100% { 
+  100% {
     transform: scale(1) translateZ(0);
     opacity: 1;
   }
@@ -1166,16 +1167,21 @@
 }
 
 @keyframes progress-fill {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1) translateZ(0);
     opacity: 1;
   }
-  50% { 
+  50% {
     transform: scale(1.02) translateZ(0);
     opacity: 0.9;
   }
@@ -1199,7 +1205,7 @@
   .btn-loading .loading-spinner {
     animation: none;
   }
-  
+
   .fade-in,
   .slide-up,
   .error-message.show,
@@ -1208,11 +1214,13 @@
     animation: none;
     transition: opacity 0.2s ease;
   }
-  
+
   .field-error {
-    transition: border-color 0.1s ease, box-shadow 0.1s ease;
+    transition:
+      border-color 0.1s ease,
+      box-shadow 0.1s ease;
   }
-  
+
   .form-loading,
   .form-disabled input,
   .form-disabled select,
@@ -1220,7 +1228,7 @@
   .form-disabled button {
     transition: opacity 0.1s ease;
   }
-  
+
   /* Provide alternative visual feedback when animations are disabled */
   .spinner,
   .loading::before,

@@ -26,15 +26,12 @@ export interface ValidationErrorResponse extends ApiErrorResponse {
 }
 
 // Success response creator
-export function createSuccessResponse<T = unknown>(
-  data?: T,
-  message?: string
-): ApiSuccessResponse<T> {
+export function createSuccessResponse<T = unknown>(data?: T, message?: string): ApiSuccessResponse<T> {
   return {
     success: true,
     data,
     message,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -51,7 +48,7 @@ export function createErrorResponse(
     message,
     details,
     status,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -67,7 +64,7 @@ export function createValidationErrorResponse(
     errors,
     details: { fieldCount: Object.keys(errors).length },
     status: 400,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -80,8 +77,8 @@ export function jsonResponse(
     status,
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache'
-    }
+      'Cache-Control': 'no-cache',
+    },
   });
 }
 
@@ -89,9 +86,9 @@ export function redirectResponse(url: string, status: number = 303): Response {
   return new Response(null, {
     status,
     headers: {
-      'Location': url,
-      'Cache-Control': 'no-cache'
-    }
+      Location: url,
+      'Cache-Control': 'no-cache',
+    },
   });
 }
 
@@ -100,48 +97,43 @@ export const ApiErrors = {
   // 400 Client Errors
   badRequest: (message: string = 'Bad request', details?: Record<string, unknown>) =>
     createErrorResponse('bad_request', message, 400, details),
-  
-  validation: (errors: Record<string, string[]>, message?: string) =>
-    createValidationErrorResponse(errors, message),
-  
+
+  validation: (errors: Record<string, string[]>, message?: string) => createValidationErrorResponse(errors, message),
+
   // 401 Unauthorized
-  unauthorized: (message: string = 'Authentication required') =>
-    createErrorResponse('unauthorized', message, 401),
-  
+  unauthorized: (message: string = 'Authentication required') => createErrorResponse('unauthorized', message, 401),
+
   // 403 Forbidden
-  forbidden: (message: string = 'Access denied') =>
-    createErrorResponse('forbidden', message, 403),
-  
-  botDetected: () =>
-    createErrorResponse('access_denied', 'Bot traffic is not allowed', 403),
-  
+  forbidden: (message: string = 'Access denied') => createErrorResponse('forbidden', message, 403),
+
+  botDetected: () => createErrorResponse('access_denied', 'Bot traffic is not allowed', 403),
+
   // 404 Not Found
-  notFound: (message: string = 'Resource not found') =>
-    createErrorResponse('not_found', message, 404),
-  
+  notFound: (message: string = 'Resource not found') => createErrorResponse('not_found', message, 404),
+
   // 422 Unprocessable Entity
   unprocessableEntity: (message: string, details?: Record<string, unknown>) =>
     createErrorResponse('validation_error', message, 422, details),
-  
+
   contentValidation: (message: string = 'Content cannot be processed') =>
     createErrorResponse('content_validation_error', message, 422),
-  
+
   // 500 Server Errors
   internalServer: (message: string = 'Internal server error. Please try again later.') =>
     createErrorResponse('server_error', message, 500),
-  
+
   // 502 Bad Gateway
   externalService: (service: string = 'external service') =>
-    createErrorResponse('external_service_error', 
-      `${service} temporarily unavailable. Please try again.`, 502),
-  
+    createErrorResponse('external_service_error', `${service} temporarily unavailable. Please try again.`, 502),
+
   // 503 Service Unavailable
-  serviceUnavailable: (message: string = 'Service temporarily unavailable. Please check your connection and try again.') =>
-    createErrorResponse('network_error', message, 503),
-  
+  serviceUnavailable: (
+    message: string = 'Service temporarily unavailable. Please check your connection and try again.'
+  ) => createErrorResponse('network_error', message, 503),
+
   // 504 Gateway Timeout
   timeout: (message: string = 'Request timed out. Please try again.') =>
-    createErrorResponse('timeout_error', message, 504)
+    createErrorResponse('timeout_error', message, 504),
 };
 
 // Error classification helper
@@ -161,7 +153,7 @@ export function classifyError(error: unknown): {
     return {
       type: 'external_service_error',
       status: 502,
-      message: 'External service temporarily unavailable. Please try again.'
+      message: 'External service temporarily unavailable. Please try again.',
     };
   }
 
@@ -170,7 +162,7 @@ export function classifyError(error: unknown): {
     return {
       type: 'network_error',
       status: 503,
-      message: 'Service temporarily unavailable. Please check your connection and try again.'
+      message: 'Service temporarily unavailable. Please check your connection and try again.',
     };
   }
 
@@ -179,7 +171,7 @@ export function classifyError(error: unknown): {
     return {
       type: 'timeout_error',
       status: 504,
-      message: 'Request timed out. Please try again.'
+      message: 'Request timed out. Please try again.',
     };
   }
 
@@ -188,7 +180,7 @@ export function classifyError(error: unknown): {
     return {
       type: 'email_service_error',
       status: 502,
-      message: 'Email service temporarily unavailable. Your form was submitted but confirmation email may be delayed.'
+      message: 'Email service temporarily unavailable. Your form was submitted but confirmation email may be delayed.',
     };
   }
 
@@ -196,7 +188,7 @@ export function classifyError(error: unknown): {
   return {
     type: 'server_error',
     status: 500,
-    message: 'Internal server error. Please try again later.'
+    message: 'Internal server error. Please try again later.',
   };
 }
 
@@ -211,4 +203,4 @@ export function isApiErrorResponse(response: unknown): response is ApiErrorRespo
 
 export function isValidationErrorResponse(response: unknown): response is ValidationErrorResponse {
   return isApiErrorResponse(response) && 'error' in response && response.error === 'validation_error';
-} 
+}

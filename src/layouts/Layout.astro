@@ -67,7 +67,7 @@ const protectedRoutes = [
     </div>
 
     <BasicScripts />
-    
+
     <!-- Focus Management Script -->
     <script is:inline>
       // Focus Management and Skip Links Enhancement
@@ -82,49 +82,49 @@ const protectedRoutes = [
             'textarea:not([disabled])',
             '[tabindex]:not([tabindex="-1"])',
             'details > summary',
-            '[contenteditable]'
+            '[contenteditable]',
           ].join(', ');
-          
+
           this.init();
         }
 
-                 init() {
-           this.setupSkipLinks();
-           this.setupFocusTrapping();
-           this.setupKeyboardNavigation();
-           this.setupFocusIndicators();
-           this.setupModalFocusManagement();
-           
-           // Advanced focus management features
-           this.handleNestedInteractives();
-           this.setupAdvancedModalManagement();
-           this.setupAdvancedKeyboardNavigation();
-           this.setupDynamicContentFocus();
-           this.setupFocusDebugging();
-         }
+        init() {
+          this.setupSkipLinks();
+          this.setupFocusTrapping();
+          this.setupKeyboardNavigation();
+          this.setupFocusIndicators();
+          this.setupModalFocusManagement();
+
+          // Advanced focus management features
+          this.handleNestedInteractives();
+          this.setupAdvancedModalManagement();
+          this.setupAdvancedKeyboardNavigation();
+          this.setupDynamicContentFocus();
+          this.setupFocusDebugging();
+        }
 
         /**
          * Setup skip links with smooth scrolling and focus management
          */
         setupSkipLinks() {
           const skipLinks = document.querySelectorAll('.skip-link');
-          
-          skipLinks.forEach(link => {
+
+          skipLinks.forEach((link) => {
             link.addEventListener('click', (e) => {
               e.preventDefault();
               const targetId = link.getAttribute('href').substring(1);
               const targetElement = document.getElementById(targetId);
-              
+
               if (targetElement) {
                 // Smooth scroll to target
                 targetElement.scrollIntoView({
                   behavior: 'smooth',
-                  block: 'start'
+                  block: 'start',
                 });
-                
+
                 // Set focus to target element
                 this.setFocusToElement(targetElement);
-                
+
                 // Announce to screen readers
                 this.announceSkipAction(targetElement);
               }
@@ -138,18 +138,18 @@ const protectedRoutes = [
         setFocusToElement(element) {
           // Store original tabindex
           const originalTabIndex = element.getAttribute('tabindex');
-          
+
           // Make element focusable if it's not already
           if (!element.matches(this.focusableSelectors)) {
             element.setAttribute('tabindex', '-1');
           }
-          
+
           // Focus the element
           element.focus();
-          
+
           // Add visual focus indicator
           element.classList.add('skip-target-focused');
-          
+
           // Remove temporary tabindex after focus
           setTimeout(() => {
             if (originalTabIndex === null && element.getAttribute('tabindex') === '-1') {
@@ -167,14 +167,15 @@ const protectedRoutes = [
           announcement.setAttribute('aria-live', 'polite');
           announcement.setAttribute('aria-atomic', 'true');
           announcement.className = 'sr-only';
-          
-          const targetName = targetElement.getAttribute('aria-label') || 
-                           targetElement.textContent.trim().substring(0, 50) || 
-                           'content section';
-          
+
+          const targetName =
+            targetElement.getAttribute('aria-label') ||
+            targetElement.textContent.trim().substring(0, 50) ||
+            'content section';
+
           announcement.textContent = `Skipped to ${targetName}`;
           document.body.appendChild(announcement);
-          
+
           // Remove announcement after it's been read
           setTimeout(() => {
             document.body.removeChild(announcement);
@@ -267,7 +268,7 @@ const protectedRoutes = [
           e.preventDefault();
           const menuItems = menu.querySelectorAll('[role="menuitem"], a, button');
           const currentIndex = Array.from(menuItems).indexOf(document.activeElement);
-          
+
           let nextIndex;
           if (e.key === 'ArrowDown') {
             nextIndex = currentIndex + 1;
@@ -276,7 +277,7 @@ const protectedRoutes = [
             nextIndex = currentIndex - 1;
             if (nextIndex < 0) nextIndex = menuItems.length - 1;
           }
-          
+
           menuItems[nextIndex].focus();
         }
 
@@ -319,7 +320,7 @@ const protectedRoutes = [
           document.addEventListener('modal:open', (e) => {
             this.lastFocusedElement = document.activeElement;
             const modal = e.detail?.modal;
-            
+
             // Focus first focusable element in modal
             setTimeout(() => {
               const firstFocusable = modal.querySelector(this.focusableSelectors);
@@ -343,10 +344,10 @@ const protectedRoutes = [
          */
         closeModal(modal) {
           modal.setAttribute('aria-hidden', 'true');
-          
+
           // Dispatch close event
           const closeEvent = new CustomEvent('modal:close', {
-            detail: { modal }
+            detail: { modal },
           });
           document.dispatchEvent(closeEvent);
         }
@@ -378,12 +379,12 @@ const protectedRoutes = [
           announcement.setAttribute('aria-atomic', 'true');
           announcement.className = 'sr-only';
           announcement.textContent = `Navigated to ${newPageTitle}`;
-          
+
           document.body.appendChild(announcement);
-          
+
           // Note: Removed auto-focus of main content to prevent disruptive visual overlay
           // The main content will still be accessible via skip links if needed
-          
+
           // Clean up announcement
           setTimeout(() => {
             if (document.body.contains(announcement)) {
@@ -396,374 +397,372 @@ const protectedRoutes = [
          * Advanced Focus Management Features
          */
 
-         /**
-          * Handle nested interactive elements focus management
-          */
-         handleNestedInteractives() {
-           document.addEventListener('focusin', (e) => {
-             const target = e.target;
-             const nestedContainer = target.closest('[data-nested-interactive]');
-             
-             if (nestedContainer) {
-               this.manageNestedFocus(target, nestedContainer);
-             }
-           });
-         }
+        /**
+         * Handle nested interactive elements focus management
+         */
+        handleNestedInteractives() {
+          document.addEventListener('focusin', (e) => {
+            const target = e.target;
+            const nestedContainer = target.closest('[data-nested-interactive]');
 
-         /**
-          * Manage focus within nested interactive containers
-          */
-         manageNestedFocus(target, container) {
-           // Store the active nested container
-           container.setAttribute('data-active-nested', 'true');
-           
-           // Clear other active nested containers
-           document.querySelectorAll('[data-nested-interactive][data-active-nested="true"]')
-             .forEach(el => {
-               if (el !== container) {
-                 el.removeAttribute('data-active-nested');
-               }
-             });
-         }
-
-         /**
-          * Enhanced modal focus management with stacking support
-          */
-         setupAdvancedModalManagement() {
-           this.modalStack = [];
-           
-           // Enhanced modal open handler
-           document.addEventListener('modal:open', (e) => {
-             const modal = e.detail?.modal;
-             if (!modal) return;
-             
-             // Add to modal stack
-             this.modalStack.push({
-               modal: modal,
-               previousFocus: document.activeElement,
-               previousAriaHidden: this.getAriaHiddenElements()
-             });
-             
-             // Hide other content from screen readers
-             this.hideContentFromScreenReaders(modal);
-             
-             // Set up focus trap
-             this.setupModalFocusTrap(modal);
-             
-             // Focus first element
-             setTimeout(() => {
-               this.focusFirstInModal(modal);
-             }, 100);
-           });
-           
-           // Enhanced modal close handler
-           document.addEventListener('modal:close', (e) => {
-             const modal = e.detail?.modal;
-             if (!modal || this.modalStack.length === 0) return;
-             
-             // Find and remove modal from stack
-             const modalIndex = this.modalStack.findIndex(item => item.modal === modal);
-             if (modalIndex === -1) return;
-             
-             const modalData = this.modalStack[modalIndex];
-             this.modalStack.splice(modalIndex, 1);
-             
-             // Restore aria-hidden states
-             this.restoreAriaHiddenElements(modalData.previousAriaHidden);
-             
-             // Restore focus
-             if (modalData.previousFocus && modalData.previousFocus.focus) {
-               modalData.previousFocus.focus();
-             }
-             
-             // If there are other modals, focus the top one
-             if (this.modalStack.length > 0) {
-               const topModal = this.modalStack[this.modalStack.length - 1];
-               this.focusFirstInModal(topModal.modal);
-             }
-           });
-         }
-
-         /**
-          * Hide content from screen readers when modal is open
-          */
-         hideContentFromScreenReaders(activeModal) {
-           const elementsToHide = document.querySelectorAll('body > *:not(.sr-only)');
-           elementsToHide.forEach(el => {
-             if (!el.contains(activeModal) && !el.hasAttribute('aria-hidden')) {
-               el.setAttribute('aria-hidden', 'true');
-               el.setAttribute('data-modal-hidden', 'true');
-             }
-           });
-         }
-
-         /**
-          * Get currently aria-hidden elements
-          */
-         getAriaHiddenElements() {
-           return Array.from(document.querySelectorAll('[aria-hidden="true"]'))
-             .map(el => ({
-               element: el,
-               wasHidden: !el.hasAttribute('data-modal-hidden')
-             }));
-         }
-
-         /**
-          * Restore aria-hidden states
-          */
-         restoreAriaHiddenElements(_previousStates) {
-           // Remove modal-added aria-hidden
-           document.querySelectorAll('[data-modal-hidden="true"]').forEach(el => {
-             el.removeAttribute('aria-hidden');
-             el.removeAttribute('data-modal-hidden');
-           });
-         }
-
-         /**
-          * Setup focus trap for modal
-          */
-         setupModalFocusTrap(modal) {
-           const focusableElements = this.getFocusableElements(modal);
-           
-           if (focusableElements.length === 0) {
-             // Make modal itself focusable if no focusable children
-             modal.setAttribute('tabindex', '-1');
-           }
-           
-           // Store focusable elements on modal for reference
-           modal._focusableElements = focusableElements;
-         }
-
-         /**
-          * Focus first element in modal
-          */
-         focusFirstInModal(modal) {
-           const focusableElements = modal._focusableElements || this.getFocusableElements(modal);
-           
-           if (focusableElements.length > 0) {
-             focusableElements[0].focus();
-           } else {
-             modal.focus();
-           }
-         }
-
-         /**
-          * Enhanced keyboard navigation for complex components
-          */
-         setupAdvancedKeyboardNavigation() {
-           // Handle complex component navigation
-           document.addEventListener('keydown', (e) => {
-             const target = e.target;
-             const complexComponent = target.closest('[data-complex-navigation]');
-             
-             if (complexComponent) {
-               this.handleComplexNavigation(e, complexComponent);
-             }
-           });
-           
-           // Handle roving tabindex pattern
-           this.setupRovingTabindex();
-         }
-
-         /**
-          * Handle navigation in complex components
-          */
-         handleComplexNavigation(e, component) {
-           const navigationType = component.getAttribute('data-complex-navigation');
-           
-           switch (navigationType) {
-             case 'grid':
-               this.handleGridNavigation(e, component);
-               break;
-             case 'tree':
-               this.handleTreeNavigation(e, component);
-               break;
-             case 'tab-list':
-               this.handleTabListNavigation(e, component);
-               break;
-           }
-         }
-
-         /**
-          * Handle grid navigation (arrow keys in 2D)
-          */
-         handleGridNavigation(e, grid) {
-           if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
-           
-           e.preventDefault();
-           
-           const cells = Array.from(grid.querySelectorAll('[role="gridcell"], [data-grid-cell]'));
-           const currentIndex = cells.indexOf(e.target);
-           const columns = parseInt(grid.getAttribute('data-grid-columns') || '1');
-           
-           let nextIndex;
-           switch (e.key) {
-             case 'ArrowRight':
-               nextIndex = currentIndex + 1;
-               break;
-             case 'ArrowLeft':
-               nextIndex = currentIndex - 1;
-               break;
-             case 'ArrowDown':
-               nextIndex = currentIndex + columns;
-               break;
-             case 'ArrowUp':
-               nextIndex = currentIndex - columns;
-               break;
-           }
-           
-           if (nextIndex >= 0 && nextIndex < cells.length) {
-             cells[nextIndex].focus();
-           }
-         }
-
-         /**
-          * Setup roving tabindex pattern
-          */
-         setupRovingTabindex() {
-           document.addEventListener('focusin', (e) => {
-             const target = e.target;
-             const rovingContainer = target.closest('[data-roving-tabindex]');
-             
-             if (rovingContainer) {
-               this.updateRovingTabindex(rovingContainer, target);
-             }
-           });
-         }
-
-         /**
-          * Update roving tabindex
-          */
-         updateRovingTabindex(container, activeElement) {
-           const items = container.querySelectorAll('[data-roving-item]');
-           
-           items.forEach(item => {
-             if (item === activeElement) {
-               item.setAttribute('tabindex', '0');
-             } else {
-               item.setAttribute('tabindex', '-1');
-             }
-           });
-         }
-
-         /**
-          * Dynamic content focus management
-          */
-         setupDynamicContentFocus() {
-           // Watch for dynamic content insertion
-           const observer = new MutationObserver((mutations) => {
-             mutations.forEach(mutation => {
-               if (mutation.type === 'childList') {
-                 mutation.addedNodes.forEach(node => {
-                   if (node.nodeType === Node.ELEMENT_NODE) {
-                     this.handleDynamicContentAdded(node);
-                   }
-                 });
-               }
-             });
-           });
-           
-           observer.observe(document.body, {
-             childList: true,
-             subtree: true
-           });
-         }
-
-         /**
-          * Handle dynamically added content
-          */
-         handleDynamicContentAdded(element) {
-           // If element requests focus
-           if (element.hasAttribute('data-auto-focus')) {
-             setTimeout(() => {
-               const focusTarget = element.querySelector('[data-focus-target]') || element;
-               if (focusTarget.focus) {
-                 focusTarget.focus();
-                 
-                 // Announce content addition
-                 this.announceDynamicContent(element);
-               }
-             }, 100);
-           }
-           
-           // Setup any new interactive components
-           this.initializeNewInteractiveElements(element);
-         }
-
-         /**
-          * Announce dynamic content to screen readers
-          */
-         announceDynamicContent(element) {
-           const announcement = element.getAttribute('data-announce') || 'New content added';
-           
-           const liveRegion = document.createElement('div');
-           liveRegion.setAttribute('aria-live', 'polite');
-           liveRegion.className = 'sr-only';
-           liveRegion.textContent = announcement;
-           
-           document.body.appendChild(liveRegion);
-           
-           setTimeout(() => {
-             document.body.removeChild(liveRegion);
-           }, 2000);
-         }
-
-         /**
-          * Initialize new interactive elements
-          */
-         initializeNewInteractiveElements(container) {
-           // Setup any new roving tabindex containers
-           const rovingContainers = container.querySelectorAll('[data-roving-tabindex]');
-           rovingContainers.forEach(container => {
-             const firstItem = container.querySelector('[data-roving-item]');
-             if (firstItem) {
-               firstItem.setAttribute('tabindex', '0');
-             }
-           });
-           
-           // Setup any new complex navigation components
-           const complexComponents = container.querySelectorAll('[data-complex-navigation]');
-           complexComponents.forEach(_component => {
-             // Initialize component-specific setup
-           });
-         }
-
-         /**
-          * Focus debugging and monitoring
-          */
-         setupFocusDebugging() {
-           if (window.location.search.includes('debug-focus')) {
-             document.addEventListener('focusin', (e) => {
-               console.log('Focus moved to:', e.target);
-               e.target.style.outline = '3px solid red';
-             });
-             
-             document.addEventListener('focusout', (e) => {
-               e.target.style.outline = '';
-             });
-           }
-         }
-      }
-
-              // Initialize focus manager when DOM is ready
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', () => {
-            window.focusManager = new FocusManager();
+            if (nestedContainer) {
+              this.manageNestedFocus(target, nestedContainer);
+            }
           });
-        } else {
-          window.focusManager = new FocusManager();
         }
 
-              // Store focus manager globally
-        window.focusManager = new FocusManager();
-        
-        // Handle page navigation for SPA-like behavior
-        document.addEventListener('astro:page-load', () => {
-          const pageTitle = document.title;
-          if (window.focusManager) {
-            window.focusManager.handlePageNavigation(pageTitle);
+        /**
+         * Manage focus within nested interactive containers
+         */
+        manageNestedFocus(target, container) {
+          // Store the active nested container
+          container.setAttribute('data-active-nested', 'true');
+
+          // Clear other active nested containers
+          document.querySelectorAll('[data-nested-interactive][data-active-nested="true"]').forEach((el) => {
+            if (el !== container) {
+              el.removeAttribute('data-active-nested');
+            }
+          });
+        }
+
+        /**
+         * Enhanced modal focus management with stacking support
+         */
+        setupAdvancedModalManagement() {
+          this.modalStack = [];
+
+          // Enhanced modal open handler
+          document.addEventListener('modal:open', (e) => {
+            const modal = e.detail?.modal;
+            if (!modal) return;
+
+            // Add to modal stack
+            this.modalStack.push({
+              modal: modal,
+              previousFocus: document.activeElement,
+              previousAriaHidden: this.getAriaHiddenElements(),
+            });
+
+            // Hide other content from screen readers
+            this.hideContentFromScreenReaders(modal);
+
+            // Set up focus trap
+            this.setupModalFocusTrap(modal);
+
+            // Focus first element
+            setTimeout(() => {
+              this.focusFirstInModal(modal);
+            }, 100);
+          });
+
+          // Enhanced modal close handler
+          document.addEventListener('modal:close', (e) => {
+            const modal = e.detail?.modal;
+            if (!modal || this.modalStack.length === 0) return;
+
+            // Find and remove modal from stack
+            const modalIndex = this.modalStack.findIndex((item) => item.modal === modal);
+            if (modalIndex === -1) return;
+
+            const modalData = this.modalStack[modalIndex];
+            this.modalStack.splice(modalIndex, 1);
+
+            // Restore aria-hidden states
+            this.restoreAriaHiddenElements(modalData.previousAriaHidden);
+
+            // Restore focus
+            if (modalData.previousFocus && modalData.previousFocus.focus) {
+              modalData.previousFocus.focus();
+            }
+
+            // If there are other modals, focus the top one
+            if (this.modalStack.length > 0) {
+              const topModal = this.modalStack[this.modalStack.length - 1];
+              this.focusFirstInModal(topModal.modal);
+            }
+          });
+        }
+
+        /**
+         * Hide content from screen readers when modal is open
+         */
+        hideContentFromScreenReaders(activeModal) {
+          const elementsToHide = document.querySelectorAll('body > *:not(.sr-only)');
+          elementsToHide.forEach((el) => {
+            if (!el.contains(activeModal) && !el.hasAttribute('aria-hidden')) {
+              el.setAttribute('aria-hidden', 'true');
+              el.setAttribute('data-modal-hidden', 'true');
+            }
+          });
+        }
+
+        /**
+         * Get currently aria-hidden elements
+         */
+        getAriaHiddenElements() {
+          return Array.from(document.querySelectorAll('[aria-hidden="true"]')).map((el) => ({
+            element: el,
+            wasHidden: !el.hasAttribute('data-modal-hidden'),
+          }));
+        }
+
+        /**
+         * Restore aria-hidden states
+         */
+        restoreAriaHiddenElements(_previousStates) {
+          // Remove modal-added aria-hidden
+          document.querySelectorAll('[data-modal-hidden="true"]').forEach((el) => {
+            el.removeAttribute('aria-hidden');
+            el.removeAttribute('data-modal-hidden');
+          });
+        }
+
+        /**
+         * Setup focus trap for modal
+         */
+        setupModalFocusTrap(modal) {
+          const focusableElements = this.getFocusableElements(modal);
+
+          if (focusableElements.length === 0) {
+            // Make modal itself focusable if no focusable children
+            modal.setAttribute('tabindex', '-1');
           }
+
+          // Store focusable elements on modal for reference
+          modal._focusableElements = focusableElements;
+        }
+
+        /**
+         * Focus first element in modal
+         */
+        focusFirstInModal(modal) {
+          const focusableElements = modal._focusableElements || this.getFocusableElements(modal);
+
+          if (focusableElements.length > 0) {
+            focusableElements[0].focus();
+          } else {
+            modal.focus();
+          }
+        }
+
+        /**
+         * Enhanced keyboard navigation for complex components
+         */
+        setupAdvancedKeyboardNavigation() {
+          // Handle complex component navigation
+          document.addEventListener('keydown', (e) => {
+            const target = e.target;
+            const complexComponent = target.closest('[data-complex-navigation]');
+
+            if (complexComponent) {
+              this.handleComplexNavigation(e, complexComponent);
+            }
+          });
+
+          // Handle roving tabindex pattern
+          this.setupRovingTabindex();
+        }
+
+        /**
+         * Handle navigation in complex components
+         */
+        handleComplexNavigation(e, component) {
+          const navigationType = component.getAttribute('data-complex-navigation');
+
+          switch (navigationType) {
+            case 'grid':
+              this.handleGridNavigation(e, component);
+              break;
+            case 'tree':
+              this.handleTreeNavigation(e, component);
+              break;
+            case 'tab-list':
+              this.handleTabListNavigation(e, component);
+              break;
+          }
+        }
+
+        /**
+         * Handle grid navigation (arrow keys in 2D)
+         */
+        handleGridNavigation(e, grid) {
+          if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+
+          e.preventDefault();
+
+          const cells = Array.from(grid.querySelectorAll('[role="gridcell"], [data-grid-cell]'));
+          const currentIndex = cells.indexOf(e.target);
+          const columns = parseInt(grid.getAttribute('data-grid-columns') || '1');
+
+          let nextIndex;
+          switch (e.key) {
+            case 'ArrowRight':
+              nextIndex = currentIndex + 1;
+              break;
+            case 'ArrowLeft':
+              nextIndex = currentIndex - 1;
+              break;
+            case 'ArrowDown':
+              nextIndex = currentIndex + columns;
+              break;
+            case 'ArrowUp':
+              nextIndex = currentIndex - columns;
+              break;
+          }
+
+          if (nextIndex >= 0 && nextIndex < cells.length) {
+            cells[nextIndex].focus();
+          }
+        }
+
+        /**
+         * Setup roving tabindex pattern
+         */
+        setupRovingTabindex() {
+          document.addEventListener('focusin', (e) => {
+            const target = e.target;
+            const rovingContainer = target.closest('[data-roving-tabindex]');
+
+            if (rovingContainer) {
+              this.updateRovingTabindex(rovingContainer, target);
+            }
+          });
+        }
+
+        /**
+         * Update roving tabindex
+         */
+        updateRovingTabindex(container, activeElement) {
+          const items = container.querySelectorAll('[data-roving-item]');
+
+          items.forEach((item) => {
+            if (item === activeElement) {
+              item.setAttribute('tabindex', '0');
+            } else {
+              item.setAttribute('tabindex', '-1');
+            }
+          });
+        }
+
+        /**
+         * Dynamic content focus management
+         */
+        setupDynamicContentFocus() {
+          // Watch for dynamic content insertion
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach((node) => {
+                  if (node.nodeType === Node.ELEMENT_NODE) {
+                    this.handleDynamicContentAdded(node);
+                  }
+                });
+              }
+            });
+          });
+
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+          });
+        }
+
+        /**
+         * Handle dynamically added content
+         */
+        handleDynamicContentAdded(element) {
+          // If element requests focus
+          if (element.hasAttribute('data-auto-focus')) {
+            setTimeout(() => {
+              const focusTarget = element.querySelector('[data-focus-target]') || element;
+              if (focusTarget.focus) {
+                focusTarget.focus();
+
+                // Announce content addition
+                this.announceDynamicContent(element);
+              }
+            }, 100);
+          }
+
+          // Setup any new interactive components
+          this.initializeNewInteractiveElements(element);
+        }
+
+        /**
+         * Announce dynamic content to screen readers
+         */
+        announceDynamicContent(element) {
+          const announcement = element.getAttribute('data-announce') || 'New content added';
+
+          const liveRegion = document.createElement('div');
+          liveRegion.setAttribute('aria-live', 'polite');
+          liveRegion.className = 'sr-only';
+          liveRegion.textContent = announcement;
+
+          document.body.appendChild(liveRegion);
+
+          setTimeout(() => {
+            document.body.removeChild(liveRegion);
+          }, 2000);
+        }
+
+        /**
+         * Initialize new interactive elements
+         */
+        initializeNewInteractiveElements(container) {
+          // Setup any new roving tabindex containers
+          const rovingContainers = container.querySelectorAll('[data-roving-tabindex]');
+          rovingContainers.forEach((container) => {
+            const firstItem = container.querySelector('[data-roving-item]');
+            if (firstItem) {
+              firstItem.setAttribute('tabindex', '0');
+            }
+          });
+
+          // Setup any new complex navigation components
+          const complexComponents = container.querySelectorAll('[data-complex-navigation]');
+          complexComponents.forEach((_component) => {
+            // Initialize component-specific setup
+          });
+        }
+
+        /**
+         * Focus debugging and monitoring
+         */
+        setupFocusDebugging() {
+          if (window.location.search.includes('debug-focus')) {
+            document.addEventListener('focusin', (e) => {
+              console.log('Focus moved to:', e.target);
+              e.target.style.outline = '3px solid red';
+            });
+
+            document.addEventListener('focusout', (e) => {
+              e.target.style.outline = '';
+            });
+          }
+        }
+      }
+
+      // Initialize focus manager when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          window.focusManager = new FocusManager();
         });
+      } else {
+        window.focusManager = new FocusManager();
+      }
+
+      // Store focus manager globally
+      window.focusManager = new FocusManager();
+
+      // Handle page navigation for SPA-like behavior
+      document.addEventListener('astro:page-load', () => {
+        const pageTitle = document.title;
+        if (window.focusManager) {
+          window.focusManager.handlePageNavigation(pageTitle);
+        }
+      });
     </script>
   </body>
 </html>

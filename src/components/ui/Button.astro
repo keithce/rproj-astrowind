@@ -23,8 +23,8 @@ const variants = {
 
 {
   type === 'button' || type === 'submit' || type === 'reset' ? (
-    <button 
-      type={type} 
+    <button
+      type={type}
       class={twMerge(variants[variant] || '', className)}
       data-original-text={text}
       aria-describedby={type === 'submit' ? 'submit-button-help' : undefined}

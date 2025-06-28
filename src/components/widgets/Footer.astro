@@ -26,9 +26,9 @@ export interface Props {
 const { socialLinks = [], secondaryLinks = [], links = [], footNote = '', theme = 'light' } = Astro.props;
 ---
 
-<footer 
-  id="footer" 
-  role="contentinfo" 
+<footer
+  id="footer"
+  role="contentinfo"
   class:list={[{ dark: theme === 'dark' }, 'relative border-t border-border not-prose']}
   aria-label="Site footer"
 >
