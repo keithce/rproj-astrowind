@@ -42,9 +42,10 @@ jobs:
       
     - name: Start development server
       run: |
-        pnpm run dev &
-        sleep 10
-        curl -f http://localhost:4321 || exit 1
+        pnpm run dev > dev.log 2>&1 &
+        sleep 20
+        cat dev.log
+        curl -f http://localhost:4321 || (cat dev.log && exit 1)
       
     - name: Run contrast validation
       run: pnpm run test:contrast
