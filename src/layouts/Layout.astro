@@ -381,11 +381,8 @@ const protectedRoutes = [
           
           document.body.appendChild(announcement);
           
-          // Focus main content area
-          const mainContent = document.getElementById('main-content');
-          if (mainContent) {
-            this.setFocusToElement(mainContent);
-          }
+          // Note: Removed auto-focus of main content to prevent disruptive visual overlay
+          // The main content will still be accessible via skip links if needed
           
           // Clean up announcement
           setTimeout(() => {

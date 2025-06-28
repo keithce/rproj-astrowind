@@ -50,36 +50,6 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
     ></div>
   </div>
 
-  <!-- Visible status containers for dynamic content -->
-  <div id="form-messages" class="mb-4" role="region" aria-label="Form status messages">
-    <!-- Error messages container -->
-    <div 
-      id="error-container" 
-      class="error-message" 
-      role="alert"
-      aria-live="assertive"
-      style="display: none;"
-    ></div>
-    
-    <!-- Success messages container -->
-    <div 
-      id="success-container" 
-      class="success-message" 
-      role="status"
-      aria-live="polite"
-      style="display: none;"
-    ></div>
-    
-    <!-- Loading indicator container -->
-    <div 
-      id="loading-container" 
-      class="loading-message" 
-      role="status"
-      aria-live="polite"
-      style="display: none;"
-    ></div>
-  </div>
-
   {
     inputs &&
       inputs.map(

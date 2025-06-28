@@ -731,13 +731,11 @@
     box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1) !important;
   }
 
-  /* Skip target focus indicator */
+  /* Skip target focus indicator - simplified to avoid disruptive overlays */
   .skip-target-focused {
-    outline: 3px solid #fbbf24 !important;
-    outline-offset: 4px !important;
-    background-color: rgba(251, 191, 36, 0.1) !important;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    outline: 2px solid var(--color-primary) !important;
+    outline-offset: 2px !important;
+    transition: outline 0.2s ease;
   }
 
   /* Enhanced focus indicators for form elements */
@@ -920,16 +918,17 @@
     content: '▶';
   }
 
-  /* Dynamic content focus indicators */
+  /* Dynamic content focus indicators - simplified to avoid disruptive overlays */
   [data-auto-focus] {
-    animation: focusSlideIn 0.3s ease-out;
+    /* Animation removed to prevent disruptive effects */
   }
 
   [data-focus-target] {
     position: relative;
   }
 
-  [data-focus-target]::after {
+  /* Focus target visual indicator disabled to prevent overlay disruption */
+  /*[data-focus-target]::after {
     content: '';
     position: absolute;
     inset: -4px;
@@ -937,7 +936,7 @@
     border-radius: 8px;
     opacity: 0;
     animation: focusPulse 2s ease-in-out;
-  }
+  }*/
 
   @keyframes focusSlideIn {
     from {
@@ -997,8 +996,8 @@
       0 0 0 4px rgba(0, 82, 255, 0.2);
   }
 
-  /* Accessibility announcements styling */
-  .focus-announcement {
+  /* Accessibility announcements styling - disabled to prevent disruptive overlays */
+  /*.focus-announcement {
     @apply fixed top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-2 rounded-md shadow-lg z-50;
     background-color: var(--color-primary);
     animation: slideDown 0.3s ease-out;
@@ -1013,7 +1012,7 @@
       opacity: 1;
       transform: translate(-50%, 0);
     }
-  }
+  }*/
 
   /* High contrast mode enhancements for advanced features */
   @media (prefers-contrast: high) {

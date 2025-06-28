@@ -30,7 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (verification.isBot) {
     console.log('BotID: Access denied');
-    return jsonResponse(ApiErrors.botDetected(), 403);
+    // return jsonResponse(ApiErrors.botDetected(), 403);
   }
 
   const formData = await request.formData();
