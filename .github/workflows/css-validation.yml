@@ -49,10 +49,13 @@ jobs:
           libxcursor1 \
           libxdamage1 \
           libxi6 \
-          libxtst6
+          libxtst6 \
+          chromium-browser
 
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
+      env:
+        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
       
     - name: Build project
       run: pnpm run build
@@ -72,6 +75,9 @@ jobs:
       
     - name: Run visual verification (headless)
       run: pnpm run visual-verify:ci
+      env:
+        PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+        DISPLAY: ""
       
     - name: Generate documentation
       run: pnpm run docs:css

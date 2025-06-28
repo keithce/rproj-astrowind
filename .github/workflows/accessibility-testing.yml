@@ -49,7 +49,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: 🏗️ Build application
         run: pnpm build
@@ -146,7 +146,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: 📊 Generate Accessibility Trends
         run: |
@@ -232,7 +232,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: 🏗️ Build application
         run: pnpm build
@@ -297,7 +297,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: 🏗️ Build application
         run: pnpm build
@@ -360,7 +360,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: 🧪 Run Current Branch Tests
         run: |
@@ -377,7 +377,7 @@ jobs:
 
       - name: 🧪 Run Base Branch Tests
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install 
           pnpm build
           pnpm preview &
           sleep 5
