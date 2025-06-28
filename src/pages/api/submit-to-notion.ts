@@ -9,9 +9,9 @@ import { checkBotId } from 'botid/server';
 import { 
   ApiErrors, 
   jsonResponse, 
-  redirectResponse, 
   classifyError, 
-  createValidationErrorResponse 
+  createValidationErrorResponse,
+  createSuccessResponse
 } from '../../utils/api-responses';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
@@ -114,8 +114,15 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-    const redirectUrl = new URL('/thank-you', request.url);
-    return redirectResponse(redirectUrl.toString());
+    // Return JSON success response so client JS can handle redirect
+    const redirectUrl = '/thank-you';
+    const body = createSuccessResponse({ redirect: redirectUrl }, 'Form submitted successfully');
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
     
