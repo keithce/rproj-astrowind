@@ -21,7 +21,7 @@ on:
           - production
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '20'
   PNPM_VERSION: '9'
 
 jobs:
@@ -204,7 +204,7 @@ jobs:
 
       - name: 🛡️ Run Security Audit
         run: |
-          npm audit --audit-level moderate
+          pnpm audit --audit-level moderate
           
       - name: 🧪 Accessibility Security Check
         run: |

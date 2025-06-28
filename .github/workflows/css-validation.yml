@@ -30,31 +30,36 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        cache: 'pnpm'
         
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.11.0
+
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
       
     - name: Build project
-      run: npm run build
+      run: pnpm run build
       
     - name: Start development server
       run: |
-        npm run dev &
+        pnpm run dev &
         sleep 10
         curl -f http://localhost:4321 || exit 1
       
     - name: Run contrast validation
-      run: npm run test:contrast
+      run: pnpm run test:contrast
       
     - name: Run CSS variable validation
-      run: npm run validate:css
+      run: pnpm run validate:css
       
     - name: Run visual verification (headless)
-      run: npm run visual-verify:ci
+      run: pnpm run visual-verify:ci
       
     - name: Generate documentation
-      run: npm run docs:css
+      run: pnpm run docs:css
       
     - name: Upload validation reports
       uses: actions/upload-artifact@v4
@@ -132,22 +137,27 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        cache: 'pnpm'
         
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.11.0
+
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
       
     - name: Build project
-      run: npm run build
+      run: pnpm run build
       
     - name: Start server for accessibility testing
       run: |
-        npm run preview &
+        pnpm run preview &
         sleep 5
         
     - name: Run accessibility tests
       run: |
-        npx @axe-core/cli http://localhost:4321 \
+        pnpm exec @axe-core/cli http://localhost:4321 \
           --tags wcag2a,wcag2aa,wcag21aa \
           --exit
           
