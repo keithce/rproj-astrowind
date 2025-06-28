@@ -124,6 +124,15 @@ class SimpleFormHandler {
       }
       if (response.ok) {
         console.log('✅ Form submitted successfully');
+        const redirectTo = response.redirected ? response.url : response.headers.get('X-Redirect-URL');
+        console.log('✅ Form submitted: redirect received to location header:', response.headers.get('X-Redirect-URL'));
+        console.log('✅ Form submitted: redirect received to response url:', response.url);
+        
+        if (redirectTo) {
+          console.log('✅ Form submitted – redirecting to thank-you page:', redirectTo);
+          window.location.href = redirectTo;
+          return; // Stop further processing
+        }
         this.showSuccess();
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Submission failed' }));
