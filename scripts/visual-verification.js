@@ -63,7 +63,7 @@ class VisualVerificationTester {
 
     // Launch browser
     this.browser = await puppeteer.launch({
-      headless: false, // Set to true for CI
+      headless: true, // Set to true for CI
       defaultViewport: null,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
