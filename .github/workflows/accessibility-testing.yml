@@ -422,6 +422,15 @@ jobs:
           pnpm test:accessibility:ci
           cp -r accessibility-reports current-reports
 
+      # 🚫 Stop the dev server started for the PR branch so the port is free
+      - name: 🛑 Stop PR branch dev server
+        run: |
+          echo "Killing dev server on port 4321 (if running)"
+          PID=$(lsof -t -i:4321 || true)
+          if [ -n "$PID" ]; then
+            kill $PID || true
+          fi
+
       - name: 📥 Checkout base branch
         uses: actions/checkout@v4
         with:
