@@ -170,7 +170,7 @@ jobs:
       
     - name: Start server for accessibility testing
       run: |
-        pnpm exec sirv ./dist --single --dev --port 4321 &
+        pnpm astro preview --port 4321 &
         # Wait for server readiness (max ~60 s)
         for i in {1..30}; do
           sleep 2
