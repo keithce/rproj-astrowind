@@ -77,7 +77,9 @@ export function jsonResponse(
     status,
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
   });
 }
@@ -87,7 +89,9 @@ export function redirectResponse(url: string, status: number = 303): Response {
     status,
     headers: {
       Location: url,
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
   });
 }
