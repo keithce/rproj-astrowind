@@ -29,32 +29,58 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
+        node-version: '22'
         
+    - name: Install pnpm
+      run: npm install -g pnpm@10.11.0
+
+    - name: Install browser dependencies (Chromium)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libnss3 \
+          libatk-bridge2.0-0 \
+          libxss1 \
+          libgtk-3-0 \
+          libasound2t64 \
+          libgbm-dev \
+          libxshmfence1 \
+          libxcomposite1 \
+          libxcursor1 \
+          libxdamage1 \
+          libxi6 \
+          libxtst6 \
+          chromium-browser
+
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
+      env:
+        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
       
     - name: Build project
-      run: npm run build
+      run: pnpm run build
       
     - name: Start development server
       run: |
-        npm run dev &
-        sleep 10
-        curl -f http://localhost:4321 || exit 1
+        pnpm run dev > dev.log 2>&1 &
+        sleep 20
+        cat dev.log
+        curl -f http://localhost:4321 || (cat dev.log && exit 1)
       
     - name: Run contrast validation
-      run: npm run test:contrast
+      run: pnpm run test:contrast
       
     - name: Run CSS variable validation
-      run: npm run validate:css
+      run: pnpm run validate:css
       
     - name: Run visual verification (headless)
-      run: npm run visual-verify:ci
+      run: pnpm run visual-verify:ci
+      env:
+        PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+        DISPLAY: ""
       
     - name: Generate documentation
-      run: npm run docs:css
+      run: pnpm run docs:css
       
     - name: Upload validation reports
       uses: actions/upload-artifact@v4
@@ -131,25 +157,56 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
+        node-version: '22'
         
+    - name: Install pnpm
+      run: npm install -g pnpm@10.11.0
+
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
       
+    - name: Install browser dependencies (Chrome)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libnss3 \
+          libatk-bridge2.0-0 \
+          libxss1 \
+          libgtk-3-0 \
+          libasound2t64 \
+          libgbm-dev \
+          libxshmfence1 \
+          libxcomposite1 \
+          libxcursor1 \
+          libxdamage1 \
+          libxi6 \
+          libxtst6
+
+    - name: Install matching Chrome & ChromeDriver
+      run: npx browser-driver-manager install chrome
+
     - name: Build project
-      run: npm run build
+      run: pnpm run build
       
     - name: Start server for accessibility testing
       run: |
-        npm run preview &
-        sleep 5
+        pnpm dev --port 4321 --host &
+        # Wait for server readiness (max ~60 s)
+        for i in {1..30}; do
+          sleep 2
+          if curl -sf http://localhost:4321 > /dev/null; then
+            echo "✅ Server is up!"
+            break
+          fi
+          echo "⏳ Waiting for server... ($i/30)"
+          if [ $i -eq 30 ]; then
+            echo "❌ Server did not start in time" >&2
+            exit 1
+          fi
+        done
         
     - name: Run accessibility tests
-      run: |
-        npx @axe-core/cli http://localhost:4321 \
-          --tags wcag2a,wcag2aa,wcag21aa \
-          --exit
+      run: pnpm run axe:scan
           
     - name: Upload accessibility report
       uses: actions/upload-artifact@v4

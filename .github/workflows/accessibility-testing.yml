@@ -1,5 +1,10 @@
 name: 🛡️ Accessibility Testing
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   push:
     branches: [main, develop]
@@ -22,7 +27,7 @@ on:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '9'
+  PNPM_VERSION: '10'
 
 jobs:
   accessibility-tests:
@@ -48,19 +53,6 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: 📦 Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: 🗂️ Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -69,9 +61,20 @@ jobs:
 
       - name: 🚀 Start development server
         run: |
-          pnpm dev &
-          sleep 10
-          curl -f http://localhost:4321 || exit 1
+          pnpm dev --port 4321 --host &
+          # Wait for the dev server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
         env:
           CI: true
 
@@ -159,7 +162,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile 
 
       - name: 📊 Generate Accessibility Trends
         run: |
@@ -202,9 +205,18 @@ jobs:
       - name: 🔍 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
+      # Ensure Node.js and pnpm are available for the security audit step
+      - name: 📦 Setup Node.js for Security Scan
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Install pnpm
+        run: npm install -g pnpm@10.11.0
+
       - name: 🛡️ Run Security Audit
         run: |
-          npm audit --audit-level moderate
+          pnpm audit --audit-level moderate
           
       - name: 🧪 Accessibility Security Check
         run: |
@@ -236,15 +248,27 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile 
 
       - name: 🏗️ Build application
         run: pnpm build
 
       - name: 🚀 Start server
         run: |
-          pnpm preview &
-          sleep 5
+          pnpm dev --port 4321 --host &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
 
       - name: ⚡ Run Performance Tests with Accessibility Focus
         run: |
@@ -301,15 +325,27 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile 
 
       - name: 🏗️ Build application
         run: pnpm build
 
       - name: 🚀 Start server
         run: |
-          pnpm preview &
-          sleep 5
+          pnpm dev --port 4321 --host &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
 
       - name: 📱 Test Mobile Accessibility
         run: |
@@ -364,15 +400,36 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile 
 
       - name: 🧪 Run Current Branch Tests
         run: |
           pnpm build
-          pnpm preview &
-          sleep 5
+          pnpm dev --port 4321 --host &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
           pnpm test:accessibility:ci
           cp -r accessibility-reports current-reports
+
+      # 🚫 Stop the dev server started for the PR branch so the port is free
+      - name: 🛑 Stop PR branch dev server
+        run: |
+          echo "Killing dev server on port 4321 (if running)"
+          PID=$(lsof -t -i:4321 || true)
+          if [ -n "$PID" ]; then
+            kill $PID || true
+          fi
 
       - name: 📥 Checkout base branch
         uses: actions/checkout@v4
@@ -381,10 +438,22 @@ jobs:
 
       - name: 🧪 Run Base Branch Tests
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile 
           pnpm build
-          pnpm preview &
-          sleep 5
+          pnpm dev --port 4321 --host &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
           pnpm test:accessibility:ci
           cp -r accessibility-reports base-reports
 
