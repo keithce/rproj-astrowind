@@ -127,19 +127,21 @@ jobs:
       - name: "🧪 Run Axe-Core Tests"
         if: matrix.test-type == 'axe-core'
         run: |
+          # Install a Chrome + ChromeDriver pair that axe-core can use
+          npx --yes browser-driver-manager@latest install chrome
+          # Run the scans
           pnpm axe:scan
           pnpm test:accessibility:ci
-        continue-on-error: true
 
       - name: "🧪 Run Lighthouse Tests"
         if: matrix.test-type == 'lighthouse'
-        run: pnpm lighthouse:accessibility
-        continue-on-error: true
+        run: |
+          mkdir -p accessibility-reports
+          pnpm lighthouse:accessibility
 
       - name: "🧪 Run Custom Accessibility Tests"
         if: matrix.test-type == 'custom'
         run: pnpm test:accessibility:verbose
-        continue-on-error: true
 
       - name: "📊 Upload Accessibility Reports"
         uses: actions/upload-artifact@v4
@@ -380,7 +382,7 @@ jobs:
             echo "⏳ Waiting for dev server... ($i/30)";
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
-      - name: "�� Run Current Branch Tests"
+      - name: "🧪 Run Current Branch Tests"
         run: |
           pnpm test:accessibility:ci
           cp -r accessibility-reports current-reports
