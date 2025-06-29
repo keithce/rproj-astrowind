@@ -753,9 +753,6 @@ const protectedRoutes = [
         window.focusManager = new FocusManager();
       }
 
-      // Store focus manager globally
-      window.focusManager = new FocusManager();
-
       // Handle page navigation for SPA-like behavior
       document.addEventListener('astro:page-load', () => {
         const pageTitle = document.title;
