@@ -1,18 +1,14 @@
 import type { APIRoute } from 'astro';
 import { checkBotId } from 'botid/server';
+import { ApiErrors, jsonResponse, redirectResponse } from '../../utils/api-responses';
 
 export const POST: APIRoute = async ({ request }) => {
   const verification = await checkBotId();
 
   if (verification.isBot) {
-    return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
+    return jsonResponse(ApiErrors.botDetected(), 403);
   }
 
   const redirectUrl = new URL('/thank-you', request.url);
-  return new Response(null, {
-    status: 303,
-    headers: new Headers({
-      location: redirectUrl.toString(),
-    }),
-  });
+  return redirectResponse(redirectUrl.toString());
 };

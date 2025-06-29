@@ -6,7 +6,7 @@ import type { CallToAction as Props } from '~/types';
 const {
   variant = 'primary',
   target,
-  text = Astro.slots.render('default'),
+  text = await Astro.slots.render('default'),
   icon = '',
   class: className = '',
   type,
@@ -23,9 +23,22 @@ const variants = {
 
 {
   type === 'button' || type === 'submit' || type === 'reset' ? (
-    <button type={type} class={twMerge(variants[variant] || '', className)} {...rest}>
-      <Fragment set:html={text} />
+    <button
+      type={type}
+      class={twMerge(variants[variant] || '', className)}
+      data-original-text={text}
+      aria-describedby={type === 'submit' ? 'submit-button-help' : undefined}
+      {...rest}
+    >
+      <span class="btn-text">
+        <Fragment set:html={text} />
+      </span>
       {icon && <Icon name={icon} class="w-5 h-5 ml-1 -mr-1.5 rtl:mr-1 rtl:-ml-1.5 inline-block" />}
+      {type === 'submit' && (
+        <span id="submit-button-help" class="sr-only">
+          Submit the contact form to send your message
+        </span>
+      )}
     </button>
   ) : (
     <a

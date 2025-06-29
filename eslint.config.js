@@ -54,6 +54,15 @@ export default [
     },
   },
   {
-    ignores: ['dist', 'node_modules', '.github', 'types.generated.d.ts', '.astro', '.vercel', 'public/pagefind'],
+    ignores: [
+      'dist',
+      'node_modules',
+      '.github',
+      'types.generated.d.ts',
+      '.astro',
+      '.vercel',
+      'public/pagefind',
+      'scripts/accessibility-test.js',
+    ],
   },
 ];

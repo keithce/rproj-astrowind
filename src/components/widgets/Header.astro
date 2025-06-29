@@ -5,6 +5,7 @@ import ToggleMenu from '~/components/common/ToggleMenu.astro';
 import Button from '~/components/ui/Button.astro';
 import NavigationMenu from '~/components/ui/NavigationMenu.astro';
 import ToggleTheme from '~/components/common/ToggleTheme.astro';
+import Search from '~/components/ui/Search.astro';
 
 import { getHomePermalink, getAsset } from '~/utils/permalinks';
 import type { CallToAction } from '~/types';
@@ -29,6 +30,7 @@ export interface Props {
   isFullWidth?: boolean;
   showToggleTheme?: boolean;
   showRssFeed?: boolean;
+  showSearch?: boolean;
   position?: string;
 }
 
@@ -41,6 +43,7 @@ const {
   isFullWidth = false,
   showToggleTheme = false,
   showRssFeed = false,
+  showSearch = true,
   position = 'center',
 } = Astro.props;
 ---
@@ -77,7 +80,12 @@ const {
         <ToggleMenu />
       </div>
     </div>
-    <nav class="items-center hidden w-full md:flex md:w-auto md:mx-5 text-foreground md:justify-self-center">
+    <nav
+      id="navigation"
+      role="navigation"
+      aria-label="Main navigation"
+      class="hidden items-center w-full md:flex md:w-auto md:mx-5 text-foreground md:justify-self-center"
+    >
       <NavigationMenu links={links} orientation="horizontal" showChevrons={true} className="w-full" />
     </nav>
     <div
@@ -86,13 +94,28 @@ const {
         'hidden md:self-center md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0 md:justify-self-end',
       ]}
     >
-      <div class="flex items-center justify-between w-full md:w-auto">
-        <div class="flex">
+      <div class="flex justify-between items-center w-full md:w-auto">
+        <div class="flex gap-2 items-center">
+          {
+            showSearch && (
+              <div id="search" role="search" aria-label="Site search">
+                <Search
+                  id="header-search"
+                  className="w-64 hidden lg:block"
+                  uiOptions={{
+                    placeholder: 'Search...',
+                    showImages: false,
+                    excerptLength: 15,
+                  }}
+                />
+              </div>
+            )
+          }
           {showToggleTheme && <ToggleTheme iconClass="w-6 h-6 md:w-5 md:h-5 md:inline-block" />}
           {
             showRssFeed && (
               <a
-                class="text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-hidden focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center"
+                class="inline-flex items-center p-2.5 text-sm rounded-lg text-muted dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-hidden focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700"
                 aria-label="RSS Feed"
                 href={getAsset('/rss.xml')}
               >
@@ -105,7 +128,10 @@ const {
           actions?.length ? (
             <span class="ml-4 rtl:ml-0 rtl:mr-4">
               {actions.map((btnProps) => (
-                <Button {...btnProps} class="ml-2 py-2.5 px-5.5 md:px-6 font-semibold shadow-none text-sm w-auto" />
+                <Button
+                  {...btnProps}
+                  class="py-2.5 ml-2 w-auto text-sm font-semibold whitespace-nowrap shadow-none px-5.5 md:px-6"
+                />
               ))}
             </span>
           ) : (

@@ -6,6 +6,13 @@ import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
 import { checkBotId } from 'botid/server';
+import {
+  ApiErrors,
+  jsonResponse,
+  classifyError,
+  createValidationErrorResponse,
+  createSuccessResponse,
+} from '../../utils/api-responses';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
@@ -23,7 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (verification.isBot) {
     console.log('BotID: Access denied');
-    // return new Response(JSON.stringify({ error: 'Access denied' }), { status: 403 });
+    // return jsonResponse(ApiErrors.botDetected(), 403);
   }
 
   const formData = await request.formData();
@@ -31,16 +38,36 @@ export const POST: APIRoute = async ({ request }) => {
     const data = Object.fromEntries(formData.entries());
     const result = schema.safeParse(data);
     if (!result.success) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: 'Validation failed',
-          errors: result.error.flatten().fieldErrors,
-        }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
+
+    // Business logic validation (422 Unprocessable Entity)
+    if (message.length > 5000) {
+      return jsonResponse(
+        ApiErrors.unprocessableEntity('Message is too long. Please keep it under 5000 characters.', {
+          field: 'message',
+          limit: 5000,
+          current: message.length,
+        }),
+        422
+      );
+    }
+
+    // Additional business logic checks
+    const prohibitedWords = ['spam', 'test123', 'dummy'];
+    const hasProhibitedContent = prohibitedWords.some(
+      (word) => message.toLowerCase().includes(word) || name.toLowerCase().includes(word)
+    );
+
+    if (hasProhibitedContent) {
+      return jsonResponse(
+        ApiErrors.contentValidation(
+          'Your submission contains content that cannot be processed. Please revise and try again.'
+        ),
+        422
+      );
+    }
 
     await notion.pages.create({
       parent: { database_id: import.meta.env.NOTION_DATABASE_ID },
@@ -87,42 +114,50 @@ export const POST: APIRoute = async ({ request }) => {
     });
     console.log('Welcome email sent to:', email);
 
-    const redirectUrl = new URL('/thank-you', request.url);
-    const response = new Response(null, {
-      status: 303,
-      headers: new Headers({
-        location: redirectUrl.toString(),
-        'x-debug-timestamp': Date.now().toString(),
-        'x-debug-original-status': '303',
-      }),
+    // Return JSON success response so client JS can handle redirect
+    const redirectUrl = '/thank-you';
+    const body = createSuccessResponse({ redirect: redirectUrl }, 'Form submitted successfully');
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-
-    return response;
   } catch (error: unknown) {
     console.error('Error submitting to Notion:', error);
-    const message =
-      typeof error === 'object' && error && 'message' in error
-        ? String((error as { message?: unknown }).message)
-        : 'Unknown error';
 
-    // Send error notification email
-    await resend.emails.send({
-      from: 'noreply@resonantprojects.art',
-      to: 'info@resonantprojects.art',
-      subject: 'Contact Form Error',
-      html: `
-        <h2>Contact Form Submission Error</h2>
-        <p><strong>Error Message:</strong> ${message}</p>
-        <h3>Form Data:</h3>
-        <pre>${JSON.stringify(formData, null, 2)}</pre>
-      `,
-    });
+    // Use standardized error classification
+    const { type, status, message: errorMessage } = classifyError(error);
 
-    // Even on error we redirect to thank-you; use absolute URL
-    const redirectUrlErr = new URL('/thank-you', request.url);
-    return new Response(null, {
-      status: 303,
-      headers: new Headers({ Location: redirectUrlErr.toString() }),
-    });
+    // Send error notification email (non-blocking)
+    try {
+      await resend.emails.send({
+        from: 'noreply@resonantprojects.art',
+        to: 'info@resonantprojects.art',
+        subject: 'Contact Form Error',
+        html: `
+          <h2>Contact Form Submission Error</h2>
+          <p><strong>Error Type:</strong> ${type}</p>
+          <p><strong>Status Code:</strong> ${status}</p>
+          <p><strong>Error Message:</strong> ${errorMessage}</p>
+          <h3>Form Data:</h3>
+          <pre>${JSON.stringify(Object.fromEntries(formData.entries()), null, 2)}</pre>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send error notification email:', emailError);
+    }
+
+    // Return standardized error response
+    return jsonResponse(
+      {
+        success: false,
+        error: type,
+        message: errorMessage,
+        status: status,
+        timestamp: new Date().toISOString(),
+      },
+      status
+    );
   }
 };

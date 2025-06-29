@@ -5,7 +5,31 @@ import Button from '~/components/ui/Button.astro';
 const { inputs, textarea, disclaimer, button = 'Contact us', description = '', formAction } = Astro.props;
 ---
 
-<form action={formAction ? formAction : undefined} method="POST" data-astro-reload>
+<form
+  id="notion-contact-form"
+  action={formAction ? formAction : undefined}
+  method="POST"
+  data-astro-reload
+  novalidate
+  role="form"
+  aria-label="Contact form"
+  aria-describedby="form-description form-status"
+>
+  <!-- ARIA Live Regions for Dynamic Feedback -->
+  <div class="sr-only">
+    <!-- Status announcements for form state changes -->
+    <div id="form-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <!-- Error announcements for validation feedback -->
+    <div id="form-errors" aria-live="assertive" aria-atomic="false" class="sr-only"></div>
+
+    <!-- Success announcements for completion feedback -->
+    <div id="form-success" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <!-- Loading state announcements -->
+    <div id="form-loading" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+  </div>
+
   {
     inputs &&
       inputs.map(
@@ -24,6 +48,11 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
               {label && (
                 <label for={name} class="block mb-2 text-sm font-medium text-foreground">
                   {label}
+                  {required && (
+                    <span class="ml-1 text-red-500" aria-label="required">
+                      *
+                    </span>
+                  )}
                 </label>
               )}
               {type === 'select' ? (
@@ -31,7 +60,10 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   name={name}
                   id={name}
                   required={required}
-                  class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  aria-required={required ? 'true' : 'false'}
+                  aria-invalid="false"
+                  aria-describedby={`${name}-error ${name}-help`}
+                  class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   {options.map(({ value, label }) => (
                     <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
@@ -47,9 +79,24 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   autocomplete={autocomplete}
                   placeholder={placeholder}
                   required={required}
-                  class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  aria-required={required ? 'true' : 'false'}
+                  aria-invalid="false"
+                  aria-describedby={`${name}-error ${name}-help`}
+                  class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
+
+              <div
+                id={`${name}-error`}
+                class="field-error-message"
+                role="alert"
+                aria-live="assertive"
+                style="display: none;"
+              />
+
+              <div id={`${name}-help`} class="sr-only field-help-text">
+                {required ? `${label} is required` : `${label} is optional`}
+              </div>
             </div>
           )
       )
@@ -60,6 +107,11 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
       <div class="mb-6">
         <label for="textarea" class="block mb-2 text-sm font-medium text-foreground">
           {textarea.label}
+          {textarea.required && (
+            <span class="ml-1 text-red-500" aria-label="required">
+              *
+            </span>
+          )}
         </label>
         <textarea
           id="textarea"
@@ -67,8 +119,23 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           rows={textarea.rows ? textarea.rows : 4}
           placeholder={textarea.placeholder}
           required={textarea.required}
-          class="block px-4 py-3 w-full rounded-lg border transition-colors border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
+          aria-required={textarea.required ? 'true' : 'false'}
+          aria-invalid="false"
+          aria-describedby="textarea-error textarea-help"
+          class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
         />
+
+        <div
+          id="textarea-error"
+          class="field-error-message"
+          role="alert"
+          aria-live="assertive"
+          style="display: none;"
+        />
+
+        <div id="textarea-help" class="sr-only field-help-text">
+          {textarea.required ? `${textarea.label} is required` : `${textarea.label} is optional`}
+        </div>
       </div>
     )
   }
@@ -81,6 +148,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
             id="disclaimer"
             name="disclaimer"
             type="checkbox"
+            aria-describedby="disclaimer-help"
             class="mt-1 w-4 h-4 rounded border transition-colors cursor-pointer border-border text-primary bg-background focus:ring-2 focus:ring-primary focus:ring-offset-2"
           />
         </div>
@@ -88,6 +156,9 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           <label for="disclaimer" class="text-sm cursor-pointer select-none text-muted-foreground">
             {disclaimer.label}
           </label>
+          <div id="disclaimer-help" class="sr-only">
+            Check this box to agree to the disclaimer
+          </div>
         </div>
       </div>
     )
@@ -96,9 +167,11 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     button && (
       <div class="grid mt-10">
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" aria-describedby="submit-status">
           {button}
         </Button>
+
+        <div id="submit-status" class="sr-only" aria-live="polite" />
       </div>
     )
   }
@@ -106,7 +179,9 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     description && (
       <div class="mt-3 text-center">
-        <p class="text-sm text-muted-foreground">{description}</p>
+        <p id="form-description" class="text-sm text-muted-foreground">
+          {description}
+        </p>
       </div>
     )
   }

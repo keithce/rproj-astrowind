@@ -2,6 +2,10 @@
   "mcpServers": {
     "astro": {
       "url": "http://localhost:4321/__mcp/sse"
+    },
+    "task-master-ai": {
+      "command": "npx",
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"]
     }
   }
 }
