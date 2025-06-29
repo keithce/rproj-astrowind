@@ -1,5 +1,10 @@
 name: 🛡️ Accessibility Testing
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   push:
     branches: [main, develop]
@@ -250,7 +255,7 @@ jobs:
 
       - name: 🚀 Start server
         run: |
-          npx sirv ./dist --single --dev --port 4321 &
+          pnpm exec sirv ./dist --single --dev --port 4321 &
           # Wait for the preview server to become available (max ~60 s)
           for i in {1..30}; do
             sleep 2
@@ -327,7 +332,7 @@ jobs:
 
       - name: 🚀 Start server
         run: |
-          npx sirv ./dist --single --dev --port 4321 &
+          pnpm exec sirv ./dist --single --dev --port 4321 &
           # Wait for the preview server to become available (max ~60 s)
           for i in {1..30}; do
             sleep 2
@@ -400,7 +405,7 @@ jobs:
       - name: 🧪 Run Current Branch Tests
         run: |
           pnpm build
-          npx sirv ./dist --single --dev --port 4321 &
+          pnpm exec sirv ./dist --single --dev --port 4321 &
           # Wait for the preview server to become available (max ~60 s)
           for i in {1..30}; do
             sleep 2
@@ -426,7 +431,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile 
           pnpm build
-          npx sirv ./dist --single --dev --port 4321 &
+          pnpm exec sirv ./dist --single --dev --port 4321 &
           # Wait for the preview server to become available (max ~60 s)
           for i in {1..30}; do
             sleep 2
