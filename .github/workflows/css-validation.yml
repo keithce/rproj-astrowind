@@ -174,10 +174,7 @@ jobs:
         sleep 5
         
     - name: Run accessibility tests
-      run: |
-        pnpm exec @axe-core/cli http://localhost:4321 \
-          --tags wcag2a,wcag2aa,wcag21aa \
-          --exit
+      run: pnpm run axe:scan
           
     - name: Upload accessibility report
       uses: actions/upload-artifact@v4

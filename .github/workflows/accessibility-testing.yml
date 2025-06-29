@@ -57,8 +57,19 @@ jobs:
       - name: 🚀 Start development server
         run: |
           pnpm dev &
-          sleep 10
-          curl -f http://localhost:4321 || exit 1
+          # Wait for the dev server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
         env:
           CI: true
 
@@ -239,8 +250,20 @@ jobs:
 
       - name: 🚀 Start server
         run: |
-          pnpm preview &
-          sleep 5
+          npx sirv ./dist --single --dev --port 4321 &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
 
       - name: ⚡ Run Performance Tests with Accessibility Focus
         run: |
@@ -304,8 +327,20 @@ jobs:
 
       - name: 🚀 Start server
         run: |
-          pnpm preview &
-          sleep 5
+          npx sirv ./dist --single --dev --port 4321 &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
 
       - name: 📱 Test Mobile Accessibility
         run: |
@@ -365,8 +400,20 @@ jobs:
       - name: 🧪 Run Current Branch Tests
         run: |
           pnpm build
-          pnpm preview &
-          sleep 5
+          npx sirv ./dist --single --dev --port 4321 &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
           pnpm test:accessibility:ci
           cp -r accessibility-reports current-reports
 
@@ -379,8 +426,20 @@ jobs:
         run: |
           pnpm install --frozen-lockfile 
           pnpm build
-          pnpm preview &
-          sleep 5
+          npx sirv ./dist --single --dev --port 4321 &
+          # Wait for the preview server to become available (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
           pnpm test:accessibility:ci
           cp -r accessibility-reports base-reports
 
