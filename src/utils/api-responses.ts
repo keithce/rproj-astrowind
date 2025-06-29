@@ -77,6 +77,8 @@ export function jsonResponse(
     status,
     headers: {
       'Content-Type': 'application/json',
+      'CDN-Cache-Control': 'max-age=10',
+      'Vercel-CDN-Cache-Control': 'max-age=10',
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       Pragma: 'no-cache',
       Expires: '0',
@@ -90,6 +92,8 @@ export function redirectResponse(url: string, status: number = 303): Response {
     headers: {
       Location: url,
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'CDN-Cache-Control': 'max-age=10',
+      'Vercel-CDN-Cache-Control': 'max-age=10',
       Pragma: 'no-cache',
       Expires: '0',
     },

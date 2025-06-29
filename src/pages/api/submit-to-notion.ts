@@ -147,6 +147,8 @@ export const POST: APIRoute = async ({ request }) => {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'CDN-Cache-Control': 'max-age=10',
+        'Vercel-CDN-Cache-Control': 'max-age=10',
         Pragma: 'no-cache',
         Expires: '0',
       },
