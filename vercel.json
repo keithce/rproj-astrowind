@@ -19,6 +19,23 @@
           "value": "SAMEORIGIN"
         }
       ]
+    },
+    {
+      "source": "/api/submit-to-notion",
+      "headers": [
+        {
+          "key": "CDN-Cache-Control",
+          "value": "max-age=0"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "max-age=0"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "max-age=0"
+        }
+      ]
     }
   ],
   "rewrites": [
