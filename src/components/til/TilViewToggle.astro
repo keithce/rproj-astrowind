@@ -1,0 +1,51 @@
+---
+export interface Props {
+  currentView: 'social' | 'kanban';
+  class?: string;
+}
+
+const { currentView = 'social', class: className = '' } = Astro.props;
+
+// Get current URL to preserve other parameters
+const url = new URL(Astro.url);
+url.searchParams.delete('view');
+const socialUrl = new URL(url);
+socialUrl.searchParams.set('view', 'social');
+const kanbanUrl = new URL(url);
+kanbanUrl.searchParams.set('view', 'kanban');
+---
+
+<div class={`til-view-toggle ${className}`}>
+  <div class="bg-muted/50 p-1 rounded-md inline-flex">
+    <a
+      href={socialUrl.toString()}
+      class={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+        currentView === 'social'
+          ? 'bg-card shadow-sm text-foreground'
+          : 'hover:bg-muted-foreground/10 text-muted-foreground'
+      }`}
+    >
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+        Social
+      </span>
+    </a>
+    <a
+      href={kanbanUrl.toString()}
+      class={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+        currentView === 'kanban'
+          ? 'bg-card shadow-sm text-foreground'
+          : 'hover:bg-muted-foreground/10 text-muted-foreground'
+      }`}
+    >
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        </svg>
+        Kanban
+      </span>
+    </a>
+  </div>
+</div>

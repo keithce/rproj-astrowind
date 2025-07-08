@@ -1,0 +1,72 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { TilEntry } from '~/utils/til';
+import { formatTilDate } from '~/utils/til';
+
+export interface Props {
+  entry: TilEntry;
+  class?: string;
+}
+
+const { entry, class: className = '' } = Astro.props;
+const { title, date, tags, description } = entry.data;
+
+// Format date
+const formattedDate = formatTilDate(date);
+
+// Get first paragraph of content for preview
+const maxLength = 150;
+const truncatedDescription = description.length > maxLength
+  ? `${description.substring(0, maxLength)}...`
+  : description;
+---
+
+<article class={`til-card ${className}`}>
+  <div class="bg-card dark:bg-card p-6 rounded-lg border border-border hover:shadow-md transition-all duration-300 h-full flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+      <span class="text-sm text-muted-foreground">
+        <Icon name="tabler:calendar" class="w-4 h-4 inline-block mr-1 -mt-0.5" />
+        {formattedDate}
+      </span>
+    </div>
+
+    <h3 class="text-xl font-bold text-foreground mb-2 hover:text-primary transition-colors">
+      <a href={`/til/${entry.slug}`} class="stretched-link">
+        {title}
+      </a>
+    </h3>
+
+    <p class="text-muted-foreground mb-4 grow">{truncatedDescription}</p>
+
+    <div class="flex flex-wrap gap-2 mt-auto">
+      {tags.map((tag) => (
+        <a
+          href={`/til?tag=${tag.toLowerCase().replace(/\s+/g, '-')}`}
+          class="bg-primary/10 dark:bg-primary/20 text-primary px-2 py-1 rounded-md text-xs font-medium hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+        >
+          #{tag}
+        </a>
+      ))}
+    </div>
+  </div>
+</article>
+
+<style>
+  .til-card {
+    position: relative;
+  }
+
+  .stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    content: "";
+  }
+
+  .til-card:hover {
+    transform: translateY(-2px);
+  }
+</style>

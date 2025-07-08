@@ -1,0 +1,62 @@
+---
+import TilCard from './TilCard.astro';
+import type { TilEntry } from '~/utils/til';
+
+export interface Props {
+  entries: TilEntry[];
+  class?: string;
+}
+
+const { entries, class: className = '' } = Astro.props;
+---
+
+<div class={`til-social-feed ${className}`} id="til-feed">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {entries.map((entry) => (
+      <TilCard entry={entry} />
+    ))}
+  </div>
+</div>
+
+<script>
+  // Basic implementation of infinite scroll
+  // In a full implementation, this would load more entries via fetch
+  document.addEventListener('DOMContentLoaded', () => {
+    const feedContainer = document.getElementById('til-feed');
+    if (!feedContainer) return;
+
+    // Function to check if we've scrolled to the bottom
+    const isBottomVisible = () => {
+      const feedRect = feedContainer.getBoundingClientRect();
+      return feedRect.bottom <= window.innerHeight + 100; // 100px buffer
+    };
+
+    // Placeholder for a function that would fetch more entries
+    const loadMoreEntries = () => {
+      // In a real implementation, this would fetch more entries
+      // and append them to the feedContainer
+      console.log('Would load more entries here');
+      
+      // For demo, create a visual indicator that more would load
+      const loadingIndicator = document.getElementById('loading-indicator');
+      if (loadingIndicator) {
+        loadingIndicator.classList.remove('hidden');
+        
+        // Simulate loading delay
+        setTimeout(() => {
+          loadingIndicator.classList.add('hidden');
+        }, 1500);
+      }
+    };
+
+    // Scroll event listener
+    const handleScroll = () => {
+      if (isBottomVisible()) {
+        loadMoreEntries();
+      }
+    };
+
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+  });
+</script>

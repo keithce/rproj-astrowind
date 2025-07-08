@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import { formatTilDate } from '~/utils/til';
+
+export async function getStaticPaths() {
+  const tilEntries = await getCollection('til');
+  return tilEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const { title, date, tags, description } = entry.data;
+const formattedDate = formatTilDate(date);
+
+const metadata = {
+  title: `TIL: ${title}`,
+  description: description
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="px-4 py-12 sm:px-6 mx-auto max-w-4xl lg:px-8 lg:py-16">
+    <div class="mb-8">
+      <a href="/til" class="inline-flex items-center gap-2 text-primary hover:text-accent mb-6 transition-colors">
+        <Icon name="tabler:arrow-left" class="w-5 h-5" />
+        <span>Back to TIL</span>
+      </a>
+      
+      <h1 class="text-3xl md:text-4xl font-bold leading-tight tracking-tighter mb-4">{title}</h1>
+      
+      <div class="flex flex-wrap items-center gap-4 text-sm">
+        <span class="inline-flex items-center text-muted-foreground">
+          <Icon name="tabler:calendar" class="w-4 h-4 mr-1" />
+          {formattedDate}
+        </span>
+        
+        <div class="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <a
+              href={`/til?tag=${tag.toLowerCase().replace(/\s+/g, '-')}`}
+              class="bg-primary/10 dark:bg-primary/20 text-primary px-2 py-1 rounded-md text-xs font-medium hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <div class="prose-enhanced dark:prose-invert max-w-none">
+          <Content />
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-8 text-center">
+      <a href="/til" class="inline-flex items-center gap-2 text-primary hover:text-accent transition-colors">
+        <Icon name="tabler:arrow-left" class="w-5 h-5" />
+        <span>Back to all TIL entries</span>
+      </a>
+    </div>
+  </section>
+</Layout>
