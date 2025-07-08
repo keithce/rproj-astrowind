@@ -1,0 +1,83 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { TilEntry } from '~/utils/til';
+import { formatTilDate, groupTilEntriesByDay } from '~/utils/til';
+
+export interface Props {
+  entries: TilEntry[];
+  class?: string;
+}
+
+const { entries, class: className = '' } = Astro.props;
+
+// Group entries by day
+const entriesByDay = await groupTilEntriesByDay(entries);
+
+// Get days of the week
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Function to format tag for URL
+const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
+---
+
+<div class={`til-kanban-view ${className}`}>
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 overflow-x-auto">
+    {days.map((day) => (
+      <div class="min-w-[250px] h-full">
+        <div class="bg-muted/30 rounded-lg p-4 h-full">
+          <h3 class="text-lg font-semibold text-foreground mb-4 sticky top-0 bg-muted/30 p-2 -m-2 rounded-t-lg">
+            {day}
+          </h3>
+          <div class="space-y-3">
+            {entriesByDay.get(day)?.map((entry) => (
+              <div class="bg-card p-3 rounded border border-border shadow-sm hover:shadow-md transition-shadow">
+                <a 
+                  href={`/til/${entry.slug}`} 
+                  class="block text-foreground hover:text-primary font-medium mb-2 transition-colors"
+                >
+                  {entry.data.title}
+                </a>
+                <div class="text-xs text-muted-foreground mb-2 flex items-center">
+                  <Icon name="tabler:calendar" class="w-3 h-3 inline-block mr-1" />
+                  {formatTilDate(entry.data.date)}
+                </div>
+                <div class="flex flex-wrap gap-1">
+                  {entry.data.tags.slice(0, 2).map((tag) => (
+                    <a
+                      href={`/til?tag=${formatTagForUrl(tag)}&view=kanban`}
+                      class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded text-xs hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+                    >
+                      #{tag}
+                    </a>
+                  ))}
+                  {entry.data.tags.length > 2 && (
+                    <span class="text-xs text-muted-foreground">+{entry.data.tags.length - 2}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+            {(!entriesByDay.get(day) || entriesByDay.get(day)?.length === 0) && (
+              <div class="text-center py-4 text-muted-foreground text-sm">
+                <p>No entries</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .til-kanban-view {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .til-kanban-view > div {
+      min-width: 100%;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+</style>

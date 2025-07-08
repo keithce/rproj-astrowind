@@ -5,7 +5,10 @@ import Layout from '~/layouts/PageLayout.astro';
 import { formatTilDate } from '~/utils/til';
 
 export async function getStaticPaths() {
-  const tilEntries = await getCollection('til');
+  const tilEntries = await getCollection('til', ({ data }) => {
+    return !data.draft;
+  });
+  
   return tilEntries.map(entry => ({
     params: { slug: entry.slug },
     props: { entry },

@@ -2,37 +2,16 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import type { Taxonomy } from '~/types';
 
-export interface TilEntry {
-  id: string;
-  slug: string;
-  body: string;
-  collection: string;
-  data: {
-    title: string;
-    date: Date;
-    tags: string[];
-    description: string;
-    draft?: boolean;
-    image?: string;
-  };
-  render: () => Promise<{
-    Content: import('astro').AstroComponentFactory;
-    headings: {
-      depth: number;
-      slug: string;
-      text: string;
-    }[];
-    remarkPluginFrontmatter: Record<string, any>;
-  }>;
-}
+export type TilEntry = CollectionEntry<'til'>;
 
 /**
  * Fetch all TIL entries
  */
 export const fetchTilEntries = async (): Promise<TilEntry[]> => {
-  const tilEntries = await getCollection('til');
+  const tilEntries = await getCollection('til', ({ data }) => {
+    return !data.draft;
+  });
   return tilEntries
-    .filter((entry) => !entry.data.draft)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
 };
 

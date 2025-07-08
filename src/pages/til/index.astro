@@ -5,6 +5,7 @@ import TilFilter from '~/components/til/TilFilter.astro';
 import TilSearch from '~/components/til/TilSearch.astro';
 import TilViewToggle from '~/components/til/TilViewToggle.astro';
 import TilSocialFeed from '~/components/til/TilSocialFeed.astro';
+import TilKanbanView from '~/components/til/TilKanbanView.astro';
 import { fetchTilEntries, findTilTags, findTilEntriesByTag } from '~/utils/til';
 import type { TilEntry } from '~/utils/til';
 
@@ -73,9 +74,13 @@ const metadata = {
 
       <!-- Main Content -->
       <div class="md:col-span-3">
-        {entries.length > 0 ? (
-          <TilSocialFeed entries={entries} />
-        ) : (
+        {entries.length > 0 ? 
+          currentView === 'social' ? (
+            <TilSocialFeed entries={entries} />
+          ) : (
+            <TilKanbanView entries={entries} />
+          )
+        : (
           <div class="bg-muted/30 rounded-lg p-8 text-center">
             <Icon name="tabler:mood-sad" class="w-16 h-16 mx-auto text-muted-foreground" />
             <h3 class="mt-4 text-xl font-medium text-foreground">No entries found</h3>
