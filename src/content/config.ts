@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+// Shared metadataDefinition for collections
 const metadataDefinition = () =>
   z
     .object({
@@ -66,6 +67,20 @@ const postCollection = defineCollection({
     }),
 });
 
+const tilCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.date(),
+    tags: z.array(z.string()),
+    description: z.string(),
+    draft: z.boolean().optional(),
+    image: z.string().optional(),
+    metadata: metadataDefinition(),
+  }),
+});
+
 export const collections = {
   post: postCollection,
+  til: tilCollection,
 };
