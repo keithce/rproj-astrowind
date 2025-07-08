@@ -16,6 +16,12 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+
+// Check if entry exists and has required properties
+if (!entry || !entry.render) {
+  throw new Error(`TIL entry not found or invalid for slug: ${Astro.params.slug}`);
+}
+
 const { Content } = await entry.render();
 
 const { title, date, tags, description } = entry.data;
