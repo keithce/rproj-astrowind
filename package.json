@@ -15,10 +15,10 @@
     }
   },
   "scripts": {
-    "dev": "npm run pagefind:build && astro dev",
+    "dev": "mkdir -p public && npm run pagefind:build && astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
-    "pagefind:build": "pagefind --site public --output-path public/pagefind",
+    "pagefind:build": "pagefind --site public --output-path public/pagefind || echo 'Pagefind indexing skipped (empty public directory)'",
     "preview": "astro preview",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",
