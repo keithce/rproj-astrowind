@@ -7,12 +7,25 @@ export interface Props {
 const { currentView = 'social', class: className = '' } = Astro.props;
 
 // Get current URL to preserve other parameters
+const preserveParams = ['tag', 'q']; // Parameters to preserve when switching views
 const url = new URL(Astro.url);
 url.searchParams.delete('view');
-const socialUrl = new URL(url);
+
+// Build URLs for each view
+let socialUrl = new URL('/til', url.origin);
+let kanbanUrl = new URL('/til/board', url.origin);
+
+// Preserve specified query parameters
+preserveParams.forEach(param => {
+  if (url.searchParams.has(param)) {
+    const value = url.searchParams.get(param);
+    socialUrl.searchParams.set(param, value);
+    kanbanUrl.searchParams.set(param, value);
+  }
+});
+
+// Set the view parameter for social view
 socialUrl.searchParams.set('view', 'social');
-const kanbanUrl = new URL(url);
-kanbanUrl.searchParams.set('view', 'kanban');
 ---
 
 <div class={`til-view-toggle ${className}`}>
@@ -26,10 +39,8 @@ kanbanUrl.searchParams.set('view', 'kanban');
       }`}
     >
       <span class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-        </svg>
-        Social
+        <Icon name="tabler:layout-list" class="w-4 h-4" />
+        <span>Social</span>
       </span>
     </a>
     <a
@@ -41,10 +52,8 @@ kanbanUrl.searchParams.set('view', 'kanban');
       }`}
     >
       <span class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-        </svg>
-        Kanban
+        <Icon name="tabler:layout-kanban" class="w-4 h-4" />
+        <span>Kanban</span>
       </span>
     </a>
   </div>

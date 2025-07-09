@@ -2,6 +2,14 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import type { Taxonomy } from '~/types';
 
+/**
+ * Weekly date range type
+ */
+export interface WeeklyDateRange {
+  startDate: Date;
+  endDate: Date;
+}
+
 export type TilEntry = CollectionEntry<'til'>;
 
 /**
@@ -78,4 +86,33 @@ export const groupTilEntriesByDay = async (entries?: TilEntry[]) => {
   });
   
   return grouped;
+};
+
+/**
+ * Calculate the Monday-Sunday range for a given week
+ */
+export const getWeekRange = (date: Date): WeeklyDateRange => {
+  const startDate = new Date(date);
+  // Get monday of the week (or previous monday if date is sunday)
+  startDate.setDate(startDate.getDate() - startDate.getDay() + (startDate.getDay() === 0 ? -6 : 1));
+  startDate.setHours(0, 0, 0, 0);
+  
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 6);
+  endDate.setHours(23, 59, 59, 999);
+  
+  return { startDate, endDate };
+};
+
+/**
+ * Filter TIL entries for a specific week
+ */
+export const getEntriesForWeek = async (weekDate: Date): Promise<TilEntry[]> => {
+  const { startDate, endDate } = getWeekRange(weekDate);
+  const entries = await fetchTilEntries();
+  
+  return entries.filter(entry => {
+    const entryDate = entry.data.date;
+    return entryDate >= startDate && entryDate <= endDate;
+  });
 };
