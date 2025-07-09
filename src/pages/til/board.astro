@@ -69,23 +69,17 @@ const metadata = {
   
   <section class="px-4 py-8 sm:px-6 mx-auto max-w-7xl lg:px-8 lg:py-12">
     <div class="mb-8">
-      <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <a href="/til" class="text-primary hover:text-accent transition-colors">
-              <Icon name="tabler:arrow-left" class="w-5 h-5 inline-block" />
-              <span>Back to TIL</span>
-            </a>
-          </div>
-          
-          <h1 class="text-3xl font-bold leading-tighter tracking-tighter">
-            TIL Board <span class="text-primary">/ {dateRangeFormatted}</span>
-          </h1>
-        </div>
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+        <h1 class="text-3xl md:text-4xl font-bold leading-tighter tracking-tighter mb-4 md:mb-0">
+          Today I Learned
+          <span class="text-primary">: {dateRangeFormatted}</span>
+        </h1>
         
-        <div class="flex items-center gap-4">
-          <TilViewToggle currentView="kanban" />
-        </div>
+        <TilViewToggle currentView="kanban" />
+      </div>
+      
+      <p class="text-lg text-muted-foreground mt-2 mb-6">
+        A collection of daily discoveries and quick lessons in web development and technology
       </div>
       
       <TilBoardControls currentDate={currentDate} class="mb-8" />
