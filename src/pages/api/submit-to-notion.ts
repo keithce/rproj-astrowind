@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
-import { checkBotId } from 'botid/server';
+// import { checkBotId } from 'botid/server';
 import {
   ApiErrors,
   jsonResponse,
@@ -27,13 +27,13 @@ const schema = z.object({
 
 export const POST: APIRoute = async ({ request }) => {
   console.log('[submit-to-notion] ⏩ Handler invoked - processing new request');
-  const verification = await checkBotId();
-  console.log('[submit-to-notion] 🤖 Bot verification result:', verification);
+  // const verification = await checkBotId();
+  // console.log('[submit-to-notion] 🤖 Bot verification result:', verification);
 
-  if (verification.isBot) {
-    console.log('[submit-to-notion] 🚫 Bot detected - denying access');
-    // return jsonResponse(ApiErrors.botDetected(), 403);
-  }
+  // if (verification.isBot) {
+  //   console.log('[submit-to-notion] 🚫 Bot detected - denying access');
+  //   // return jsonResponse(ApiErrors.botDetected(), 403);
+  // }
 
   const formData = await request.formData();
   console.log('[submit-to-notion] 📥 Raw FormData received:', Object.fromEntries(formData.entries()));
