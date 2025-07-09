@@ -12,7 +12,7 @@ import { headerData } from '~/navigation';
 
 // Get URL parameters
 const { tag: tagParam, q: searchQuery, view: viewParam } = Astro.url.searchParams;
-const currentView = viewParam === 'kanban' ? 'kanban' : 'social';
+const currentView = viewParam === 'kanban' ? 'kanban' : 'feed';
 
 // Fetch data
 const tags = await findTilTags();
@@ -85,7 +85,7 @@ const metadata = {
       <!-- Main Content -->
       <div class="md:col-span-3">
         {entries.length > 0 ? 
-          currentView === 'social' ? (
+          currentView === 'feed' ? (
             <TilSocialFeed entries={entries} />
           )
           : null

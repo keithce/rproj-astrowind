@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import Header from '~/components/widgets/Header.astro';
+import TilViewToggle from '~/components/til/TilViewToggle.astro';
 import { headerData } from '~/navigation';
 import TilBoardControls from '~/components/til/TilBoardControls.astro';
 import TilKanbanView from '~/components/til/TilKanbanView.astro';
@@ -77,19 +78,13 @@ const metadata = {
             </a>
           </div>
           
-          <h1 class="text-3xl md:text-4xl font-bold leading-tighter tracking-tighter">
+          <h1 class="text-3xl font-bold leading-tighter tracking-tighter">
             TIL Board <span class="text-primary">/ {dateRangeFormatted}</span>
           </h1>
         </div>
         
         <div class="flex items-center gap-4">
-          <a 
-            href="/til" 
-            class="inline-flex items-center px-4 py-2 rounded-md bg-muted hover:bg-muted-foreground/20 text-foreground transition-colors"
-          >
-            <Icon name="tabler:layout-list" class="w-5 h-5 mr-2" />
-            List View
-          </a>
+          <TilViewToggle currentView="kanban" />
         </div>
       </div>
       
