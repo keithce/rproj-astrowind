@@ -8,6 +8,8 @@ import TilSocialFeed from '~/components/til/TilSocialFeed.astro';
 import TilKanbanView from '~/components/til/TilKanbanView.astro';
 import { fetchTilEntries, findTilTags, findTilEntriesByTag } from '~/utils/til';
 import type { TilEntry } from '~/utils/til';
+import Header from '~/components/widgets/Header.astro';
+import { headerData } from '~/navigation';
 
 // Get URL parameters
 const { tag: tagParam, q: searchQuery, view: viewParam } = Astro.url.searchParams;
@@ -44,6 +46,15 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
+  <Fragment slot="header">
+    <Header
+      {...headerData}
+      isSticky
+      showRssFeed={false}
+      showToggleTheme
+      showSearch={true}
+    />
+  </Fragment>
   <section class="px-4 py-8 sm:px-6 mx-auto max-w-7xl lg:px-8 lg:py-12">
     <div class="mb-8">
       <div class="flex flex-col md:flex-row md:justify-between md:items-center">

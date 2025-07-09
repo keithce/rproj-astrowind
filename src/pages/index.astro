@@ -11,6 +11,8 @@ import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getPermalink } from '~/utils/permalinks';
+import Header from '~/components/widgets/Header.astro';
+import { headerData } from '~/navigation';
 import Features3 from '~/components/widgets/Features3.astro';
 
 const metadata = {
@@ -20,6 +22,15 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
+  <Fragment slot="header">
+    <Header
+      {...headerData}
+      isSticky
+      showRssFeed={false}
+      showToggleTheme
+      showSearch={false}
+    />
+  </Fragment>
   <Hero
     actions={[
       {
