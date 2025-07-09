@@ -96,21 +96,17 @@ const {
     >
       <div class="flex justify-between items-center w-full md:w-auto">
         <div class="flex gap-2 items-center">
-          {
-            showSearch && (
-              <div id="search" role="search" aria-label="Site search">
-                <Search
-                  id="header-search"
-                  className="w-64 hidden lg:block"
-                  uiOptions={{
-                    placeholder: 'Search...',
-                    showImages: false,
-                    excerptLength: 15,
-                  }}
-                />
-              </div>
-            )
-          }
+          <div id="search" role="search" aria-label="Site search" class={showSearch ? '' : 'hidden'}>
+            <Search
+              id="header-search"
+              className="w-64 hidden lg:block"
+              uiOptions={{
+                placeholder: 'Search...',
+                showImages: false,
+                excerptLength: 15,
+              }}
+            />
+          </div>
           {showToggleTheme && <ToggleTheme iconClass="w-6 h-6 md:w-5 md:h-5 md:inline-block" />}
           {
             showRssFeed && (
