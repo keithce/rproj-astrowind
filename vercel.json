@@ -3,6 +3,23 @@
   "trailingSlash": false,
   "headers": [
     {
+      "source": "/form-handler.js",
+      "headers": [
+        {
+          "key": "CDN-Cache-Control",
+          "value": "max-age=0"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "max-age=0"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/_astro/(.*)",
       "headers": [
         {

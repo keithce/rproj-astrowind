@@ -64,14 +64,6 @@ export const headerData = {
     // },
     {
       text: 'Blog',
-      href: getBlogPermalink(),
-    },
-    {
-      text: 'TIL',
-      href: getPermalink('/til'),
-    },
-    {
-      text: 'My Story',
       links: [
         {
           text: 'All Articles',
@@ -86,6 +78,13 @@ export const headerData = {
           href: getBlogTagPermalink(),
         },
       ],
+    },
+    {
+      text: 'TIL',
+      href: getPermalink('/til'),
+    },
+    {
+      text: 'My Story',
       href: getPermalink('/about'),
     },
   ],

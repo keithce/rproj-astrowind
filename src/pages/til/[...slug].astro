@@ -4,6 +4,8 @@ import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import { formatTilDate } from '~/utils/til';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const tilEntries = await getCollection('til', ({ data }) => {
     return !data.draft;
@@ -15,7 +17,23 @@ export async function getStaticPaths() {
   }));
 }
 
-const { entry } = Astro.props;
+let { entry } = Astro.props;
+
+// If entry is not available (during prefetching), fetch it directly
+if (!entry) {
+  const slug = Astro.params.slug;
+  if (slug) {
+    try {
+      const tilEntries = await getCollection('til', ({ data }) => {
+        return !data.draft;
+      });
+
+      entry = tilEntries.find(e => e.slug === slug) as typeof entry;
+    } catch (error) {
+      console.error('Error fetching TIL entry during prefetch:', error);
+    }
+  }
+}
 
 // Check if entry exists and has required properties
 if (!entry || !entry.render) {

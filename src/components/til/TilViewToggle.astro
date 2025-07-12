@@ -21,8 +21,10 @@ let kanbanUrl = new URL('/til/board', url.origin);
 preserveParams.forEach(param => {
   if (url.searchParams.has(param)) {
     const value = url.searchParams.get(param);
-    feedUrl.searchParams.set(param, value);
-    kanbanUrl.searchParams.set(param, value);
+    if (value !== null) {
+      feedUrl.searchParams.set(param, value);
+      kanbanUrl.searchParams.set(param, value);
+    }
   }
 });
 

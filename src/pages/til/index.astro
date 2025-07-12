@@ -11,7 +11,9 @@ import Header from '~/components/widgets/Header.astro';
 import { headerData } from '~/navigation';
 
 // Get URL parameters
-const { tag: tagParam, q: searchQuery, view: viewParam } = Astro.url.searchParams;
+const tagParam = Astro.url.searchParams.get('tag');
+const searchQuery = Astro.url.searchParams.get('q');
+const viewParam = Astro.url.searchParams.get('view');
 const currentView = viewParam === 'kanban' ? 'kanban' : 'feed';
 
 // Fetch data
@@ -23,7 +25,7 @@ if (tagParam) {
   entries = await findTilEntriesByTag(tagParam);
 }
 
-// Apply search filtering if specified
+// Apply search filtering if specified  
 if (searchQuery) {
   const query = searchQuery.toLowerCase();
   entries = entries.filter(entry => 
@@ -51,7 +53,6 @@ const metadata = {
       isSticky
       showRssFeed={false}
       showToggleTheme
-     showSearch={false}
     />
   </Fragment>
   <section class="px-4 py-8 sm:px-6 mx-auto max-w-7xl lg:px-8 lg:py-12">
@@ -79,7 +80,7 @@ const metadata = {
       <!-- Sidebar -->
       <div class="md:col-span-1">
         <TilSearch class="mb-8" />
-        <TilFilter tags={tags} selectedTag={tagParam} />
+        <TilFilter tags={tags} selectedTag={tagParam ?? undefined} />
       </div>
 
       <!-- Main Content -->
