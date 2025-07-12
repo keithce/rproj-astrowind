@@ -10,6 +10,8 @@ import { fetchTilEntries } from '~/utils/til';
 
 export const prerender = false;
 
+Astro.response?.headers.set('Cache-Control', 'no-store, must-revalidate');
+
 // Get URL parameters
 const weekParam = Astro.url.searchParams.get('week');
 

@@ -26,6 +26,16 @@ const schema = z.object({
 });
 
 export const POST: APIRoute = async ({ request }) => {
+  // Set cache-control headers to prevent any caching
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'CDN-Cache-Control': 'max-age=10',
+    'Vercel-CDN-Cache-Control': 'max-age=10',
+    Pragma: 'no-cache',
+    Expires: '0',
+  });
+
   console.log('[submit-to-notion] ⏩ Handler invoked - processing new request');
   // const verification = await checkBotId();
   // console.log('[submit-to-notion] 🤖 Bot verification result:', verification);
@@ -144,14 +154,7 @@ export const POST: APIRoute = async ({ request }) => {
     console.log('[submit-to-notion] ↩️ Returning success response with redirect', redirectUrl);
     return new Response(JSON.stringify(body), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
-        'CDN-Cache-Control': 'max-age=10',
-        'Vercel-CDN-Cache-Control': 'max-age=10',
-        Pragma: 'no-cache',
-        Expires: '0',
-      },
+      headers,
     });
   } catch (error: unknown) {
     console.error('[submit-to-notion] ❗ Error encountered during processing:', error);
