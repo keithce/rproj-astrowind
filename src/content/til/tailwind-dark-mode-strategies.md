@@ -1,8 +1,8 @@
 ---
-title: "Tailwind Dark Mode Implementation Strategies"
+title: 'Tailwind Dark Mode Implementation Strategies'
 date: 2025-06-19
-tags: ["tailwind", "css", "dark mode"]
-description: "Today I learned about different strategies for implementing dark mode with Tailwind CSS, from class-based to media query approaches."
+tags: ['tailwind', 'css', 'dark mode']
+description: 'Today I learned about different strategies for implementing dark mode with Tailwind CSS, from class-based to media query approaches.'
 draft: false
 ---
 
@@ -19,7 +19,7 @@ The default approach in Tailwind is class-based, where dark mode styles are appl
 module.exports = {
   darkMode: 'class', // Default in Tailwind v3+
   // ...
-}
+};
 ```
 
 This requires JavaScript to toggle the class on the `html` or `body` element:
@@ -41,7 +41,7 @@ Alternatively, you can use the user's system preference:
 module.exports = {
   darkMode: 'media',
   // ...
-}
+};
 ```
 
 With this approach, dark mode styles automatically apply when the user has enabled dark mode in their operating system.

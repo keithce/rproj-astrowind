@@ -13,28 +13,27 @@ const { tags, selectedTag, class: className = '' } = Astro.props;
 <div class={`til-filter mb-8 ${className}`}>
   <div class="flex justify-between items-center mb-4">
     <h2 class="text-xl font-bold text-foreground">Filter by Tag</h2>
-    {selectedTag && (
-      <a 
-        href="/til" 
-        class="text-sm text-primary hover:text-accent transition-colors"
-      >
-        Clear filter
-      </a>
-    )}
+    {
+      selectedTag && (
+        <a href="/til" class="text-sm text-primary hover:text-accent transition-colors">
+          Clear filter
+        </a>
+      )
+    }
   </div>
 
   <div class="flex flex-wrap gap-2">
-    {tags.map((tag) => (
-      <a
-        href={`/til?tag=${tag.slug}`}
-        class={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-          selectedTag === tag.slug
-            ? 'bg-primary text-white'
-            : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
-        }`}
-      >
-        #{tag.title}
-      </a>
-    ))}
+    {
+      tags.map((tag) => (
+        <a
+          href={`/til?tag=${tag.slug}`}
+          class={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+            selectedTag === tag.slug ? 'bg-primary text-white' : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
+          }`}
+        >
+          #{tag.title}
+        </a>
+      ))
+    }
   </div>
 </div>

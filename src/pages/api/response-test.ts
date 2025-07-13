@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 // import { checkBotId } from 'botid/server';
-import { ApiErrors, jsonResponse, redirectResponse } from '../../utils/api-responses';
+import { redirectResponse } from '../../utils/api-responses';
 
 export const POST: APIRoute = async ({ request }) => {
   // const verification = await checkBotId();

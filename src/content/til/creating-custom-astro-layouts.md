@@ -1,8 +1,8 @@
 ---
-title: "Creating Custom Astro Layouts"
+title: 'Creating Custom Astro Layouts'
 date: 2025-06-20
-tags: ["astro", "web development", "layouts"]
-description: "Today I learned how to create custom layouts in Astro to reuse page structures while passing specific metadata."
+tags: ['astro', 'web development', 'layouts']
+description: 'Today I learned how to create custom layouts in Astro to reuse page structures while passing specific metadata.'
 draft: false
 ---
 
@@ -55,7 +55,8 @@ You can also use named slots for more complex layouts:
 ```astro
 <slot name="header" />
 <main>
-  <slot /> <!-- default slot -->
+  <slot />
+  <!-- default slot -->
 </main>
 <slot name="footer" />
 ```

@@ -12,9 +12,7 @@ const { entries, class: className = '' } = Astro.props;
 
 <div class={`til-social-feed ${className}`} id="til-feed">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {entries.map((entry) => (
-      <TilCard entry={entry} class="h-full" />
-    ))}
+    {entries.map((entry) => <TilCard entry={entry} class="h-full" />)}
   </div>
 </div>
 
@@ -36,12 +34,12 @@ const { entries, class: className = '' } = Astro.props;
       // In a real implementation, this would fetch more entries
       // and append them to the feedContainer
       console.log('Would load more entries here');
-      
+
       // For demo, create a visual indicator that more would load
       const loadingIndicator = document.getElementById('loading-indicator');
       if (loadingIndicator) {
         loadingIndicator.classList.remove('hidden');
-        
+
         // Simulate loading delay
         setTimeout(() => {
           loadingIndicator.classList.add('hidden');

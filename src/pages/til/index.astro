@@ -25,52 +25,45 @@ if (tagParam) {
   entries = await findTilEntriesByTag(tagParam);
 }
 
-// Apply search filtering if specified  
+// Apply search filtering if specified
 if (searchQuery) {
   const query = searchQuery.toLowerCase();
-  entries = entries.filter(entry => 
-    entry.data.title.toLowerCase().includes(query) || 
-    entry.data.description.toLowerCase().includes(query) ||
-    entry.data.tags.some(tag => tag.toLowerCase().includes(query))
+  entries = entries.filter(
+    (entry) =>
+      entry.data.title.toLowerCase().includes(query) ||
+      entry.data.description.toLowerCase().includes(query) ||
+      entry.data.tags.some((tag) => tag.toLowerCase().includes(query))
   );
 }
 
 // Prepare metadata
 const metadata = {
-  title: tagParam 
-    ? `TIL: #${tags.find(t => t.slug === tagParam)?.title || tagParam}`
+  title: tagParam
+    ? `TIL: #${tags.find((t) => t.slug === tagParam)?.title || tagParam}`
     : searchQuery
-    ? `TIL: Search results for "${searchQuery}"`
-    : "Today I Learned",
-  description: "A collection of daily learning insights and discoveries in web development, programming, and technology."
+      ? `TIL: Search results for "${searchQuery}"`
+      : 'Today I Learned',
+  description:
+    'A collection of daily learning insights and discoveries in web development, programming, and technology.',
 };
 ---
 
 <Layout metadata={metadata}>
   <Fragment slot="header">
-    <Header
-      {...headerData}
-      isSticky
-      showRssFeed={false}
-      showToggleTheme
-    />
+    <Header {...headerData} isSticky showRssFeed={false} showToggleTheme />
   </Fragment>
   <section class="px-4 py-8 sm:px-6 mx-auto max-w-7xl lg:px-8 lg:py-12">
     <div class="mb-8">
       <div class="flex flex-col md:flex-row md:justify-between md:items-center">
         <h1 class="text-3xl md:text-4xl font-bold leading-tighter tracking-tighter mb-4 md:mb-0">
           Today I Learned
-          {tagParam && (
-            <span class="text-primary">: #{tags.find(t => t.slug === tagParam)?.title || tagParam}</span>
-          )}
-          {searchQuery && (
-            <span class="text-primary">: "{searchQuery}"</span>
-          )}
+          {tagParam && <span class="text-primary">: #{tags.find((t) => t.slug === tagParam)?.title || tagParam}</span>}
+          {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
         </h1>
-        
+
         <TilViewToggle currentView={currentView} />
       </div>
-      
+
       <p class="text-lg text-muted-foreground mt-2">
         A collection of daily discoveries and quick lessons in web development and technology
       </p>
@@ -85,29 +78,35 @@ const metadata = {
 
       <!-- Main Content -->
       <div class="md:col-span-3">
-        {entries.length > 0 ? 
-          currentView === 'feed' ? (
-            <TilSocialFeed entries={entries} />
+        {
+          entries.length > 0 ? (
+            currentView === 'feed' ? (
+              <TilSocialFeed entries={entries} />
+            ) : null
+          ) : (
+            <div class="bg-muted/30 rounded-lg p-8 text-center">
+              <Icon name="tabler:mood-sad" class="w-16 h-16 mx-auto text-muted-foreground" />
+              <h3 class="mt-4 text-xl font-medium text-foreground">No entries found</h3>
+              <p class="mt-2 text-muted-foreground">
+                {tagParam
+                  ? `No entries found with the tag #${tags.find((t) => t.slug === tagParam)?.title || tagParam}`
+                  : searchQuery
+                    ? `No entries match your search for "${searchQuery}"`
+                    : 'No entries found'}
+              </p>
+              <a href="/til" class="mt-4 inline-block text-primary hover:text-accent">
+                View all entries
+              </a>
+            </div>
           )
-          : null
-        : (
-          <div class="bg-muted/30 rounded-lg p-8 text-center">
-            <Icon name="tabler:mood-sad" class="w-16 h-16 mx-auto text-muted-foreground" />
-            <h3 class="mt-4 text-xl font-medium text-foreground">No entries found</h3>
-            <p class="mt-2 text-muted-foreground">
-              {tagParam 
-                ? `No entries found with the tag #${tags.find(t => t.slug === tagParam)?.title || tagParam}` 
-                : searchQuery
-                ? `No entries match your search for "${searchQuery}"`
-                : 'No entries found'}
-            </p>
-            <a href="/til" class="mt-4 inline-block text-primary hover:text-accent">View all entries</a>
-          </div>
-        )}
-        
+        }
+
         <!-- Loading indicator for infinite scroll -->
         <div id="loading-indicator" class="hidden py-8 text-center">
-          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" role="status">
+          <div
+            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent"
+            role="status"
+          >
             <span class="sr-only">Loading...</span>
           </div>
           <p class="mt-2 text-muted-foreground">Loading more entries...</p>

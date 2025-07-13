@@ -1,8 +1,8 @@
 ---
-title: "Advanced CSS Container Queries"
+title: 'Advanced CSS Container Queries'
 date: 2025-06-16
-tags: ["css", "responsive design", "web development"]
-description: "Today I learned how to use CSS container queries to create truly component-based responsive designs that go beyond viewport dimensions."
+tags: ['css', 'responsive design', 'web development']
+description: 'Today I learned how to use CSS container queries to create truly component-based responsive designs that go beyond viewport dimensions.'
 draft: false
 ---
 
@@ -63,13 +63,13 @@ I also discovered container query units, which are relative to the container siz
 .card-title {
   /* 10% of the container's width */
   font-size: 10cqw;
-  
+
   /* 5% of the container's height */
   margin-bottom: 5cqh;
-  
+
   /* Smaller value of container width or height */
   padding: 2cqi;
-  
+
   /* Larger value of container width or height */
   max-width: 80cqb;
 }

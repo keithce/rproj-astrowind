@@ -17,7 +17,7 @@ const entriesByDay = (await groupTilEntriesByDay(entries)) ?? new Map();
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // Only include days with entries
-const daysWithEntries = days.filter(day => (entriesByDay.get(day) ?? []).length > 0);
+const daysWithEntries = days.filter((day) => (entriesByDay.get(day) ?? []).length > 0);
 
 // Function to format tag for URL
 const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
@@ -25,16 +25,17 @@ const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
 
 <div class={`til-kanban-view ${className}`}>
   <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-x-auto">
-    {daysWithEntries.map((day) => (
-      <div class="min-w-[250px] h-full bg-muted/30 rounded-lg p-4">
+    {
+      daysWithEntries.map((day) => (
+        <div class="min-w-[250px] h-full bg-muted/30 rounded-lg p-4">
           <h3 class="text-lg font-semibold text-foreground mb-4 sticky top-0 bg-muted/30 p-2 -m-2 rounded-t-lg">
             {day}
           </h3>
           <div class="space-y-3">
             {entriesByDay.get(day)!.map((entry) => (
               <div class="bg-card p-3 rounded border border-border shadow-sm hover:shadow-md transition-shadow">
-                <a 
-                  href={`/til/${entry.slug}`} 
+                <a
+                  href={`/til/${entry.slug}`}
                   class="block text-foreground hover:text-primary font-medium mb-2 transition-colors"
                 >
                   {entry.data.title}
@@ -59,8 +60,9 @@ const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
               </div>
             ))}
           </div>
-      </div>
-    ))}
+        </div>
+      ))
+    }
   </div>
 </div>
 
@@ -69,7 +71,7 @@ const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
     overflow-x: auto;
     padding-bottom: 1rem;
   }
-  
+
   @media (max-width: 768px) {
     .til-kanban-view > div {
       min-width: 100%;

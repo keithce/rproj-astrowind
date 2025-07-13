@@ -1,8 +1,8 @@
 ---
-title: "Deploying Astro to Cloudflare Pages"
+title: 'Deploying Astro to Cloudflare Pages'
 date: 2025-06-15
-tags: ["astro", "cloudflare", "deployment", "web development"]
-description: "Today I learned how to deploy an Astro site to Cloudflare Pages, including setting up adapter options for optimal performance."
+tags: ['astro', 'cloudflare', 'deployment', 'web development']
+description: 'Today I learned how to deploy an Astro site to Cloudflare Pages, including setting up adapter options for optimal performance.'
 draft: false
 ---
 

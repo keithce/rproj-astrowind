@@ -4,10 +4,7 @@ export interface Props {
   placeholder?: string;
 }
 
-const { 
-  class: className = '',
-  placeholder = 'Search TIL entries...'
-} = Astro.props;
+const { class: className = '', placeholder = 'Search TIL entries...' } = Astro.props;
 ---
 
 <div class={`til-search ${className}`}>
@@ -25,7 +22,11 @@ const {
       aria-label="Search"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
     </button>
   </form>
@@ -36,7 +37,7 @@ const {
   document.addEventListener('DOMContentLoaded', () => {
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
-    
+
     // Check URL for search query
     const urlParams = new URLSearchParams(window.location.search);
     const queryParam = urlParams.get('q');
@@ -44,7 +45,7 @@ const {
       searchInput.value = queryParam;
       // Trigger search...
     }
-    
+
     searchForm?.addEventListener('submit', (e) => {
       e.preventDefault();
       const query = searchInput.value.trim();

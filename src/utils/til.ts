@@ -19,8 +19,7 @@ export const fetchTilEntries = async (): Promise<TilEntry[]> => {
   const tilEntries = await getCollection('til', ({ data }) => {
     return !data.draft;
   });
-  return tilEntries
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
+  return tilEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
 };
 
 /**
@@ -29,7 +28,7 @@ export const fetchTilEntries = async (): Promise<TilEntry[]> => {
 export const findTilTags = async (): Promise<Taxonomy[]> => {
   const entries = await fetchTilEntries();
   const tagMap = new Map<string, Taxonomy>();
-  
+
   entries.forEach((entry) => {
     if (Array.isArray(entry.data.tags)) {
       entry.data.tags.forEach((tag) => {
@@ -38,7 +37,7 @@ export const findTilTags = async (): Promise<Taxonomy[]> => {
       });
     }
   });
-  
+
   return Array.from(tagMap.values());
 };
 
@@ -48,10 +47,8 @@ export const findTilTags = async (): Promise<Taxonomy[]> => {
 export const findTilEntriesByTag = async (tag: string): Promise<TilEntry[]> => {
   const entries = await fetchTilEntries();
   const normalizedTag = tag.toLowerCase();
-  
-  return entries.filter((entry) => 
-    entry.data.tags.some(t => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag)
-  );
+
+  return entries.filter((entry) => entry.data.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag));
 };
 
 /**
@@ -61,7 +58,7 @@ export const formatTilDate = (date: Date): string => {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   }).format(date);
 };
 
@@ -69,22 +66,22 @@ export const formatTilDate = (date: Date): string => {
  * Group TIL entries by day for Kanban view
  */
 export const groupTilEntriesByDay = async (entries?: TilEntry[]) => {
-  const tilEntries = entries || await fetchTilEntries();
+  const tilEntries = entries || (await fetchTilEntries());
   const grouped = new Map<string, TilEntry[]>();
-  
+
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  
+
   // Initialize all days
-  days.forEach(day => grouped.set(day, []));
-  
+  days.forEach((day) => grouped.set(day, []));
+
   // Group entries by day
-  tilEntries.forEach(entry => {
+  tilEntries.forEach((entry) => {
     const day = days[entry.data.date.getDay()];
     const existingEntries = grouped.get(day) || [];
     existingEntries.push(entry);
     grouped.set(day, existingEntries);
   });
-  
+
   return grouped;
 };
 
@@ -96,11 +93,11 @@ export const getWeekRange = (date: Date): WeeklyDateRange => {
   // Get monday of the week (or previous monday if date is sunday)
   startDate.setDate(startDate.getDate() - startDate.getDay() + (startDate.getDay() === 0 ? -6 : 1));
   startDate.setHours(0, 0, 0, 0);
-  
+
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 6);
   endDate.setHours(23, 59, 59, 999);
-  
+
   return { startDate, endDate };
 };
 
@@ -110,8 +107,8 @@ export const getWeekRange = (date: Date): WeeklyDateRange => {
 export const getEntriesForWeek = async (weekDate: Date): Promise<TilEntry[]> => {
   const { startDate, endDate } = getWeekRange(weekDate);
   const entries = await fetchTilEntries();
-  
-  return entries.filter(entry => {
+
+  return entries.filter((entry) => {
     const entryDate = entry.data.date;
     return entryDate >= startDate && entryDate <= endDate;
   });
