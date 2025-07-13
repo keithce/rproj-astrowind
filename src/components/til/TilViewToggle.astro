@@ -1,0 +1,64 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  currentView: 'feed' | 'kanban';
+  class?: string;
+}
+
+const { currentView = 'feed', class: className = '' } = Astro.props;
+
+// Get current URL to preserve other parameters
+const preserveParams = ['tag', 'q']; // Parameters to preserve when switching views
+const url = new URL(Astro.url);
+url.searchParams.delete('view');
+
+// Build URLs for each view
+let feedUrl = new URL('/til', url.origin);
+let kanbanUrl = new URL('/til/board', url.origin);
+
+// Preserve specified query parameters
+preserveParams.forEach((param) => {
+  if (url.searchParams.has(param)) {
+    const value = url.searchParams.get(param);
+    if (value !== null) {
+      feedUrl.searchParams.set(param, value);
+      kanbanUrl.searchParams.set(param, value);
+    }
+  }
+});
+
+// Set the view parameter for feed view
+feedUrl.searchParams.set('view', 'feed');
+---
+
+<div class={`til-view-toggle ${className}`}>
+  <div class="bg-muted/50 p-1 rounded-md inline-flex">
+    <a
+      href={feedUrl.toString()}
+      class={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+        currentView === 'feed'
+          ? 'bg-card shadow-sm text-foreground'
+          : 'hover:bg-muted-foreground/10 text-muted-foreground'
+      }`}
+    >
+      <span class="flex items-center gap-2">
+        <Icon name="tabler:list" class="w-4 h-4" />
+        <span>Feed View</span>
+      </span>
+    </a>
+    <a
+      href={kanbanUrl.toString()}
+      class={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+        currentView === 'kanban'
+          ? 'bg-card shadow-sm text-foreground'
+          : 'hover:bg-muted-foreground/10 text-muted-foreground'
+      }`}
+    >
+      <span class="flex items-center gap-2">
+        <Icon name="tabler:layout-kanban" class="w-4 h-4" />
+        <span>Board View</span>
+      </span>
+    </a>
+  </div>
+</div>

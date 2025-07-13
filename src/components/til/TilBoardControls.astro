@@ -1,0 +1,69 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  currentDate: Date;
+  class?: string;
+}
+
+const { currentDate, class: className = '' } = Astro.props;
+
+// Clone current date for manipulation
+const currentDateClone = new Date(currentDate);
+
+// Calculate dates for previous and next week
+const prevWeekDate = new Date(currentDate);
+prevWeekDate.setDate(prevWeekDate.getDate() - 7);
+
+const nextWeekDate = new Date(currentDate);
+nextWeekDate.setDate(nextWeekDate.getDate() + 7);
+
+// Format dates for display
+const formatDateRange = (date: Date) => {
+  const start = new Date(date);
+  // Find the Monday of the week
+  start.setDate(start.getDate() - start.getDay() + (start.getDay() === 0 ? -6 : 1));
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+
+  const formatOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+  return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`;
+};
+
+// Create URLs for navigation
+const createWeekUrl = (date: Date) => {
+  const url = new URL(Astro.request.url);
+  url.searchParams.set('week', date.toISOString().split('T')[0]);
+  return url.toString();
+};
+
+const currentWeekRange = formatDateRange(currentDateClone);
+const prevWeekUrl = createWeekUrl(prevWeekDate);
+const nextWeekUrl = createWeekUrl(nextWeekDate);
+
+// Check if next week is in the future
+const isNextWeekInFuture = nextWeekDate > new Date();
+---
+
+<div class={`til-board-controls flex items-center justify-between ${className}`}>
+  <a href={prevWeekUrl} class="flex items-center gap-1 text-primary hover:text-accent transition-colors">
+    <Icon name="tabler:arrow-left" class="w-5 h-5" />
+    <span>Previous Week</span>
+  </a>
+
+  <div class="px-4 py-2 bg-muted/30 rounded-full font-medium">
+    {currentWeekRange}
+  </div>
+
+  <a
+    href={isNextWeekInFuture ? '#' : nextWeekUrl}
+    class={`flex items-center gap-1 transition-colors ${
+      isNextWeekInFuture ? 'text-muted-foreground cursor-not-allowed' : 'text-primary hover:text-accent'
+    }`}
+    aria-disabled={isNextWeekInFuture}
+  >
+    <span>Next Week</span>
+    <Icon name="tabler:arrow-right" class="w-5 h-5" />
+  </a>
+</div>
