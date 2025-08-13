@@ -1,13 +1,16 @@
 {
   "extends": "astro/tsconfigs/base",
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
     "strictNullChecks": true,
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"]
     },
-    "types": ["eslint"]
+    "types": ["eslint", "node", "vite/client", "astro/client"]
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist/"]

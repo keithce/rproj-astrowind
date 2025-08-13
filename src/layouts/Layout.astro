@@ -20,6 +20,7 @@ import type { MetaData as MetaDataType } from '~/types';
 
 export interface Props {
   metadata?: MetaDataType;
+  children?: unknown;
 }
 
 const { metadata = {} } = Astro.props;

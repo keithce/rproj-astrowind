@@ -88,6 +88,9 @@ export default defineConfig({
     domains: ['cdn.pixabay.com', 'images.unsplash.com', 'images.pexels.com'],
     responsiveStyles: true,
     layout: 'constrained',
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.amazonaws.com' },
+    ],
   },
 
   markdown: {

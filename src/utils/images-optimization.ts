@@ -222,9 +222,20 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     return [];
   }
 
+  const canTransform = typeof (getImage as unknown) === 'function';
+  if (!canTransform) {
+    return Promise.all(
+      breakpoints.map(async (w: number) => ({
+        src: typeof image === 'string' ? image : image.src,
+        width: w,
+        height: undefined as unknown as number,
+      }))
+    );
+  }
+
   return Promise.all(
     breakpoints.map(async (w: number) => {
-      const result = await getImage({ src: image, width: w, inferSize: true, ...(format ? { format: format } : {}) });
+      const result = await (getImage as any)({ src: image, width: w, ...(format ? { format } : {}) });
 
       return {
         src: result?.src,

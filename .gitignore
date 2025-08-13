@@ -27,6 +27,9 @@ pnpm-debug.log*
 .vscode/
 .cursor/rules/isolation_rules/
 
+# Temporary files from Notion
+src/assets/images/notion/
+
 # Added by Claude Task Master
 # Logs
 logs

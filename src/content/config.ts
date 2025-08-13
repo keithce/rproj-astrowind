@@ -1,4 +1,6 @@
 import { defineCollection, z } from 'astro:content';
+// Use vendored loader source so we can modify locally
+import { notionLoader } from '../../vendor/notion-astro-loader/src/src';
 import { glob } from 'astro/loaders';
 
 // Shared metadataDefinition for collections
@@ -83,4 +85,33 @@ const tilCollection = defineCollection({
 export const collections = {
   post: postCollection,
   til: tilCollection,
+  rrresources: defineCollection({
+    loader: notionLoader({
+      auth: import.meta.env.NOTION_TOKEN,
+      database_id: import.meta.env.NOTION_RR_RESOURCES_ID,
+      imageSavePath: 'assets/images/notion',
+      // Narrow scope during debugging to avoid Notion API rate limits and focus fixes
+      filter: {
+        property: 'Name',
+        title: { contains: 'How to finish a track' },
+      },
+    }),
+    // Schema: start from Notion property types; refine as needed
+    schema: () =>
+      z.object({
+        Name: z.string().optional(),
+        Source: z.string().url().optional(),
+        ['userDefined:URL']: z.string().url().optional(),
+        Category: z.array(z.string()).optional(),
+        Type: z.array(z.string()).optional(),
+        Tags: z.array(z.string()).optional(),
+        Keywords: z.array(z.string()).optional(),
+        Status: z.enum(['Needs Review', 'Writing', 'Needs Update', 'Up-to-Date']).optional(),
+        Length: z.enum(['Short', 'Medium', 'Long']).optional(),
+        'AI summary': z.string().optional(),
+        'Last Updated': z.union([z.date(), z.string()]).optional(),
+        'Skill Level': z.enum(['Beginner', 'Intermediate', 'Advanced', 'Any']).optional(),
+        Favorite: z.boolean().optional(),
+      }),
+  }),
 };

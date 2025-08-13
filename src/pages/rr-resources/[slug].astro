@@ -1,0 +1,64 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import Layout from '~/layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+import { cleanSlug, getPermalink } from '~/utils/permalinks';
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  const entries = await (getCollection as any)('rrresources');
+  return entries.map((entry) => {
+    const name = (entry.data as any).Name || entry.id;
+    const slug = cleanSlug(name);
+    return {
+      params: { slug },
+      props: { entry },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+// using any casting to avoid typegen dependency before `astro sync`
+const { entry } = (Astro.props as any);
+const data = (entry as any).data as any;
+const title = data.Name || 'Resource';
+const description = data['AI summary'] || data.Source || '';
+const canonical = getPermalink(`/rr-resources/${cleanSlug(title)}`, 'post');
+---
+
+<Layout metadata={{ title, description, canonical }}>
+  <article class="container px-4 py-8 mx-auto max-w-3xl prose prose-gray dark:prose-invert">
+    <h1>{title}</h1>
+
+    {data.Source && (
+      <p>
+        Original: <a href={data.Source} rel="noopener noreferrer" target="_blank">{data.Source}</a>
+      </p>
+    )}
+
+    {data['AI summary'] && (
+      <p class="mt-4 text-base">{data['AI summary']}</p>
+    )}
+
+    {data.Type?.length && (
+      <p class="mt-4 text-sm"><strong>Type:</strong> {data.Type.join(', ')}</p>
+    )}
+    {data.Category?.length && (
+      <p class="mt-2 text-sm"><strong>Category:</strong> {data.Category.join(', ')}</p>
+    )}
+    {data.Tags?.length && (
+      <p class="mt-2 text-sm"><strong>Tags:</strong> {data.Tags.join(', ')}</p>
+    )}
+
+    {data.Keywords?.length && (
+      <details class="mt-6">
+        <summary class="cursor-pointer">Keywords</summary>
+        <ul class="mt-2 text-sm">
+          {data.Keywords.map((k: string) => <li>{k}</li>)}
+        </ul>
+      </details>
+    )}
+  </article>
+</Layout>
+
+
