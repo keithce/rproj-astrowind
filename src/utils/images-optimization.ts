@@ -1,4 +1,5 @@
-import { getImage } from 'astro:assets';
+// Guard for environments where getImage may not be available (SSR dev)
+import * as astroAssets from 'astro:assets';
 import { parseUrl, transformUrl } from 'unpic';
 
 import type { ImageMetadata } from 'astro';
@@ -241,10 +242,20 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     );
   }
 
+  const getImage = (astroAssets as any)?.getImage;
+  if (typeof getImage !== 'function') {
+    // Fallback: return untransformed URLs
+    return Promise.all(
+      breakpoints.map(async (w: number) => ({
+        src: (image as ImageMetadata).src,
+        width: w,
+      }))
+    );
+  }
+
   return Promise.all(
     breakpoints.map(async (w: number) => {
       const result = await getImage({ src: image, width: w, ...(format ? { format } : {}) });
-
       return {
         src: result?.src,
         width: result?.attributes?.width ?? w,

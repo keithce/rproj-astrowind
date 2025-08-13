@@ -90,15 +90,16 @@ export const collections = {
       auth: import.meta.env.NOTION_TOKEN,
       database_id: import.meta.env.NOTION_RR_RESOURCES_ID,
       imageSavePath: 'assets/images/notion',
-      // Narrow scope during debugging to avoid Notion API rate limits and focus fixes
       filter: {
-        property: 'Name',
-        title: { contains: 'How to finish a track' },
+        property: 'Status',
+        status: { equals: 'Up-to-Date' },
       },
     }),
     // Schema: start from Notion property types; refine as needed
     schema: () =>
       z.object({
+        // Include raw Notion properties so we can derive titles when needed
+        properties: z.any().optional(),
         Name: z.string().optional(),
         Source: z.string().url().optional(),
         'User Defined URL': z.string().url().optional(),
