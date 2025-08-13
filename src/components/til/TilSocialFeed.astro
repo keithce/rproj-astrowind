@@ -33,7 +33,7 @@ const { entries, class: className = '' } = Astro.props;
     const loadMoreEntries = () => {
       // In a real implementation, this would fetch more entries
       // and append them to the feedContainer
-      console.log('Would load more entries here');
+      // Intentionally no console logging in production
 
       // For demo, create a visual indicator that more would load
       const loadingIndicator = document.getElementById('loading-indicator');

@@ -1,5 +1,4 @@
 ---
-// @ts-nocheck
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import Layout from '~/layouts/PageLayout.astro';
@@ -10,7 +9,7 @@ import { getNotionEntryTitle } from '~/utils/notion';
 export const prerender = true;
 
 export const getStaticPaths = (async () => {
-  const entries = (await getCollection('rrresources' as any)) as any[];
+  const entries = await getCollection<'rrresources'>('rrresources');
   return entries.map((entry: CollectionEntry<'rrresources'>) => {
     const name = getNotionEntryTitle(entry);
     const slug = cleanSlug(name);
@@ -23,6 +22,7 @@ export const getStaticPaths = (async () => {
 
 // Properly typed props using the generic type
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+type RRRendered = { rendered?: { html?: string } };
 const { entry } = Astro.props as Props;
 const data = entry.data;
 const title = data.Name || getNotionEntryTitle(entry) || 'Resource';
@@ -36,12 +36,14 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
   <article class="prose prose-gray dark:prose-invert container mx-auto max-w-3xl px-4 py-8">
     <h1 class="mb-4">{title}</h1>
 
-    {data['AI summary'] && (
-      <details class="mb-6 rounded-lg border bg-white/60 p-4 dark:bg-gray-900/60">
-        <summary class="cursor-pointer select-none text-base font-semibold">AI summary</summary>
-        <div class="mt-3 text-base leading-relaxed">{data['AI summary']}</div>
-      </details>
-    )}
+    {
+      data['AI summary'] && (
+        <details class="mb-6 rounded-lg border bg-white/60 p-4 dark:bg-gray-900/60">
+          <summary class="cursor-pointer text-base font-semibold select-none">AI summary</summary>
+          <div class="mt-3 text-base leading-relaxed">{data['AI summary']}</div>
+        </details>
+      )
+    }
 
     {
       data.Type?.length && (
@@ -66,30 +68,44 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
     }
 
     <footer class="mt-10 space-y-4">
-      {data.Source && (
-        <p class="text-sm">
-          <strong>Source:</strong>{' '}
-          <a class="underline underline-offset-2" href={data.Source} rel="noopener noreferrer" target="_blank">
-            {data.Source}
-          </a>
-        </p>
-      )}
+      {
+        data.Source && (
+          <p class="text-sm">
+            <strong>Source:</strong>{' '}
+            <a
+              class="underline underline-offset-2"
+              href={data.Source}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {data.Source}
+            </a>
+          </p>
+        )
+      }
 
-      {data.Keywords?.length && (
-        <div class="flex flex-wrap gap-2">
-          {data.Keywords.map((kw: string) => (
-            <span class="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-900/40 dark:text-brand-100">
-              {kw}
-            </span>
-          ))}
-        </div>
-      )}
+      {
+        data.Keywords?.length && (
+          <div class="flex flex-wrap gap-2">
+            {data.Keywords.map((kw: string) => (
+              <span class="bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-100 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
+                {kw}
+              </span>
+            ))}
+          </div>
+        )
+      }
     </footer>
 
     {/* Render Notion page HTML content */}
-    {Boolean((entry as any).rendered?.html) && (
-      <div class="mt-10 notion-content" set:html={(entry as any).rendered.html} />
-    )}
-    <div id="debug-rendered-present" style="display:none">{(entry as any).rendered ? '1' : '0'}</div>
+    {
+      (() => {
+        const renderedHtml = (entry as RRRendered).rendered?.html;
+        return renderedHtml ? <div class="notion-content mt-10" set:html={renderedHtml} /> : null;
+      })()
+    }
+    <div id="debug-rendered-present" style="display:none">
+      {(entry as RRRendered).rendered ? '1' : '0'}
+    </div>
   </article>
 </Layout>

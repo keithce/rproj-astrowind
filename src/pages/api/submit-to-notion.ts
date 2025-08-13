@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { APIRoute } from 'astro';
 import { Client } from '@notionhq/client';
 import { z } from 'astro:content';
@@ -36,7 +37,8 @@ export const POST: APIRoute = async ({ request }) => {
     Expires: '0',
   });
 
-  console.log('[submit-to-notion] ⏩ Handler invoked - processing new request');
+  // Debug logs for observability in development environments
+  console.debug('[submit-to-notion] ⏩ Handler invoked - processing new request');
   // const verification = await checkBotId();
   // console.log('[submit-to-notion] 🤖 Bot verification result:', verification);
 
@@ -46,24 +48,24 @@ export const POST: APIRoute = async ({ request }) => {
   // }
 
   const formData = await request.formData();
-  console.log(
+  console.debug(
     '[submit-to-notion] 📥 Raw FormData received:',
     Object.fromEntries(formData.entries())
   );
   try {
     const data = Object.fromEntries(formData.entries());
-    console.log('[submit-to-notion] 🔄 Converted FormData to object:', data);
+    console.debug('[submit-to-notion] 🔄 Converted FormData to object:', data);
     const result = schema.safeParse(data);
-    console.log('[submit-to-notion] 🛂 Schema validation success:', result.success);
+    console.debug('[submit-to-notion] 🛂 Schema validation success:', result.success);
     if (!result.success) {
-      console.log(
+      console.debug(
         '[submit-to-notion] ❌ Validation failed with errors:',
         result.error.flatten().fieldErrors
       );
       return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
-    console.log('[submit-to-notion] ✅ Parsed form fields', {
+    console.debug('[submit-to-notion] ✅ Parsed form fields', {
       name,
       email,
       service,
@@ -71,9 +73,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     // Business logic validation (422 Unprocessable Entity)
-    console.log('[submit-to-notion] 🔍 Checking message length constraint (<5000)');
+    console.debug('[submit-to-notion] 🔍 Checking message length constraint (<5000)');
     if (message.length > 5000) {
-      console.log('[submit-to-notion] ⚠️ Message too long:', message.length);
+      console.debug('[submit-to-notion] ⚠️ Message too long:', message.length);
       return jsonResponse(
         ApiErrors.unprocessableEntity(
           'Message is too long. Please keep it under 5000 characters.',
@@ -89,12 +91,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Additional business logic checks
     const prohibitedWords = ['spam', 'test123', 'dummy'];
-    console.log('[submit-to-notion] 🔎 Checking for prohibited words:', prohibitedWords);
+    console.debug('[submit-to-notion] 🔎 Checking for prohibited words:', prohibitedWords);
 
     let hasProhibitedContent = false;
     for (const word of prohibitedWords) {
       const present = message.toLowerCase().includes(word) || name.toLowerCase().includes(word);
-      console.log(`  [submit-to-notion] ➡️ Word check "${word}":`, present);
+      console.debug(`  [submit-to-notion] ➡️ Word check "${word}":`, present);
       if (present) {
         hasProhibitedContent = true;
         break;
@@ -102,7 +104,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (hasProhibitedContent) {
-      console.log('[submit-to-notion] 🚫 Prohibited content found in submission');
+      console.debug('[submit-to-notion] 🚫 Prohibited content found in submission');
       return jsonResponse(
         ApiErrors.contentValidation(
           'Your submission contains content that cannot be processed. Please revise and try again.'
@@ -111,7 +113,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    console.log('[submit-to-notion] 📝 Creating Notion page with submission data');
+    console.debug('[submit-to-notion] 📝 Creating Notion page with submission data');
     const notionResponse = await notion.pages.create({
       parent: { database_id: import.meta.env.NOTION_DATABASE_ID },
       properties: {
@@ -127,7 +129,7 @@ export const POST: APIRoute = async ({ request }) => {
         },
       },
     });
-    console.log('[submit-to-notion] ✅ Notion page created', notionResponse);
+    console.debug('[submit-to-notion] ✅ Notion page created', notionResponse);
 
     // --- Compose personalized steps for the welcome email ---
     const steps = [
@@ -144,28 +146,28 @@ export const POST: APIRoute = async ({ request }) => {
         description: `Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.`,
       },
     ];
-    console.log('[submit-to-notion] 📨 Welcome email steps composed', steps);
+    console.debug('[submit-to-notion] 📨 Welcome email steps composed', steps);
 
     // --- Render the welcome email to HTML ---
-    console.log('[submit-to-notion] 🖨️ Rendering welcome email HTML');
+    console.debug('[submit-to-notion] 🖨️ Rendering welcome email HTML');
     const html = await render(React.createElement(ResonantWelcomeEmail, { steps }));
-    console.log('[submit-to-notion] 📄 Email HTML generated (length):', html.length);
+    console.debug('[submit-to-notion] 📄 Email HTML generated (length):', html.length);
 
     // --- Send the personalized welcome email to the user ---
-    console.log('[submit-to-notion] ✉️ Sending welcome email to:', email);
+    console.debug('[submit-to-notion] ✉️ Sending welcome email to:', email);
     await resend.emails.send({
       from: 'info@rproj.art',
       to: email,
       subject: 'Welcome to Resonant Projects.art!',
       html,
     });
-    console.log('[submit-to-notion] ✅ Welcome email dispatched to:', email);
+    console.debug('[submit-to-notion] ✅ Welcome email dispatched to:', email);
 
     // Return JSON success response so client JS can handle redirect
-    console.log('[submit-to-notion] 🚀 Preparing success JSON response');
+    console.debug('[submit-to-notion] 🚀 Preparing success JSON response');
     const redirectUrl = '/thank-you';
     const body = createSuccessResponse({ redirect: redirectUrl }, 'Form submitted successfully');
-    console.log('[submit-to-notion] ↩️ Returning success response with redirect', redirectUrl);
+    console.debug('[submit-to-notion] ↩️ Returning success response with redirect', redirectUrl);
     return new Response(JSON.stringify(body), {
       status: 200,
       headers,
@@ -175,11 +177,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Use standardized error classification
     const { type, status, message: errorMessage } = classifyError(error);
-    console.log('[submit-to-notion] ⚠️ Classified error', { type, status, errorMessage });
+    console.debug('[submit-to-notion] ⚠️ Classified error', { type, status, errorMessage });
 
     // Send error notification email (non-blocking)
     try {
-      console.log('[submit-to-notion] 📧 Sending error notification email');
+      console.debug('[submit-to-notion] 📧 Sending error notification email');
       await resend.emails.send({
         from: 'noreply@resonantprojects.art',
         to: 'info@resonantprojects.art',
@@ -193,12 +195,12 @@ export const POST: APIRoute = async ({ request }) => {
           <pre>${JSON.stringify(Object.fromEntries(formData.entries()), null, 2)}</pre>
         `,
       });
-      console.log('[submit-to-notion] ✅ Error notification email sent');
+      console.debug('[submit-to-notion] ✅ Error notification email sent');
     } catch (emailError) {
       console.error('[submit-to-notion] ❌ Failed to send error notification email:', emailError);
     }
 
-    console.log('[submit-to-notion] ↩️ Returning error JSON response');
+    console.debug('[submit-to-notion] ↩️ Returning error JSON response');
     // Return standardized error response
     return jsonResponse(
       {

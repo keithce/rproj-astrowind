@@ -37,42 +37,42 @@ export type RehypePlugin = Plugin<any[], any>;
 export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [RehypePlugin, any]>>) {
   let headings: MarkdownHeading[] = [];
 
-  const pluginsPromise = rehypePlugins.then((plugins) => plugins as [RehypePlugin, any?][]);
+  const pluginsPromise = rehypePlugins.then((plugins) => plugins as unknown as [RehypePlugin, any?][]);
 
   return async function processBlocks(blocks: unknown[], imagePaths: string[]) {
     // Build the processor lazily so we can control ordering strictly
     const sanitizerMode = globalThis?.process?.env?.NOTION_SANITIZER_MODE === 'visitor' ? 'visitor' : 'recursive';
     const extraPlugins = await pluginsPromise;
 
-    let chain = unified().use(notionRehype, {});
+    let chain = unified().use(notionRehype as any);
 
     // Sanitize FIRST so downstream plugins (like KaTeX) can rely on structure
     if (sanitizerMode === 'recursive') {
-      chain = chain.use(rehypeSanitizeRecursive());
+      chain = (chain as any).use(rehypeSanitizeRecursive() as any);
     } else {
-      chain = chain.use(rehypeNormalize());
+      chain = (chain as any).use(rehypeNormalize() as any);
     }
 
     // Normalize basic props before any downstream plugin expects them
-    chain = chain.use(rehypeEnsureProps());
+    chain = (chain as any).use(rehypeEnsureProps() as any);
 
     // Apply any caller-provided rehype plugins (pre-image, pre-stringify)
     for (const [plugin, options] of extraPlugins) {
-      chain = chain.use(plugin as any, options);
+      chain = (chain as any).use(plugin as any, options as any);
     }
 
     // Our base plugins after sanitize
     for (const [plugin, options] of baseAfterSanitizePlugins) {
-      chain = chain.use(plugin as any, options);
+      chain = (chain as any).use(plugin as any, options as any);
     }
 
     // Clean text artifacts and fix hrefs
-    chain = chain.use(rehypeCleanText());
+    chain = (chain as any).use(rehypeCleanText() as any);
 
     // Handle images just before stringify
-    chain = chain.use(rehypeImages(), { imagePaths });
+    chain = (chain as any).use(rehypeImages() as any, { imagePaths } as any);
 
-    const vFile = (await chain.process({ data: blocks } as Record<string, unknown>)) as VFile;
+    const vFile = (await chain.process({ data: blocks } as unknown as Record<string, unknown>)) as VFile;
     return { vFile, headings };
   };
 }
@@ -263,7 +263,7 @@ export class NotionPageRenderer {
         this.#logger.debug(`Block types: ${summary}${blocks.length > 20 ? ', ...' : ''}`);
         if (globalThis?.process?.env?.DEBUG_NOTION_LOADER === '1') {
           // Persist full sanitized blocks for deep inspection
-          const tmpDir = `${process.cwd()}/tmp`;
+          const tmpDir = `${(globalThis as any).process?.cwd?.() ?? ''}/tmp`;
           fse.ensureDirSync(tmpDir);
           const dumpPath = `${tmpDir}/notion-blocks-${this.page.id.slice(0, 6)}.json`;
           await fse.writeJSON(dumpPath, blocks, { spaces: 2 });

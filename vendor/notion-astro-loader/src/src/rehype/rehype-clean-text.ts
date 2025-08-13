@@ -18,14 +18,16 @@ export function rehypeCleanText() {
 
       // Clean text nodes not inside <code> or <pre>
       if (node.type === 'text' && typeof node.value === 'string') {
-        const inCode = ancestors.some((a) => a?.type === 'element' && (a.tagName === 'code' || a.tagName === 'pre'));
+        const inCode = ancestors.some(
+          (a) => a?.type === 'element' && (a.tagName === 'code' || a.tagName === 'pre')
+        );
         if (!inCode) {
           // Remove a single escaping backslash before common punctuation/symbols
-          node.value = node.value.replace(/\\([()\[\]{}'";:,.!?])/g, '$1');
+          node.value = node.value.replace(/\\([()\[\]{}'";:,.!?|`~<>#\-])/g, '$1');
+          // Collapse doubled spaces introduced during transformations
+          node.value = node.value.replace(/\s{2,}/g, ' ');
         }
       }
     });
   };
 }
-
-

@@ -10,8 +10,8 @@ import type { FileObject } from './types.js';
  * @example
  * richTextToPlainText(page.properties.Name.title)
  */
-export function richTextToPlainText(data: ReadonlyArray<{ plain_text: string }>): string {
-  return data.map((text) => text.plain_text).join('');
+export function richTextToPlainText(data: ReadonlyArray<{ plain_text?: string }>): string {
+  return data.map((text) => text.plain_text ?? '').join('');
 }
 
 /**
@@ -50,9 +50,9 @@ export async function fileToImageAsset(file: FileObject): Promise<GetImageResult
  */
 export function dateToDateObjects(
   dateResponse: {
-    start: string;
-    end: string | null;
-    time_zone: string | null;
+    start?: string;
+    end?: string | null;
+    time_zone?: string | null;
   } | null
 ) {
   if (dateResponse === null) {
@@ -60,8 +60,8 @@ export function dateToDateObjects(
   }
 
   return {
-    start: new Date(dateResponse.start),
+    start: dateResponse.start ? new Date(dateResponse.start) : (undefined as unknown as Date),
     end: dateResponse.end ? new Date(dateResponse.end) : null,
-    time_zone: dateResponse.time_zone,
+    time_zone: dateResponse.time_zone ?? null,
   };
 }

@@ -1,9 +1,10 @@
 // Utility to extract a human-readable title from a Notion-backed collection entry
 export function getNotionEntryTitle(entry: unknown): string {
   // Helper to read safely
-  const obj = (entry && typeof entry === 'object') ? (entry as Record<string, unknown>) : {};
+  const obj = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
   const id = typeof obj.id === 'string' ? obj.id : '';
-  const data = (obj.data && typeof obj.data === 'object') ? (obj.data as Record<string, unknown>) : {};
+  const data =
+    obj.data && typeof obj.data === 'object' ? (obj.data as Record<string, unknown>) : {};
 
   // Prefer flattened transformer (transformed-properties.title)
   const nameVal = data['Name'];
@@ -18,25 +19,31 @@ export function getNotionEntryTitle(entry: unknown): string {
     const nameProp = p['Name'] as Record<string, unknown> | undefined;
     if (nameProp && nameProp['type'] === 'title' && Array.isArray(nameProp['title'])) {
       const titleArr = nameProp['title'] as Array<unknown>;
-      const text = titleArr.map((t) => {
-        const c = (t && typeof t === 'object') ? (t as Record<string, unknown>) : {};
-        return typeof c['plain_text'] === 'string' ? c['plain_text'] : '';
-      }).join('').trim();
+      const text = titleArr
+        .map(t => {
+          const c = t && typeof t === 'object' ? (t as Record<string, unknown>) : {};
+          return typeof c['plain_text'] === 'string' ? c['plain_text'] : '';
+        })
+        .join('')
+        .trim();
       if (text) return text;
     }
     // Generic title search
-    const anyTitle = Object.values(p).find((pp) => (pp && typeof pp === 'object') && (pp as any).type === 'title') as Record<string, unknown> | undefined;
+    const anyTitle = Object.values(p).find(
+      pp => pp && typeof pp === 'object' && (pp as Record<string, unknown>).type === 'title'
+    ) as Record<string, unknown> | undefined;
     if (anyTitle && Array.isArray(anyTitle['title'])) {
       const titleArr = anyTitle['title'] as Array<unknown>;
-      const text = titleArr.map((t) => {
-        const c = (t && typeof t === 'object') ? (t as Record<string, unknown>) : {};
-        return typeof c['plain_text'] === 'string' ? c['plain_text'] : '';
-      }).join('').trim();
+      const text = titleArr
+        .map(t => {
+          const c = t && typeof t === 'object' ? (t as Record<string, unknown>) : {};
+          return typeof c['plain_text'] === 'string' ? c['plain_text'] : '';
+        })
+        .join('')
+        .trim();
       if (text) return text;
     }
   }
 
   return id || 'Untitled';
 }
-
-

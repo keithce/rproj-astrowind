@@ -4,7 +4,10 @@ import { getCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
 import { getNotionEntryTitle } from '~/utils/notion';
 
-interface RRItem { id: string; data: unknown }
+interface RRItem {
+  id: string;
+  data: unknown;
+}
 const getCollectionAny = getCollection as unknown as (name: string) => Promise<RRItem[]>;
 const items = await getCollectionAny('rrresources');
 
@@ -15,14 +18,14 @@ const description = 'Curated resources from the Notion database';
 ---
 
 <Layout metadata={{ title, description }}>
-  <section class="container px-4 py-8 mx-auto">
+  <section class="container mx-auto px-4 py-8">
     <h1 class="mb-6 text-3xl font-bold">{title}</h1>
     {
       items.length === 0 ? (
         <p>No resources found.</p>
       ) : (
         <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {items.map((entry) => {
+          {items.map(entry => {
             const data = (entry.data ?? {}) as { Type?: string[]; Category?: string[] };
             const titleText = getNotionEntryTitle(entry);
             const slug = cleanSlug(titleText);
@@ -31,7 +34,7 @@ const description = 'Curated resources from the Notion database';
             const category = Array.isArray(data.Category) ? data.Category[0] : undefined;
 
             return (
-              <li class="p-4 bg-white rounded-lg border dark:bg-gray-900">
+              <li class="rounded-lg border bg-white p-4 dark:bg-gray-900">
                 <a href={href} class="text-lg font-semibold hover:underline">
                   {titleText}
                 </a>

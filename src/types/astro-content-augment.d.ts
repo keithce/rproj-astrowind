@@ -7,7 +7,11 @@ declare module 'astro:content' {
       body: string;
       collection: 'rrresources';
       data: import('~/types/rr-resources').RrResourceData;
-      render(): Promise<{ Content: import('astro').ComponentInstance; headings: import('astro').MarkdownHeading[]; remarkPluginFrontmatter: Record<string, any> }>;
+      render(): Promise<{
+        Content: import('astro').ComponentInstance;
+        headings: import('astro').MarkdownHeading[];
+        remarkPluginFrontmatter: Record<string, any>;
+      }>;
     };
   }
 }

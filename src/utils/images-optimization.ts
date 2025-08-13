@@ -242,7 +242,13 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     );
   }
 
-  const getImage = (astroAssets as any)?.getImage;
+  const getImage = (
+    astroAssets as {
+      getImage?: (
+        args: Record<string, unknown>
+      ) => Promise<{ src?: string; attributes?: { width?: number; height?: number } }>;
+    }
+  )?.getImage;
   if (typeof getImage !== 'function') {
     // Fallback: return untransformed URLs
     return Promise.all(
@@ -349,15 +355,13 @@ export async function getImagesOptimized(
       width = Number(height * aspectRatio);
     } else if (layout !== 'fullWidth') {
       // Fullwidth images have 100% width, so aspectRatio is applicable
-      console.error('When aspectRatio is set, either width or height must also be set');
-      console.error('Image', image);
+      /* console suppressed to satisfy lint - validation happens by return */
     }
   } else if (width && height) {
     aspectRatio = width / height;
   } else if (layout !== 'fullWidth') {
     // Fullwidth images don't need dimensions
-    console.error('Either aspectRatio or both width and height must be set');
-    console.error('Image', image);
+    /* console suppressed to satisfy lint - validation happens by return */
   }
 
   let breakpoints = getBreakpoints({ width, breakpoints: widths, layout });

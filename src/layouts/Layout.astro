@@ -735,7 +735,7 @@ const { language, textDirection } = I18N;
         setupFocusDebugging() {
           if (window.location.search.includes('debug-focus')) {
             document.addEventListener('focusin', e => {
-              console.log('Focus moved to:', e.target);
+              // Visual focus tracing (disabled console output to satisfy lint)
               e.target.style.outline = '3px solid red';
             });
 

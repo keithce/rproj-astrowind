@@ -13,8 +13,8 @@ export const multi_select = propertyType.multi_select.transform(
 );
 export const status = propertyType.status.transform((property) => property.status?.name ?? null);
 
-export const title = propertyType.title.transform((property) => richTextToPlainText(property.title));
-export const rich_text = propertyType.rich_text.transform((property) => richTextToPlainText(property.rich_text));
+export const title = propertyType.title.transform((property) => richTextToPlainText(property.title as ReadonlyArray<{ plain_text?: string }>));
+export const rich_text = propertyType.rich_text.transform((property) => richTextToPlainText(property.rich_text as ReadonlyArray<{ plain_text?: string }>));
 
-export const date = propertyType.date.transform((property) => dateToDateObjects(property.date));
+export const date = propertyType.date.transform((property) => dateToDateObjects(property.date as any));
 export const created_time = propertyType.created_time.transform((property) => new Date(property.created_time));
