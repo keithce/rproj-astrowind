@@ -2,7 +2,7 @@ name: CSS Variable Validation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'src/components/CustomStyles.astro'
       - 'src/assets/styles/**'
@@ -10,7 +10,7 @@ on:
       - 'scripts/contrast-*.js'
       - 'scripts/visual-*.js'
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'src/components/CustomStyles.astro'
       - 'src/assets/styles/**'
@@ -21,197 +21,197 @@ on:
 jobs:
   css-validation:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm@10.11.0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install browser dependencies (Chromium)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libnss3 \
-          libatk-bridge2.0-0 \
-          libxss1 \
-          libgtk-3-0 \
-          libasound2t64 \
-          libgbm-dev \
-          libxshmfence1 \
-          libxcomposite1 \
-          libxcursor1 \
-          libxdamage1 \
-          libxi6 \
-          libxtst6 \
-          chromium-browser
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-      env:
-        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
-      
-    - name: Build project
-      run: pnpm run build
-      
-    - name: Start development server
-      run: |
-        pnpm run dev > dev.log 2>&1 &
-        sleep 20
-        cat dev.log
-        curl -f http://localhost:4321 || (cat dev.log && exit 1)
-      
-    - name: Run contrast validation
-      run: pnpm run test:contrast
-      
-    - name: Run CSS variable validation
-      run: pnpm run validate:css
-      
-    - name: Run visual verification (headless)
-      run: pnpm run visual-verify:ci
-      env:
-        PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
-        DISPLAY: ""
-      
-    - name: Generate documentation
-      run: pnpm run docs:css
-      
-    - name: Upload validation reports
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: css-validation-reports
-        path: |
-          visual-test-results/
-          css-validation-results/
-          docs/css-variables/
-        retention-days: 30
-        
-    - name: Comment PR with results
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          const path = require('path');
-          
-          try {
-            // Read validation results
-            const contrastResults = JSON.parse(fs.readFileSync('css-validation-results/validation-report.json', 'utf8'));
-            const visualResults = JSON.parse(fs.readFileSync('visual-test-results/test-report.json', 'utf8'));
-            
-            const totalVariables = contrastResults.summary.totalExpected;
-            const lightDefined = contrastResults.summary.lightThemeDefined;
-            const darkDefined = contrastResults.summary.darkThemeDefined;
-            const recommendations = contrastResults.recommendations.length;
-            
-            const contrastPassed = visualResults.contrastTests.filter(t => t.passes.AA_NORMAL).length;
-            const contrastTotal = visualResults.contrastTests.length;
-            
-            let comment = '## 🎨 CSS Variable Validation Results\n\n';
-            comment += '### ✅ Summary\n';
-            comment += `- **CSS Variables**: ${lightDefined}/${totalVariables} (light), ${darkDefined}/${totalVariables} (dark)\n`;
-            comment += `- **Contrast Tests**: ${contrastPassed}/${contrastTotal} passed WCAG AA\n`;
-            comment += `- **Recommendations**: ${recommendations} items to review\n\n`;
-            comment += '### 📊 Details\n';
-            
-            if (recommendations > 0) {
-              comment += '**⚠️ Recommendations:**\n';
-              contrastResults.recommendations.forEach(r => {
-                comment += `- ${r.type.toUpperCase()}: ${r.message}\n`;
+      - name: Install pnpm
+        run: npm install -g pnpm@10.11.0
+
+      - name: Install browser dependencies (Chromium)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libxss1 \
+            libgtk-3-0 \
+            libasound2t64 \
+            libgbm-dev \
+            libxshmfence1 \
+            libxcomposite1 \
+            libxcursor1 \
+            libxdamage1 \
+            libxi6 \
+            libxtst6 \
+            chromium-browser
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Start development server
+        run: |
+          pnpm run dev > dev.log 2>&1 &
+          sleep 20
+          cat dev.log
+          curl -f http://localhost:4321 || (cat dev.log && exit 1)
+
+      - name: Run contrast validation
+        run: pnpm run test:contrast
+
+      - name: Run CSS variable validation
+        run: pnpm run validate:css
+
+      - name: Run visual verification (headless)
+        run: pnpm run visual-verify:ci
+        env:
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+          DISPLAY: ''
+
+      - name: Generate documentation
+        run: pnpm run docs:css
+
+      - name: Upload validation reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: css-validation-reports
+          path: |
+            visual-test-results/
+            css-validation-results/
+            docs/css-variables/
+          retention-days: 30
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            try {
+              // Read validation results
+              const contrastResults = JSON.parse(fs.readFileSync('css-validation-results/validation-report.json', 'utf8'));
+              const visualResults = JSON.parse(fs.readFileSync('visual-test-results/test-report.json', 'utf8'));
+              
+              const totalVariables = contrastResults.summary.totalExpected;
+              const lightDefined = contrastResults.summary.lightThemeDefined;
+              const darkDefined = contrastResults.summary.darkThemeDefined;
+              const recommendations = contrastResults.recommendations.length;
+              
+              const contrastPassed = visualResults.contrastTests.filter(t => t.passes.AA_NORMAL).length;
+              const contrastTotal = visualResults.contrastTests.length;
+              
+              let comment = '## 🎨 CSS Variable Validation Results\n\n';
+              comment += '### ✅ Summary\n';
+              comment += `- **CSS Variables**: ${lightDefined}/${totalVariables} (light), ${darkDefined}/${totalVariables} (dark)\n`;
+              comment += `- **Contrast Tests**: ${contrastPassed}/${contrastTotal} passed WCAG AA\n`;
+              comment += `- **Recommendations**: ${recommendations} items to review\n\n`;
+              comment += '### 📊 Details\n';
+              
+              if (recommendations > 0) {
+                comment += '**⚠️ Recommendations:**\n';
+                contrastResults.recommendations.forEach(r => {
+                  comment += `- ${r.type.toUpperCase()}: ${r.message}\n`;
+                });
+              } else {
+                comment += '**🎉 All validations passed!**\n';
+              }
+              
+              comment += '\n### 📄 Reports\n';
+              comment += '- CSS Variable Validation Report: css-validation-results/validation-report.html\n';
+              comment += '- Visual Verification Report: visual-test-results/test-report.html\n';
+              comment += '- CSS Documentation: docs/css-variables/index.html\n\n';
+              comment += '*Generated by CSS Variable Validation workflow*';
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
               });
-            } else {
-              comment += '**🎉 All validations passed!**\n';
+            } catch (error) {
+              console.log('Could not read validation results:', error.message);
             }
-            
-            comment += '\n### 📄 Reports\n';
-            comment += '- CSS Variable Validation Report: css-validation-results/validation-report.html\n';
-            comment += '- Visual Verification Report: visual-test-results/test-report.html\n';
-            comment += '- CSS Documentation: docs/css-variables/index.html\n\n';
-            comment += '*Generated by CSS Variable Validation workflow*';
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-          } catch (error) {
-            console.log('Could not read validation results:', error.message);
-          }
 
   accessibility-check:
     runs-on: ubuntu-latest
     needs: css-validation
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm@10.11.0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    - name: Install browser dependencies (Chrome)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libnss3 \
-          libatk-bridge2.0-0 \
-          libxss1 \
-          libgtk-3-0 \
-          libasound2t64 \
-          libgbm-dev \
-          libxshmfence1 \
-          libxcomposite1 \
-          libxcursor1 \
-          libxdamage1 \
-          libxi6 \
-          libxtst6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-    - name: Install matching Chrome & ChromeDriver
-      run: npx browser-driver-manager install chrome
+      - name: Install pnpm
+        run: npm install -g pnpm@10.11.0
 
-    - name: Build project
-      run: pnpm run build
-      
-    - name: Start server for accessibility testing
-      run: |
-        pnpm dev --port 4321 --host &
-        # Wait for server readiness (max ~60 s)
-        for i in {1..30}; do
-          sleep 2
-          if curl -sf http://localhost:4321 > /dev/null; then
-            echo "✅ Server is up!"
-            break
-          fi
-          echo "⏳ Waiting for server... ($i/30)"
-          if [ $i -eq 30 ]; then
-            echo "❌ Server did not start in time" >&2
-            exit 1
-          fi
-        done
-        
-    - name: Run accessibility tests
-      run: pnpm run axe:scan
-          
-    - name: Upload accessibility report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: accessibility-report
-        path: axe-results.json
-        retention-days: 30 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install browser dependencies (Chrome)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libxss1 \
+            libgtk-3-0 \
+            libasound2t64 \
+            libgbm-dev \
+            libxshmfence1 \
+            libxcomposite1 \
+            libxcursor1 \
+            libxdamage1 \
+            libxi6 \
+            libxtst6
+
+      - name: Install matching Chrome & ChromeDriver
+        run: npx browser-driver-manager install chrome
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Start server for accessibility testing
+        run: |
+          pnpm dev --port 4321 --host &
+          # Wait for server readiness (max ~60 s)
+          for i in {1..30}; do
+            sleep 2
+            if curl -sf http://localhost:4321 > /dev/null; then
+              echo "✅ Server is up!"
+              break
+            fi
+            echo "⏳ Waiting for server... ($i/30)"
+            if [ $i -eq 30 ]; then
+              echo "❌ Server did not start in time" >&2
+              exit 1
+            fi
+          done
+
+      - name: Run accessibility tests
+        run: pnpm run axe:scan
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: axe-results.json
+          retention-days: 30

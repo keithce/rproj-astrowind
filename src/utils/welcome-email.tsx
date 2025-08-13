@@ -65,25 +65,26 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
             className="mx-auto my-20"
             style={{ borderRadius: '12px' }}
           />
-          <Container className="bg-white p-45 rounded-lg shadow-md">
-            <Heading className="my-0 text-center leading-8 text-primary font-bold text-2xl">
+          <Container className="rounded-lg bg-white p-45 shadow-md">
+            <Heading className="text-primary my-0 text-center text-2xl leading-8 font-bold">
               Welcome to Resonant Projects.art
             </Heading>
 
             <Section>
               <Row>
-                <Text className="text-base text-text text-center mt-4">
+                <Text className="text-text mt-4 text-center text-base">
                   Thank you for reaching out to Resonant Projects.art!
                   <br />
-                  We're excited to connect and help you awaken the sound of emotion in your creative journey.
+                  We're excited to connect and help you awaken the sound of emotion in your creative
+                  journey.
                 </Text>
-                <Text className="text-base text-text text-center mt-4">
+                <Text className="text-text mt-4 text-center text-base">
                   Here's what you can expect in our follow-up:
                 </Text>
               </Row>
             </Section>
 
-            <ul className="mt-4 mb-8 list-disc list-inside text-text">
+            <ul className="text-text mt-4 mb-8 list-inside list-disc">
               {steps?.map(({ id, description }) => (
                 <li className="mb-20" key={id}>
                   {description}
@@ -91,19 +92,22 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
               ))}
             </ul>
 
-            <Section className="text-center mt-8">
+            <Section className="mt-8 text-center">
               <Button
-                className="rounded-lg bg-primary px-[18px] py-3 text-white font-semibold hover:bg-secondary transition-colors"
+                className="bg-primary hover:bg-secondary rounded-lg px-[18px] py-3 font-semibold text-white transition-colors"
                 href="https://cal.com/resonantprojects/30min"
               >
                 Book a 30-Minute Call
               </Button>
             </Section>
 
-            <Section className="text-center mt-6">
-              <Text className="text-base text-text">
+            <Section className="mt-6 text-center">
+              <Text className="text-text text-base">
                 Want to follow my journey?&nbsp;
-                <Link href="https://newsletter.resonantprojects.art/" className="text-accent underline font-medium">
+                <Link
+                  href="https://newsletter.resonantprojects.art/"
+                  className="text-accent font-medium underline"
+                >
                   Sign up for the Resonant Projects newsletter
                 </Link>
                 .
@@ -122,7 +126,7 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
                 </Column>
               </Row>
             </Section>
-            <Text className="mb-45 text-center text-muted text-xs">Resonant Projects.art</Text>
+            <Text className="text-muted mb-45 text-center text-xs">Resonant Projects.art</Text>
           </Container>
         </Body>
       </Tailwind>
@@ -134,7 +138,8 @@ ResonantWelcomeEmail.PreviewProps = {
   steps: [
     {
       id: 1,
-      description: "Personalized follow-up. I'll review your message and respond with tailored insights or next steps.",
+      description:
+        "Personalized follow-up. I'll review your message and respond with tailored insights or next steps.",
     },
     {
       id: 2,

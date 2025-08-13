@@ -121,7 +121,7 @@ class AccessibilityTester {
         for (const viewport of this.config.axe.environment.viewports) {
           await page.setViewport(viewport);
 
-          const results = await page.evaluate((axeConfig) => {
+          const results = await page.evaluate(axeConfig => {
             return axe.run(document, {
               rules: axeConfig.rules,
               tags: ['wcag2a', 'wcag2aa', 'wcag21aa'],
@@ -326,11 +326,13 @@ class AccessibilityTester {
    * Test color contrast ratios
    */
   async testColorContrast(page, url) {
-    const contrastTests = await page.evaluate((minRatios) => {
+    const contrastTests = await page.evaluate(minRatios => {
       const results = [];
 
       // Get all text elements
-      const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, button, label');
+      const textElements = document.querySelectorAll(
+        'p, h1, h2, h3, h4, h5, h6, span, a, button, label'
+      );
       let totalTests = 0;
       let passed = 0;
 
@@ -375,10 +377,10 @@ class AccessibilityTester {
       const results = [];
 
       // Test prefers-reduced-motion support
-      const hasReducedMotionCSS = Array.from(document.styleSheets).some((sheet) => {
+      const hasReducedMotionCSS = Array.from(document.styleSheets).some(sheet => {
         try {
           return Array.from(sheet.cssRules).some(
-            (rule) => rule.conditionText && rule.conditionText.includes('prefers-reduced-motion')
+            rule => rule.conditionText && rule.conditionText.includes('prefers-reduced-motion')
           );
         } catch (e) {
           return false;
@@ -436,7 +438,7 @@ class AccessibilityTester {
       }
 
       // Run axe again after interactions
-      const results = await page.evaluate((axeConfig) => {
+      const results = await page.evaluate(axeConfig => {
         return axe.run(document, {
           rules: axeConfig.rules,
           tags: ['wcag2a', 'wcag2aa', 'wcag21aa'],
@@ -469,7 +471,7 @@ class AccessibilityTester {
 
     if (results.violations.length > 0) {
       console.log(`    ⚠️  ${results.violations.length} violations found in ${context}`);
-      results.violations.forEach((violation) => {
+      results.violations.forEach(violation => {
         this.results.violations.push({
           type: 'axe-violation',
           url,
@@ -514,7 +516,9 @@ class AccessibilityTester {
       });
     }
 
-    console.log(`    📊 Scores - A11y: ${accessibilityScore}%, BP: ${bestPracticesScore}%, SEO: ${seoScore}%`);
+    console.log(
+      `    📊 Scores - A11y: ${accessibilityScore}%, BP: ${bestPracticesScore}%, SEO: ${seoScore}%`
+    );
   }
 
   /**
@@ -533,15 +537,24 @@ class AccessibilityTester {
 
     // HTML Report
     const htmlReport = this.generateHTMLReport();
-    await fs.writeFile(path.join(this.options.outputDir, `accessibility-report-${timestamp}.html`), htmlReport);
+    await fs.writeFile(
+      path.join(this.options.outputDir, `accessibility-report-${timestamp}.html`),
+      htmlReport
+    );
 
     // JUnit XML Report (for CI/CD)
     const junitReport = this.generateJUnitReport();
-    await fs.writeFile(path.join(this.options.outputDir, `accessibility-junit-${timestamp}.xml`), junitReport);
+    await fs.writeFile(
+      path.join(this.options.outputDir, `accessibility-junit-${timestamp}.xml`),
+      junitReport
+    );
 
     // Summary Report
     const summaryReport = this.generateSummaryReport();
-    await fs.writeFile(path.join(this.options.outputDir, `accessibility-summary-${timestamp}.txt`), summaryReport);
+    await fs.writeFile(
+      path.join(this.options.outputDir, `accessibility-summary-${timestamp}.txt`),
+      summaryReport
+    );
 
     console.log(`📁 Reports saved to: ${this.options.outputDir}`);
   }
@@ -601,7 +614,7 @@ class AccessibilityTester {
     <h2>🚨 Violations</h2>
     ${this.results.violations
       .map(
-        (violation) => `
+        violation => `
         <div class="violation-item impact-${violation.impact || 'moderate'}">
             <h4>${violation.rule || violation.type}</h4>
             <p><strong>URL:</strong> ${violation.url}</p>
@@ -615,7 +628,7 @@ class AccessibilityTester {
     <h2>📊 Lighthouse Scores</h2>
     ${this.results.lighthouse
       .map(
-        (result) => `
+        result => `
         <div class="card">
             <h4>${result.url}</h4>
             <p>Accessibility: ${result.scores.accessibility}%</p>
@@ -634,13 +647,13 @@ class AccessibilityTester {
    */
   generateJUnitReport() {
     const testSuites = this.results.axe
-      .map((result) => {
+      .map(result => {
         const tests = [...result.violations, ...result.passes];
         return `
     <testsuite name="Accessibility Tests - ${result.url}" tests="${tests.length}" failures="${result.violations.length}">
       ${tests
         .map(
-          (test) => `
+          test => `
         <testcase name="${test.id || test.rule}" classname="accessibility">
           ${test.impact ? `<failure message="${test.description}">${test.help}</failure>` : ''}
         </testcase>
@@ -746,7 +759,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const options = {
     headless: !args.includes('--headed'),
-    environment: args.find((arg) => arg.startsWith('--env='))?.split('=')[1] || 'development',
+    environment: args.find(arg => arg.startsWith('--env='))?.split('=')[1] || 'development',
     verbose: args.includes('--verbose'),
   };
 
@@ -758,7 +771,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(1);
   });
 
-  tester.run().catch(async (error) => {
+  tester.run().catch(async error => {
     console.error('❌ Test execution failed:', error);
     await tester.cleanup();
     process.exit(1);

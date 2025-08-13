@@ -46,29 +46,43 @@ export const POST: APIRoute = async ({ request }) => {
   // }
 
   const formData = await request.formData();
-  console.log('[submit-to-notion] 📥 Raw FormData received:', Object.fromEntries(formData.entries()));
+  console.log(
+    '[submit-to-notion] 📥 Raw FormData received:',
+    Object.fromEntries(formData.entries())
+  );
   try {
     const data = Object.fromEntries(formData.entries());
     console.log('[submit-to-notion] 🔄 Converted FormData to object:', data);
     const result = schema.safeParse(data);
     console.log('[submit-to-notion] 🛂 Schema validation success:', result.success);
     if (!result.success) {
-      console.log('[submit-to-notion] ❌ Validation failed with errors:', result.error.flatten().fieldErrors);
+      console.log(
+        '[submit-to-notion] ❌ Validation failed with errors:',
+        result.error.flatten().fieldErrors
+      );
       return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
-    console.log('[submit-to-notion] ✅ Parsed form fields', { name, email, service, messageLength: message.length });
+    console.log('[submit-to-notion] ✅ Parsed form fields', {
+      name,
+      email,
+      service,
+      messageLength: message.length,
+    });
 
     // Business logic validation (422 Unprocessable Entity)
     console.log('[submit-to-notion] 🔍 Checking message length constraint (<5000)');
     if (message.length > 5000) {
       console.log('[submit-to-notion] ⚠️ Message too long:', message.length);
       return jsonResponse(
-        ApiErrors.unprocessableEntity('Message is too long. Please keep it under 5000 characters.', {
-          field: 'message',
-          limit: 5000,
-          current: message.length,
-        }),
+        ApiErrors.unprocessableEntity(
+          'Message is too long. Please keep it under 5000 characters.',
+          {
+            field: 'message',
+            limit: 5000,
+            current: message.length,
+          }
+        ),
         422
       );
     }
@@ -191,7 +205,7 @@ export const POST: APIRoute = async ({ request }) => {
         success: false,
         error: type,
         message: errorMessage,
-        status: status,
+        status,
         timestamp: new Date().toISOString(),
       },
       status

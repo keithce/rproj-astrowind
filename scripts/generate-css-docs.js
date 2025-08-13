@@ -40,10 +40,22 @@ const VARIABLE_DEFINITIONS = {
         description: 'Medium brand color, used for secondary elements',
         usage: 'Secondary buttons, muted text',
       },
-      '--color-brand-500': { description: 'Core brand color, primary accent', usage: 'Primary accents, outlines' },
-      '--color-brand-600': { description: 'Medium-dark brand color, primary buttons', usage: 'Primary buttons, links' },
-      '--color-brand-700': { description: 'Dark brand color, used for text', usage: 'Text, headings' },
-      '--color-brand-800': { description: 'Very dark brand color, body text', usage: 'Body text, default text' },
+      '--color-brand-500': {
+        description: 'Core brand color, primary accent',
+        usage: 'Primary accents, outlines',
+      },
+      '--color-brand-600': {
+        description: 'Medium-dark brand color, primary buttons',
+        usage: 'Primary buttons, links',
+      },
+      '--color-brand-700': {
+        description: 'Dark brand color, used for text',
+        usage: 'Text, headings',
+      },
+      '--color-brand-800': {
+        description: 'Very dark brand color, body text',
+        usage: 'Body text, default text',
+      },
       '--color-brand-900': {
         description: 'Darkest brand color, high contrast text',
         usage: 'High contrast text, dark backgrounds',
@@ -63,12 +75,30 @@ const VARIABLE_DEFINITIONS = {
         usage: 'Page backgrounds, main content areas',
       },
       '--color-foreground': { description: 'Primary text color', usage: 'Headings, primary text' },
-      '--color-card': { description: 'Card background color', usage: 'Card components, elevated surfaces' },
-      '--color-card-foreground': { description: 'Text color on cards', usage: 'Text within card components' },
-      '--color-popover': { description: 'Popover background color', usage: 'Tooltips, dropdowns, modals' },
-      '--color-popover-foreground': { description: 'Text color in popovers', usage: 'Text in tooltips and dropdowns' },
-      '--color-primary': { description: 'Primary action color', usage: 'Primary buttons, key actions' },
-      '--color-primary-foreground': { description: 'Text color on primary elements', usage: 'Text on primary buttons' },
+      '--color-card': {
+        description: 'Card background color',
+        usage: 'Card components, elevated surfaces',
+      },
+      '--color-card-foreground': {
+        description: 'Text color on cards',
+        usage: 'Text within card components',
+      },
+      '--color-popover': {
+        description: 'Popover background color',
+        usage: 'Tooltips, dropdowns, modals',
+      },
+      '--color-popover-foreground': {
+        description: 'Text color in popovers',
+        usage: 'Text in tooltips and dropdowns',
+      },
+      '--color-primary': {
+        description: 'Primary action color',
+        usage: 'Primary buttons, key actions',
+      },
+      '--color-primary-foreground': {
+        description: 'Text color on primary elements',
+        usage: 'Text on primary buttons',
+      },
       '--color-secondary': {
         description: 'Secondary action color',
         usage: 'Secondary buttons, less important actions',
@@ -77,31 +107,73 @@ const VARIABLE_DEFINITIONS = {
         description: 'Text color on secondary elements',
         usage: 'Text on secondary buttons',
       },
-      '--color-muted': { description: 'Muted background color', usage: 'Disabled states, subtle backgrounds' },
-      '--color-muted-foreground': { description: 'Muted text color', usage: 'Secondary text, captions' },
-      '--color-accent': { description: 'Accent color for highlights', usage: 'Highlights, badges, notifications' },
+      '--color-muted': {
+        description: 'Muted background color',
+        usage: 'Disabled states, subtle backgrounds',
+      },
+      '--color-muted-foreground': {
+        description: 'Muted text color',
+        usage: 'Secondary text, captions',
+      },
+      '--color-accent': {
+        description: 'Accent color for highlights',
+        usage: 'Highlights, badges, notifications',
+      },
       '--color-accent-foreground': {
         description: 'Text color on accent elements',
         usage: 'Text on highlighted elements',
       },
-      '--color-border': { description: 'Default border color', usage: 'Component borders, dividers' },
+      '--color-border': {
+        description: 'Default border color',
+        usage: 'Component borders, dividers',
+      },
       '--color-input': { description: 'Input field background', usage: 'Form inputs, text areas' },
-      '--color-outline': { description: 'Focus outline color', usage: 'Focus states, accessibility outlines' },
-      '--color-ring': { description: 'Focus ring color', usage: 'Focus rings, selection indicators' },
+      '--color-outline': {
+        description: 'Focus outline color',
+        usage: 'Focus states, accessibility outlines',
+      },
+      '--color-ring': {
+        description: 'Focus ring color',
+        usage: 'Focus rings, selection indicators',
+      },
     },
   },
   status: {
     title: 'Status Colors',
     description: 'Colors for different states and feedback messages',
     variables: {
-      '--color-info': { description: 'Information message color', usage: 'Info alerts, informational content' },
-      '--color-info-foreground': { description: 'Text color for info messages', usage: 'Text in info alerts' },
-      '--color-success': { description: 'Success message color', usage: 'Success alerts, positive feedback' },
-      '--color-success-foreground': { description: 'Text color for success messages', usage: 'Text in success alerts' },
-      '--color-warning': { description: 'Warning message color', usage: 'Warning alerts, caution indicators' },
-      '--color-warning-foreground': { description: 'Text color for warning messages', usage: 'Text in warning alerts' },
-      '--color-error': { description: 'Error message color', usage: 'Error alerts, validation errors' },
-      '--color-error-foreground': { description: 'Text color for error messages', usage: 'Text in error alerts' },
+      '--color-info': {
+        description: 'Information message color',
+        usage: 'Info alerts, informational content',
+      },
+      '--color-info-foreground': {
+        description: 'Text color for info messages',
+        usage: 'Text in info alerts',
+      },
+      '--color-success': {
+        description: 'Success message color',
+        usage: 'Success alerts, positive feedback',
+      },
+      '--color-success-foreground': {
+        description: 'Text color for success messages',
+        usage: 'Text in success alerts',
+      },
+      '--color-warning': {
+        description: 'Warning message color',
+        usage: 'Warning alerts, caution indicators',
+      },
+      '--color-warning-foreground': {
+        description: 'Text color for warning messages',
+        usage: 'Text in warning alerts',
+      },
+      '--color-error': {
+        description: 'Error message color',
+        usage: 'Error alerts, validation errors',
+      },
+      '--color-error-foreground': {
+        description: 'Text color for error messages',
+        usage: 'Text in error alerts',
+      },
     },
   },
   legacy: {
@@ -112,13 +184,31 @@ const VARIABLE_DEFINITIONS = {
       '--aw-font-serif': { description: 'Serif font family', usage: 'Headings, decorative text' },
       '--aw-font-heading': { description: 'Heading font family', usage: 'All heading elements' },
       '--aw-color-primary': { description: 'Legacy primary color', usage: 'Existing components' },
-      '--aw-color-secondary': { description: 'Legacy secondary color', usage: 'Existing components' },
+      '--aw-color-secondary': {
+        description: 'Legacy secondary color',
+        usage: 'Existing components',
+      },
       '--aw-color-accent': { description: 'Legacy accent color', usage: 'Existing components' },
-      '--aw-color-text-heading': { description: 'Legacy heading text color', usage: 'Existing headings' },
-      '--aw-color-text-default': { description: 'Legacy default text color', usage: 'Existing text elements' },
-      '--aw-color-text-muted': { description: 'Legacy muted text color', usage: 'Existing secondary text' },
-      '--aw-color-text-page': { description: 'Legacy page text color', usage: 'Existing page content' },
-      '--aw-color-bg-page': { description: 'Legacy page background color', usage: 'Existing page backgrounds' },
+      '--aw-color-text-heading': {
+        description: 'Legacy heading text color',
+        usage: 'Existing headings',
+      },
+      '--aw-color-text-default': {
+        description: 'Legacy default text color',
+        usage: 'Existing text elements',
+      },
+      '--aw-color-text-muted': {
+        description: 'Legacy muted text color',
+        usage: 'Existing secondary text',
+      },
+      '--aw-color-text-page': {
+        description: 'Legacy page text color',
+        usage: 'Existing page content',
+      },
+      '--aw-color-bg-page': {
+        description: 'Legacy page background color',
+        usage: 'Existing page backgrounds',
+      },
       '--aw-color-bg-page-dark': {
         description: 'Legacy dark page background',
         usage: 'Existing dark theme backgrounds',
@@ -211,7 +301,8 @@ class CSSDocumentationGenerator {
             <h4>Dark Theme</h4>
             ${Object.entries(variables)
               .map(([variable]) => {
-                const value = darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
+                const value =
+                  darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
                 return this.generateColorSwatch(variable, value);
               })
               .join('')}
@@ -604,7 +695,10 @@ The CSS variable system is organized into four main categories:
 | Category | Variables | Description |
 |----------|-----------|-------------|
 ${Object.entries(VARIABLE_DEFINITIONS)
-  .map(([section]) => `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`)
+  .map(
+    ([section]) =>
+      `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`
+  )
   .join('\n')}
 
 ${Object.entries(VARIABLE_DEFINITIONS)

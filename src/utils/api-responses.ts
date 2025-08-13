@@ -26,7 +26,10 @@ export interface ValidationErrorResponse extends ApiErrorResponse {
 }
 
 // Success response creator
-export function createSuccessResponse<T = unknown>(data?: T, message?: string): ApiSuccessResponse<T> {
+export function createSuccessResponse<T = unknown>(
+  data?: T,
+  message?: string
+): ApiSuccessResponse<T> {
   return {
     success: true,
     data,
@@ -106,10 +109,12 @@ export const ApiErrors = {
   badRequest: (message: string = 'Bad request', details?: Record<string, unknown>) =>
     createErrorResponse('bad_request', message, 400, details),
 
-  validation: (errors: Record<string, string[]>, message?: string) => createValidationErrorResponse(errors, message),
+  validation: (errors: Record<string, string[]>, message?: string) =>
+    createValidationErrorResponse(errors, message),
 
   // 401 Unauthorized
-  unauthorized: (message: string = 'Authentication required') => createErrorResponse('unauthorized', message, 401),
+  unauthorized: (message: string = 'Authentication required') =>
+    createErrorResponse('unauthorized', message, 401),
 
   // 403 Forbidden
   forbidden: (message: string = 'Access denied') => createErrorResponse('forbidden', message, 403),
@@ -117,7 +122,8 @@ export const ApiErrors = {
   botDetected: () => createErrorResponse('access_denied', 'Bot traffic is not allowed', 403),
 
   // 404 Not Found
-  notFound: (message: string = 'Resource not found') => createErrorResponse('not_found', message, 404),
+  notFound: (message: string = 'Resource not found') =>
+    createErrorResponse('not_found', message, 404),
 
   // 422 Unprocessable Entity
   unprocessableEntity: (message: string, details?: Record<string, unknown>) =>
@@ -132,7 +138,11 @@ export const ApiErrors = {
 
   // 502 Bad Gateway
   externalService: (service: string = 'external service') =>
-    createErrorResponse('external_service_error', `${service} temporarily unavailable. Please try again.`, 502),
+    createErrorResponse(
+      'external_service_error',
+      `${service} temporarily unavailable. Please try again.`,
+      502
+    ),
 
   // 503 Service Unavailable
   serviceUnavailable: (
@@ -188,7 +198,8 @@ export function classifyError(error: unknown): {
     return {
       type: 'email_service_error',
       status: 502,
-      message: 'Email service temporarily unavailable. Your form was submitted but confirmation email may be delayed.',
+      message:
+        'Email service temporarily unavailable. Your form was submitted but confirmation email may be delayed.',
     };
   }
 
@@ -202,13 +213,25 @@ export function classifyError(error: unknown): {
 
 // Type guards
 export function isApiSuccessResponse(response: unknown): response is ApiSuccessResponse {
-  return typeof response === 'object' && response !== null && 'success' in response && response.success === true;
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'success' in response &&
+    response.success === true
+  );
 }
 
 export function isApiErrorResponse(response: unknown): response is ApiErrorResponse {
-  return typeof response === 'object' && response !== null && 'success' in response && response.success === false;
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'success' in response &&
+    response.success === false
+  );
 }
 
 export function isValidationErrorResponse(response: unknown): response is ValidationErrorResponse {
-  return isApiErrorResponse(response) && 'error' in response && response.error === 'validation_error';
+  return (
+    isApiErrorResponse(response) && 'error' in response && response.error === 'validation_error'
+  );
 }

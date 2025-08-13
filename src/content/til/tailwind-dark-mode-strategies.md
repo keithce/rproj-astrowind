@@ -2,17 +2,21 @@
 title: 'Tailwind Dark Mode Implementation Strategies'
 date: 2025-06-19
 tags: ['tailwind', 'css', 'dark mode']
-description: 'Today I learned about different strategies for implementing dark mode with Tailwind CSS, from class-based to media query approaches.'
+description:
+  'Today I learned about different strategies for implementing dark mode with
+  Tailwind CSS, from class-based to media query approaches.'
 draft: false
 ---
 
 # Tailwind Dark Mode Implementation Strategies
 
-Today I explored the different ways to implement dark mode using Tailwind CSS. The framework offers multiple strategies, each with unique advantages.
+Today I explored the different ways to implement dark mode using Tailwind CSS.
+The framework offers multiple strategies, each with unique advantages.
 
 ## Class-Based Dark Mode
 
-The default approach in Tailwind is class-based, where dark mode styles are applied when a parent element has a `.dark` class:
+The default approach in Tailwind is class-based, where dark mode styles are
+applied when a parent element has a `.dark` class:
 
 ```js
 // tailwind.config.js
@@ -29,7 +33,9 @@ This requires JavaScript to toggle the class on the `html` or `body` element:
 document.documentElement.classList.toggle('dark');
 
 // Persist in localStorage
-localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+localStorage.theme = document.documentElement.classList.contains('dark')
+  ? 'dark'
+  : 'light';
 ```
 
 ## Media Query-Based Dark Mode
@@ -44,7 +50,8 @@ module.exports = {
 };
 ```
 
-With this approach, dark mode styles automatically apply when the user has enabled dark mode in their operating system.
+With this approach, dark mode styles automatically apply when the user has
+enabled dark mode in their operating system.
 
 ## Custom CSS Variables Strategy
 
@@ -82,6 +89,9 @@ theme: {
 }
 ```
 
-This gives you both automatic system preference support and the ability to override with user preference.
+This gives you both automatic system preference support and the ability to
+override with user preference.
 
-The key insight I gained was that combining CSS variables with Tailwind's class-based system provides the most flexible solution for real-world applications.
+The key insight I gained was that combining CSS variables with Tailwind's
+class-based system provides the most flexible solution for real-world
+applications.

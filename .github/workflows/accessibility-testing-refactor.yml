@@ -1,4 +1,4 @@
-name: "🛡️ Accessibility Testing (Refactored)"
+name: '🛡️ Accessibility Testing (Refactored)'
 
 permissions:
   contents: read
@@ -11,13 +11,13 @@ on:
   pull_request:
     branches: [main, develop]
   schedule:
-    - cron: "0 2 * * *"  # daily at 2 AM UTC
+    - cron: '0 2 * * *' # daily at 2 AM UTC
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment to test"
+        description: 'Environment to test'
         required: true
-        default: "development"
+        default: 'development'
         type: choice
         options:
           - development
@@ -28,65 +28,65 @@ on:
 # Shared env values
 # ------------------------------------------------------------------
 env:
-  NODE_VERSION: "22"
-  PNPM_VERSION: "10"
-  DEV_PORT: 4321  # change once – propagates everywhere
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+  DEV_PORT: 4321 # change once – propagates everywhere
 
 # ------------------------------------------------------------------
 # Jobs
 # ------------------------------------------------------------------
 jobs:
-# ================================================================
-# 1) Build the site once to fail fast on build-time errors
-# ================================================================
+  # ================================================================
+  # 1) Build the site once to fail fast on build-time errors
+  # ================================================================
   build-site:
-    name: "🏗️ Build & sanity-check"
+    name: '🏗️ Build & sanity-check'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
-      - name: "📥 Checkout repository"
+      - name: '📥 Checkout repository'
         uses: actions/checkout@v4
 
-      - name: "📦 Setup Node.js"
+      - name: '📦 Setup Node.js'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: "📦 Setup pnpm"
+      - name: '📦 Setup pnpm'
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: "📦 Install dependencies"
+      - name: '📦 Install dependencies'
         run: pnpm install --frozen-lockfile
 
-      - name: "🏗️ Build application"
+      - name: '🏗️ Build application'
         run: pnpm build
 
-# ================================================================
-# Re-usable shell snippet – start astro dev, wait, expose PID
-# ================================================================
-# Using YAML anchors for brevity
-#  _start_dev: &start_dev |
-#      pnpm astro dev --port ${{ env.DEV_PORT }} --host &
-#      echo "PID=$!" >> "$GITHUB_OUTPUT"
-#      for i in {1..30}; do
-#        sleep 2
-#        if curl -sf http://localhost:${{ env.DEV_PORT }} > /dev/null; then
-#          echo "✅ astro dev is up!"; break; fi
-#        echo "⏳ Waiting for dev server... ($i/30)";
-#        if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
-#      done
-#
-#  _stop_dev: &stop_dev |
-#      kill ${{ steps.dev.outputs.PID }} || true
+  # ================================================================
+  # Re-usable shell snippet – start astro dev, wait, expose PID
+  # ================================================================
+  # Using YAML anchors for brevity
+  #  _start_dev: &start_dev |
+  #      pnpm astro dev --port ${{ env.DEV_PORT }} --host &
+  #      echo "PID=$!" >> "$GITHUB_OUTPUT"
+  #      for i in {1..30}; do
+  #        sleep 2
+  #        if curl -sf http://localhost:${{ env.DEV_PORT }} > /dev/null; then
+  #          echo "✅ astro dev is up!"; break; fi
+  #        echo "⏳ Waiting for dev server... ($i/30)";
+  #        if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
+  #      done
+  #
+  #  _stop_dev: &stop_dev |
+  #      kill ${{ steps.dev.outputs.PID }} || true
 
-# ================================================================
-# 2) Accessibility matrix tests (axe, lighthouse, custom)
-# ================================================================
+  # ================================================================
+  # 2) Accessibility matrix tests (axe, lighthouse, custom)
+  # ================================================================
   accessibility-tests:
-    name: "🧪 Accessibility Tests"
+    name: '🧪 Accessibility Tests'
     needs: build-site
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -95,23 +95,23 @@ jobs:
         test-type: [axe-core, lighthouse, custom]
 
     steps:
-      - name: "📥 Checkout repository"
+      - name: '📥 Checkout repository'
         uses: actions/checkout@v4
 
-      - name: "📦 Setup Node.js"
+      - name: '📦 Setup Node.js'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: "📦 Setup pnpm"
+      - name: '📦 Setup pnpm'
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: "📦 Install dependencies (test libs)"
+      - name: '📦 Install dependencies (test libs)'
         run: pnpm install --frozen-lockfile
 
-      - name: "🚀 Start astro dev"
+      - name: '🚀 Start astro dev'
         id: dev
         run: |
           pnpm astro dev --port ${{ env.DEV_PORT }} --host &
@@ -124,7 +124,7 @@ jobs:
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
 
-      - name: "🧪 Run Axe-Core Tests"
+      - name: '🧪 Run Axe-Core Tests'
         if: matrix.test-type == 'axe-core'
         run: |
           # Install a Chrome + ChromeDriver pair that axe-core can use
@@ -133,17 +133,17 @@ jobs:
           pnpm axe:scan
           pnpm test:accessibility:ci
 
-      - name: "🧪 Run Lighthouse Tests"
+      - name: '🧪 Run Lighthouse Tests'
         if: matrix.test-type == 'lighthouse'
         run: |
           mkdir -p accessibility-reports
           pnpm lighthouse:accessibility
 
-      - name: "🧪 Run Custom Accessibility Tests"
+      - name: '🧪 Run Custom Accessibility Tests'
         if: matrix.test-type == 'custom'
         run: pnpm test:accessibility:verbose
 
-      - name: "📊 Upload Accessibility Reports"
+      - name: '📊 Upload Accessibility Reports'
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -153,12 +153,12 @@ jobs:
             lighthouse-report.html
           retention-days: 30
 
-      - name: "🛑 Stop dev server"
+      - name: '🛑 Stop dev server'
         if: always()
         run: |
           kill ${{ steps.dev.outputs.PID }} || true
 
-      - name: "📝 Comment PR with Results"
+      - name: '📝 Comment PR with Results'
         if: github.event_name == 'pull_request' && matrix.test-type == 'axe-core'
         uses: actions/github-script@v7
         with:
@@ -183,11 +183,11 @@ jobs:
               body
             });
 
-# ================================================================
-# 3) Accessibility Monitoring (no server needed)
-# ================================================================
+  # ================================================================
+  # 3) Accessibility Monitoring (no server needed)
+  # ================================================================
   accessibility-monitoring:
-    name: "📈 Accessibility Monitoring"
+    name: '📈 Accessibility Monitoring'
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs: [build-site, accessibility-tests]
@@ -201,17 +201,17 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
-      - name: "📊 Generate Accessibility Trends"
+      - name: '📊 Generate Accessibility Trends'
         run: |
           mkdir -p accessibility-trends
           echo "$(date): Accessibility tests completed" >> accessibility-trends/history.log
-      - name: "📤 Upload Trends Data"
+      - name: '📤 Upload Trends Data'
         uses: actions/upload-artifact@v4
         with:
           name: accessibility-trends
           path: accessibility-trends/
           retention-days: 90
-      - name: "🚨 Notify Slack on failure"
+      - name: '🚨 Notify Slack on failure'
         if: failure()
         uses: 8398a7/action-slack@v3
         with:
@@ -221,11 +221,11 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-# ================================================================
-# 4) Security & Accessibility Scan (no server)
-# ================================================================
+  # ================================================================
+  # 4) Security & Accessibility Scan (no server)
+  # ================================================================
   security-accessibility-scan:
-    name: "🔒 Security & Accessibility Scan"
+    name: '🔒 Security & Accessibility Scan'
     runs-on: ubuntu-latest
     needs: build-site
 
@@ -240,17 +240,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install -g pnpm@${{ env.PNPM_VERSION }}
       - run: pnpm audit --audit-level moderate
-      - name: "🧪 Accessibility Security Check"
+      - name: '🧪 Accessibility Security Check'
         run: |
           echo "Checking for accessibility-related security vulnerabilities..."
           grep -r "aria-label.*innerHTML\|aria-describedby.*innerHTML" src/ || echo "No innerHTML in ARIA attributes found"
           grep -r "eval\|Function.*focus\|setTimeout.*focus" src/ || echo "No unsafe focus management found"
 
-# ================================================================
-# 5) Performance Impact on Accessibility
-# ================================================================
+  # ================================================================
+  # 5) Performance Impact on Accessibility
+  # ================================================================
   performance-accessibility:
-    name: "⚡ Performance Impact on Accessibility"
+    name: '⚡ Performance Impact on Accessibility'
     needs: build-site
     runs-on: ubuntu-latest
 
@@ -263,7 +263,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
-      - name: "🚀 Start astro dev"
+      - name: '🚀 Start astro dev'
         id: dev
         run: |
           pnpm astro dev --port ${{ env.DEV_PORT }} --host &
@@ -275,32 +275,32 @@ jobs:
             echo "⏳ Waiting for dev server... ($i/30)";
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
-      - name: "⚡ Run Performance Tests"
+      - name: '⚡ Run Performance Tests'
         run: |
           npx lighthouse http://localhost:${{ env.DEV_PORT }} \
             --only-categories=accessibility,performance \
             --output=json \
             --output-path=./lighthouse-perf-a11y.json \
             --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
-      - name: "📊 Analyze Performance Impact"
+      - name: '📊 Analyze Performance Impact'
         run: |
           node -e "const r=require('./lighthouse-perf-a11y.json');const a=r.categories.accessibility.score*100;const p=r.categories.performance.score*100;console.log('Accessibility Score:',a);console.log('Performance Score:',p);if(a<95){process.exitCode=1;}"
-      - name: "📤 Upload Performance Report"
+      - name: '📤 Upload Performance Report'
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: performance-accessibility-report
           path: lighthouse-perf-a11y.json
-      - name: "🛑 Stop dev server"
+      - name: '🛑 Stop dev server'
         if: always()
         run: |
           kill ${{ steps.dev.outputs.PID }} || true
 
-# ================================================================
-# 6) Mobile Accessibility Tests
-# ================================================================
+  # ================================================================
+  # 6) Mobile Accessibility Tests
+  # ================================================================
   mobile-accessibility:
-    name: "📱 Mobile Accessibility Testing"
+    name: '📱 Mobile Accessibility Testing'
     needs: build-site
     runs-on: ubuntu-latest
 
@@ -313,7 +313,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
-      - name: "🚀 Start astro dev"
+      - name: '🚀 Start astro dev'
         id: dev
         run: |
           pnpm astro dev --port ${{ env.DEV_PORT }} --host &
@@ -325,7 +325,7 @@ jobs:
             echo "⏳ Waiting for dev server... ($i/30)";
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
-      - name: "📱 Test Mobile Accessibility"
+      - name: '📱 Test Mobile Accessibility'
         run: |
           npx lighthouse http://localhost:${{ env.DEV_PORT }} \
             --only-categories=accessibility \
@@ -336,25 +336,25 @@ jobs:
             --output=json \
             --output-path=./mobile-a11y.json \
             --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
-      - name: "📊 Analyze Mobile Results"
+      - name: '📊 Analyze Mobile Results'
         run: |
           node -e "const r=require('./mobile-a11y.json');const s=r.categories.accessibility.score*100;console.log('Mobile Accessibility Score:',s);if(s<95){process.exitCode=1;}"
-      - name: "📤 Upload Mobile Report"
+      - name: '📤 Upload Mobile Report'
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mobile-accessibility-report
           path: mobile-a11y.json
-      - name: "🛑 Stop dev server"
+      - name: '🛑 Stop dev server'
         if: always()
         run: |
           kill ${{ steps.dev.outputs.PID }} || true
 
-# ================================================================
-# 7) Accessibility Regression (current vs base)
-# ================================================================
+  # ================================================================
+  # 7) Accessibility Regression (current vs base)
+  # ================================================================
   accessibility-regression:
-    name: "🔄 Accessibility Regression Testing"
+    name: '🔄 Accessibility Regression Testing'
     if: github.event_name == 'pull_request'
     needs: build-site
     runs-on: ubuntu-latest
@@ -370,7 +370,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
-      - name: "🚀 Start astro dev (current)"
+      - name: '🚀 Start astro dev (current)'
         id: dev_current
         run: |
           pnpm astro dev --port ${{ env.DEV_PORT }} --host &
@@ -382,21 +382,21 @@ jobs:
             echo "⏳ Waiting for dev server... ($i/30)";
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
-      - name: "🧪 Run Current Branch Tests"
+      - name: '🧪 Run Current Branch Tests'
         run: |
           pnpm test:accessibility:ci
           cp -r accessibility-reports current-reports
-      - name: "🛑 Stop dev server (current)"
+      - name: '🛑 Stop dev server (current)'
         run: |
           kill ${{ steps.dev.outputs.PID }} || true
 
       # -------- base branch --------
-      - name: "📥 Checkout base branch"
+      - name: '📥 Checkout base branch'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
       - run: pnpm install --frozen-lockfile
-      - name: "🚀 Start astro dev (base)"
+      - name: '🚀 Start astro dev (base)'
         id: dev_base
         run: |
           pnpm astro dev --port ${{ env.DEV_PORT }} --host &
@@ -408,15 +408,15 @@ jobs:
             echo "⏳ Waiting for dev server... ($i/30)";
             if [ $i -eq 30 ]; then echo "❌ Server did not start in time" >&2; exit 1; fi
           done
-      - name: "🧪 Run Base Branch Tests"
+      - name: '🧪 Run Base Branch Tests'
         run: |
           pnpm test:accessibility:ci
           cp -r accessibility-reports base-reports
-      - name: "🛑 Stop dev server (base)"
+      - name: '🛑 Stop dev server (base)'
         run: |
           kill ${{ steps.dev.outputs.PID }} || true
 
-      - name: "🔍 Compare Results"
+      - name: '🔍 Compare Results'
         run: |
           echo "Comparing accessibility results..."
           if [ -d "current-reports" ] && [ -d "base-reports" ]; then
@@ -427,11 +427,11 @@ jobs:
             echo "❌ Unable to compare reports"
           fi
 
-      - name: "📤 Upload Comparison"
+      - name: '📤 Upload Comparison'
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: accessibility-regression-comparison
           path: |
             current-reports/
-            base-reports/ 
+            base-reports/

@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  path-match: npm:path-to-regexp@^6.2.1
-  undici: ^6.21.0
-  esbuild: ^0.25.0
-
 importers:
 
   .:
@@ -97,9 +92,6 @@ importers:
       notion-utils:
         specifier: ^7.4.3
         version: 7.4.3
-      pagefind:
-        specifier: ^1.3.0
-        version: 1.3.0
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -124,9 +116,6 @@ importers:
       unpic:
         specifier: ^4.1.3
         version: 4.1.3
-      vercel:
-        specifier: ^44.7.3
-        version: 44.7.3(rollup@4.46.2)
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.4
@@ -227,12 +216,18 @@ importers:
       notion-rehype-k:
         specifier: ^1.1.6
         version: 1.1.6
+      pagefind:
+        specifier: ^1.3.0
+        version: 1.3.0
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
       prettier-plugin-astro:
         specifier: ^0.14.1
         version: 0.14.1
+      prettier-plugin-tailwindcss:
+        specifier: ^0.6.14
+        version: 0.6.14(prettier-plugin-astro@0.14.1)(prettier@3.6.2)
       puppeteer:
         specifier: ^24.16.1
         version: 24.16.1(typescript@5.9.2)
@@ -278,6 +273,9 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
+      vercel:
+        specifier: ^44.7.3
+        version: 44.7.3(rollup@4.46.2)
       vfile:
         specifier: ^6.0.3
         version: 6.0.3
@@ -798,6 +796,10 @@ packages:
   '@eslint/plugin-kit@0.3.5':
     resolution: {integrity: sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@fastify/busboy@2.1.1':
+    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
+    engines: {node: '>=14'}
 
   '@fontsource-variable/inter@5.2.6':
     resolution: {integrity: sha512-jks/bficUPQ9nn7GvXvHtlQIPudW7Wx8CrlZoY8bhxgeobNxlQan8DclUJuYF2loYRrGpfrhCIZZspXYysiVGg==}
@@ -2507,7 +2509,7 @@ packages:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     peerDependencies:
-      esbuild: ^0.25.0
+      esbuild: '>=0.18'
 
   bytes@3.1.0:
     resolution: {integrity: sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==}
@@ -3056,6 +3058,131 @@ packages:
   esast-util-from-js@2.0.1:
     resolution: {integrity: sha512-8Ja+rNJ0Lt56Pcf3TAmpBZjmx8ZcK5Ts4cAzIOjsjevg9oSXJnl6SUQ2EevU8tv3h6ZLWmoKL5H4fgWvdvfETw==}
 
+  esbuild-android-64@0.14.47:
+    resolution: {integrity: sha512-R13Bd9+tqLVFndncMHssZrPWe6/0Kpv2/dt4aA69soX4PRxlzsVpCvoJeFE8sOEoeVEiBkI0myjlkDodXlHa0g==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [android]
+
+  esbuild-android-arm64@0.14.47:
+    resolution: {integrity: sha512-OkwOjj7ts4lBp/TL6hdd8HftIzOy/pdtbrNA4+0oVWgGG64HrdVzAF5gxtJufAPOsEjkyh1oIYvKAUinKKQRSQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [android]
+
+  esbuild-darwin-64@0.14.47:
+    resolution: {integrity: sha512-R6oaW0y5/u6Eccti/TS6c/2c1xYTb1izwK3gajJwi4vIfNs1s8B1dQzI1UiC9T61YovOQVuePDcfqHLT3mUZJA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [darwin]
+
+  esbuild-darwin-arm64@0.14.47:
+    resolution: {integrity: sha512-seCmearlQyvdvM/noz1L9+qblC5vcBrhUaOoLEDDoLInF/VQ9IkobGiLlyTPYP5dW1YD4LXhtBgOyevoIHGGnw==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [darwin]
+
+  esbuild-freebsd-64@0.14.47:
+    resolution: {integrity: sha512-ZH8K2Q8/Ux5kXXvQMDsJcxvkIwut69KVrYQhza/ptkW50DC089bCVrJZZ3sKzIoOx+YPTrmsZvqeZERjyYrlvQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [freebsd]
+
+  esbuild-freebsd-arm64@0.14.47:
+    resolution: {integrity: sha512-ZJMQAJQsIOhn3XTm7MPQfCzEu5b9STNC+s90zMWe2afy9EwnHV7Ov7ohEMv2lyWlc2pjqLW8QJnz2r0KZmeAEQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [freebsd]
+
+  esbuild-linux-32@0.14.47:
+    resolution: {integrity: sha512-FxZOCKoEDPRYvq300lsWCTv1kcHgiiZfNrPtEhFAiqD7QZaXrad8LxyJ8fXGcWzIFzRiYZVtB3ttvITBvAFhKw==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [linux]
+
+  esbuild-linux-64@0.14.47:
+    resolution: {integrity: sha512-nFNOk9vWVfvWYF9YNYksZptgQAdstnDCMtR6m42l5Wfugbzu11VpMCY9XrD4yFxvPo9zmzcoUL/88y0lfJZJJw==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [linux]
+
+  esbuild-linux-arm64@0.14.47:
+    resolution: {integrity: sha512-ywfme6HVrhWcevzmsufjd4iT3PxTfCX9HOdxA7Hd+/ZM23Y9nXeb+vG6AyA6jgq/JovkcqRHcL9XwRNpWG6XRw==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [linux]
+
+  esbuild-linux-arm@0.14.47:
+    resolution: {integrity: sha512-ZGE1Bqg/gPRXrBpgpvH81tQHpiaGxa8c9Rx/XOylkIl2ypLuOcawXEAo8ls+5DFCcRGt/o3sV+PzpAFZobOsmA==}
+    engines: {node: '>=12'}
+    cpu: [arm]
+    os: [linux]
+
+  esbuild-linux-mips64le@0.14.47:
+    resolution: {integrity: sha512-mg3D8YndZ1LvUiEdDYR3OsmeyAew4MA/dvaEJxvyygahWmpv1SlEEnhEZlhPokjsUMfRagzsEF/d/2XF+kTQGg==}
+    engines: {node: '>=12'}
+    cpu: [mips64el]
+    os: [linux]
+
+  esbuild-linux-ppc64le@0.14.47:
+    resolution: {integrity: sha512-WER+f3+szmnZiWoK6AsrTKGoJoErG2LlauSmk73LEZFQ/iWC+KhhDsOkn1xBUpzXWsxN9THmQFltLoaFEH8F8w==}
+    engines: {node: '>=12'}
+    cpu: [ppc64]
+    os: [linux]
+
+  esbuild-linux-riscv64@0.14.47:
+    resolution: {integrity: sha512-1fI6bP3A3rvI9BsaaXbMoaOjLE3lVkJtLxsgLHqlBhLlBVY7UqffWBvkrX/9zfPhhVMd9ZRFiaqXnB1T7BsL2g==}
+    engines: {node: '>=12'}
+    cpu: [riscv64]
+    os: [linux]
+
+  esbuild-linux-s390x@0.14.47:
+    resolution: {integrity: sha512-eZrWzy0xFAhki1CWRGnhsHVz7IlSKX6yT2tj2Eg8lhAwlRE5E96Hsb0M1mPSE1dHGpt1QVwwVivXIAacF/G6mw==}
+    engines: {node: '>=12'}
+    cpu: [s390x]
+    os: [linux]
+
+  esbuild-netbsd-64@0.14.47:
+    resolution: {integrity: sha512-Qjdjr+KQQVH5Q2Q1r6HBYswFTToPpss3gqCiSw2Fpq/ua8+eXSQyAMG+UvULPqXceOwpnPo4smyZyHdlkcPppQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [netbsd]
+
+  esbuild-openbsd-64@0.14.47:
+    resolution: {integrity: sha512-QpgN8ofL7B9z8g5zZqJE+eFvD1LehRlxr25PBkjyyasakm4599iroUpaj96rdqRlO2ShuyqwJdr+oNqWwTUmQw==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [openbsd]
+
+  esbuild-sunos-64@0.14.47:
+    resolution: {integrity: sha512-uOeSgLUwukLioAJOiGYm3kNl+1wJjgJA8R671GYgcPgCx7QR73zfvYqXFFcIO93/nBdIbt5hd8RItqbbf3HtAQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [sunos]
+
+  esbuild-windows-32@0.14.47:
+    resolution: {integrity: sha512-H0fWsLTp2WBfKLBgwYT4OTfFly4Im/8B5f3ojDv1Kx//kiubVY0IQunP2Koc/fr/0wI7hj3IiBDbSrmKlrNgLQ==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [win32]
+
+  esbuild-windows-64@0.14.47:
+    resolution: {integrity: sha512-/Pk5jIEH34T68r8PweKRi77W49KwanZ8X6lr3vDAtOlH5EumPE4pBHqkCUdELanvsT14yMXLQ/C/8XPi1pAtkQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [win32]
+
+  esbuild-windows-arm64@0.14.47:
+    resolution: {integrity: sha512-HFSW2lnp62fl86/qPQlqw6asIwCnEsEoNIL1h2uVMgakddf+vUuMcCbtUY1i8sst7KkgHrVKCJQB33YhhOweCQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [win32]
+
+  esbuild@0.14.47:
+    resolution: {integrity: sha512-wI4ZiIfFxpkuxB8ju4MHrGwGLyp1+awEHAHVpx6w7a+1pmYIq8T9FGEVVwFo0iFierDoMj++Xq69GXWYn2EiwA==}
+    engines: {node: '>=12'}
+    hasBin: true
+
   esbuild@0.25.9:
     resolution: {integrity: sha512-CRbODhYyQx3qp7ZEwzxOk4JBqmD/seJrzPa/cGjY1VtIn5E09Oi9/dB4JwctnfZ8Q8iT7rioVv5k/FNT/uf54g==}
     engines: {node: '>=18'}
@@ -3525,6 +3652,10 @@ packages:
   http-cache-semantics@4.2.0:
     resolution: {integrity: sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==}
 
+  http-errors@1.4.0:
+    resolution: {integrity: sha512-oLjPqve1tuOl5aRhv8GK5eHpqP1C9fb+Ol+XTLjKfLltE44zdDbEdjPSbU7Ch5rSNsVFqZn97SrMmZLdu1/YMw==}
+    engines: {node: '>= 0.6'}
+
   http-errors@1.7.3:
     resolution: {integrity: sha512-ZTTX0MWrsQ2ZAhA1cejAwDLycFsd7I7nVtnkT3Ol0aqodaKW+0CTZDQ1uBv5whptCnc8e8HeRRJxRs0kmm/Qfw==}
     engines: {node: '>= 0.6'}
@@ -3580,6 +3711,9 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
+
+  inherits@2.0.1:
+    resolution: {integrity: sha512-8nWq2nLTAwd02jTqJExUYFSD/fKq6VH9Y/oG2accc/kdI0V98Bag8d5a4gi3XHz73rDWa2PvTtvcWYquKqSENA==}
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -3690,6 +3824,9 @@ packages:
   is2@2.0.9:
     resolution: {integrity: sha512-rZkHeBn9Zzq52sd9IUIV3a5mfwBY+o2HePMh0wkGBM4z4qjvy2GwVxQ6nNXSfw6MmVP6gf1QIlWjiOavhM3x5g==}
     engines: {node: '>=v0.10.0'}
+
+  isarray@0.0.1:
+    resolution: {integrity: sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ==}
 
   isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
@@ -4600,12 +4737,19 @@ packages:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
 
+  path-match@1.2.4:
+    resolution: {integrity: sha512-UWlehEdqu36jmh4h5CWJ7tARp1OEVKGHKm6+dg9qMq5RKUTV5WJrGgaZ3dN2m7WFAXDbjlHzvJvL/IUpy84Ktw==}
+    deprecated: This package is archived and no longer maintained. For support, visit https://github.com/expressjs/express/discussions
+
   path-parse@1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
 
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
+
+  path-to-regexp@1.9.0:
+    resolution: {integrity: sha512-xIp7/apCFJuUHdDLWe8O1HIkb0kQrOMb/0u6FXQjemHn/ii5LrIzU6bdECnsiTF/GjZkMEKg1xdiZwNqDYlZ6g==}
 
   path-to-regexp@6.1.0:
     resolution: {integrity: sha512-h9DqehX3zZZDCEm+xbfU0ZmwCGFCAAraPJWMXJ4+v32NjZJilVg3k1TcKsRgIb8IQ/izZSaydDc1OhJCZvs2Dw==}
@@ -4731,6 +4875,67 @@ packages:
   prettier-plugin-astro@0.14.1:
     resolution: {integrity: sha512-RiBETaaP9veVstE4vUwSIcdATj6dKmXljouXc/DDNwBSPTp8FRkLGDSGFClKsAFeeg+13SB0Z1JZvbD76bigJw==}
     engines: {node: ^14.15.0 || >=16.0.0}
+
+  prettier-plugin-tailwindcss@0.6.14:
+    resolution: {integrity: sha512-pi2e/+ZygeIqntN+vC573BcW5Cve8zUB0SSAGxqpB4f96boZF4M3phPVoOFCeypwkpRYdi7+jQ5YJJUwrkGUAg==}
+    engines: {node: '>=14.21.3'}
+    peerDependencies:
+      '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-hermes': '*'
+      '@prettier/plugin-oxc': '*'
+      '@prettier/plugin-pug': '*'
+      '@shopify/prettier-plugin-liquid': '*'
+      '@trivago/prettier-plugin-sort-imports': '*'
+      '@zackad/prettier-plugin-twig': '*'
+      prettier: ^3.0
+      prettier-plugin-astro: '*'
+      prettier-plugin-css-order: '*'
+      prettier-plugin-import-sort: '*'
+      prettier-plugin-jsdoc: '*'
+      prettier-plugin-marko: '*'
+      prettier-plugin-multiline-arrays: '*'
+      prettier-plugin-organize-attributes: '*'
+      prettier-plugin-organize-imports: '*'
+      prettier-plugin-sort-imports: '*'
+      prettier-plugin-style-order: '*'
+      prettier-plugin-svelte: '*'
+    peerDependenciesMeta:
+      '@ianvs/prettier-plugin-sort-imports':
+        optional: true
+      '@prettier/plugin-hermes':
+        optional: true
+      '@prettier/plugin-oxc':
+        optional: true
+      '@prettier/plugin-pug':
+        optional: true
+      '@shopify/prettier-plugin-liquid':
+        optional: true
+      '@trivago/prettier-plugin-sort-imports':
+        optional: true
+      '@zackad/prettier-plugin-twig':
+        optional: true
+      prettier-plugin-astro:
+        optional: true
+      prettier-plugin-css-order:
+        optional: true
+      prettier-plugin-import-sort:
+        optional: true
+      prettier-plugin-jsdoc:
+        optional: true
+      prettier-plugin-marko:
+        optional: true
+      prettier-plugin-multiline-arrays:
+        optional: true
+      prettier-plugin-organize-attributes:
+        optional: true
+      prettier-plugin-organize-imports:
+        optional: true
+      prettier-plugin-sort-imports:
+        optional: true
+      prettier-plugin-style-order:
+        optional: true
+      prettier-plugin-svelte:
+        optional: true
 
   prettier@2.8.7:
     resolution: {integrity: sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==}
@@ -5542,6 +5747,14 @@ packages:
 
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
+
+  undici@5.28.4:
+    resolution: {integrity: sha512-72RFADWFqKmUb2hmmvNODKL3p9hcB6Gt2DOQMis1SEBaV6a4MH8soBvzg+95CYhCKPFedut2JY9bMfrDl9D23g==}
+    engines: {node: '>=14.0'}
+
+  undici@5.29.0:
+    resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
+    engines: {node: '>=14.0'}
 
   undici@6.21.3:
     resolution: {integrity: sha512-gBLkYIlEnSp8pFbT64yFgGE6UIB9tAkhukC23PmMDCe5Nd+cRqKxSjw5y54MK2AZMgZfJWMaNE4nYUHgi1XEOw==}
@@ -6702,6 +6915,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.15.2
       levn: 0.4.1
+
+  '@fastify/busboy@2.1.1': {}
 
   '@fontsource-variable/inter@5.2.6': {}
 
@@ -8067,7 +8282,7 @@ snapshots:
       is-buffer: 2.0.5
       is-node-process: 1.2.0
       throttleit: 2.1.0
-      undici: 6.21.3
+      undici: 5.29.0
 
   '@vercel/build-utils@11.0.0': {}
 
@@ -8082,7 +8297,7 @@ snapshots:
       micro: 9.3.5-canary.3
       ms: 2.1.1
       node-fetch: 2.6.7
-      path-match: path-to-regexp@6.3.0
+      path-match: 1.2.4
       promisepipe: 3.0.0
       semver: 7.5.4
       stat-mode: 0.3.0
@@ -8109,7 +8324,7 @@ snapshots:
     dependencies:
       '@sinclair/typebox': 0.25.24
       '@vercel/build-utils': 11.0.0
-      esbuild: 0.25.9
+      esbuild: 0.14.47
       etag: 1.8.1
       fs-extra: 11.1.0
 
@@ -8192,7 +8407,7 @@ snapshots:
       cjs-module-lexer: 1.2.3
       edge-runtime: 2.5.9
       es-module-lexer: 1.4.1
-      esbuild: 0.25.9
+      esbuild: 0.14.47
       etag: 1.8.1
       node-fetch: 2.6.9
       path-to-regexp: 6.1.0
@@ -8200,7 +8415,7 @@ snapshots:
       ts-morph: 12.0.0
       ts-node: 10.9.1(@types/node@16.18.11)(typescript@4.9.5)
       typescript: 4.9.5
-      undici: 6.21.3
+      undici: 5.28.4
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -9389,6 +9604,89 @@ snapshots:
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.3
 
+  esbuild-android-64@0.14.47:
+    optional: true
+
+  esbuild-android-arm64@0.14.47:
+    optional: true
+
+  esbuild-darwin-64@0.14.47:
+    optional: true
+
+  esbuild-darwin-arm64@0.14.47:
+    optional: true
+
+  esbuild-freebsd-64@0.14.47:
+    optional: true
+
+  esbuild-freebsd-arm64@0.14.47:
+    optional: true
+
+  esbuild-linux-32@0.14.47:
+    optional: true
+
+  esbuild-linux-64@0.14.47:
+    optional: true
+
+  esbuild-linux-arm64@0.14.47:
+    optional: true
+
+  esbuild-linux-arm@0.14.47:
+    optional: true
+
+  esbuild-linux-mips64le@0.14.47:
+    optional: true
+
+  esbuild-linux-ppc64le@0.14.47:
+    optional: true
+
+  esbuild-linux-riscv64@0.14.47:
+    optional: true
+
+  esbuild-linux-s390x@0.14.47:
+    optional: true
+
+  esbuild-netbsd-64@0.14.47:
+    optional: true
+
+  esbuild-openbsd-64@0.14.47:
+    optional: true
+
+  esbuild-sunos-64@0.14.47:
+    optional: true
+
+  esbuild-windows-32@0.14.47:
+    optional: true
+
+  esbuild-windows-64@0.14.47:
+    optional: true
+
+  esbuild-windows-arm64@0.14.47:
+    optional: true
+
+  esbuild@0.14.47:
+    optionalDependencies:
+      esbuild-android-64: 0.14.47
+      esbuild-android-arm64: 0.14.47
+      esbuild-darwin-64: 0.14.47
+      esbuild-darwin-arm64: 0.14.47
+      esbuild-freebsd-64: 0.14.47
+      esbuild-freebsd-arm64: 0.14.47
+      esbuild-linux-32: 0.14.47
+      esbuild-linux-64: 0.14.47
+      esbuild-linux-arm: 0.14.47
+      esbuild-linux-arm64: 0.14.47
+      esbuild-linux-mips64le: 0.14.47
+      esbuild-linux-ppc64le: 0.14.47
+      esbuild-linux-riscv64: 0.14.47
+      esbuild-linux-s390x: 0.14.47
+      esbuild-netbsd-64: 0.14.47
+      esbuild-openbsd-64: 0.14.47
+      esbuild-sunos-64: 0.14.47
+      esbuild-windows-32: 0.14.47
+      esbuild-windows-64: 0.14.47
+      esbuild-windows-arm64: 0.14.47
+
   esbuild@0.25.9:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.25.9
@@ -10099,6 +10397,11 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
+  http-errors@1.4.0:
+    dependencies:
+      inherits: 2.0.1
+      statuses: 1.5.0
+
   http-errors@1.7.3:
     dependencies:
       depd: 1.1.2
@@ -10162,6 +10465,8 @@ snapshots:
   import-meta-resolve@4.1.0: {}
 
   imurmurhash@0.1.4: {}
+
+  inherits@2.0.1: {}
 
   inherits@2.0.4: {}
 
@@ -10244,6 +10549,8 @@ snapshots:
       deep-is: 0.1.4
       ip-regex: 4.3.0
       is-url: 1.2.4
+
+  isarray@0.0.1: {}
 
   isarray@1.0.0: {}
 
@@ -11366,12 +11673,21 @@ snapshots:
 
   path-key@3.1.1: {}
 
+  path-match@1.2.4:
+    dependencies:
+      http-errors: 1.4.0
+      path-to-regexp: 1.9.0
+
   path-parse@1.0.7: {}
 
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
       minipass: 7.1.2
+
+  path-to-regexp@1.9.0:
+    dependencies:
+      isarray: 0.0.1
 
   path-to-regexp@6.1.0: {}
 
@@ -11470,6 +11786,12 @@ snapshots:
       '@astrojs/compiler': 2.12.2
       prettier: 3.6.2
       sass-formatter: 0.7.9
+
+  prettier-plugin-tailwindcss@0.6.14(prettier-plugin-astro@0.14.1)(prettier@3.6.2):
+    dependencies:
+      prettier: 3.6.2
+    optionalDependencies:
+      prettier-plugin-astro: 0.14.1
 
   prettier@2.8.7:
     optional: true
@@ -12481,6 +12803,14 @@ snapshots:
   undici-types@6.20.0: {}
 
   undici-types@7.10.0: {}
+
+  undici@5.28.4:
+    dependencies:
+      '@fastify/busboy': 2.1.1
+
+  undici@5.29.0:
+    dependencies:
+      '@fastify/busboy': 2.1.1
 
   undici@6.21.3: {}
 

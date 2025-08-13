@@ -20,7 +20,6 @@ import type { MetaData as MetaDataType } from '~/types';
 
 export interface Props {
   metadata?: MetaDataType;
-  children?: unknown;
 }
 
 const { metadata = {} } = Astro.props;
@@ -53,7 +52,7 @@ const { language, textDirection } = I18N;
     <ClientRouter fallback="swap" />
   </head>
 
-  <body class="antialiased tracking-tight text-default bg-page">
+  <body class="text-default bg-page tracking-tight antialiased">
     <!-- Skip Links for Keyboard Navigation -->
     <div class="skip-links">
       <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -110,8 +109,8 @@ const { language, textDirection } = I18N;
         setupSkipLinks() {
           const skipLinks = document.querySelectorAll('.skip-link');
 
-          skipLinks.forEach((link) => {
-            link.addEventListener('click', (e) => {
+          skipLinks.forEach(link => {
+            link.addEventListener('click', e => {
               e.preventDefault();
               const targetId = link.getAttribute('href').substring(1);
               const targetElement = document.getElementById(targetId);
@@ -188,7 +187,7 @@ const { language, textDirection } = I18N;
          */
         setupFocusTrapping() {
           // Monitor for modal/dialog openings
-          document.addEventListener('keydown', (e) => {
+          document.addEventListener('keydown', e => {
             if (e.key === 'Tab') {
               const activeModal = document.querySelector('[role="dialog"][aria-hidden="false"]');
               if (activeModal) {
@@ -226,14 +225,14 @@ const { language, textDirection } = I18N;
          */
         setupKeyboardNavigation() {
           // Escape key handling for modals and dropdowns
-          document.addEventListener('keydown', (e) => {
+          document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
               this.handleEscapeKey();
             }
           });
 
           // Arrow key navigation for menus
-          document.addEventListener('keydown', (e) => {
+          document.addEventListener('keydown', e => {
             if (['ArrowUp', 'ArrowDown'].includes(e.key)) {
               const currentMenu = e.target.closest('[role="menu"], [role="menubar"]');
               if (currentMenu) {
@@ -289,7 +288,7 @@ const { language, textDirection } = I18N;
           // Track focus method (mouse vs keyboard)
           let isUsingKeyboard = false;
 
-          document.addEventListener('keydown', (e) => {
+          document.addEventListener('keydown', e => {
             if (e.key === 'Tab') {
               isUsingKeyboard = true;
               document.body.classList.add('keyboard-navigation');
@@ -302,13 +301,13 @@ const { language, textDirection } = I18N;
           });
 
           // Enhanced focus visibility
-          document.addEventListener('focusin', (e) => {
+          document.addEventListener('focusin', e => {
             if (isUsingKeyboard) {
               e.target.classList.add('keyboard-focused');
             }
           });
 
-          document.addEventListener('focusout', (e) => {
+          document.addEventListener('focusout', e => {
             e.target.classList.remove('keyboard-focused');
           });
         }
@@ -318,7 +317,7 @@ const { language, textDirection } = I18N;
          */
         setupModalFocusManagement() {
           // Store focus when modal opens
-          document.addEventListener('modal:open', (e) => {
+          document.addEventListener('modal:open', e => {
             this.lastFocusedElement = document.activeElement;
             const modal = e.detail?.modal;
 
@@ -402,7 +401,7 @@ const { language, textDirection } = I18N;
          * Handle nested interactive elements focus management
          */
         handleNestedInteractives() {
-          document.addEventListener('focusin', (e) => {
+          document.addEventListener('focusin', e => {
             const target = e.target;
             const nestedContainer = target.closest('[data-nested-interactive]');
 
@@ -420,11 +419,13 @@ const { language, textDirection } = I18N;
           container.setAttribute('data-active-nested', 'true');
 
           // Clear other active nested containers
-          document.querySelectorAll('[data-nested-interactive][data-active-nested="true"]').forEach((el) => {
-            if (el !== container) {
-              el.removeAttribute('data-active-nested');
-            }
-          });
+          document
+            .querySelectorAll('[data-nested-interactive][data-active-nested="true"]')
+            .forEach(el => {
+              if (el !== container) {
+                el.removeAttribute('data-active-nested');
+              }
+            });
         }
 
         /**
@@ -434,13 +435,13 @@ const { language, textDirection } = I18N;
           this.modalStack = [];
 
           // Enhanced modal open handler
-          document.addEventListener('modal:open', (e) => {
+          document.addEventListener('modal:open', e => {
             const modal = e.detail?.modal;
             if (!modal) return;
 
             // Add to modal stack
             this.modalStack.push({
-              modal: modal,
+              modal,
               previousFocus: document.activeElement,
               previousAriaHidden: this.getAriaHiddenElements(),
             });
@@ -458,12 +459,12 @@ const { language, textDirection } = I18N;
           });
 
           // Enhanced modal close handler
-          document.addEventListener('modal:close', (e) => {
+          document.addEventListener('modal:close', e => {
             const modal = e.detail?.modal;
             if (!modal || this.modalStack.length === 0) return;
 
             // Find and remove modal from stack
-            const modalIndex = this.modalStack.findIndex((item) => item.modal === modal);
+            const modalIndex = this.modalStack.findIndex(item => item.modal === modal);
             if (modalIndex === -1) return;
 
             const modalData = this.modalStack[modalIndex];
@@ -490,7 +491,7 @@ const { language, textDirection } = I18N;
          */
         hideContentFromScreenReaders(activeModal) {
           const elementsToHide = document.querySelectorAll('body > *:not(.sr-only)');
-          elementsToHide.forEach((el) => {
+          elementsToHide.forEach(el => {
             if (!el.contains(activeModal) && !el.hasAttribute('aria-hidden')) {
               el.setAttribute('aria-hidden', 'true');
               el.setAttribute('data-modal-hidden', 'true');
@@ -502,7 +503,7 @@ const { language, textDirection } = I18N;
          * Get currently aria-hidden elements
          */
         getAriaHiddenElements() {
-          return Array.from(document.querySelectorAll('[aria-hidden="true"]')).map((el) => ({
+          return Array.from(document.querySelectorAll('[aria-hidden="true"]')).map(el => ({
             element: el,
             wasHidden: !el.hasAttribute('data-modal-hidden'),
           }));
@@ -513,7 +514,7 @@ const { language, textDirection } = I18N;
          */
         restoreAriaHiddenElements(_previousStates) {
           // Remove modal-added aria-hidden
-          document.querySelectorAll('[data-modal-hidden="true"]').forEach((el) => {
+          document.querySelectorAll('[data-modal-hidden="true"]').forEach(el => {
             el.removeAttribute('aria-hidden');
             el.removeAttribute('data-modal-hidden');
           });
@@ -552,7 +553,7 @@ const { language, textDirection } = I18N;
          */
         setupAdvancedKeyboardNavigation() {
           // Handle complex component navigation
-          document.addEventListener('keydown', (e) => {
+          document.addEventListener('keydown', e => {
             const target = e.target;
             const complexComponent = target.closest('[data-complex-navigation]');
 
@@ -621,7 +622,7 @@ const { language, textDirection } = I18N;
          * Setup roving tabindex pattern
          */
         setupRovingTabindex() {
-          document.addEventListener('focusin', (e) => {
+          document.addEventListener('focusin', e => {
             const target = e.target;
             const rovingContainer = target.closest('[data-roving-tabindex]');
 
@@ -637,7 +638,7 @@ const { language, textDirection } = I18N;
         updateRovingTabindex(container, activeElement) {
           const items = container.querySelectorAll('[data-roving-item]');
 
-          items.forEach((item) => {
+          items.forEach(item => {
             if (item === activeElement) {
               item.setAttribute('tabindex', '0');
             } else {
@@ -651,10 +652,10 @@ const { language, textDirection } = I18N;
          */
         setupDynamicContentFocus() {
           // Watch for dynamic content insertion
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
+          const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
               if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach((node) => {
+                mutation.addedNodes.forEach(node => {
                   if (node.nodeType === Node.ELEMENT_NODE) {
                     this.handleDynamicContentAdded(node);
                   }
@@ -714,7 +715,7 @@ const { language, textDirection } = I18N;
         initializeNewInteractiveElements(container) {
           // Setup any new roving tabindex containers
           const rovingContainers = container.querySelectorAll('[data-roving-tabindex]');
-          rovingContainers.forEach((container) => {
+          rovingContainers.forEach(container => {
             const firstItem = container.querySelector('[data-roving-item]');
             if (firstItem) {
               firstItem.setAttribute('tabindex', '0');
@@ -723,7 +724,7 @@ const { language, textDirection } = I18N;
 
           // Setup any new complex navigation components
           const complexComponents = container.querySelectorAll('[data-complex-navigation]');
-          complexComponents.forEach((_component) => {
+          complexComponents.forEach(_component => {
             // Initialize component-specific setup
           });
         }
@@ -733,12 +734,12 @@ const { language, textDirection } = I18N;
          */
         setupFocusDebugging() {
           if (window.location.search.includes('debug-focus')) {
-            document.addEventListener('focusin', (e) => {
+            document.addEventListener('focusin', e => {
               console.log('Focus moved to:', e.target);
               e.target.style.outline = '3px solid red';
             });
 
-            document.addEventListener('focusout', (e) => {
+            document.addEventListener('focusout', e => {
               e.target.style.outline = '';
             });
           }

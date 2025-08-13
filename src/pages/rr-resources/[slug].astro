@@ -1,5 +1,6 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 import Layout from '~/layouts/PageLayout.astro';
 import { getCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
@@ -7,9 +8,9 @@ import { cleanSlug, getPermalink } from '~/utils/permalinks';
 export const prerender = true;
 
 export const getStaticPaths = (async () => {
-  const entries = await (getCollection as any)('rrresources');
-  return entries.map((entry) => {
-    const name = (entry.data as any).Name || entry.id;
+  const entries = await getCollection('rrresources');
+  return entries.map((entry: CollectionEntry<'rrresources'>) => {
+    const name = entry.data.Name || entry.id;
     const slug = cleanSlug(name);
     return {
       params: { slug },
@@ -18,47 +19,67 @@ export const getStaticPaths = (async () => {
   });
 }) satisfies GetStaticPaths;
 
-// using any casting to avoid typegen dependency before `astro sync`
-const { entry } = (Astro.props as any);
-const data = (entry as any).data as any;
+// Properly typed props using the generic type
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props as Props;
+const data = entry.data;
 const title = data.Name || 'Resource';
 const description = data['AI summary'] || data.Source || '';
-const canonical = getPermalink(`/rr-resources/${cleanSlug(title)}`, 'post');
+// Use the actual route slug parameter for canonical URL, fallback to sanitized title if needed
+const routeSlug = Astro.params.slug;
+const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`, 'post');
 ---
 
 <Layout metadata={{ title, description, canonical }}>
-  <article class="container px-4 py-8 mx-auto max-w-3xl prose prose-gray dark:prose-invert">
+  <article class="prose prose-gray dark:prose-invert container mx-auto max-w-3xl px-4 py-8">
     <h1>{title}</h1>
 
-    {data.Source && (
-      <p>
-        Original: <a href={data.Source} rel="noopener noreferrer" target="_blank">{data.Source}</a>
-      </p>
-    )}
+    {
+      data.Source && (
+        <p>
+          Original:{' '}
+          <a href={data.Source} rel="noopener noreferrer" target="_blank">
+            {data.Source}
+          </a>
+        </p>
+      )
+    }
 
-    {data['AI summary'] && (
-      <p class="mt-4 text-base">{data['AI summary']}</p>
-    )}
+    {data['AI summary'] && <p class="mt-4 text-base">{data['AI summary']}</p>}
 
-    {data.Type?.length && (
-      <p class="mt-4 text-sm"><strong>Type:</strong> {data.Type.join(', ')}</p>
-    )}
-    {data.Category?.length && (
-      <p class="mt-2 text-sm"><strong>Category:</strong> {data.Category.join(', ')}</p>
-    )}
-    {data.Tags?.length && (
-      <p class="mt-2 text-sm"><strong>Tags:</strong> {data.Tags.join(', ')}</p>
-    )}
+    {
+      data.Type?.length && (
+        <p class="mt-4 text-sm">
+          <strong>Type:</strong> {data.Type.join(', ')}
+        </p>
+      )
+    }
+    {
+      data.Category?.length && (
+        <p class="mt-2 text-sm">
+          <strong>Category:</strong> {data.Category.join(', ')}
+        </p>
+      )
+    }
+    {
+      data.Tags?.length && (
+        <p class="mt-2 text-sm">
+          <strong>Tags:</strong> {data.Tags.join(', ')}
+        </p>
+      )
+    }
 
-    {data.Keywords?.length && (
-      <details class="mt-6">
-        <summary class="cursor-pointer">Keywords</summary>
-        <ul class="mt-2 text-sm">
-          {data.Keywords.map((k: string) => <li>{k}</li>)}
-        </ul>
-      </details>
-    )}
+    {
+      data.Keywords?.length && (
+        <details class="mt-6">
+          <summary class="cursor-pointer">Keywords</summary>
+          <ul class="mt-2 text-sm">
+            {data.Keywords.map((keyword: string) => (
+              <li>{keyword}</li>
+            ))}
+          </ul>
+        </details>
+      )
+    }
   </article>
 </Layout>
-
-

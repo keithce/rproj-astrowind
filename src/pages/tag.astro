@@ -23,25 +23,30 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  <section class="max-w-4xl px-6 py-12 mx-auto sm:px-6 sm:py-16 lg:py-20">
-    <Headline subtitle="Discover content by specific topics, keywords, and themes"> Browse By Tag </Headline>
+  <section class="mx-auto max-w-4xl px-6 py-12 sm:px-6 sm:py-16 lg:py-20">
+    <Headline subtitle="Discover content by specific topics, keywords, and themes">
+      Browse By Tag
+    </Headline>
 
     {
       allTags.length > 0 ? (
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 animate-fade-in-up">
-          {allTags.map((tag) => (
-            <article class="relative p-4 overflow-hidden transition-all border rounded-lg shadow-sm group hover:shadow-md">
-              <div class="flex flex-col h-full">
-                <h3 class="mb-2 text-lg font-medium text-foreground group-hover:text-primary">
-                  <a href={`${getBlogTagPermalink()}/${tag.slug}`} class="stretched-link focus-ring text-gradient">
+        <div class="animate-fade-in-up grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {allTags.map(tag => (
+            <article class="group relative overflow-hidden rounded-lg border p-4 shadow-sm transition-all hover:shadow-md">
+              <div class="flex h-full flex-col">
+                <h3 class="text-foreground group-hover:text-primary mb-2 text-lg font-medium">
+                  <a
+                    href={`${getBlogTagPermalink()}/${tag.slug}`}
+                    class="stretched-link focus-ring text-gradient"
+                  >
                     #{tag.title}
                   </a>
                 </h3>
 
                 <div class="mt-auto">
-                  <div class="flex items-center text-xs text-muted-foreground">
+                  <div class="text-muted-foreground flex items-center text-xs">
                     <svg
-                      class="w-3 h-3 mr-1"
+                      class="mr-1 h-3 w-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -62,8 +67,8 @@ const metadata = {
           ))}
         </div>
       ) : (
-        <div class="py-12 text-center flex-center">
-          <p class="text-lg text-muted-foreground">No tags found</p>
+        <div class="flex-center py-12 text-center">
+          <p class="text-muted-foreground text-lg">No tags found</p>
         </div>
       )
     }

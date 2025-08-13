@@ -133,7 +133,11 @@ const getStyle = ({
   ];
 
   // If background is a URL, set it to cover the image and not repeat
-  if (background?.startsWith('https:') || background?.startsWith('http:') || background?.startsWith('data:')) {
+  if (
+    background?.startsWith('https:') ||
+    background?.startsWith('http:') ||
+    background?.startsWith('data:')
+  ) {
     styleEntries.push(['background-image', `url(${background})`]);
     styleEntries.push(['background-size', 'cover']);
     styleEntries.push(['background-repeat', 'no-repeat']);
@@ -188,7 +192,12 @@ const getBreakpoints = ({
   breakpoints?: number[];
   layout: Layout;
 }): number[] => {
-  if (layout === 'fullWidth' || layout === 'cover' || layout === 'responsive' || layout === 'contained') {
+  if (
+    layout === 'fullWidth' ||
+    layout === 'cover' ||
+    layout === 'responsive' ||
+    layout === 'contained'
+  ) {
     return breakpoints || config.deviceSizes;
   }
   if (!width) {
@@ -204,7 +213,7 @@ const getBreakpoints = ({
       width,
       doubleWidth,
       // Filter out any resolutions that are larger than the double-res image
-      ...(breakpoints || config.deviceSizes).filter((w) => w < doubleWidth),
+      ...(breakpoints || config.deviceSizes).filter(w => w < doubleWidth),
     ];
   }
 
@@ -222,20 +231,19 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     return [];
   }
 
-  const canTransform = typeof (getImage as unknown) === 'function';
-  if (!canTransform) {
+  // Early return for string images - fallback to src and width only
+  if (typeof image === 'string') {
     return Promise.all(
       breakpoints.map(async (w: number) => ({
-        src: typeof image === 'string' ? image : image.src,
+        src: image,
         width: w,
-        height: undefined as unknown as number,
       }))
     );
   }
 
   return Promise.all(
     breakpoints.map(async (w: number) => {
-      const result = await (getImage as any)({ src: image, width: w, ...(format ? { format } : {}) });
+      const result = await getImage({ src: image, width: w, ...(format ? { format } : {}) });
 
       return {
         src: result?.src,
@@ -251,7 +259,13 @@ export const isUnpicCompatible = (image: string) => {
 };
 
 /* ** */
-export const unpicOptimizer: ImagesOptimizer = async (image, breakpoints, width, height, format = undefined) => {
+export const unpicOptimizer: ImagesOptimizer = async (
+  image,
+  breakpoints,
+  width,
+  height,
+  format = undefined
+) => {
   if (!image || typeof image !== 'string') {
     return [];
   }
@@ -270,7 +284,7 @@ export const unpicOptimizer: ImagesOptimizer = async (image, breakpoints, width,
           width: w,
           height: _height,
           cdn: urlParsed.cdn,
-          ...(format ? { format: format } : {}),
+          ...(format ? { format } : {}),
         }) || image;
       return {
         src: String(url),
@@ -301,7 +315,8 @@ export async function getImagesOptimized(
 ): Promise<{ src: string; attributes: HTMLAttributes<'img'> }> {
   if (typeof image !== 'string') {
     width ||= Number(image.width) || undefined;
-    height ||= typeof width === 'number' ? computeHeight(width, image.width / image.height) : undefined;
+    height ||=
+      typeof width === 'number' ? computeHeight(width, image.width / image.height) : undefined;
   }
 
   width = (width && Number(width)) || undefined;
@@ -334,26 +349,34 @@ export async function getImagesOptimized(
     console.error('Image', image);
   }
 
-  let breakpoints = getBreakpoints({ width: width, breakpoints: widths, layout: layout });
+  let breakpoints = getBreakpoints({ width, breakpoints: widths, layout });
   breakpoints = [...new Set(breakpoints)].sort((a, b) => a - b);
 
-  const srcset = (await transform(image, breakpoints, Number(width) || undefined, Number(height) || undefined, format))
+  const srcset = (
+    await transform(
+      image,
+      breakpoints,
+      Number(width) || undefined,
+      Number(height) || undefined,
+      format
+    )
+  )
     .map(({ src, width }) => `${src} ${width}w`)
     .join(', ');
 
   return {
     src: typeof image === 'string' ? image : image.src,
     attributes: {
-      width: width,
-      height: height,
+      width,
+      height,
       srcset: srcset || undefined,
-      sizes: sizes,
+      sizes,
       style: `${getStyle({
-        width: width,
-        height: height,
-        aspectRatio: aspectRatio,
-        objectPosition: objectPosition,
-        layout: layout,
+        width,
+        height,
+        aspectRatio,
+        objectPosition,
+        layout,
       })}${style ?? ''}`,
       ...rest,
     },

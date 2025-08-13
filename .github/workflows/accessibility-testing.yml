@@ -35,11 +35,11 @@ jobs:
     name: 🧪 Accessibility Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     strategy:
       matrix:
         test-type: [axe-core, lighthouse, custom]
-        
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -115,10 +115,10 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             // Read accessibility report
             let reportContent = '## 🛡️ Accessibility Test Results\n\n';
-            
+
             try {
               const reportFiles = fs.readdirSync('accessibility-reports');
               const summaryFile = reportFiles.find(f => f.includes('summary'));
@@ -134,7 +134,7 @@ jobs:
             } catch (error) {
               reportContent += '❌ Unable to read accessibility report.';
             }
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -147,7 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs: accessibility-tests
-    
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -163,16 +163,16 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile 
+        run: pnpm install --frozen-lockfile
 
       - name: 📊 Generate Accessibility Trends
         run: |
           # Create trends directory if it doesn't exist
           mkdir -p accessibility-trends
-          
+
           # Generate trend data (simplified example)
           echo "$(date): Accessibility tests completed" >> accessibility-trends/history.log
-        
+
       - name: 📤 Upload Trends Data
         uses: actions/upload-artifact@v4
         with:
@@ -193,7 +193,7 @@ jobs:
   security-accessibility-scan:
     name: 🔒 Security & Accessibility Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -218,22 +218,22 @@ jobs:
       - name: 🛡️ Run Security Audit
         run: |
           pnpm audit --audit-level moderate
-          
+
       - name: 🧪 Accessibility Security Check
         run: |
           # Check for common accessibility security issues
           echo "Checking for accessibility-related security vulnerabilities..."
-          
+
           # Check for XSS vulnerabilities in ARIA labels
           grep -r "aria-label.*innerHTML\|aria-describedby.*innerHTML" src/ || echo "No innerHTML in ARIA attributes found"
-          
+
           # Check for unsafe focus management
           grep -r "eval\|Function.*focus\|setTimeout.*focus" src/ || echo "No unsafe focus management found"
 
   performance-accessibility:
     name: ⚡ Performance Impact on Accessibility
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -249,7 +249,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile 
+        run: pnpm install --frozen-lockfile
 
       - name: 🏗️ Build application
         run: pnpm build
@@ -310,7 +310,7 @@ jobs:
   mobile-accessibility:
     name: 📱 Mobile Accessibility Testing
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -326,7 +326,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile 
+        run: pnpm install --frozen-lockfile
 
       - name: 🏗️ Build application
         run: pnpm build
@@ -385,7 +385,7 @@ jobs:
     name: 🔄 Accessibility Regression Testing
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     steps:
       - name: 📥 Checkout PR branch
         uses: actions/checkout@v4
@@ -401,7 +401,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile 
+        run: pnpm install --frozen-lockfile
 
       - name: 🧪 Run Current Branch Tests
         run: |
@@ -462,7 +462,7 @@ jobs:
         run: |
           # Simple comparison (in real implementation, you'd use proper diff tools)
           echo "Comparing accessibility results..."
-          
+
           if [ -d "current-reports" ] && [ -d "base-reports" ]; then
             echo "📊 Accessibility regression analysis complete"
             echo "Current reports: $(ls current-reports | wc -l) files"
@@ -478,4 +478,4 @@ jobs:
           name: accessibility-regression-comparison
           path: |
             current-reports/
-            base-reports/ 
+            base-reports/

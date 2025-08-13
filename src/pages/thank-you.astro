@@ -22,9 +22,10 @@ import BookACall from '~/utils/book-a-call';
       }}
     />
 
-    <div class="mb-12 border-accent-foreground">
-      <p class="mx-auto mb-8 text-xl leading-relaxed text-foreground">
-        We've received your message and will get back to you soon. In the meantime, here are your next steps:
+    <div class="border-accent-foreground mb-12">
+      <p class="text-foreground mx-auto mb-8 text-xl leading-relaxed">
+        We've received your message and will get back to you soon. In the meantime, here are your
+        next steps:
       </p>
 
       <ItemGrid
@@ -39,7 +40,8 @@ import BookACall from '~/utils/book-a-call';
             },
           },
           {
-            title: 'Follow our newsletter for thoughtful insights on music, technology, and spiritual evolution.',
+            title:
+              'Follow our newsletter for thoughtful insights on music, technology, and spiritual evolution.',
             icon: 'tabler:mail',
             callToAction: {
               text: 'Join Newsletter',
@@ -58,19 +60,19 @@ import BookACall from '~/utils/book-a-call';
       />
     </div>
 
-    <div id="book-call" class="flex flex-col justify-center gap-4 mb-8 sm:flex-row">
+    <div id="book-call" class="mb-8 flex flex-col justify-center gap-4 sm:flex-row">
       <div class="w-full">
         <BookACall client:only="react" />
       </div>
     </div>
 
-    <div id="newsletter" class="flex justify-center mb-8">
+    <div id="newsletter" class="mb-8 flex justify-center">
       <div
-        class="flex flex-col items-center justify-center w-full max-w-md p-6 border rounded-lg shadow-md backdrop-blur-sm border-accent bg-accent/15"
+        class="border-accent bg-accent/15 flex w-full max-w-md flex-col items-center justify-center rounded-lg border p-6 shadow-md backdrop-blur-sm"
       >
         <div class="mb-4 text-center">
-          <h3 class="mb-2 text-xl font-semibold text-primary">Stay Connected</h3>
-          <p class="text-sm text-muted-foreground">
+          <h3 class="text-primary mb-2 text-xl font-semibold">Stay Connected</h3>
+          <p class="text-muted-foreground text-sm">
             Get thoughtful insights on music, technology, and spiritual evolution.
           </p>
         </div>
@@ -85,7 +87,7 @@ import BookACall from '~/utils/book-a-call';
       </div>
     </div>
 
-    <div class="text-sm text-center text-muted-foreground">
+    <div class="text-muted-foreground text-center text-sm">
       <span>We look forward to connecting with you!<br />— The Resonant Projects Team</span>
     </div>
   </WidgetWrapper>

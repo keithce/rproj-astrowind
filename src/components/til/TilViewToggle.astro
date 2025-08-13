@@ -18,7 +18,7 @@ let feedUrl = new URL('/til', url.origin);
 let kanbanUrl = new URL('/til/board', url.origin);
 
 // Preserve specified query parameters
-preserveParams.forEach((param) => {
+preserveParams.forEach(param => {
   if (url.searchParams.has(param)) {
     const value = url.searchParams.get(param);
     if (value !== null) {
@@ -33,7 +33,7 @@ feedUrl.searchParams.set('view', 'feed');
 ---
 
 <div class={`til-view-toggle ${className}`}>
-  <div class="bg-muted/50 p-1 rounded-md inline-flex">
+  <div class="bg-muted/50 inline-flex rounded-md p-1">
     <a
       href={feedUrl.toString()}
       class={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -43,7 +43,7 @@ feedUrl.searchParams.set('view', 'feed');
       }`}
     >
       <span class="flex items-center gap-2">
-        <Icon name="tabler:list" class="w-4 h-4" />
+        <Icon name="tabler:list" class="h-4 w-4" />
         <span>Feed View</span>
       </span>
     </a>
@@ -56,7 +56,7 @@ feedUrl.searchParams.set('view', 'feed');
       }`}
     >
       <span class="flex items-center gap-2">
-        <Icon name="tabler:layout-kanban" class="w-4 h-4" />
+        <Icon name="tabler:layout-kanban" class="h-4 w-4" />
         <span>Board View</span>
       </span>
     </a>

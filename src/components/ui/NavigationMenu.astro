@@ -19,7 +19,12 @@ export interface Props {
   showChevrons?: boolean;
 }
 
-const { links = [], className = '', orientation = 'horizontal', showChevrons = true } = Astro.props as Props;
+const {
+  links = [],
+  className = '',
+  orientation = 'horizontal',
+  showChevrons = true,
+} = Astro.props as Props;
 
 const currentPath = new URL(Astro.url).pathname;
 ---
@@ -27,16 +32,23 @@ const currentPath = new URL(Astro.url).pathname;
 <nav class={`navigation-menu ${className}`} role="navigation" aria-label="Main navigation">
   <ul class={`nav-list nav-list--${orientation}`}>
     {
-      links.map((link) => (
+      links.map(link => (
         <li class={`nav-item ${link.links?.length ? 'nav-item--dropdown' : ''}`}>
           {link.links?.length ? (
             <>
-              <button type="button" class="nav-link nav-link--dropdown" aria-expanded="false" aria-haspopup="true">
+              <button
+                type="button"
+                class="nav-link nav-link--dropdown"
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
                 <span class="nav-link-text">{link.text}</span>
-                {showChevrons && <Icon name="tabler:chevron-down" class="nav-chevron" aria-hidden="true" />}
+                {showChevrons && (
+                  <Icon name="tabler:chevron-down" class="nav-chevron" aria-hidden="true" />
+                )}
               </button>
               <ul class="dropdown-menu" role="menu">
-                {link.links.map((subLink) => (
+                {link.links.map(subLink => (
                   <li class="dropdown-item" role="none">
                     <a
                       href={subLink.href}
@@ -44,7 +56,9 @@ const currentPath = new URL(Astro.url).pathname;
                       role="menuitem"
                       aria-label={subLink.ariaLabel}
                     >
-                      {subLink.icon && <Icon name={subLink.icon} class="dropdown-icon" aria-hidden="true" />}
+                      {subLink.icon && (
+                        <Icon name={subLink.icon} class="dropdown-icon" aria-hidden="true" />
+                      )}
                       {subLink.text}
                     </a>
                   </li>
@@ -267,12 +281,12 @@ const currentPath = new URL(Astro.url).pathname;
   document.addEventListener('DOMContentLoaded', () => {
     const dropdownButtons = document.querySelectorAll('.nav-link--dropdown');
 
-    dropdownButtons.forEach((button) => {
-      button.addEventListener('click', (e) => {
+    dropdownButtons.forEach(button => {
+      button.addEventListener('click', e => {
         e.preventDefault();
         const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-        dropdownButtons.forEach((otherButton) => {
+        dropdownButtons.forEach(otherButton => {
           if (otherButton !== button) {
             otherButton.setAttribute('aria-expanded', 'false');
           }
@@ -282,18 +296,18 @@ const currentPath = new URL(Astro.url).pathname;
       });
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', e => {
       const target = e.target as Element;
       if (!target.closest('.nav-item--dropdown')) {
-        dropdownButtons.forEach((button) => {
+        dropdownButtons.forEach(button => {
           button.setAttribute('aria-expanded', 'false');
         });
       }
     });
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        dropdownButtons.forEach((button) => {
+        dropdownButtons.forEach(button => {
           button.setAttribute('aria-expanded', 'false');
         });
       }

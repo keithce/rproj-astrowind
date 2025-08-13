@@ -17,25 +17,30 @@ const {
 } = Astro.props;
 ---
 
-<WidgetWrapper id={id} isDark={isDark} containerClass={`max-w-6xl mx-auto ${classes?.container ?? ''}`} bg={bg}>
+<WidgetWrapper
+  id={id}
+  isDark={isDark}
+  containerClass={`max-w-6xl mx-auto ${classes?.container ?? ''}`}
+  bg={bg}
+>
   <Headline title={title} subtitle={subtitle} tagline={tagline} />
-  <div class="flex flex-wrap justify-center -m-4 text-center">
+  <div class="-m-4 flex flex-wrap justify-center text-center">
     {
       stats &&
         stats.map(({ amount, title, icon }) => (
-          <div class="p-4 md:w-1/4 sm:w-1/2 w-full min-w-[220px] text-center md:border-r md:last:border-none dark:md:border-brand-600">
+          <div class="dark:md:border-brand-600 w-full min-w-[220px] p-4 text-center sm:w-1/2 md:w-1/4 md:border-r md:last:border-none">
             {icon && (
-              <div class="flex items-center justify-center mx-auto mb-4 text-primary">
-                <Icon name={icon} class="w-10 h-10" />
+              <div class="text-primary mx-auto mb-4 flex items-center justify-center">
+                <Icon name={icon} class="h-10 w-10" />
               </div>
             )}
             {amount && (
-              <div class="font-heading text-brand-600 text-[2.6rem] font-bold dark:text-brand-300 lg:text-5xl xl:text-6xl">
+              <div class="font-heading text-brand-600 dark:text-brand-300 text-[2.6rem] font-bold lg:text-5xl xl:text-6xl">
                 {amount}
               </div>
             )}
             {title && (
-              <div class="text-sm font-medium tracking-widest uppercase text-muted-foreground/60 lg:text-base">
+              <div class="text-muted-foreground/60 text-sm font-medium tracking-widest uppercase lg:text-base">
                 {title}
               </div>
             )}

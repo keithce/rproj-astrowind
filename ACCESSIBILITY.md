@@ -1,6 +1,7 @@
 # 🛡️ Accessibility Implementation Guide
 
-This document provides comprehensive information about the accessibility features implemented in this project and how to maintain and test them.
+This document provides comprehensive information about the accessibility
+features implemented in this project and how to maintain and test them.
 
 ## 📋 Table of Contents
 
@@ -13,7 +14,8 @@ This document provides comprehensive information about the accessibility feature
 
 ## 🌟 Overview
 
-This project implements comprehensive accessibility features that meet and exceed WCAG 2.1 AA standards. Our accessibility implementation includes:
+This project implements comprehensive accessibility features that meet and
+exceed WCAG 2.1 AA standards. Our accessibility implementation includes:
 
 - **ARIA Live Regions** for dynamic content announcements
 - **Advanced Focus Management** with skip links and focus trapping
@@ -41,10 +43,20 @@ This project implements comprehensive accessibility features that meet and excee
 
 ```html
 <!-- Status updates -->
-<div id="form-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+<div
+  id="form-status"
+  aria-live="polite"
+  aria-atomic="true"
+  class="sr-only"
+></div>
 
 <!-- Error announcements -->
-<div id="form-errors" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+<div
+  id="form-errors"
+  aria-live="assertive"
+  aria-atomic="true"
+  class="sr-only"
+></div>
 ```
 
 ### 2. Skip Links and Navigation Enhancement
@@ -235,7 +247,13 @@ When creating new components, follow these accessibility guidelines:
 
 ```astro
 <!-- Form inputs -->
-<input type="email" id="email" aria-label="Email address" aria-describedby="email-help" aria-required="true" />
+<input
+  type="email"
+  id="email"
+  aria-label="Email address"
+  aria-describedby="email-help"
+  aria-required="true"
+/>
 <div id="email-help">We'll never share your email</div>
 
 <!-- Buttons -->
@@ -311,7 +329,10 @@ function announceToScreenReader(message) {
 ```javascript
 // Support both mouse and keyboard interactions
 function handleInteraction(event) {
-  if (event.type === 'click' || (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))) {
+  if (
+    event.type === 'click' ||
+    (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))
+  ) {
     // Handle interaction
   }
 }
@@ -332,7 +353,9 @@ function openModal(modal) {
   modal.style.display = 'block';
 
   // Focus first element in modal
-  const firstFocusable = modal.querySelector('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  const firstFocusable = modal.querySelector(
+    'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
   if (firstFocusable) {
     firstFocusable.focus();
   }
@@ -350,8 +373,8 @@ function openModal(modal) {
 
 #### 1. Skip Links Not Working
 
-**Problem**: Skip links don't navigate to target elements
-**Solution**: Ensure target elements have proper IDs and tabindex="-1"
+**Problem**: Skip links don't navigate to target elements **Solution**: Ensure
+target elements have proper IDs and tabindex="-1"
 
 ```html
 <main id="main-content" tabindex="-1">
@@ -361,8 +384,8 @@ function openModal(modal) {
 
 #### 2. Screen Reader Not Announcing Changes
 
-**Problem**: Dynamic content changes aren't announced
-**Solution**: Use proper ARIA live regions
+**Problem**: Dynamic content changes aren't announced **Solution**: Use proper
+ARIA live regions
 
 ```html
 <div aria-live="polite" id="status-updates"></div>
@@ -370,11 +393,11 @@ function openModal(modal) {
 
 #### 3. Focus Trapped in Modal
 
-**Problem**: Can't escape modal with keyboard
-**Solution**: Implement proper escape key handling
+**Problem**: Can't escape modal with keyboard **Solution**: Implement proper
+escape key handling
 
 ```javascript
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modalOpen) {
     closeModal();
   }
@@ -383,8 +406,8 @@ document.addEventListener('keydown', (e) => {
 
 #### 4. Poor Color Contrast
 
-**Problem**: Text doesn't meet contrast requirements
-**Solution**: Use tools to verify contrast ratios
+**Problem**: Text doesn't meet contrast requirements **Solution**: Use tools to
+verify contrast ratios
 
 ```bash
 npm run test:contrast
@@ -472,4 +495,5 @@ For accessibility-related questions or issues:
 3. Review the troubleshooting section
 4. Create an issue with accessibility testing results
 
-Remember: Accessibility is not a feature to be added later—it should be considered from the beginning of the development process.
+Remember: Accessibility is not a feature to be added later—it should be
+considered from the beginning of the development process.

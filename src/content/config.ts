@@ -101,7 +101,7 @@ export const collections = {
       z.object({
         Name: z.string().optional(),
         Source: z.string().url().optional(),
-        ['userDefined:URL']: z.string().url().optional(),
+        'User Defined URL': z.string().url().optional(),
         Category: z.array(z.string()).optional(),
         Type: z.array(z.string()).optional(),
         Tags: z.array(z.string()).optional(),

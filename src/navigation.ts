@@ -88,7 +88,9 @@ export const headerData = {
       href: getPermalink('/about'),
     },
   ],
-  actions: [{ text: 'Start Project', href: getPermalink('/contact#form'), icon: 'tabler:input-spark' }],
+  actions: [
+    { text: 'Start Project', href: getPermalink('/contact#form'), icon: 'tabler:input-spark' },
+  ],
 };
 
 export const footerData = {
@@ -144,8 +146,16 @@ export const footerData = {
   ],
   socialLinks: [
     // { ariaLabel: 'X', icon: 'tabler:brand-x', href: '#' },
-    { ariaLabel: 'Instagram', icon: 'tabler:brand-instagram', href: 'https://www.instagram.com/resonantrhythm' },
-    { ariaLabel: 'Facebook', icon: 'tabler:brand-facebook', href: 'https://www.facebook.com/resonantrhythm' },
+    {
+      ariaLabel: 'Instagram',
+      icon: 'tabler:brand-instagram',
+      href: 'https://www.instagram.com/resonantrhythm',
+    },
+    {
+      ariaLabel: 'Facebook',
+      icon: 'tabler:brand-facebook',
+      href: 'https://www.facebook.com/resonantrhythm',
+    },
     { ariaLabel: 'RSS', icon: 'tabler:rss', href: getAsset('/rss.xml') },
     { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/keithce' },
   ],

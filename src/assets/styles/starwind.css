@@ -168,8 +168,8 @@
   /* Transition utility without outline-color for better performance */
   .starwind-transition-colors {
     transition-property:
-      color, background-color, border-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via,
-      --tw-gradient-to;
+      color, background-color, border-color, text-decoration-color, fill, stroke,
+      --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
     transition-timing-function: var(--default-transition-timing-function);
     transition-duration: var(--default-transition-duration);
   }
@@ -205,16 +205,16 @@
 
   /* Loading Spinner Animation for Form Submissions */
   .loading-spinner {
-    @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full;
+    @apply inline-block h-4 w-4 rounded-full border-2 border-current border-t-transparent;
     animation: spin 1s linear infinite;
   }
 
   .loading-spinner--sm {
-    @apply w-3 h-3 border;
+    @apply h-3 w-3 border;
   }
 
   .loading-spinner--lg {
-    @apply w-5 h-5 border-2;
+    @apply h-5 w-5 border-2;
   }
 
   .loading-spinner--white {
@@ -236,7 +236,7 @@
 
   /* Button Loading States */
   .btn-loading {
-    @apply opacity-75 cursor-not-allowed pointer-events-none;
+    @apply pointer-events-none cursor-not-allowed opacity-75;
     position: relative;
   }
 
@@ -245,12 +245,12 @@
   }
 
   .btn-loading .loading-spinner {
-    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
   }
 
   /* Form Loading States */
   .form-loading .form-field {
-    @apply opacity-50 pointer-events-none;
+    @apply pointer-events-none opacity-50;
   }
 
   .form-loading input,
@@ -269,7 +269,7 @@
   input:disabled,
   textarea:disabled,
   select:disabled {
-    @apply opacity-60 cursor-not-allowed bg-muted/30 border-border/50;
+    @apply bg-muted/30 border-border/50 cursor-not-allowed opacity-60;
     transition:
       opacity 0.2s ease,
       background-color 0.2s ease,
@@ -280,7 +280,7 @@
   input:disabled:focus,
   textarea:disabled:focus,
   select:disabled:focus {
-    @apply ring-0 border-border/50;
+    @apply border-border/50 ring-0;
   }
 
   /* Disabled state for custom elements */
@@ -288,18 +288,18 @@
   input:disabled + label,
   textarea:disabled + label,
   select:disabled + label {
-    @apply opacity-60 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-60;
   }
 
   /* Checkbox and radio disabled states */
   input[type='checkbox']:disabled,
   input[type='radio']:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-50;
   }
 
   input[type='checkbox']:disabled + label,
   input[type='radio']:disabled + label {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-50;
   }
 
   /* Button disabled states for forms */
@@ -307,13 +307,13 @@
   .form-disabled .btn,
   button:disabled,
   .btn:disabled {
-    @apply opacity-50 cursor-not-allowed pointer-events-none;
+    @apply pointer-events-none cursor-not-allowed opacity-50;
   }
 
   /* Visual indicator for disabled form sections */
   .form-disabled::before {
     content: '';
-    @apply absolute inset-0 bg-background/50 z-10 pointer-events-none;
+    @apply bg-background/50 pointer-events-none absolute inset-0 z-10;
     backdrop-filter: blur(1px);
   }
 

@@ -108,7 +108,7 @@ class CSSVariableValidator {
    * Extract all CSS custom properties from the page
    */
   async extractCSSVariables(page, theme = 'light') {
-    return await page.evaluate((theme) => {
+    return await page.evaluate(theme => {
       // Apply theme class
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
@@ -267,8 +267,8 @@ class CSSVariableValidator {
     const lightDefined = new Set(this.results.themes.light?.defined || []);
     const darkDefined = new Set(this.results.themes.dark?.defined || []);
 
-    const onlyInLight = [...lightDefined].filter((v) => !darkDefined.has(v));
-    const onlyInDark = [...darkDefined].filter((v) => !lightDefined.has(v));
+    const onlyInLight = [...lightDefined].filter(v => !darkDefined.has(v));
+    const onlyInDark = [...darkDefined].filter(v => !lightDefined.has(v));
 
     if (onlyInLight.length > 0) {
       report.recommendations.push({
@@ -351,14 +351,14 @@ class CSSVariableValidator {
     <h2>Recommendations</h2>
     ${report.recommendations
       .map(
-        (rec) => `
+        rec => `
       <div class="recommendation ${rec.type}">
         <strong>${rec.message}</strong>
         ${
           rec.variables
             ? `
           <div class="variable-list" style="margin-top: 0.5rem;">
-            ${rec.variables.map((v) => `<div class="variable-item">${v}</div>`).join('')}
+            ${rec.variables.map(v => `<div class="variable-item">${v}</div>`).join('')}
           </div>
         `
             : ''
@@ -389,7 +389,7 @@ class CSSVariableValidator {
           <div class="variable-list">
             ${data.defined
               .map(
-                (v) => `
+                v => `
               <div class="variable-item">
                 ${v}
                 <span class="variable-value">${data.values[v] || ''}</span>
@@ -407,7 +407,7 @@ class CSSVariableValidator {
             ? `
           <h4>Undefined Variables</h4>
           <div class="variable-list">
-            ${data.undefined.map((v) => `<div class="variable-item" style="background: #fee2e2;">${v}</div>`).join('')}
+            ${data.undefined.map(v => `<div class="variable-item" style="background: #fee2e2;">${v}</div>`).join('')}
           </div>
         `
             : ''
@@ -438,7 +438,9 @@ class CSSVariableValidator {
 
       // Test inheritance
       const inheritanceTest = await this.testInheritance(page);
-      console.log(`🔗 CSS variable inheritance: ${inheritanceTest.inherits ? '✅ Working' : '❌ Failed'}`);
+      console.log(
+        `🔗 CSS variable inheritance: ${inheritanceTest.inherits ? '✅ Working' : '❌ Failed'}`
+      );
 
       // Generate reports
       const report = this.generateReport();
@@ -448,19 +450,26 @@ class CSSVariableValidator {
       const outputDir = path.join(__dirname, '../css-validation-results');
       await fs.mkdir(outputDir, { recursive: true });
 
-      await fs.writeFile(path.join(outputDir, 'validation-report.json'), JSON.stringify(report, null, 2));
+      await fs.writeFile(
+        path.join(outputDir, 'validation-report.json'),
+        JSON.stringify(report, null, 2)
+      );
 
       await fs.writeFile(path.join(outputDir, 'validation-report.html'), htmlReport);
 
       // Console summary
       console.log('\n📊 Validation Summary:');
       console.log(`  Total Expected: ${report.summary.totalExpected}`);
-      console.log(`  Light Theme: ${report.summary.lightThemeDefined}/${report.summary.totalExpected} defined`);
-      console.log(`  Dark Theme: ${report.summary.darkThemeDefined}/${report.summary.totalExpected} defined`);
+      console.log(
+        `  Light Theme: ${report.summary.lightThemeDefined}/${report.summary.totalExpected} defined`
+      );
+      console.log(
+        `  Dark Theme: ${report.summary.darkThemeDefined}/${report.summary.totalExpected} defined`
+      );
 
       if (report.recommendations.length > 0) {
         console.log(`\n⚠️  ${report.recommendations.length} recommendations found`);
-        report.recommendations.forEach((rec) => {
+        report.recommendations.forEach(rec => {
           console.log(`  ${rec.type.toUpperCase()}: ${rec.message}`);
         });
       } else {

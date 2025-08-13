@@ -2,15 +2,21 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive migration of the AstroWind project to Tailwind CSS V4 with a modernized, consistent theme architecture. The migration consolidates multiple styling approaches into a unified system while maintaining backward compatibility.
+This document outlines the comprehensive migration of the AstroWind project to
+Tailwind CSS V4 with a modernized, consistent theme architecture. The migration
+consolidates multiple styling approaches into a unified system while maintaining
+backward compatibility.
 
 ## Key Improvements Achieved
 
 ### 🎯 **Centralized Theme System**
 
-- **Single Source of Truth**: All theme variables now managed in `src/components/CustomStyles.astro`
-- **Semantic Token System**: Replaced hardcoded colors with semantic design tokens
-- **Backward Compatibility**: Legacy `--aw-*` variables maintained for gradual migration
+- **Single Source of Truth**: All theme variables now managed in
+  `src/components/CustomStyles.astro`
+- **Semantic Token System**: Replaced hardcoded colors with semantic design
+  tokens
+- **Backward Compatibility**: Legacy `--aw-*` variables maintained for gradual
+  migration
 
 ### 🏗️ **Configuration Modernization**
 
@@ -66,7 +72,9 @@ src/
 
 ```astro
 <!-- Old Pattern - Hardcoded classes -->
-<button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"> Click me </button>
+<button class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+  Click me
+</button>
 ```
 
 ### After: Semantic Token System
@@ -97,7 +105,11 @@ const variants = {
 };
 ---
 
-<button class={variants[variant]} disabled={disabled || loading} aria-busy={loading}>
+<button
+  class={variants[variant]}
+  disabled={disabled || loading}
+  aria-busy={loading}
+>
   {loading && <LoadingSpinner />}
   <slot />
 </button>
@@ -109,13 +121,11 @@ const variants = {
 
 ```css
 @utility btn-primary {
-  @apply btn font-semibold bg-primary text-primary-foreground border-primary 
-         hover:bg-secondary hover:border-secondary hover:text-secondary-foreground;
+  @apply btn bg-primary text-primary-foreground border-primary hover:bg-secondary hover:border-secondary hover:text-secondary-foreground font-semibold;
 }
 
 @utility btn-outline {
-  @apply btn border-border bg-transparent text-foreground
-         hover:bg-accent hover:text-accent-foreground;
+  @apply btn border-border text-foreground hover:bg-accent hover:text-accent-foreground bg-transparent;
 }
 ```
 
@@ -123,9 +133,7 @@ const variants = {
 
 ```css
 @utility input-field {
-  @apply w-full px-3 py-2 border border-input rounded-md shadow-sm 
-         bg-background text-foreground placeholder:text-muted-foreground
-         focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
+  @apply border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-primary focus:border-primary w-full rounded-md border px-3 py-2 shadow-sm focus:ring-2 focus:outline-none;
 }
 
 @utility input-error {
@@ -137,12 +145,11 @@ const variants = {
 
 ```css
 @utility card {
-  @apply bg-card text-card-foreground border border-border rounded-lg shadow-sm
-         p-6 transition-all duration-200;
+  @apply bg-card text-card-foreground border-border rounded-lg border p-6 shadow-sm transition-all duration-200;
 }
 
 @utility card-hover {
-  @apply card hover:shadow-md hover:border-accent;
+  @apply card hover:border-accent hover:shadow-md;
 }
 ```
 
@@ -291,4 +298,5 @@ const variants = {
 
 ---
 
-**Migration Status**: ✅ Foundation Complete | 🔄 Components In Progress | �� Testing Required
+**Migration Status**: ✅ Foundation Complete | 🔄 Components In Progress | ��
+Testing Required

@@ -47,23 +47,28 @@ const isNextWeekInFuture = nextWeekDate > new Date();
 ---
 
 <div class={`til-board-controls flex items-center justify-between ${className}`}>
-  <a href={prevWeekUrl} class="flex items-center gap-1 text-primary hover:text-accent transition-colors">
-    <Icon name="tabler:arrow-left" class="w-5 h-5" />
+  <a
+    href={prevWeekUrl}
+    class="text-primary hover:text-accent flex items-center gap-1 transition-colors"
+  >
+    <Icon name="tabler:arrow-left" class="h-5 w-5" />
     <span>Previous Week</span>
   </a>
 
-  <div class="px-4 py-2 bg-muted/30 rounded-full font-medium">
+  <div class="bg-muted/30 rounded-full px-4 py-2 font-medium">
     {currentWeekRange}
   </div>
 
   <a
     href={isNextWeekInFuture ? '#' : nextWeekUrl}
     class={`flex items-center gap-1 transition-colors ${
-      isNextWeekInFuture ? 'text-muted-foreground cursor-not-allowed' : 'text-primary hover:text-accent'
+      isNextWeekInFuture
+        ? 'text-muted-foreground cursor-not-allowed'
+        : 'text-primary hover:text-accent'
     }`}
     aria-disabled={isNextWeekInFuture}
   >
     <span>Next Week</span>
-    <Icon name="tabler:arrow-right" class="w-5 h-5" />
+    <Icon name="tabler:arrow-right" class="h-5 w-5" />
   </a>
 </div>

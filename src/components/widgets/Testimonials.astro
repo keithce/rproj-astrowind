@@ -19,7 +19,12 @@ const {
 } = Astro.props;
 ---
 
-<WidgetWrapper id={id} isDark={isDark} containerClass={`max-w-6xl mx-auto ${classes?.container ?? ''}`} bg={bg}>
+<WidgetWrapper
+  id={id}
+  isDark={isDark}
+  containerClass={`max-w-6xl mx-auto ${classes?.container ?? ''}`}
+  bg={bg}
+>
   <Headline title={title} subtitle={subtitle} tagline={tagline} />
 
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -27,37 +32,37 @@ const {
       testimonials &&
         testimonials.map(({ title, testimonial, name, job, image }) => (
           <div class="flex h-auto">
-            <div class="flex flex-col p-4 rounded-md shadow-xl md:p-6 dark:shadow-none dark:border dark:border-gray-600">
-              {title && <h2 class="pb-4 text-lg font-medium leading-6">{title}</h2>}
+            <div class="flex flex-col rounded-md p-4 shadow-xl md:p-6 dark:border dark:border-gray-600 dark:shadow-none">
+              {title && <h2 class="pb-4 text-lg leading-6 font-medium">{title}</h2>}
               {testimonial && (
                 <blockquote class="flex-auto">
                   <p class="text-muted">" {testimonial} "</p>
                 </blockquote>
               )}
 
-              <hr class="my-4 border-accent" />
+              <hr class="border-accent my-4" />
 
               <div class="flex items-center">
                 {image && (
-                  <div class="w-10 h-10 border border-gray-200 rounded-full dark:border-gray-600">
+                  <div class="h-10 w-10 rounded-full border border-gray-200 dark:border-gray-600">
                     {typeof image === 'string' ? (
                       <Fragment set:html={image} />
                     ) : (
                       <Image
-                        class="w-10 h-10 min-w-full min-h-full border border-gray-200 rounded-full dark:border-gray-600"
+                        class="h-10 min-h-full w-10 min-w-full rounded-full border border-gray-200 dark:border-gray-600"
                         width={40}
                         height={40}
                         widths={[400, 768]}
                         layout="fixed"
-                        {...image}
+                        {...(typeof image === 'object' && image !== null ? image : {})}
                       />
                     )}
                   </div>
                 )}
 
-                <div class="ml-3 grow rtl:ml-0 rtl:mr-3">
+                <div class="ml-3 grow rtl:mr-3 rtl:ml-0">
                   {name && <p class="text-base font-semibold">{name}</p>}
-                  {job && <p class="text-xs text-muted">{job}</p>}
+                  {job && <p class="text-muted text-xs">{job}</p>}
                 </div>
               </div>
             </div>
@@ -67,7 +72,7 @@ const {
   </div>
   {
     callToAction && (
-      <div class="flex justify-center mx-auto mt-8 font-medium w-fit md:mt-12">
+      <div class="mx-auto mt-8 flex w-fit justify-center font-medium md:mt-12">
         <Button {...callToAction} />
       </div>
     )

@@ -31,22 +31,27 @@ const {
   }`}
   bg={bg}
 >
-  <Headline title={title} subtitle={subtitle} tagline={tagline} classes={classes?.headline as Record<string, string>} />
+  <Headline
+    title={title}
+    subtitle={subtitle}
+    tagline={tagline}
+    classes={classes?.headline as Record<string, string>}
+  />
 
   <div aria-hidden="true" class="aspect-w-16 aspect-h-7">
     {
       image && (
-        <div class="object-cover w-full mx-auto bg-gray-500 shadow-lg h-80 rounded-xl">
+        <div class="mx-auto h-80 w-full rounded-xl bg-gray-500 object-cover shadow-lg">
           {typeof image === 'string' ? (
             <Fragment set:html={image} />
           ) : (
             <Image
-              class="object-cover w-full mx-auto bg-gray-500 shadow-lg h-80 rounded-xl"
+              class="mx-auto h-80 w-full rounded-xl bg-gray-500 object-cover shadow-lg"
               width="auto"
               height={320}
               widths={[400, 768]}
               layout="fullWidth"
-              {...image}
+              {...(typeof image === 'object' && image !== null ? image : {})}
             />
           )}
         </div>

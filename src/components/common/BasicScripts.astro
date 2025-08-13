@@ -18,7 +18,10 @@ import { UI } from 'astrowind:config';
   }
 
   const initTheme = function () {
-    if ((defaultTheme && defaultTheme.endsWith(':only')) || (!localStorage.theme && defaultTheme !== 'system')) {
+    if (
+      (defaultTheme && defaultTheme.endsWith(':only')) ||
+      (!localStorage.theme && defaultTheme !== 'system')
+    ) {
       applyTheme(defaultTheme.replace(':only', ''));
     } else if (
       localStorage.theme === 'dark' ||
@@ -34,8 +37,8 @@ import { UI } from 'astrowind:config';
   function attachEvent(selector, event, fn) {
     const matches = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
     if (matches && matches.length) {
-      matches.forEach((elem) => {
-        elem.addEventListener(event, (e) => fn(e, elem), false);
+      matches.forEach(elem => {
+        elem.addEventListener(event, e => fn(e, elem), false);
       });
     }
   }
@@ -181,20 +184,20 @@ import { UI } from 'astrowind:config';
 
       const elements = Array.from(document.querySelectorAll(selectors.join(',')));
 
-      const getThreshold = (element) => {
+      const getThreshold = element => {
         if (element.classList.contains('intersect-full')) return 0.99;
         if (element.classList.contains('intersect-half')) return 0.5;
         if (element.classList.contains('intersect-quarter')) return 0.25;
         return 0;
       };
 
-      elements.forEach((el) => {
+      elements.forEach(el => {
         el.setAttribute('no-intersect', '');
         el._intersectionThreshold = getThreshold(el);
       });
 
-      const callback = (entries) => {
-        entries.forEach((entry) => {
+      const callback = entries => {
+        entries.forEach(entry => {
           requestAnimationFrame(() => {
             const target = entry.target;
             const intersectionRatio = entry.intersectionRatio;
@@ -239,9 +242,11 @@ import { UI } from 'astrowind:config';
         });
       };
 
-      this.observer = new IntersectionObserver(callback.bind(this), { threshold: [0, 0.25, 0.5, 0.99] });
+      this.observer = new IntersectionObserver(callback.bind(this), {
+        threshold: [0, 0.25, 0.5, 0.99],
+      });
 
-      elements.forEach((el) => {
+      elements.forEach(el => {
         this.observer.observe(el);
       });
     },

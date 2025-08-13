@@ -2,13 +2,18 @@
 title: 'Advanced CSS Container Queries'
 date: 2025-06-16
 tags: ['css', 'responsive design', 'web development']
-description: 'Today I learned how to use CSS container queries to create truly component-based responsive designs that go beyond viewport dimensions.'
+description:
+  'Today I learned how to use CSS container queries to create truly
+  component-based responsive designs that go beyond viewport dimensions.'
 draft: false
 ---
 
 # Advanced CSS Container Queries
 
-Today I learned about CSS container queries, which are revolutionizing how we approach responsive design. Unlike media queries that respond to the viewport size, container queries allow elements to respond to the size of their parent container.
+Today I learned about CSS container queries, which are revolutionizing how we
+approach responsive design. Unlike media queries that respond to the viewport
+size, container queries allow elements to respond to the size of their parent
+container.
 
 ## Basic Container Query Setup
 
@@ -57,7 +62,8 @@ You can use named or anonymous containers:
 
 ## Container Query Units
 
-I also discovered container query units, which are relative to the container size:
+I also discovered container query units, which are relative to the container
+size:
 
 ```css
 .card-title {
@@ -77,7 +83,8 @@ I also discovered container query units, which are relative to the container siz
 
 ## Practical Application
 
-The most impactful realization was how container queries enable truly modular components:
+The most impactful realization was how container queries enable truly modular
+components:
 
 ```html
 <div class="main-content">
@@ -95,12 +102,16 @@ The most impactful realization was how container queries enable truly modular co
 </div>
 ```
 
-With container queries, the same component can adapt to different layout contexts without needing different classes or overrides.
+With container queries, the same component can adapt to different layout
+contexts without needing different classes or overrides.
 
-This approach dramatically improves component reusability and aligns perfectly with component-based frameworks like Astro, React, or Vue.
+This approach dramatically improves component reusability and aligns perfectly
+with component-based frameworks like Astro, React, or Vue.
 
 ## Browser Support
 
-Container queries are now supported in all modern browsers, though older browsers will need a polyfill or fallback approach.
+Container queries are now supported in all modern browsers, though older
+browsers will need a polyfill or fallback approach.
 
-This discovery has completely changed how I think about responsive design, making it truly component-based rather than page-based.
+This discovery has completely changed how I think about responsive design,
+making it truly component-based rather than page-based.

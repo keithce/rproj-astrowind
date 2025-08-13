@@ -2,40 +2,49 @@
 import Layout from '~/layouts/PageLayout.astro';
 import { getCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
+import type { RrResourceData } from '~/types/rr-resources';
+import { isRrResourceData } from '~/types/rr-resources';
 
-const items = await (getCollection as any)('rrresources');
+const items = await getCollection('rrresources');
 
 const title = 'RR Resources';
 const description = 'Curated resources from the Notion database';
 ---
 
 <Layout metadata={{ title, description }}>
-  <section class="container px-4 py-8 mx-auto">
+  <section class="container mx-auto px-4 py-8">
     <h1 class="mb-6 text-3xl font-bold">{title}</h1>
-    {items.length === 0 ? (
-      <p>No resources found.</p>
-    ) : (
-      <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((entry) => {
-          const name = (entry.data as any).Name || entry.id;
-          const slug = cleanSlug(name);
-          const href = getPermalink(`/rr-resources/${slug}`, 'post');
-          const type = (entry.data as any).Type?.[0];
-          const category = (entry.data as any).Category?.[0];
-          return (
-            <li class="p-4 bg-white rounded-lg border dark:bg-gray-900">
-              <a href={href} class="text-lg font-semibold hover:underline">{name}</a>
-              {(type || category) && (
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                  {(type ? `Type: ${type}` : '')}{type && category ? ' · ' : ''}{category ? `Category: ${category}` : ''}
-                </p>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    )}
+    {
+      items.length === 0 ? (
+        <p>No resources found.</p>
+      ) : (
+        <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {items.map(entry => {
+            // Type-safe data extraction with fallbacks
+            const data: RrResourceData = isRrResourceData(entry.data) ? entry.data : {};
+            const name = data.Name ?? entry.id;
+            const slug = cleanSlug(name);
+            const href = getPermalink(`/rr-resources/${slug}`, 'post');
+            const type = data.Type?.[0];
+            const category = data.Category?.[0];
+
+            return (
+              <li class="rounded-lg border bg-white p-4 dark:bg-gray-900">
+                <a href={href} class="text-lg font-semibold hover:underline">
+                  {name}
+                </a>
+                {(type || category) && (
+                  <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    {type ? `Type: ${type}` : ''}
+                    {type && category ? ' · ' : ''}
+                    {category ? `Category: ${category}` : ''}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
   </section>
 </Layout>
-
-

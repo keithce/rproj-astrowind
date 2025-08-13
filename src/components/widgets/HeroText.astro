@@ -21,16 +21,16 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative md:-mt-[76px] not-prose">
-  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"></div>
-  <div class="relative px-4 mx-auto max-w-7xl sm:px-6">
-    <div class="pt-0 md:pt-[76px] pointer-events-none"></div>
+<section class="not-prose relative md:-mt-[76px]">
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="pointer-events-none pt-0 md:pt-[76px]"></div>
     <div class="py-12 pb-8 md:py-20 md:pb-8">
-      <div class="max-w-5xl mx-auto text-center">
+      <div class="mx-auto max-w-5xl text-center">
         {
           tagline && (
             <p
-              class="text-base font-bold tracking-wide uppercase text-secondary dark:text-blue-200 animate-fade-in"
+              class="text-secondary animate-fade-in text-base font-bold tracking-wide uppercase dark:text-blue-200"
               set:html={tagline}
             />
           )
@@ -38,19 +38,22 @@ const {
         {
           title && (
             <h1
-              class="mb-4 text-5xl font-bold tracking-tighter md:text-6xl leading-tighter font-heading dark:text-gray-200 animate-fade-in"
+              class="leading-tighter font-heading animate-fade-in mb-4 text-5xl font-bold tracking-tighter md:text-6xl dark:text-gray-200"
               set:html={title}
             />
           )
         }
-        <div class="max-w-3xl mx-auto">
+        <div class="mx-auto max-w-3xl">
           {
             subtitle && (
-              <p class="mb-6 text-xl text-muted dark:text-muted-foreground animate-fade-in" set:html={subtitle} />
+              <p
+                class="text-muted dark:text-muted-foreground animate-fade-in mb-6 text-xl"
+                set:html={subtitle}
+              />
             )
           }
           <div
-            class="flex flex-col max-w-xs gap-4 m-auto sm:max-w-md flex-nowrap sm:flex-row sm:justify-center animate-fade-in"
+            class="animate-fade-in m-auto flex max-w-xs flex-col flex-nowrap gap-4 sm:max-w-md sm:flex-row sm:justify-center"
           >
             {
               callToAction && (

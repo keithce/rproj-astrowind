@@ -139,7 +139,9 @@ import ThemeToggle from '~/components/common/ThemeToggle.astro';
 
 ```html
 <!-- Automatic theme adaptation -->
-<div class="border bg-card text-card-foreground border-border">Content adapts to light/dark theme automatically</div>
+<div class="bg-card text-card-foreground border-border border">
+  Content adapts to light/dark theme automatically
+</div>
 
 <!-- Manual theme targeting (if needed) -->
 <div class="bg-white dark:bg-gray-900">Explicit light/dark values</div>
@@ -170,7 +172,7 @@ import ThemeToggle from '~/components/common/ThemeToggle.astro';
 <div class="space-component">Component spacing</div>
 
 <!-- Responsive containers -->
-<div class="px-4 container-responsive sm:px-6 lg:px-8">Responsive padding</div>
+<div class="container-responsive px-4 sm:px-6 lg:px-8">Responsive padding</div>
 ```
 
 ---
