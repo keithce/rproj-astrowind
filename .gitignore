@@ -30,6 +30,15 @@ pnpm-debug.log*
 # Temporary files from Notion
 src/assets/images/notion/
 
+# Build metadata and temp working dirs
+tmp/
+**/*.tsbuildinfo
+
+# Vendored package build artifacts (keep only sources)
+vendor/notion-astro-loader/src/dist/
+vendor/notion-astro-loader/src/node_modules/
+vendor/notion-astro-loader/src/.github/
+
 # Added by Claude Task Master
 # Logs
 logs
