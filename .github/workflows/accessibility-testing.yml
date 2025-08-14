@@ -59,6 +59,9 @@ jobs:
 
       - name: 🏗️ Build application
         run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: 🚀 Start development server
         run: |
@@ -165,6 +168,12 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: 🏗️ Build application
+        run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+
       - name: 📊 Generate Accessibility Trends
         run: |
           # Create trends directory if it doesn't exist
@@ -253,6 +262,9 @@ jobs:
 
       - name: 🏗️ Build application
         run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: 🚀 Start server
         run: |
@@ -330,6 +342,9 @@ jobs:
 
       - name: 🏗️ Build application
         run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: 🚀 Start server
         run: |
@@ -403,9 +418,14 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: 🏗️ Build application
+        run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+
       - name: 🧪 Run Current Branch Tests
         run: |
-          pnpm build
           pnpm dev --port 4321 --host &
           # Wait for the preview server to become available (max ~60 s)
           for i in {1..30}; do
@@ -414,7 +434,7 @@ jobs:
               echo "✅ Server is up!"
               break
             fi
-            echo "⏳ Waiting for server... ($i/30)"
+            echo "⏳ Waiting for dev server... ($i/30)"
             if [ $i -eq 30 ]; then
               echo "❌ Server did not start in time" >&2
               exit 1
@@ -449,7 +469,7 @@ jobs:
               echo "✅ Server is up!"
               break
             fi
-            echo "⏳ Waiting for server... ($i/30)"
+            echo "⏳ Waiting for dev server... ($i/30)"
             if [ $i -eq 30 ]; then
               echo "❌ Server did not start in time" >&2
               exit 1
@@ -457,6 +477,9 @@ jobs:
           done
           pnpm test:accessibility:ci
           cp -r accessibility-reports base-reports
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: 🔍 Compare Results
         run: |

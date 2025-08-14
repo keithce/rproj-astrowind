@@ -26,6 +26,9 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm run build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
       # - run: pnpm test
 
   lint:

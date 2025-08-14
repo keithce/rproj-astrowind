@@ -63,6 +63,9 @@ jobs:
 
       - name: '🏗️ Build application'
         run: pnpm build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
   # ================================================================
   # Re-usable shell snippet – start astro dev, wait, expose PID
