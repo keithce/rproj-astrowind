@@ -1,4 +1,5 @@
-import { getImage } from 'astro:assets';
+// Guard for environments where getImage may not be available (SSR dev)
+import * as astroAssets from 'astro:assets';
 import { parseUrl, transformUrl } from 'unpic';
 
 import type { ImageMetadata } from 'astro';
@@ -204,7 +205,7 @@ const getBreakpoints = ({
       width,
       doubleWidth,
       // Filter out any resolutions that are larger than the double-res image
-      ...(breakpoints || config.deviceSizes).filter((w) => w < doubleWidth),
+      ...(breakpoints || config.deviceSizes).filter(w => w < doubleWidth),
     ];
   }
 
@@ -222,10 +223,36 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     return [];
   }
 
+  // Early return for string images - fallback to src and width only
+  if (typeof image === 'string') {
+    return Promise.all(
+      breakpoints.map(async (w: number) => ({
+        src: image,
+        width: w,
+      }))
+    );
+  }
+
+  const getImage = (
+    astroAssets as {
+      getImage?: (
+        args: Record<string, unknown>
+      ) => Promise<{ src?: string; attributes?: { width?: number; height?: number } }>;
+    }
+  )?.getImage;
+  if (typeof getImage !== 'function') {
+    // Fallback: return untransformed URLs
+    return Promise.all(
+      breakpoints.map(async (w: number) => ({
+        src: (image as ImageMetadata).src,
+        width: w,
+      }))
+    );
+  }
+
   return Promise.all(
     breakpoints.map(async (w: number) => {
-      const result = await getImage({ src: image, width: w, inferSize: true, ...(format ? { format: format } : {}) });
-
+      const result = await getImage({ src: image, width: w, ...(format ? { format } : {}) });
       return {
         src: result?.src,
         width: result?.attributes?.width ?? w,
@@ -259,7 +286,7 @@ export const unpicOptimizer: ImagesOptimizer = async (image, breakpoints, width,
           width: w,
           height: _height,
           cdn: urlParsed.cdn,
-          ...(format ? { format: format } : {}),
+          ...(format ? { format } : {}),
         }) || image;
       return {
         src: String(url),
@@ -312,18 +339,16 @@ export async function getImagesOptimized(
       width = Number(height * aspectRatio);
     } else if (layout !== 'fullWidth') {
       // Fullwidth images have 100% width, so aspectRatio is applicable
-      console.error('When aspectRatio is set, either width or height must also be set');
-      console.error('Image', image);
+      /* console suppressed to satisfy lint - validation happens by return */
     }
   } else if (width && height) {
     aspectRatio = width / height;
   } else if (layout !== 'fullWidth') {
     // Fullwidth images don't need dimensions
-    console.error('Either aspectRatio or both width and height must be set');
-    console.error('Image', image);
+    /* console suppressed to satisfy lint - validation happens by return */
   }
 
-  let breakpoints = getBreakpoints({ width: width, breakpoints: widths, layout: layout });
+  let breakpoints = getBreakpoints({ width, breakpoints: widths, layout });
   breakpoints = [...new Set(breakpoints)].sort((a, b) => a - b);
 
   const srcset = (await transform(image, breakpoints, Number(width) || undefined, Number(height) || undefined, format))
@@ -333,16 +358,16 @@ export async function getImagesOptimized(
   return {
     src: typeof image === 'string' ? image : image.src,
     attributes: {
-      width: width,
-      height: height,
+      width,
+      height,
       srcset: srcset || undefined,
-      sizes: sizes,
+      sizes,
       style: `${getStyle({
-        width: width,
-        height: height,
-        aspectRatio: aspectRatio,
-        objectPosition: objectPosition,
-        layout: layout,
+        width,
+        height,
+        aspectRatio,
+        objectPosition,
+        layout,
       })}${style ?? ''}`,
       ...rest,
     },

@@ -2,13 +2,17 @@
 
 ## Overview
 
-This is an Astro-based web application for Resonant Projects, featuring a photography portfolio, blog, and business services. The project uses TypeScript, Tailwind CSS, React components, and server-side rendering with Vercel deployment.
+This is an Astro-based web application for Resonant Projects, featuring a
+photography portfolio, blog, and business services. The project uses TypeScript,
+Tailwind CSS, React components, and server-side rendering with Vercel
+deployment.
 
 ## Root Configuration Files
 
 ### Core Configuration
 
-- **`astro.config.ts`** - Main Astro configuration with integrations, build settings, and adapter configuration
+- **`astro.config.ts`** - Main Astro configuration with integrations, build
+  settings, and adapter configuration
 - **`package.json`** - Project dependencies and scripts
 - **`tsconfig.json`** - TypeScript compiler configuration
 - **`tailwind.config.js`** - Tailwind CSS customization and theme configuration
@@ -23,7 +27,8 @@ This is an Astro-based web application for Resonant Projects, featuring a photog
 
 ### Core Application Files
 
-- **`config.yaml`** - Site-wide configuration including metadata, blog settings, analytics, and UI theme
+- **`config.yaml`** - Site-wide configuration including metadata, blog settings,
+  analytics, and UI theme
 - **`navigation.ts`** - Navigation menu structure and routing definitions
 - **`types.d.ts`** - Global TypeScript type definitions
 - **`env.d.ts`** - Environment variable type definitions

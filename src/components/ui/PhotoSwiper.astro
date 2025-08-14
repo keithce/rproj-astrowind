@@ -419,7 +419,7 @@ function getPlaceholderImage(category: string, index: number): string {
   function initializeSwiper() {
     const swipers = document.querySelectorAll('.mySwiper');
 
-    swipers.forEach((swiperElement) => {
+    swipers.forEach(swiperElement => {
       // Skip if already initialized
       if (swiperElement.hasAttribute('data-swiper-initialized')) {
         return;

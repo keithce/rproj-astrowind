@@ -2,13 +2,15 @@
 title: 'Creating Custom Astro Layouts'
 date: 2025-06-20
 tags: ['astro', 'web development', 'layouts']
-description: 'Today I learned how to create custom layouts in Astro to reuse page structures while passing specific metadata.'
+description: 'Today I learned how to create custom layouts in Astro to reuse page
+  structures while passing specific metadata.'
 draft: false
 ---
 
 # Creating Custom Astro Layouts
 
-One of the most powerful features in Astro is the ability to create reusable layout components that can be applied across multiple pages.
+One of the most powerful features in Astro is the ability to create reusable
+layout components that can be applied across multiple pages.
 
 ## The Basic Structure
 
@@ -46,7 +48,9 @@ import CustomLayout from '../layouts/CustomLayout.astro';
 </CustomLayout>
 ```
 
-The key insight I gained today is that layouts in Astro can receive props just like any other component, making them incredibly flexible for managing page-specific metadata while maintaining consistent structure.
+The key insight I gained today is that layouts in Astro can receive props just
+like any other component, making them incredibly flexible for managing
+page-specific metadata while maintaining consistent structure.
 
 ## Named Slots
 
@@ -61,4 +65,5 @@ You can also use named slots for more complex layouts:
 <slot name="footer" />
 ```
 
-This approach has significantly improved my workflow by reducing duplication across pages.
+This approach has significantly improved my workflow by reducing duplication
+across pages.

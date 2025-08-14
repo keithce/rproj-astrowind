@@ -1,0 +1,26 @@
+// Export all widget components
+export { default as Announcement } from './Announcement.astro';
+export { default as BlogHighlightedPosts } from './BlogHighlightedPosts.astro';
+export { default as BlogLatestPosts } from './BlogLatestPosts.astro';
+export { default as Brands } from './Brands.astro';
+export { default as CallToAction } from './CallToAction.astro';
+export { default as CategoryHero } from './CategoryHero.astro';
+export { default as Contact } from './Contact.astro';
+export { default as ContactForm } from './ContactForm.astro';
+export { default as Content } from './Content.astro';
+export { default as FAQs } from './FAQs.astro';
+export { default as Features } from './Features.astro';
+export { default as Features2 } from './Features2.astro';
+export { default as Features3 } from './Features3.astro';
+export { default as Footer } from './Footer.astro';
+export { default as Header } from './Header.astro';
+export { default as Hero } from './Hero.astro';
+export { default as Hero2 } from './Hero2.astro';
+export { default as HeroText } from './HeroText.astro';
+export { default as Note } from './Note.astro';
+export { default as NotionContact } from './NotionContact.astro';
+export { default as Pricing } from './Pricing.astro';
+export { default as Stats } from './Stats.astro';
+export { default as Steps } from './Steps.astro';
+export { default as Steps2 } from './Steps2.astro';
+export { default as Testimonials } from './Testimonials.astro';

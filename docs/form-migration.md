@@ -2,7 +2,9 @@
 
 ## Overview
 
-Migrate the NotionContact form component from a standard HTML form POST to a JavaScript client-side submission handler for improved user experience with immediate visual feedback and smoother transitions.
+Migrate the NotionContact form component from a standard HTML form POST to a
+JavaScript client-side submission handler for improved user experience with
+immediate visual feedback and smoother transitions.
 
 ## Current Implementation
 
