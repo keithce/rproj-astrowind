@@ -100,6 +100,8 @@ export const collections = {
       z.object({
         // Include raw Notion properties so we can derive titles when needed
         properties: z.any().optional(),
+        // Flattened map of all property values for convenient access
+        flat: z.record(z.unknown()).optional(),
         Name: z.string().optional(),
         Source: z.string().url().optional(),
         'User Defined URL': z.string().url().optional(),

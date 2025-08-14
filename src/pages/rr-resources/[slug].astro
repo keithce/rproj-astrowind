@@ -39,6 +39,66 @@ type Props = { entry: RREntry };
 type RRRendered = { rendered?: { html?: string } };
 const { entry } = Astro.props as Props;
 const data = entry.data as RRData;
+
+// Derive a flat map from raw Notion properties if `data.flat` isn't present
+type NotionProp = Record<string, unknown> & { type?: string };
+function flattenProperties(props: Record<string, NotionProp> | undefined): Record<string, unknown> {
+  if (!props || typeof props !== 'object') return {};
+  const out: Record<string, unknown> = {};
+  for (const [key, prop] of Object.entries(props)) {
+    const t = prop?.type as string | undefined;
+    let value: unknown;
+    switch (t) {
+      case 'number':
+        value = prop.number; break;
+      case 'url':
+        value = typeof prop.url === 'string' && prop.url.trim() ? prop.url : undefined; break;
+      case 'email':
+        value = prop.email ?? undefined; break;
+      case 'phone_number':
+        value = prop.phone_number ?? undefined; break;
+      case 'checkbox':
+        value = prop.checkbox; break;
+      case 'select':
+        value = (prop as { select?: { name?: string } }).select?.name ?? null; break;
+      case 'multi_select':
+        value = Array.isArray((prop as { multi_select?: Array<{ name?: string }> }).multi_select)
+          ? ((prop as { multi_select?: Array<{ name?: string }> }).multi_select || [])
+              .map((o) => o?.name)
+              .filter(Boolean)
+          : [];
+        break;
+      case 'status':
+        value = (prop as { status?: { name?: string } }).status?.name ?? null; break;
+      case 'title':
+        value = Array.isArray((prop as { title?: Array<{ plain_text?: string }> }).title)
+          ? ((prop as { title?: Array<{ plain_text?: string }> }).title || [])
+              .map((rt) => rt?.plain_text || '')
+              .join('')
+          : '';
+        break;
+      case 'rich_text':
+        value = Array.isArray((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text)
+          ? ((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text || [])
+              .map((rt) => rt?.plain_text || '')
+              .join('')
+          : '';
+        break;
+      case 'date':
+        value = (prop as { date?: { start?: string } }).date?.start ?? undefined; break;
+      case 'created_time':
+        value = prop.created_time ?? undefined; break;
+      case 'last_edited_time':
+        value = prop.last_edited_time ?? undefined; break;
+      default:
+        value = prop;
+    }
+    if (value !== null && value !== undefined) {
+      out[key] = value;
+    }
+  }
+  return out;
+}
 const title = data.Name || getNotionEntryTitle(entry) || 'Resource';
 const description = data['AI summary'] || data.Source || '';
 // Use the actual route slug parameter for canonical URL, fallback to sanitized title if needed
@@ -47,17 +107,20 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
 
 if (Astro.props && process.env.NOTION_TRACE === '1') {
   const keys = Object.keys((data as Record<string, unknown>) || {});
-  // eslint-disable-next-line no-console
-  console.debug('[rrresources:slug] id=', entry.id, 'keys=', keys);
+  console.debug('[rrresources:slug] id=', (entry as { id: string }).id, 'keys=', keys);
 }
 
 // Debug toggles: show property dump in non-production or when NOTION_TRACE=1
 const showDebug = (process?.env?.NOTION_TRACE === '1') || import.meta.env.MODE !== 'production';
-const flatDataForDebug = (data.flat as Record<string, unknown> | undefined) ?? (() => {
-  const { properties: _props, ...rest } = (data as Record<string, unknown>) || {};
-  return rest;
-})();
+const flatDataForDebug = (data.flat as Record<string, unknown> | undefined)
+  ?? flattenProperties(data.properties as Record<string, NotionProp> | undefined)
+  ?? ((() => {
+    const rest: Record<string, unknown> = { ...(data as Record<string, unknown>) };
+    delete (rest as Record<string, unknown>).properties;
+    return rest;
+  })());
 const propertyKeys = Object.keys((data.properties || {}) as Record<string, unknown>);
+const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<string, unknown>;
 ---
 
 <Layout metadata={{ title, description, canonical }}>
@@ -96,18 +159,18 @@ const propertyKeys = Object.keys((data.properties || {}) as Record<string, unkno
     }
 
     {showDebug && (
-      <details class="mt-6 rounded-lg border bg-white/50 dark:bg-gray-900/40">
+      <details class="mt-6 rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-gray-50/60 dark:bg-gray-800/40">
         <summary class="px-3 py-2 text-sm font-medium cursor-pointer select-none">Debug: Notion Properties</summary>
         <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
-          <p class="mb-2 opacity-80">Flat data (selected keys):</p>
-          <pre class="overflow-x-auto p-3 rounded-md bg-black/5 dark:bg-white/5">
+          <p class="mb-2 text-gray-700 dark:text-gray-300">Flat data (flattened values):</p>
+          <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
 {JSON.stringify(flatDataForDebug, null, 2)}
           </pre>
           {propertyKeys.length > 0 && (
             <div class="mt-4">
-              <p class="mb-2 opacity-80">Raw Notion properties:</p>
-              <pre class="overflow-x-auto p-3 rounded-md bg-black/5 dark:bg-white/5">
-{JSON.stringify((data as any).properties, null, 2)}
+              <p class="mb-2 text-gray-700 dark:text-gray-300">Raw Notion properties:</p>
+              <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
+{JSON.stringify(rawPropsForDebug, null, 2)}
               </pre>
             </div>
           )}

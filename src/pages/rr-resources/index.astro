@@ -1,15 +1,17 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import { getCollection } from 'astro:content';
+import { getLiveCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
 import { getNotionEntryTitle } from '~/utils/notion';
 
-interface RRItem {
-  id: string;
-  data: unknown;
-}
-const getCollectionAny = getCollection as unknown as (name: string) => Promise<RRItem[]>;
-const items = await getCollectionAny('rrresources');
+type RRData = {
+  Name?: string;
+  Type?: string[];
+  Category?: string[];
+  flat?: Record<string, unknown>;
+};
+const live = await getLiveCollection('rrresources' as any);
+const items = ((live as any).data ?? []) as Array<{ id: string; data: RRData }>;
 
 const title = 'RR Resources';
 const description = 'Curated resources from the Notion database';
@@ -26,8 +28,8 @@ const description = 'Curated resources from the Notion database';
       ) : (
         <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {items.map(entry => {
-            const data = (entry.data ?? {}) as { Type?: string[]; Category?: string[] };
-            const titleText = getNotionEntryTitle(entry);
+            const data = (entry.data ?? {}) as RRData;
+            const titleText = data.Name ?? getNotionEntryTitle(entry as any);
             const slug = cleanSlug(titleText);
             const href = getPermalink(`/rr-resources/${slug}`, 'post');
             const type = Array.isArray(data.Type) ? data.Type[0] : undefined;
