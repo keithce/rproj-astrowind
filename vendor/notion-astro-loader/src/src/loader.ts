@@ -211,6 +211,20 @@ export function notionLoader({
                   filePath: `${VIRTUAL_CONTENT_ROOT}/${page.id}.md`, // 不重要，有就行
                   assetImports: rendered?.metadata.imagePaths,
                 });
+                if (process?.env?.NOTION_TRACE === '1') {
+                  const propKeys = Object.keys((data as any)?.data?.properties ?? {});
+                  const titleSample = (data as any)?.data?.properties?.Name;
+                  const renderedLen = rendered?.html?.length ?? 0;
+                  log_pg.debug(
+                    `TRACE page saved id=${page.id.slice(0,6)} props=${propKeys.length} keys=[${propKeys.slice(0,8).join(', ')}${propKeys.length>8?', ...':''}] htmlLen=${renderedLen}`
+                  );
+                  if (titleSample) {
+                    try {
+                      const titleText = (titleSample as any).title?.map((t: any)=> t?.plain_text || '').join('');
+                      log_pg.debug(`TRACE titleFromProperties="${titleText}"`);
+                    } catch {}
+                  }
+                }
                 break;
               } catch (e: any) {
                 const msg = String(e?.message || e);

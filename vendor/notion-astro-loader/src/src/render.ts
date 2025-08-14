@@ -14,7 +14,7 @@ import { type VFile } from 'vfile';
 import { isFullBlock, iteratePaginatedAPI, type Client } from '@notionhq/client';
 import { dim } from 'kleur/colors';
 
-import { fileToUrl } from './format.js';
+import { fileToUrl, richTextToPlainText, dateToDateObjects } from './format.js';
 import { saveImageFromAWS, transformImagePathForCover } from './image.js';
 import { rehypeImages } from './rehype/rehype-images.js';
 import { rehypeEnsureProps } from './rehype/rehype-ensure-props.js';
@@ -25,10 +25,10 @@ import type { FileObject, NotionPageData, PageObjectResponse } from './types.js'
 
 // Base plugins used after sanitization. We intentionally build the processor
 // in buildProcessor so that sanitization happens BEFORE other plugins like KaTeX.
+// Note: rehype-katex expects element.properties to always exist; ensure our
+// props normalizer runs BEFORE it (done below) and run katex AFTER clean/text/images.
 const baseAfterSanitizePlugins: [RehypePlugin, any?][] = [
   [rehypeSlug, undefined],
-  // @ts-ignore
-  [rehypeKatex, undefined],
   [rehypeStringify, undefined],
 ];
 
@@ -61,18 +61,36 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
       chain = (chain as any).use(plugin as any, options as any);
     }
 
+    // Clean text artifacts and fix hrefs (ensures stable text before katex)
+    chain = (chain as any).use(rehypeCleanText() as any);
+
+    // Handle images before katex/stringify
+    chain = (chain as any).use(rehypeImages() as any, { imagePaths } as any);
+
+    // Ensure props again in case upstream plugins introduced new elements
+    chain = (chain as any).use(rehypeEnsureProps() as any);
+
+    // Optionally apply KaTeX once structure is normalized and props exist
+    if (globalThis?.process?.env?.NOTION_KATEX === '1') {
+      // @ts-ignore
+      chain = (chain as any).use(rehypeKatex as any);
+    }
+
     // Our base plugins after sanitize
     for (const [plugin, options] of baseAfterSanitizePlugins) {
       chain = (chain as any).use(plugin as any, options as any);
     }
 
-    // Clean text artifacts and fix hrefs
-    chain = (chain as any).use(rehypeCleanText() as any);
-
-    // Handle images just before stringify
-    chain = (chain as any).use(rehypeImages() as any, { imagePaths } as any);
-
     const vFile = (await chain.process({ data: blocks } as unknown as Record<string, unknown>)) as VFile;
+    if (globalThis?.process?.env?.NOTION_TRACE === '1') {
+      try {
+        const output = String(vFile);
+        const head = output.slice(0, 200).replace(/\s+/g, ' ');
+        const tail = output.slice(-200).replace(/\s+/g, ' ');
+        // eslint-disable-next-line no-console
+        console.debug(`[notion-trace] render htmlLen=${output.length} head="${head}" tail="${tail}"`);
+      } catch {}
+    }
     return { vFile, headings };
   };
 }
@@ -188,6 +206,77 @@ export class NotionPageRenderer {
         },
       };
     }
+    // Transform Notion raw properties to simple values and also expose them at top-level for convenience
+    const transformed: Record<string, unknown> = {};
+    try {
+      for (const [propName, prop] of Object.entries(page.properties as Record<string, any>)) {
+        const t = (prop as any)?.type;
+        let value: unknown = undefined;
+        switch (t) {
+          case 'number':
+            value = prop.number;
+            break;
+          case 'url':
+            try {
+              const u = prop.url ?? undefined;
+              if (typeof u === 'string' && u.trim().length > 0) {
+                // Accept only valid URL strings to satisfy strict schemas
+                // If invalid, drop to undefined to avoid breaking sync
+                new URL(u);
+                value = u;
+              } else {
+                value = undefined;
+              }
+            } catch {
+              value = undefined;
+            }
+            break;
+          case 'email':
+            value = prop.email ?? undefined;
+            break;
+          case 'phone_number':
+            value = prop.phone_number ?? undefined;
+            break;
+          case 'checkbox':
+            value = prop.checkbox;
+            break;
+          case 'select':
+            value = prop.select?.name ?? null;
+            break;
+          case 'multi_select':
+            value = Array.isArray(prop.multi_select) ? prop.multi_select.map((o: any) => o?.name).filter(Boolean) : [];
+            break;
+          case 'status':
+            value = prop.status?.name ?? null;
+            break;
+          case 'title':
+            value = richTextToPlainText(prop.title as ReadonlyArray<{ plain_text?: string }>);
+            break;
+          case 'rich_text':
+            value = richTextToPlainText(prop.rich_text as ReadonlyArray<{ plain_text?: string }>);
+            break;
+          case 'date':
+            // Provide a simple scalar for schemas expecting string/date
+            value = (prop.date?.start as string | undefined) ?? undefined;
+            break;
+          case 'created_time':
+            value = new Date(prop.created_time);
+            break;
+          case 'last_edited_time':
+            // Keep as ISO string to satisfy zod union (string | date)
+            value = prop.last_edited_time as string;
+            break;
+          default:
+            // Pass-through for unhandled types (files, people, relation, etc.)
+            value = prop;
+        }
+        // Only assign present, non-null values. Optional schema fields should be omitted when empty.
+        if (value !== null && value !== undefined) {
+          transformed[propName] = value;
+        }
+      }
+    } catch {}
+
     return {
       id: page.id,
       data: {
@@ -198,6 +287,10 @@ export class NotionPageRenderer {
         url: page.url,
         public_url: page.public_url,
         properties: page.properties,
+        // flatten for direct access (e.g., data.Name, data.Tags)
+        ...transformed,
+        // also provide a dedicated map of flattened values for all properties
+        flat: transformed as unknown as Record<string, unknown>,
       },
     };
   }

@@ -1,6 +1,5 @@
 ---
-import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
-import type { CollectionEntry } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
 import Layout from '~/layouts/PageLayout.astro';
 import { getCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
@@ -8,9 +7,24 @@ import { getNotionEntryTitle } from '~/utils/notion';
 
 export const prerender = true;
 
+// Local, minimal types to keep lint/type errors away while staying descriptive
+type RRData = {
+  Name?: string;
+  Source?: string;
+  Tags?: string[];
+  Type?: string[];
+  Category?: string[];
+  Keywords?: string[];
+  'AI summary'?: string;
+  properties?: Record<string, unknown>;
+  flat?: Record<string, unknown>;
+};
+type RREntry = { id: string; data: RRData } & Record<string, unknown>;
+
 export const getStaticPaths = (async () => {
-  const entries = await getCollection<'rrresources'>('rrresources');
-  return entries.map((entry: CollectionEntry<'rrresources'>) => {
+  const getCollectionLoose = getCollection as unknown as (c: string) => Promise<RREntry[]>;
+  const entries = await getCollectionLoose('rrresources');
+  return entries.map((entry: RREntry) => {
     const name = getNotionEntryTitle(entry);
     const slug = cleanSlug(name);
     return {
@@ -21,25 +35,39 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 // Properly typed props using the generic type
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+type Props = { entry: RREntry };
 type RRRendered = { rendered?: { html?: string } };
 const { entry } = Astro.props as Props;
-const data = entry.data;
+const data = entry.data as RRData;
 const title = data.Name || getNotionEntryTitle(entry) || 'Resource';
 const description = data['AI summary'] || data.Source || '';
 // Use the actual route slug parameter for canonical URL, fallback to sanitized title if needed
 const routeSlug = Astro.params.slug;
 const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`, 'post');
+
+if (Astro.props && process.env.NOTION_TRACE === '1') {
+  const keys = Object.keys((data as Record<string, unknown>) || {});
+  // eslint-disable-next-line no-console
+  console.debug('[rrresources:slug] id=', entry.id, 'keys=', keys);
+}
+
+// Debug toggles: show property dump in non-production or when NOTION_TRACE=1
+const showDebug = (process?.env?.NOTION_TRACE === '1') || import.meta.env.MODE !== 'production';
+const flatDataForDebug = (data.flat as Record<string, unknown> | undefined) ?? (() => {
+  const { properties: _props, ...rest } = (data as Record<string, unknown>) || {};
+  return rest;
+})();
+const propertyKeys = Object.keys((data.properties || {}) as Record<string, unknown>);
 ---
 
 <Layout metadata={{ title, description, canonical }}>
-  <article class="prose prose-gray dark:prose-invert container mx-auto max-w-3xl px-4 py-8">
+  <article class="container px-4 py-8 mx-auto max-w-3xl prose prose-gray dark:prose-invert">
     <h1 class="mb-4">{title}</h1>
 
     {
       data['AI summary'] && (
-        <details class="mb-6 rounded-lg border bg-white/60 p-4 dark:bg-gray-900/60">
-          <summary class="cursor-pointer text-base font-semibold select-none">AI summary</summary>
+        <details class="p-4 mb-6 rounded-lg border bg-white/60 dark:bg-gray-900/60">
+          <summary class="text-base font-semibold cursor-pointer select-none">AI summary</summary>
           <div class="mt-3 text-base leading-relaxed">{data['AI summary']}</div>
         </details>
       )
@@ -67,6 +95,26 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
       )
     }
 
+    {showDebug && (
+      <details class="mt-6 rounded-lg border bg-white/50 dark:bg-gray-900/40">
+        <summary class="px-3 py-2 text-sm font-medium cursor-pointer select-none">Debug: Notion Properties</summary>
+        <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
+          <p class="mb-2 opacity-80">Flat data (selected keys):</p>
+          <pre class="overflow-x-auto p-3 rounded-md bg-black/5 dark:bg-white/5">
+{JSON.stringify(flatDataForDebug, null, 2)}
+          </pre>
+          {propertyKeys.length > 0 && (
+            <div class="mt-4">
+              <p class="mb-2 opacity-80">Raw Notion properties:</p>
+              <pre class="overflow-x-auto p-3 rounded-md bg-black/5 dark:bg-white/5">
+{JSON.stringify((data as any).properties, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      </details>
+    )}
+
     <footer class="mt-10 space-y-4">
       {
         data.Source && (
@@ -88,7 +136,7 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
         data.Keywords?.length && (
           <div class="flex flex-wrap gap-2">
             {data.Keywords.map((kw: string) => (
-              <span class="bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-100 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
+              <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-100">
                 {kw}
               </span>
             ))}
@@ -100,12 +148,12 @@ const canonical = getPermalink(`/rr-resources/${routeSlug || cleanSlug(title)}`,
     {/* Render Notion page HTML content */}
     {
       (() => {
-        const renderedHtml = (entry as RRRendered).rendered?.html;
-        return renderedHtml ? <div class="notion-content mt-10" set:html={renderedHtml} /> : null;
+        const renderedHtml = (entry as unknown as RRRendered).rendered?.html;
+        return renderedHtml ? <div class="mt-10 notion-content" set:html={renderedHtml} /> : null;
       })()
     }
     <div id="debug-rendered-present" style="display:none">
-      {(entry as RRRendered).rendered ? '1' : '0'}
+      {(entry as unknown as RRRendered).rendered ? '1' : '0'}
     </div>
   </article>
 </Layout>

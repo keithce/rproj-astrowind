@@ -33,6 +33,10 @@ const description = 'Curated resources from the Notion database';
             const type = Array.isArray(data.Type) ? data.Type[0] : undefined;
             const category = Array.isArray(data.Category) ? data.Category[0] : undefined;
 
+            if (process.env.NOTION_TRACE === '1') {
+              try { console.debug('[rrresources:index] entry=', (entry as any).id, 'title=', titleText); } catch {}
+            }
+
             return (
               <li class="rounded-lg border bg-white p-4 dark:bg-gray-900">
                 <a href={href} class="text-lg font-semibold hover:underline">

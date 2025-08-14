@@ -1,33 +1,40 @@
-import { visitParents } from 'unist-util-visit-parents';
-
 // Clean up common escaping artifacts in text nodes and normalize <a href> URLs.
-// - Decodes anchor hrefs with decodeURI
-// - Removes stray backslashes that precede punctuation/symbols in visible text
-//   outside of <code>/<pre> blocks
+// Implemented with a manual traversal to avoid visitor assumptions about children.
 export function rehypeCleanText() {
   return function (tree: any) {
-    visitParents(tree, (node: any, ancestors: any[]) => {
-      if (!node || typeof node !== 'object') return;
+    type StackItem = { node: any; inCode: boolean };
+    const stack: StackItem[] = [];
+    if (tree && typeof tree === 'object') {
+      stack.push({ node: tree, inCode: false });
+    }
+
+    while (stack.length > 0) {
+      const { node, inCode } = stack.pop() as StackItem;
+      if (!node || typeof node !== 'object') continue;
+
+      const isElement = node.type === 'element';
+      const tag = isElement ? node.tagName : undefined;
+      const nextInCode = inCode || (isElement && (tag === 'code' || tag === 'pre'));
 
       // Normalize anchor hrefs
-      if (node.type === 'element' && node.tagName === 'a' && node.properties?.href) {
+      if (isElement && tag === 'a' && node.properties?.href) {
         try {
           node.properties.href = decodeURI(String(node.properties.href));
         } catch {}
       }
 
-      // Clean text nodes not inside <code> or <pre>
-      if (node.type === 'text' && typeof node.value === 'string') {
-        const inCode = ancestors.some(
-          (a) => a?.type === 'element' && (a.tagName === 'code' || a.tagName === 'pre')
-        );
-        if (!inCode) {
-          // Remove a single escaping backslash before common punctuation/symbols
-          node.value = node.value.replace(/\\([()\[\]{}'";:,.!?|`~<>#\-])/g, '$1');
-          // Collapse doubled spaces introduced during transformations
-          node.value = node.value.replace(/\s{2,}/g, ' ');
+      // Clean visible text
+      if (node.type === 'text' && typeof node.value === 'string' && !nextInCode) {
+        node.value = node.value.replace(/\\([()\[\]{}'";:,.!?|`~<>#\-])/g, '$1');
+        node.value = node.value.replace(/\s{2,}/g, ' ');
+      }
+
+      const children = Array.isArray(node.children) ? node.children : [];
+      for (const child of children) {
+        if (child && typeof child === 'object') {
+          stack.push({ node: child, inCode: Boolean(nextInCode) });
         }
       }
-    });
+    }
   };
 }

@@ -21,6 +21,12 @@ export type RichTextItemResponse = Extract<PageProperty, { type: 'rich_text' }>[
 export type NotionPageData = Pick<
   PageObjectResponse,
   'icon' | 'cover' | 'archived' | 'in_trash' | 'url' | 'public_url' | 'properties'
->;
+> & {
+  /**
+   * Flattened values for every Notion property, already converted to easy-to-use primitives.
+   * Example: { Name: 'My Title', Tags: ['A','B'], Source: 'https://...'}
+   */
+  flat?: Record<string, unknown>;
+};
 
 export type FileObject = { type: 'external'; external: { url: string } } | { type: 'file'; file: { url: string } };
