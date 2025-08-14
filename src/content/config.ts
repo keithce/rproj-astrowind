@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 // Use vendored loader source so we can modify locally
-import { notionLoader } from '../../vendor/notion-astro-loader/src/src';
+import { notionLoader } from '../../vendor/notion-astro-loader/src';
 import { glob } from 'astro/loaders';
 
 // Shared metadataDefinition for collections
