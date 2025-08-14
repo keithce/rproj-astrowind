@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 // Use vendored loader source so we can modify locally
 import { notionLoader } from '../../vendor/notion-astro-loader/src';
+import type { Loader } from 'astro/loaders';
 import { glob } from 'astro/loaders';
 
 // Shared metadataDefinition for collections
@@ -86,15 +87,33 @@ export const collections = {
   post: postCollection,
   til: tilCollection,
   rrresources: defineCollection({
-    loader: notionLoader({
-      auth: import.meta.env.NOTION_TOKEN,
-      database_id: import.meta.env.NOTION_RR_RESOURCES_ID,
-      imageSavePath: 'assets/images/notion',
-      filter: {
-        property: 'Status',
-        status: { equals: 'Up-to-Date' },
-      },
-    }),
+    loader: (() => {
+      const token = import.meta.env.NOTION_TOKEN;
+      const db = import.meta.env.NOTION_RR_RESOURCES_ID;
+      if (!token || !db) {
+        // Gracefully no-op when secrets are absent (CI/docs preview)
+        const emptyLoader: Loader = {
+          name: 'notion-loader/disabled',
+          async schema() {
+            return z.object({}).optional();
+          },
+          async load(ctx) {
+            // ensure store cleared to avoid stale content
+            for (const id of ctx.store.keys()) ctx.store.delete(id);
+          },
+        };
+        return emptyLoader;
+      }
+      return notionLoader({
+        auth: token,
+        database_id: db,
+        imageSavePath: 'assets/images/notion',
+        filter: {
+          property: 'Status',
+          status: { equals: 'Up-to-Date' },
+        },
+      });
+    })(),
     // Schema: start from Notion property types; refine as needed
     schema: () =>
       z.object({
