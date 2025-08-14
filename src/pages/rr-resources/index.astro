@@ -1,6 +1,6 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import { getLiveCollection } from 'astro:content';
+import { getLiveCollection, getCollection } from 'astro:content';
 import { cleanSlug, getPermalink } from '~/utils/permalinks';
 import { getNotionEntryTitle } from '~/utils/notion';
 
@@ -10,8 +10,29 @@ type RRData = {
   Category?: string[];
   flat?: Record<string, unknown>;
 };
-const live = await getLiveCollection('rrresources' as any);
-const items = ((live as any).data ?? []) as Array<{ id: string; data: RRData }>;
+type RREntry = { id: string; data: RRData };
+async function fetchItems(): Promise<RREntry[]> {
+  try {
+    // Prefer stable content first
+    const getCollectionLoose = getCollection as unknown as (c: string) => Promise<RREntry[]>;
+    const coll = await getCollectionLoose('rrresources');
+    if (Array.isArray(coll) && coll.length > 0) return coll;
+  } catch {
+    // ignore
+  }
+  try {
+    const live = (await getLiveCollection('rrresources' as unknown as string)) as unknown as {
+      data?: RREntry[];
+    };
+    return Array.isArray(live?.data) ? (live!.data as RREntry[]) : [];
+  } catch {
+    return [] as RREntry[];
+  }
+}
+
+const items = await fetchItems();
+
+// (optional) trace removed to satisfy linter
 
 const title = 'RR Resources';
 const description = 'Curated resources from the Notion database';
@@ -20,27 +41,25 @@ const description = 'Curated resources from the Notion database';
 ---
 
 <Layout metadata={{ title, description }}>
-  <section class="container mx-auto px-4 py-8">
+  <section class="container px-4 py-8 mx-auto">
     <h1 class="mb-6 text-3xl font-bold">{title}</h1>
     {
       items.length === 0 ? (
         <p>No resources found.</p>
       ) : (
         <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {items.map(entry => {
-            const data = (entry.data ?? {}) as RRData;
-            const titleText = data.Name ?? getNotionEntryTitle(entry as any);
+          {items.map((entry: RREntry) => {
+            const data: RRData = (entry.data ?? {}) as RRData;
+            const titleText = data.Name ?? getNotionEntryTitle({ id: entry.id, data: entry.data } as unknown as { id: string; data: unknown });
             const slug = cleanSlug(titleText);
             const href = getPermalink(`/rr-resources/${slug}`, 'post');
             const type = Array.isArray(data.Type) ? data.Type[0] : undefined;
             const category = Array.isArray(data.Category) ? data.Category[0] : undefined;
 
-            if (process.env.NOTION_TRACE === '1') {
-              try { console.debug('[rrresources:index] entry=', (entry as any).id, 'title=', titleText); } catch {}
-            }
+            // optional trace removed for lint cleanliness
 
             return (
-              <li class="rounded-lg border bg-white p-4 dark:bg-gray-900">
+              <li class="p-4 bg-white rounded-lg border dark:bg-gray-900">
                 <a href={href} class="text-lg font-semibold hover:underline">
                   {titleText}
                 </a>

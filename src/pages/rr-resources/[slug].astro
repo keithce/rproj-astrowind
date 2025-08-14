@@ -50,46 +50,56 @@ function flattenProperties(props: Record<string, NotionProp> | undefined): Recor
     let value: unknown;
     switch (t) {
       case 'number':
-        value = prop.number; break;
+        value = prop.number;
+        break;
       case 'url':
-        value = typeof prop.url === 'string' && prop.url.trim() ? prop.url : undefined; break;
+        value = typeof prop.url === 'string' && prop.url.trim() ? prop.url : undefined;
+        break;
       case 'email':
-        value = prop.email ?? undefined; break;
+        value = prop.email ?? undefined;
+        break;
       case 'phone_number':
-        value = prop.phone_number ?? undefined; break;
+        value = prop.phone_number ?? undefined;
+        break;
       case 'checkbox':
-        value = prop.checkbox; break;
+        value = prop.checkbox;
+        break;
       case 'select':
-        value = (prop as { select?: { name?: string } }).select?.name ?? null; break;
+        value = (prop as { select?: { name?: string } }).select?.name ?? null;
+        break;
       case 'multi_select':
         value = Array.isArray((prop as { multi_select?: Array<{ name?: string }> }).multi_select)
           ? ((prop as { multi_select?: Array<{ name?: string }> }).multi_select || [])
-              .map((o) => o?.name)
+              .map(o => o?.name)
               .filter(Boolean)
           : [];
         break;
       case 'status':
-        value = (prop as { status?: { name?: string } }).status?.name ?? null; break;
+        value = (prop as { status?: { name?: string } }).status?.name ?? null;
+        break;
       case 'title':
         value = Array.isArray((prop as { title?: Array<{ plain_text?: string }> }).title)
           ? ((prop as { title?: Array<{ plain_text?: string }> }).title || [])
-              .map((rt) => rt?.plain_text || '')
+              .map(rt => rt?.plain_text || '')
               .join('')
           : '';
         break;
       case 'rich_text':
         value = Array.isArray((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text)
           ? ((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text || [])
-              .map((rt) => rt?.plain_text || '')
+              .map(rt => rt?.plain_text || '')
               .join('')
           : '';
         break;
       case 'date':
-        value = (prop as { date?: { start?: string } }).date?.start ?? undefined; break;
+        value = (prop as { date?: { start?: string } }).date?.start ?? undefined;
+        break;
       case 'created_time':
-        value = prop.created_time ?? undefined; break;
+        value = prop.created_time ?? undefined;
+        break;
       case 'last_edited_time':
-        value = prop.last_edited_time ?? undefined; break;
+        value = prop.last_edited_time ?? undefined;
+        break;
       default:
         value = prop;
     }
@@ -111,16 +121,43 @@ if (Astro.props && process.env.NOTION_TRACE === '1') {
 }
 
 // Debug toggles: show property dump in non-production or when NOTION_TRACE=1
-const showDebug = (process?.env?.NOTION_TRACE === '1') || import.meta.env.MODE !== 'production';
-const flatDataForDebug = (data.flat as Record<string, unknown> | undefined)
-  ?? flattenProperties(data.properties as Record<string, NotionProp> | undefined)
-  ?? ((() => {
+const showDebug = process?.env?.NOTION_TRACE === '1' || import.meta.env.MODE !== 'production';
+const flatDataForDebug =
+  (data.flat as Record<string, unknown> | undefined) ??
+  flattenProperties(data.properties as Record<string, NotionProp> | undefined) ??
+  (() => {
     const rest: Record<string, unknown> = { ...(data as Record<string, unknown>) };
     delete (rest as Record<string, unknown>).properties;
     return rest;
-  })());
+  })();
 const propertyKeys = Object.keys((data.properties || {}) as Record<string, unknown>);
-const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<string, unknown>;
+const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<
+  string,
+  unknown
+>;
+
+// Normalize commonly displayed fields using top-level, flat, or property fallback
+const flat = flatDataForDebug as Record<string, unknown>;
+const aiSummary =
+  (data['AI summary'] as string | undefined) ?? (flat?.['AI summary'] as string | undefined);
+const types = Array.isArray(data.Type)
+  ? data.Type
+  : Array.isArray(flat?.['Type'])
+    ? (flat['Type'] as string[])
+    : [];
+const categories = Array.isArray(data.Category)
+  ? data.Category
+  : Array.isArray(flat?.['Category'])
+    ? (flat['Category'] as string[])
+    : [];
+const tags = Array.isArray((data as { Tags?: string[] }).Tags)
+  ? ((data as { Tags?: string[] }).Tags as string[])
+  : Array.isArray(flat?.['Tags'])
+    ? (flat['Tags'] as string[])
+    : [];
+const sourceUrl =
+  (data.Source as string | undefined) ??
+  (typeof flat?.['Source'] === 'string' ? (flat['Source'] as string) : undefined);
 ---
 
 <Layout metadata={{ title, description, canonical }}>
@@ -128,68 +165,83 @@ const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Rec
     <h1 class="mb-4">{title}</h1>
 
     {
-      data['AI summary'] && (
+      aiSummary && (
         <details class="p-4 mb-6 rounded-lg border bg-white/60 dark:bg-gray-900/60">
           <summary class="text-base font-semibold cursor-pointer select-none">AI summary</summary>
-          <div class="mt-3 text-base leading-relaxed">{data['AI summary']}</div>
+          <div class="mt-3 text-base leading-relaxed">{aiSummary}</div>
         </details>
       )
     }
 
     {
-      data.Type?.length && (
-        <p class="mt-4 text-sm">
-          <strong>Type:</strong> {data.Type.join(', ')}
-        </p>
-      )
-    }
-    {
-      data.Category?.length && (
-        <p class="mt-2 text-sm">
-          <strong>Category:</strong> {data.Category.join(', ')}
-        </p>
-      )
-    }
-    {
-      data.Tags?.length && (
-        <p class="mt-2 text-sm">
-          <strong>Tags:</strong> {data.Tags.join(', ')}
-        </p>
+      showDebug && (
+        <details class="mt-6 rounded-lg border border-gray-200/60 bg-gray-50/60 dark:border-gray-700/60 dark:bg-gray-800/40">
+          <summary class="px-3 py-2 text-sm font-medium cursor-pointer select-none">
+            Debug: Notion Properties
+          </summary>
+          <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
+            <p class="mb-2 text-gray-700 dark:text-gray-300">Flat data (flattened values):</p>
+            <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
+              {JSON.stringify(flatDataForDebug, null, 2)}
+            </pre>
+            {propertyKeys.length > 0 && (
+              <div class="mt-4">
+                <p class="mb-2 text-gray-700 dark:text-gray-300">Raw Notion properties:</p>
+                <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
+                  {JSON.stringify(rawPropsForDebug, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </details>
       )
     }
 
-    {showDebug && (
-      <details class="mt-6 rounded-lg border border-gray-200/60 dark:border-gray-700/60 bg-gray-50/60 dark:bg-gray-800/40">
-        <summary class="px-3 py-2 text-sm font-medium cursor-pointer select-none">Debug: Notion Properties</summary>
-        <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
-          <p class="mb-2 text-gray-700 dark:text-gray-300">Flat data (flattened values):</p>
-          <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
-{JSON.stringify(flatDataForDebug, null, 2)}
-          </pre>
-          {propertyKeys.length > 0 && (
-            <div class="mt-4">
-              <p class="mb-2 text-gray-700 dark:text-gray-300">Raw Notion properties:</p>
-              <pre class="overflow-x-auto p-3 text-gray-900 bg-gray-100 rounded-md dark:bg-gray-900 dark:text-gray-100">
-{JSON.stringify(rawPropsForDebug, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
-      </details>
-    )}
+    {/* Render Notion page HTML content */}
+    {
+      (() => {
+        const renderedHtml = (entry as unknown as RRRendered).rendered?.html;
+        return renderedHtml ? <div class="mt-10 notion-content" set:html={renderedHtml} /> : null;
+      })()
+    }
+    <div id="debug-rendered-present" style="display:none">
+      {(entry as unknown as RRRendered).rendered ? '1' : '0'}
+    </div>
 
     <footer class="mt-10 space-y-4">
       {
-        data.Source && (
+        types.length > 0 && (
+          <p class="mt-4 text-sm">
+            <strong>Type:</strong> {types.join(', ')}
+          </p>
+        )
+      }
+      {
+        categories.length > 0 && (
+          <p class="mt-2 text-sm">
+            <strong>Category:</strong> {categories.join(', ')}
+          </p>
+        )
+      }
+      {
+        tags.length > 0 && (
+          <p class="mt-2 text-sm">
+            <strong>Tags:</strong> {tags.join(', ')}
+          </p>
+        )
+      }
+
+      {
+        sourceUrl && (
           <p class="text-sm">
             <strong>Source:</strong>{' '}
             <a
               class="underline underline-offset-2"
-              href={data.Source}
+              href={sourceUrl}
               rel="noopener noreferrer"
               target="_blank"
             >
-              {data.Source}
+              {sourceUrl}
             </a>
           </p>
         )
@@ -207,16 +259,5 @@ const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Rec
         )
       }
     </footer>
-
-    {/* Render Notion page HTML content */}
-    {
-      (() => {
-        const renderedHtml = (entry as unknown as RRRendered).rendered?.html;
-        return renderedHtml ? <div class="mt-10 notion-content" set:html={renderedHtml} /> : null;
-      })()
-    }
-    <div id="debug-rendered-present" style="display:none">
-      {(entry as unknown as RRRendered).rendered ? '1' : '0'}
-    </div>
   </article>
 </Layout>
