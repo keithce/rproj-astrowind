@@ -69,9 +69,7 @@ function flattenProperties(props: Record<string, NotionProp> | undefined): Recor
         break;
       case 'multi_select':
         value = Array.isArray((prop as { multi_select?: Array<{ name?: string }> }).multi_select)
-          ? ((prop as { multi_select?: Array<{ name?: string }> }).multi_select || [])
-              .map(o => o?.name)
-              .filter(Boolean)
+          ? ((prop as { multi_select?: Array<{ name?: string }> }).multi_select || []).map(o => o?.name).filter(Boolean)
           : [];
         break;
       case 'status':
@@ -79,9 +77,7 @@ function flattenProperties(props: Record<string, NotionProp> | undefined): Recor
         break;
       case 'title':
         value = Array.isArray((prop as { title?: Array<{ plain_text?: string }> }).title)
-          ? ((prop as { title?: Array<{ plain_text?: string }> }).title || [])
-              .map(rt => rt?.plain_text || '')
-              .join('')
+          ? ((prop as { title?: Array<{ plain_text?: string }> }).title || []).map(rt => rt?.plain_text || '').join('')
           : '';
         break;
       case 'rich_text':
@@ -131,20 +127,12 @@ const flatDataForDebug =
     return rest;
   })();
 const propertyKeys = Object.keys((data.properties || {}) as Record<string, unknown>);
-const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<
-  string,
-  unknown
->;
+const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<string, unknown>;
 
 // Normalize commonly displayed fields using top-level, flat, or property fallback
 const flat = flatDataForDebug as Record<string, unknown>;
-const aiSummary =
-  (data['AI summary'] as string | undefined) ?? (flat?.['AI summary'] as string | undefined);
-const types = Array.isArray(data.Type)
-  ? data.Type
-  : Array.isArray(flat?.['Type'])
-    ? (flat['Type'] as string[])
-    : [];
+const aiSummary = (data['AI summary'] as string | undefined) ?? (flat?.['AI summary'] as string | undefined);
+const types = Array.isArray(data.Type) ? data.Type : Array.isArray(flat?.['Type']) ? (flat['Type'] as string[]) : [];
 const categories = Array.isArray(data.Category)
   ? data.Category
   : Array.isArray(flat?.['Category'])
@@ -176,9 +164,7 @@ const sourceUrl =
     {
       showDebug && (
         <details class="mt-6 rounded-lg border border-gray-200/60 bg-gray-50/60 dark:border-gray-700/60 dark:bg-gray-800/40">
-          <summary class="cursor-pointer px-3 py-2 text-sm font-medium select-none">
-            Debug: Notion Properties
-          </summary>
+          <summary class="cursor-pointer px-3 py-2 text-sm font-medium select-none">Debug: Notion Properties</summary>
           <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
             <p class="mb-2 text-gray-700 dark:text-gray-300">Flat data (flattened values):</p>
             <pre class="overflow-x-auto rounded-md bg-gray-100 p-3 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
@@ -235,12 +221,7 @@ const sourceUrl =
         sourceUrl && (
           <p class="text-sm">
             <strong>Source:</strong>{' '}
-            <a
-              class="underline underline-offset-2"
-              href={sourceUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a class="underline underline-offset-2" href={sourceUrl} rel="noopener noreferrer" target="_blank">
               {sourceUrl}
             </a>
           </p>

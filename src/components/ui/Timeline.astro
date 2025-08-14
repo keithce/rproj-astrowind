@@ -52,11 +52,7 @@ const {
             )}
             {description && (
               <p
-                class={twMerge(
-                  'text-muted-foreground mt-2',
-                  descriptionClass,
-                  itemClasses?.description
-                )}
+                class={twMerge('text-muted-foreground mt-2', descriptionClass, itemClasses?.description)}
                 set:html={description}
               />
             )}

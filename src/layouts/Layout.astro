@@ -419,13 +419,11 @@ const { language, textDirection } = I18N;
           container.setAttribute('data-active-nested', 'true');
 
           // Clear other active nested containers
-          document
-            .querySelectorAll('[data-nested-interactive][data-active-nested="true"]')
-            .forEach(el => {
-              if (el !== container) {
-                el.removeAttribute('data-active-nested');
-              }
-            });
+          document.querySelectorAll('[data-nested-interactive][data-active-nested="true"]').forEach(el => {
+            if (el !== container) {
+              el.removeAttribute('data-active-nested');
+            }
+          });
         }
 
         /**

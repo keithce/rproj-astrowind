@@ -36,9 +36,7 @@ const { title, subtitle, description, backgroundImage, className = '' } = Astro.
         {title}
       </h2>
 
-      <p
-        class="mx-auto max-w-3xl text-lg leading-relaxed text-[var(--aw-color-text-muted)] sm:text-xl"
-      >
+      <p class="mx-auto max-w-3xl text-lg leading-relaxed text-[var(--aw-color-text-muted)] sm:text-xl">
         {description}
       </p>
     </div>
@@ -47,19 +45,11 @@ const { title, subtitle, description, backgroundImage, className = '' } = Astro.
 
 <style>
   .category-hero {
-    background: linear-gradient(
-      135deg,
-      var(--aw-color-bg-page) 0%,
-      var(--aw-color-accent) / 10 100%
-    );
+    background: linear-gradient(135deg, var(--aw-color-bg-page) 0%, var(--aw-color-accent) / 10 100%);
   }
 
   .dark .category-hero {
-    background: linear-gradient(
-      135deg,
-      var(--aw-color-bg-page-dark) 0%,
-      var(--aw-color-secondary) / 20 100%
-    );
+    background: linear-gradient(135deg, var(--aw-color-bg-page-dark) 0%, var(--aw-color-secondary) / 20 100%);
   }
 
   @media (max-width: 768px) {

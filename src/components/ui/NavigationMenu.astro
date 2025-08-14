@@ -19,12 +19,7 @@ export interface Props {
   showChevrons?: boolean;
 }
 
-const {
-  links = [],
-  className = '',
-  orientation = 'horizontal',
-  showChevrons = true,
-} = Astro.props as Props;
+const { links = [], className = '', orientation = 'horizontal', showChevrons = true } = Astro.props as Props;
 
 const currentPath = new URL(Astro.url).pathname;
 ---
@@ -36,16 +31,9 @@ const currentPath = new URL(Astro.url).pathname;
         <li class={`nav-item ${link.links?.length ? 'nav-item--dropdown' : ''}`}>
           {link.links?.length ? (
             <>
-              <button
-                type="button"
-                class="nav-link nav-link--dropdown"
-                aria-expanded="false"
-                aria-haspopup="true"
-              >
+              <button type="button" class="nav-link nav-link--dropdown" aria-expanded="false" aria-haspopup="true">
                 <span class="nav-link-text">{link.text}</span>
-                {showChevrons && (
-                  <Icon name="tabler:chevron-down" class="nav-chevron" aria-hidden="true" />
-                )}
+                {showChevrons && <Icon name="tabler:chevron-down" class="nav-chevron" aria-hidden="true" />}
               </button>
               <ul class="dropdown-menu" role="menu">
                 {link.links.map(subLink => (
@@ -56,9 +44,7 @@ const currentPath = new URL(Astro.url).pathname;
                       role="menuitem"
                       aria-label={subLink.ariaLabel}
                     >
-                      {subLink.icon && (
-                        <Icon name={subLink.icon} class="dropdown-icon" aria-hidden="true" />
-                      )}
+                      {subLink.icon && <Icon name={subLink.icon} class="dropdown-icon" aria-hidden="true" />}
                       {subLink.text}
                     </a>
                   </li>

@@ -438,9 +438,7 @@ class CSSVariableValidator {
 
       // Test inheritance
       const inheritanceTest = await this.testInheritance(page);
-      console.log(
-        `🔗 CSS variable inheritance: ${inheritanceTest.inherits ? '✅ Working' : '❌ Failed'}`
-      );
+      console.log(`🔗 CSS variable inheritance: ${inheritanceTest.inherits ? '✅ Working' : '❌ Failed'}`);
 
       // Generate reports
       const report = this.generateReport();
@@ -450,22 +448,15 @@ class CSSVariableValidator {
       const outputDir = path.join(__dirname, '../css-validation-results');
       await fs.mkdir(outputDir, { recursive: true });
 
-      await fs.writeFile(
-        path.join(outputDir, 'validation-report.json'),
-        JSON.stringify(report, null, 2)
-      );
+      await fs.writeFile(path.join(outputDir, 'validation-report.json'), JSON.stringify(report, null, 2));
 
       await fs.writeFile(path.join(outputDir, 'validation-report.html'), htmlReport);
 
       // Console summary
       console.log('\n📊 Validation Summary:');
       console.log(`  Total Expected: ${report.summary.totalExpected}`);
-      console.log(
-        `  Light Theme: ${report.summary.lightThemeDefined}/${report.summary.totalExpected} defined`
-      );
-      console.log(
-        `  Dark Theme: ${report.summary.darkThemeDefined}/${report.summary.totalExpected} defined`
-      );
+      console.log(`  Light Theme: ${report.summary.lightThemeDefined}/${report.summary.totalExpected} defined`);
+      console.log(`  Dark Theme: ${report.summary.darkThemeDefined}/${report.summary.totalExpected} defined`);
 
       if (report.recommendations.length > 0) {
         console.log(`\n⚠️  ${report.recommendations.length} recommendations found`);

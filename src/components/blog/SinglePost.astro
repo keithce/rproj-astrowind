@@ -21,26 +21,16 @@ const { post, url } = Astro.props;
 
 <section class="mx-auto py-8 sm:py-16 lg:py-20">
   <article data-pagefind-body>
-    <header
-      class={post.image ? 'intersect-once intersect-quarter' : 'intersect-once intersect-quarter'}
-    >
-      <div
-        class="mx-auto mt-0 mb-2 flex max-w-3xl flex-col justify-between px-4 sm:flex-row sm:items-center sm:px-6"
-      >
+    <header class={post.image ? 'intersect-once intersect-quarter' : 'intersect-once intersect-quarter'}>
+      <div class="mx-auto mt-0 mb-2 flex max-w-3xl flex-col justify-between px-4 sm:flex-row sm:items-center sm:px-6">
         <p>
           <Icon name="tabler:clock" class="text-muted-foreground -mt-0.5 inline-block h-4 w-4" />
-          <time datetime={String(post.publishDate)} class="inline-block"
-            >{getFormattedDate(post.publishDate)}</time
-          >
+          <time datetime={String(post.publishDate)} class="inline-block">{getFormattedDate(post.publishDate)}</time>
           {
             post.author && (
               <>
                 {' '}
-                ·{' '}
-                <Icon
-                  name="tabler:user"
-                  class="text-muted-foreground -mt-0.5 inline-block h-4 w-4"
-                />
+                · <Icon name="tabler:user" class="text-muted-foreground -mt-0.5 inline-block h-4 w-4" />
                 <span class="inline-block">{post.author}</span>
               </>
             )
@@ -50,10 +40,7 @@ const { post, url } = Astro.props;
               <>
                 {' '}
                 ·{' '}
-                <a
-                  class="inline-block hover:underline"
-                  href={getPermalink(post.category.slug, 'category')}
-                >
+                <a class="inline-block hover:underline" href={getPermalink(post.category.slug, 'category')}>
                   {post.category.title}
                 </a>
               </>
@@ -74,9 +61,7 @@ const { post, url } = Astro.props;
       >
         {post.title}
       </h1>
-      <p
-        class="text-muted-foreground mx-auto mt-4 mb-8 max-w-3xl px-4 text-justify text-xl sm:px-6 md:text-2xl"
-      >
+      <p class="text-muted-foreground mx-auto mt-4 mb-8 max-w-3xl px-4 text-justify text-xl sm:px-6 md:text-2xl">
         {post.excerpt}
       </p>
 
@@ -103,16 +88,9 @@ const { post, url } = Astro.props;
     <div class="prose prose-lg dark:prose-invert mx-auto mt-8 max-w-3xl px-6 sm:px-6">
       <slot />
     </div>
-    <div
-      data-pagefind-ignore
-      class="mx-auto mt-8 flex max-w-3xl flex-col justify-between px-6 sm:flex-row sm:px-6"
-    >
+    <div data-pagefind-ignore class="mx-auto mt-8 flex max-w-3xl flex-col justify-between px-6 sm:flex-row sm:px-6">
       <PostTags tags={post.tags} class="mr-5 rtl:mr-0 rtl:ml-5" />
-      <SocialShare
-        url={url}
-        text={post.title}
-        class="text-muted-foreground mt-5 align-middle sm:mt-1"
-      />
+      <SocialShare url={url} text={post.title} class="text-muted-foreground mt-5 align-middle sm:mt-1" />
     </div>
   </article>
 </section>

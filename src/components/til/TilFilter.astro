@@ -28,9 +28,7 @@ const { tags, selectedTag, class: className = '' } = Astro.props;
         <a
           href={`/til?tag=${tag.slug}`}
           class={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
-            selectedTag === tag.slug
-              ? 'bg-primary text-white'
-              : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
+            selectedTag === tag.slug ? 'bg-primary text-white' : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
           }`}
         >
           #{tag.title}

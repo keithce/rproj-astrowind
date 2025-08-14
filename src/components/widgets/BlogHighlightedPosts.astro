@@ -54,10 +54,7 @@ const posts = APP_BLOG.isEnabled ? await findPostsByIds(postIds) : [];
         )}
 
         {information && (
-          <p
-            class="text-muted dark:text-muted-foreground lg:max-w-md lg:text-sm"
-            set:html={information}
-          />
+          <p class="text-muted dark:text-muted-foreground lg:max-w-md lg:text-sm" set:html={information} />
         )}
       </div>
 

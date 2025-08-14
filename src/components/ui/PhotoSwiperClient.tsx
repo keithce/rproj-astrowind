@@ -64,12 +64,7 @@ function getPlaceholderImage(category: string, index: number): string {
   return `${baseUrl}/${imageId}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80`;
 }
 
-export default function PhotoSwiperClient({
-  images,
-  title,
-  category,
-  className = '',
-}: PhotoSwiperClientProps) {
+export default function PhotoSwiperClient({ images, title, category, className = '' }: PhotoSwiperClientProps) {
   const swiperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

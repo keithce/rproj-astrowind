@@ -27,10 +27,7 @@ const {
   <!-- Gradient Background (when gradientBg is true) -->
   {
     gradientBg && (
-      <div
-        class="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden"
-        aria-hidden="true"
-      >
+      <div class="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden" aria-hidden="true">
         <div class="from-accent via-muted to-background dark:from-background dark:via-secondary dark:to-card h-full w-full bg-gradient-to-br" />
       </div>
     )
@@ -39,10 +36,7 @@ const {
   <!-- Background Image Layer -->
   {
     image && (
-      <div
-        class="pointer-events-none absolute inset-0 z-1 h-full w-full overflow-hidden"
-        aria-hidden="true"
-      >
+      <div class="pointer-events-none absolute inset-0 z-1 h-full w-full overflow-hidden" aria-hidden="true">
         {typeof image === 'string' ? (
           <img
             src={image}
@@ -136,18 +130,8 @@ const {
   {
     showScrollIndicator && (
       <div class="absolute bottom-8 left-1/2 z-20 -translate-x-1/2 transform animate-bounce">
-        <svg
-          class={`text-foreground h-6 w-6`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-          />
+        <svg class={`text-foreground h-6 w-6`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
       </div>
     )

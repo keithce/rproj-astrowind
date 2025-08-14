@@ -1,7 +1,7 @@
 /** @type {import('prettier').Config} */
 module.exports = {
   // Basic formatting
-  printWidth: 100,
+  printWidth: 120,
   semi: true,
   singleQuote: true,
   quoteProps: 'as-needed',
@@ -19,34 +19,7 @@ module.exports = {
   arrowParens: 'avoid',
 
   // Plugins
-  plugins: [
-    require.resolve('prettier-plugin-astro'),
-    require.resolve('prettier-plugin-tailwindcss'),
-  ],
-
-  // File-specific overrides
-  overrides: [
-    {
-      files: '*.astro',
-      options: {
-        parser: 'astro',
-        printWidth: 100,
-      },
-    },
-    {
-      files: '*.md',
-      options: {
-        proseWrap: 'always',
-        printWidth: 80,
-      },
-    },
-    {
-      files: '*.json',
-      options: {
-        printWidth: 120,
-      },
-    },
-  ],
+  plugins: [require.resolve('prettier-plugin-astro'), require.resolve('prettier-plugin-tailwindcss')],
 
   // Tailwind CSS class sorting
   tailwindConfig: './tailwind.config.js',

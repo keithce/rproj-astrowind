@@ -139,9 +139,7 @@ import ThemeToggle from '~/components/common/ThemeToggle.astro';
 
 ```html
 <!-- Automatic theme adaptation -->
-<div class="bg-card text-card-foreground border-border border">
-  Content adapts to light/dark theme automatically
-</div>
+<div class="bg-card text-card-foreground border-border border">Content adapts to light/dark theme automatically</div>
 
 <!-- Manual theme targeting (if needed) -->
 <div class="bg-white dark:bg-gray-900">Explicit light/dark values</div>

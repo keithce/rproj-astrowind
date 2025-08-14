@@ -2,8 +2,7 @@
 title: 'Optimizing Astro Build Performance'
 date: 2025-06-18
 tags: ['astro', 'performance', 'build']
-description:
-  'Today I learned several techniques to significantly improve build times in
+description: 'Today I learned several techniques to significantly improve build times in
   larger Astro projects.'
 draft: false
 ---

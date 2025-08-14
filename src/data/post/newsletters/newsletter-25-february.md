@@ -1,8 +1,7 @@
 ---
 publishDate: 2025-03-01
 title: Newsletter - February 2025
-excerpt:
-  A journey through homeownership challenges, tech explorations with Coolify and
+excerpt: A journey through homeownership challenges, tech explorations with Coolify and
   Rust, AI coding advancements, childhood Lego revival, and fascinating research
   into music, mathematics, and physics connections.
 image: ~/assets/images/newsletter-metatron-cube.svg

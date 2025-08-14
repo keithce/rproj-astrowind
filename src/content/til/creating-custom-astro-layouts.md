@@ -2,8 +2,7 @@
 title: 'Creating Custom Astro Layouts'
 date: 2025-06-20
 tags: ['astro', 'web development', 'layouts']
-description:
-  'Today I learned how to create custom layouts in Astro to reuse page
+description: 'Today I learned how to create custom layouts in Astro to reuse page
   structures while passing specific metadata.'
 draft: false
 ---

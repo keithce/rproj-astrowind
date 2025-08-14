@@ -48,20 +48,14 @@ export const POST: APIRoute = async ({ request }) => {
   // }
 
   const formData = await request.formData();
-  console.debug(
-    '[submit-to-notion] 📥 Raw FormData received:',
-    Object.fromEntries(formData.entries())
-  );
+  console.debug('[submit-to-notion] 📥 Raw FormData received:', Object.fromEntries(formData.entries()));
   try {
     const data = Object.fromEntries(formData.entries());
     console.debug('[submit-to-notion] 🔄 Converted FormData to object:', data);
     const result = schema.safeParse(data);
     console.debug('[submit-to-notion] 🛂 Schema validation success:', result.success);
     if (!result.success) {
-      console.debug(
-        '[submit-to-notion] ❌ Validation failed with errors:',
-        result.error.flatten().fieldErrors
-      );
+      console.debug('[submit-to-notion] ❌ Validation failed with errors:', result.error.flatten().fieldErrors);
       return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
@@ -77,14 +71,11 @@ export const POST: APIRoute = async ({ request }) => {
     if (message.length > 5000) {
       console.debug('[submit-to-notion] ⚠️ Message too long:', message.length);
       return jsonResponse(
-        ApiErrors.unprocessableEntity(
-          'Message is too long. Please keep it under 5000 characters.',
-          {
-            field: 'message',
-            limit: 5000,
-            current: message.length,
-          }
-        ),
+        ApiErrors.unprocessableEntity('Message is too long. Please keep it under 5000 characters.', {
+          field: 'message',
+          limit: 5000,
+          current: message.length,
+        }),
         422
       );
     }

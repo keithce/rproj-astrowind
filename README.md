@@ -28,14 +28,10 @@ your one-stop shop for:
 
 ## 🚀 Key Features
 
-- 🧑‍💻 **Multi-Service Platform:** Dedicated sections for audio, photography,
-  video, and tech consulting.
-- 🤝 **Personalized Collaboration:** Work directly with Keith to bring your
-  vision to life.
-- 🛠️ **Technical Expertise:** Deep knowledge in networking, home studio setup,
-  and creative workflows.
-- 🗂️ **Organized Content:** Easy navigation with clear service pages and content
-  pillars.
+- 🧑‍💻 **Multi-Service Platform:** Dedicated sections for audio, photography, video, and tech consulting.
+- 🤝 **Personalized Collaboration:** Work directly with Keith to bring your vision to life.
+- 🛠️ **Technical Expertise:** Deep knowledge in networking, home studio setup, and creative workflows.
+- 🗂️ **Organized Content:** Easy navigation with clear service pages and content pillars.
 - 📬 **Lead Generation:** Service-specific landing pages and newsletter signup.
 - 🔍 **SEO Optimized:** Structured for discoverability and fast performance.
 - ⚡ **Automated Deployment:** Every commit updates the live site automatically.
@@ -70,5 +66,4 @@ If you'd like to help or collaborate, just reach out to Keith via email!
 
 ---
 
-_Resonant Projects .ART: Helping you finish and share your creative work with
-the world!_ 🌍✨
+_Resonant Projects .ART: Helping you finish and share your creative work with the world!_ 🌍✨

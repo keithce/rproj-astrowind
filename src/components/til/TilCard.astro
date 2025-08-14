@@ -16,8 +16,7 @@ const formattedDate = formatTilDate(date);
 
 // Get first paragraph of content for preview
 const maxLength = 150;
-const truncatedDescription =
-  description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
+const truncatedDescription = description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
 ---
 
 <article class={`til-card ${className}`}>

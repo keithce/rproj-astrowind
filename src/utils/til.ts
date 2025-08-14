@@ -48,9 +48,7 @@ export const findTilEntriesByTag = async (tag: string): Promise<TilEntry[]> => {
   const entries = await fetchTilEntries();
   const normalizedTag = tag.toLowerCase();
 
-  return entries.filter(entry =>
-    entry.data.tags.some(t => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag)
-  );
+  return entries.filter(entry => entry.data.tags.some(t => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag));
 };
 
 /**

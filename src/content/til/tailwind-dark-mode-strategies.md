@@ -2,8 +2,7 @@
 title: 'Tailwind Dark Mode Implementation Strategies'
 date: 2025-06-19
 tags: ['tailwind', 'css', 'dark mode']
-description:
-  'Today I learned about different strategies for implementing dark mode with
+description: 'Today I learned about different strategies for implementing dark mode with
   Tailwind CSS, from class-based to media query approaches.'
 draft: false
 ---
@@ -33,9 +32,7 @@ This requires JavaScript to toggle the class on the `html` or `body` element:
 document.documentElement.classList.toggle('dark');
 
 // Persist in localStorage
-localStorage.theme = document.documentElement.classList.contains('dark')
-  ? 'dark'
-  : 'light';
+localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 ```
 
 ## Media Query-Based Dark Mode

@@ -26,11 +26,7 @@ const { prevUrl, nextUrl, prevText = 'Newer posts', nextText = 'Older posts' } =
           <p class="ml-2">{prevText}</p>
         </Button>
 
-        <Button
-          variant="tertiary"
-          class={`px-3 md:px-3 ${!nextUrl ? 'invisible' : ''}`}
-          href={getPermalink(nextUrl)}
-        >
+        <Button variant="tertiary" class={`px-3 md:px-3 ${!nextUrl ? 'invisible' : ''}`} href={getPermalink(nextUrl)}>
           <span class="mr-2">{nextText}</span>
           <Icon name="tabler:chevron-right" class="h-6 w-6" />
         </Button>

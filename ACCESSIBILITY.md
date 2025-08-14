@@ -329,10 +329,7 @@ function announceToScreenReader(message) {
 ```javascript
 // Support both mouse and keyboard interactions
 function handleInteraction(event) {
-  if (
-    event.type === 'click' ||
-    (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))
-  ) {
+  if (event.type === 'click' || (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))) {
     // Handle interaction
   }
 }
@@ -353,9 +350,7 @@ function openModal(modal) {
   modal.style.display = 'block';
 
   // Focus first element in modal
-  const firstFocusable = modal.querySelector(
-    'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  );
+  const firstFocusable = modal.querySelector('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
   if (firstFocusable) {
     firstFocusable.focus();
   }

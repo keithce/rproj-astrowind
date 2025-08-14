@@ -2,8 +2,7 @@
 title: 'TypeScript Utility Type Tricks'
 date: 2025-06-17
 tags: ['typescript', 'programming', 'web development']
-description:
-  'Today I learned about some lesser-known but incredibly useful TypeScript
+description: 'Today I learned about some lesser-known but incredibly useful TypeScript
   utility types that have improved my type safety.'
 draft: false
 ---

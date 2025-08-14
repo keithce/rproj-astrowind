@@ -68,9 +68,7 @@ async function main() {
   const show = args.includes('--show');
 
   if (leftIdx === -1 || rightIdx === -1 || !args[leftIdx + 1] || !args[rightIdx + 1]) {
-    console.error(
-      'Usage: node scripts/html-compare.js --left <url-or-file> --right <url-or-file> [--show]'
-    );
+    console.error('Usage: node scripts/html-compare.js --left <url-or-file> --right <url-or-file> [--show]');
     process.exit(2);
   }
 

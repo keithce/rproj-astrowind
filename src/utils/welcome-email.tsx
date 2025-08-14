@@ -75,8 +75,7 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
                 <Text className="text-text mt-4 text-center text-base">
                   Thank you for reaching out to Resonant Projects.art!
                   <br />
-                  We're excited to connect and help you awaken the sound of emotion in your creative
-                  journey.
+                  We're excited to connect and help you awaken the sound of emotion in your creative journey.
                 </Text>
                 <Text className="text-text mt-4 text-center text-base">
                   Here's what you can expect in our follow-up:
@@ -104,10 +103,7 @@ export const ResonantWelcomeEmail = ({ steps }: ResonantWelcomeEmailProps) => {
             <Section className="mt-6 text-center">
               <Text className="text-text text-base">
                 Want to follow my journey?&nbsp;
-                <Link
-                  href="https://newsletter.resonantprojects.art/"
-                  className="text-accent font-medium underline"
-                >
+                <Link href="https://newsletter.resonantprojects.art/" className="text-accent font-medium underline">
                   Sign up for the Resonant Projects newsletter
                 </Link>
                 .
@@ -138,8 +134,7 @@ ResonantWelcomeEmail.PreviewProps = {
   steps: [
     {
       id: 1,
-      description:
-        "Personalized follow-up. I'll review your message and respond with tailored insights or next steps.",
+      description: "Personalized follow-up. I'll review your message and respond with tailored insights or next steps.",
     },
     {
       id: 2,

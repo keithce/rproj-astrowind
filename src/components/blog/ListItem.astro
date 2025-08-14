@@ -21,9 +21,7 @@ const image = (await findImage(post.image)) as ImageMetadata | undefined;
 const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : '';
 ---
 
-<article
-  class={`max-w-md mx-auto md:max-w-none grid gap-6 md:gap-8 ${image ? 'md:grid-cols-2' : ''}`}
->
+<article class={`max-w-md mx-auto md:max-w-none grid gap-6 md:gap-8 ${image ? 'md:grid-cols-2' : ''}`}>
   {
     image &&
       (link ? (
@@ -66,22 +64,13 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
     <header>
       <div class="mb-1">
         <span class="text-sm">
-          <Icon
-            name="tabler:clock"
-            class="text-muted-foreground -mt-0.5 inline-block h-3.5 w-3.5"
-          />
-          <time datetime={String(post.publishDate)} class="inline-block"
-            >{getFormattedDate(post.publishDate)}</time
-          >
+          <Icon name="tabler:clock" class="text-muted-foreground -mt-0.5 inline-block h-3.5 w-3.5" />
+          <time datetime={String(post.publishDate)} class="inline-block">{getFormattedDate(post.publishDate)}</time>
           {
             post.author && (
               <>
                 {' '}
-                ·{' '}
-                <Icon
-                  name="tabler:user"
-                  class="text-muted-foreground -mt-0.5 inline-block h-3.5 w-3.5"
-                />
+                · <Icon name="tabler:user" class="text-muted-foreground -mt-0.5 inline-block h-3.5 w-3.5" />
                 <span>{post.author.replaceAll('-', ' ')}</span>
               </>
             )

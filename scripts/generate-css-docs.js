@@ -301,8 +301,7 @@ class CSSDocumentationGenerator {
             <h4>Dark Theme</h4>
             ${Object.entries(variables)
               .map(([variable]) => {
-                const value =
-                  darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
+                const value = darkValues[variable] || lightValues[variable] || 'var(' + variable + ')';
                 return this.generateColorSwatch(variable, value);
               })
               .join('')}
@@ -695,10 +694,7 @@ The CSS variable system is organized into four main categories:
 | Category | Variables | Description |
 |----------|-----------|-------------|
 ${Object.entries(VARIABLE_DEFINITIONS)
-  .map(
-    ([section]) =>
-      `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`
-  )
+  .map(([section]) => `| ${section.title} | ${Object.keys(section.variables).length} | ${section.description} |`)
   .join('\n')}
 
 ${Object.entries(VARIABLE_DEFINITIONS)

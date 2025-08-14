@@ -106,8 +106,7 @@ const { iconClass = 'w-5 h-5', class: className = '' } = Astro.props;
     themes: ['light', 'dark', 'system'],
     currentThemeIndex: 0,
 
-    getSystemTheme: () =>
-      window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+    getSystemTheme: () => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
 
     applyTheme: theme => {
       let effectiveTheme = theme;
@@ -127,17 +126,13 @@ const { iconClass = 'w-5 h-5', class: className = '' } = Astro.props;
 
       const toggle = document.getElementById('theme-toggle');
       if (toggle) {
-        toggle.setAttribute(
-          'aria-pressed',
-          String(document.documentElement.classList.contains('dark'))
-        );
+        toggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
         toggle.setAttribute('title', `Current theme: ${theme}. Toggle to next.`);
       }
     },
 
     cycleTheme: () => {
-      themeManager.currentThemeIndex =
-        (themeManager.currentThemeIndex + 1) % themeManager.themes.length;
+      themeManager.currentThemeIndex = (themeManager.currentThemeIndex + 1) % themeManager.themes.length;
       const nextTheme = themeManager.themes[themeManager.currentThemeIndex];
       themeManager.setTheme(nextTheme);
     },

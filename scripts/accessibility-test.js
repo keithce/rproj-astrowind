@@ -330,9 +330,7 @@ class AccessibilityTester {
       const results = [];
 
       // Get all text elements
-      const textElements = document.querySelectorAll(
-        'p, h1, h2, h3, h4, h5, h6, span, a, button, label'
-      );
+      const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, button, label');
       let totalTests = 0;
       let passed = 0;
 
@@ -516,9 +514,7 @@ class AccessibilityTester {
       });
     }
 
-    console.log(
-      `    📊 Scores - A11y: ${accessibilityScore}%, BP: ${bestPracticesScore}%, SEO: ${seoScore}%`
-    );
+    console.log(`    📊 Scores - A11y: ${accessibilityScore}%, BP: ${bestPracticesScore}%, SEO: ${seoScore}%`);
   }
 
   /**
@@ -537,24 +533,15 @@ class AccessibilityTester {
 
     // HTML Report
     const htmlReport = this.generateHTMLReport();
-    await fs.writeFile(
-      path.join(this.options.outputDir, `accessibility-report-${timestamp}.html`),
-      htmlReport
-    );
+    await fs.writeFile(path.join(this.options.outputDir, `accessibility-report-${timestamp}.html`), htmlReport);
 
     // JUnit XML Report (for CI/CD)
     const junitReport = this.generateJUnitReport();
-    await fs.writeFile(
-      path.join(this.options.outputDir, `accessibility-junit-${timestamp}.xml`),
-      junitReport
-    );
+    await fs.writeFile(path.join(this.options.outputDir, `accessibility-junit-${timestamp}.xml`), junitReport);
 
     // Summary Report
     const summaryReport = this.generateSummaryReport();
-    await fs.writeFile(
-      path.join(this.options.outputDir, `accessibility-summary-${timestamp}.txt`),
-      summaryReport
-    );
+    await fs.writeFile(path.join(this.options.outputDir, `accessibility-summary-${timestamp}.txt`), summaryReport);
 
     console.log(`📁 Reports saved to: ${this.options.outputDir}`);
   }

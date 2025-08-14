@@ -91,11 +91,7 @@ class VisualVerificationTester {
 
     const parseColor = color => {
       const hex = color.replace('#', '');
-      return [
-        parseInt(hex.substr(0, 2), 16),
-        parseInt(hex.substr(2, 2), 16),
-        parseInt(hex.substr(4, 2), 16),
-      ];
+      return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
     };
 
     const [r1, g1, b1] = parseColor(color1);
@@ -217,10 +213,7 @@ class VisualVerificationTester {
         await page.waitForTimeout(100);
 
         const hoverScreenshot = await element.screenshot();
-        const hoverPath = path.join(
-          CONFIG.outputDir,
-          `${pageName}-${theme}-${elementInfo.tagName}-hover.png`
-        );
+        const hoverPath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${elementInfo.tagName}-hover.png`);
         await fs.writeFile(hoverPath, hoverScreenshot);
 
         // Test focus state
@@ -228,10 +221,7 @@ class VisualVerificationTester {
         await page.waitForTimeout(100);
 
         const focusScreenshot = await element.screenshot();
-        const focusPath = path.join(
-          CONFIG.outputDir,
-          `${pageName}-${theme}-${elementInfo.tagName}-focus.png`
-        );
+        const focusPath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${elementInfo.tagName}-focus.png`);
         await fs.writeFile(focusPath, focusScreenshot);
 
         stateResults.push({
@@ -275,10 +265,7 @@ class VisualVerificationTester {
     console.log(`📸 Taking screenshots for ${pageName} (${theme} theme, ${viewport.name})...`);
 
     // Full page screenshot
-    const fullPagePath = path.join(
-      CONFIG.outputDir,
-      `${pageName}-${theme}-${viewport.name}-full.png`
-    );
+    const fullPagePath = path.join(CONFIG.outputDir, `${pageName}-${theme}-${viewport.name}-full.png`);
     await page.screenshot({
       path: fullPagePath,
       fullPage: true,
@@ -531,20 +518,14 @@ class VisualVerificationTester {
       // Print summary
       console.log('\n📊 Test Summary:');
       console.log(`  Screenshots: ${report.summary.totalScreenshots}`);
-      console.log(
-        `  Contrast Tests: ${report.contrastAnalysis.passed}/${report.summary.totalContrastTests} passed`
-      );
+      console.log(`  Contrast Tests: ${report.contrastAnalysis.passed}/${report.summary.totalContrastTests} passed`);
       console.log(`  Errors: ${report.summary.totalErrors}`);
 
       if (report.contrastAnalysis.failed > 0) {
-        console.warn(
-          `\n⚠️  ${report.contrastAnalysis.failed} contrast tests failed. Check the report for details.`
-        );
+        console.warn(`\n⚠️  ${report.contrastAnalysis.failed} contrast tests failed. Check the report for details.`);
       }
 
-      console.log(
-        `\n✅ Visual verification complete! Report: ${CONFIG.outputDir}/visual-verification-report.html`
-      );
+      console.log(`\n✅ Visual verification complete! Report: ${CONFIG.outputDir}/visual-verification-report.html`);
     } catch (error) {
       console.error('❌ Visual verification failed:', error);
       throw error;

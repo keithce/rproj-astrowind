@@ -3,8 +3,7 @@ export function getNotionEntryTitle(entry: unknown): string {
   // Helper to read safely
   const obj = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
   const id = typeof obj.id === 'string' ? obj.id : '';
-  const data =
-    obj.data && typeof obj.data === 'object' ? (obj.data as Record<string, unknown>) : {};
+  const data = obj.data && typeof obj.data === 'object' ? (obj.data as Record<string, unknown>) : {};
 
   // Prefer flattened transformer (transformed-properties.title)
   const nameVal = data['Name'];

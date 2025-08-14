@@ -176,9 +176,7 @@ function testAllCombinations() {
     results
       .filter(r => !r.compliance.AA_NORMAL)
       .forEach(result => {
-        console.log(
-          `• ${result.theme} theme - ${result.combination}: Consider adjusting colors for better contrast`
-        );
+        console.log(`• ${result.theme} theme - ${result.combination}: Consider adjusting colors for better contrast`);
       });
   } else {
     console.log('\n🎉 All color combinations pass WCAG AA standards!');

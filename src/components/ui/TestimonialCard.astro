@@ -8,14 +8,7 @@ export interface Props {
   className?: string;
 }
 
-const {
-  testimonial,
-  clientName,
-  clientTitle,
-  clientImage,
-  rating = 5,
-  className = '',
-} = Astro.props;
+const { testimonial, clientName, clientTitle, clientImage, rating = 5, className = '' } = Astro.props;
 ---
 
 <div class={`testimonial-card ${className}`}>
@@ -57,19 +50,14 @@ const {
         <div class="font-semibold text-[var(--color-foreground)]">
           {clientName}
         </div>
-        {
-          clientTitle && (
-            <div class="text-sm text-[var(--color-muted-foreground)]">{clientTitle}</div>
-          )
-        }
+        {clientTitle && <div class="text-sm text-[var(--color-muted-foreground)]">{clientTitle}</div>}
       </div>
     </div>
 
     <!-- Quote Icon -->
     <div class="absolute top-4 right-4 opacity-10">
       <svg class="h-8 w-8 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 32 32">
-        <path
-          d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm16 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"
+        <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm16 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"
         ></path>
       </svg>
     </div>

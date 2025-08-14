@@ -9,12 +9,10 @@ const { className = '' } = Astro.props;
 <section class={`contact-form-section ${className}`}>
   <div class="mx-auto max-w-4xl">
     <div class="mb-8 text-center">
-      <h2 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-        Let's Create Something Beautiful Together
-      </h2>
+      <h2 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">Let's Create Something Beautiful Together</h2>
       <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-        Ready to capture your special moments? Get in touch to discuss your photography needs and
-        let's create memories that will last a lifetime.
+        Ready to capture your special moments? Get in touch to discuss your photography needs and let's create memories
+        that will last a lifetime.
       </p>
     </div>
 
@@ -24,10 +22,7 @@ const { className = '' } = Astro.props;
         <form class="space-y-6" action="/api/contact" method="POST">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label
-                for="firstName"
-                class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label for="firstName" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 First Name *
               </label>
               <input
@@ -39,10 +34,7 @@ const { className = '' } = Astro.props;
               />
             </div>
             <div>
-              <label
-                for="lastName"
-                class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label for="lastName" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Last Name *
               </label>
               <input
@@ -56,10 +48,7 @@ const { className = '' } = Astro.props;
           </div>
 
           <div>
-            <label
-              for="email"
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+            <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address *
             </label>
             <input
@@ -72,10 +61,7 @@ const { className = '' } = Astro.props;
           </div>
 
           <div>
-            <label
-              for="phone"
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+            <label for="phone" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Phone Number
             </label>
             <input
@@ -87,10 +73,7 @@ const { className = '' } = Astro.props;
           </div>
 
           <div>
-            <label
-              for="eventDate"
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+            <label for="eventDate" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Event Date (if applicable)
             </label>
             <input
@@ -102,10 +85,7 @@ const { className = '' } = Astro.props;
           </div>
 
           <div>
-            <label
-              for="photographyType"
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+            <label for="photographyType" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Photography Type *
             </label>
             <select
@@ -126,10 +106,7 @@ const { className = '' } = Astro.props;
           </div>
 
           <div>
-            <label
-              for="message"
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
+            <label for="message" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tell us about your vision *
             </label>
             <textarea
@@ -138,8 +115,7 @@ const { className = '' } = Astro.props;
               required
               rows="4"
               class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="Describe your photography needs, vision, or any specific requirements..."
-            ></textarea>
+              placeholder="Describe your photography needs, vision, or any specific requirements..."></textarea>
           </div>
 
           <button
@@ -158,12 +134,7 @@ const { className = '' } = Astro.props;
 
           <div class="space-y-4">
             <div class="flex items-center">
-              <svg
-                class="mr-3 h-5 w-5 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="mr-3 h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -175,12 +146,7 @@ const { className = '' } = Astro.props;
             </div>
 
             <div class="flex items-center">
-              <svg
-                class="mr-3 h-5 w-5 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="mr-3 h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -192,18 +158,12 @@ const { className = '' } = Astro.props;
             </div>
 
             <div class="flex items-center">
-              <svg
-                class="mr-3 h-5 w-5 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="mr-3 h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                ></path>
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -218,13 +178,12 @@ const { className = '' } = Astro.props;
         <div class="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
           <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Response Time</h3>
           <p class="mb-4 text-gray-600 dark:text-gray-300">
-            We typically respond to all inquiries within 24 hours. For urgent requests, please call
-            us directly.
+            We typically respond to all inquiries within 24 hours. For urgent requests, please call us directly.
           </p>
           <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
             <p class="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Pro Tip:</strong> The more details you provide about your vision and requirements,
-              the better we can tailor our response to your needs.
+              <strong>Pro Tip:</strong> The more details you provide about your vision and requirements, the better we can
+              tailor our response to your needs.
             </p>
           </div>
         </div>
