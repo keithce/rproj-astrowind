@@ -40,6 +40,8 @@
     "test:all": "npm run test:contrast && npm run validate:css && npm run visual-verify:ci",
     "docs:css": "node scripts/generate-css-docs.js",
     "docs:generate": "npm run docs:css",
+    "analyze:content": "node scripts/content-analyzer.js",
+    "analyze:readability": "node scripts/content-analyzer.js --readability-only",
     "test:accessibility": "node scripts/accessibility-test.js",
     "test:accessibility:ci": "node scripts/accessibility-test.js --env=development",
     "test:accessibility:staging": "node scripts/accessibility-test.js --env=staging",
