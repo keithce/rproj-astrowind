@@ -1,0 +1,131 @@
+---
+import { Icon } from 'astro-icon/components';
+import Button from './Button.astro';
+
+interface RelatedPage {
+  title: string;
+  href: string;
+  description: string;
+  icon?: string;
+  category?: string;
+}
+
+export interface Props {
+  pages: RelatedPage[];
+  title?: string;
+  className?: string;
+  variant?: 'cards' | 'list' | 'compact';
+  showIcon?: boolean;
+}
+
+const { 
+  pages, 
+  title = 'Related Pages', 
+  className = '', 
+  variant = 'cards',
+  showIcon = true 
+} = Astro.props;
+
+const getVariantClasses = () => {
+  switch (variant) {
+    case 'list':
+      return {
+        container: 'space-y-3',
+        item: 'flex items-start gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/10 transition-colors',
+        content: 'flex-1',
+        title: 'font-semibold text-foreground hover:text-primary text-base',
+        description: 'text-sm text-muted-foreground mt-1'
+      };
+    case 'compact':
+      return {
+        container: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+        item: 'flex items-center gap-2 p-3 rounded-lg border border-border bg-card hover:bg-accent/10 transition-colors',
+        content: 'flex-1 min-w-0',
+        title: 'font-medium text-foreground hover:text-primary text-sm truncate',
+        description: 'text-xs text-muted-foreground truncate'
+      };
+    default: // cards
+      return {
+        container: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
+        item: 'p-6 rounded-lg border border-border bg-card hover:shadow-md hover:bg-accent/5 transition-all duration-200',
+        content: '',
+        title: 'font-semibold text-foreground hover:text-primary text-lg mb-2',
+        description: 'text-muted-foreground'
+      };
+  }
+};
+
+const classes = getVariantClasses();
+---
+
+{pages.length > 0 && (
+  <section class={`related-pages ${className}`}>
+    <h3 class="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+      <Icon name="tabler:link" class="w-5 h-5 text-primary" aria-hidden="true" />
+      {title}
+    </h3>
+    
+    <div class={classes.container}>
+      {pages.map((page) => (
+        <article class={classes.item}>
+          <a href={page.href} class="block">
+            <div class={`flex items-start gap-3 ${classes.content}`}>
+              {showIcon && page.icon && (
+                <div class="flex-shrink-0 mt-1">
+                  <Icon 
+                    name={page.icon} 
+                    class="w-5 h-5 text-primary" 
+                    aria-hidden="true" 
+                  />
+                </div>
+              )}
+              
+              <div class="flex-1 min-w-0">
+                <h4 class={classes.title}>
+                  {page.title}
+                </h4>
+                
+                {page.description && (
+                  <p class={classes.description}>
+                    {page.description}
+                  </p>
+                )}
+                
+                {page.category && variant === 'cards' && (
+                  <span class="inline-block mt-2 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+                    {page.category}
+                  </span>
+                )}
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-pages a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .related-pages a:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+  }
+
+  /* Hover effects */
+  .related-pages article:hover h4 {
+    color: var(--color-primary);
+  }
+
+  /* Enhanced accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .related-pages article {
+      transition: none;
+    }
+  }
+</style>

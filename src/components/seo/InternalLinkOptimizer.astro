@@ -1,0 +1,70 @@
+---
+/**
+ * SEO Internal Link Optimizer
+ * Automatically enhances content with strategic internal links
+ */
+
+import { optimizeInternalLinks } from '~/utils/internal-linking';
+
+export interface Props {
+  content: string;
+  currentPath?: string;
+  maxLinks?: number;
+  preserveExisting?: boolean;
+}
+
+const { 
+  content, 
+  currentPath = Astro.url.pathname,
+  maxLinks = 3,
+  preserveExisting = true 
+} = Astro.props;
+
+// Optimize content with internal links
+const optimizedContent = optimizeInternalLinks(content, currentPath);
+---
+
+<div class="seo-optimized-content" set:html={optimizedContent} />
+
+<style>
+  .seo-optimized-content {
+    /* Ensure generated links match site styling */
+  }
+
+  .seo-optimized-content a {
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .seo-optimized-content a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .seo-optimized-content a:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Limit to reasonable number of links */
+  .seo-optimized-content a:nth-of-type(n+4) {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // Initialize link analytics when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof window !== 'undefined') {
+      import('~/utils/link-analytics').then(({ initializeLinkAnalytics }) => {
+        initializeLinkAnalytics();
+      });
+    }
+  });
+</script>

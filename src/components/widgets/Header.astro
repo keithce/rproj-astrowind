@@ -5,6 +5,7 @@ import ToggleMenu from '~/components/common/ToggleMenu.astro';
 import Button from '~/components/ui/Button.astro';
 import NavigationMenu from '~/components/ui/NavigationMenu.astro';
 import ToggleTheme from '~/components/common/ToggleTheme.astro';
+import ServiceNavigation from '~/components/ui/ServiceNavigation.astro';
 
 import { getHomePermalink, getAsset } from '~/utils/permalinks';
 import type { CallToAction } from '~/types';
@@ -30,6 +31,7 @@ export interface Props {
   showToggleTheme?: boolean;
   showRssFeed?: boolean;
   position?: string;
+  showServiceNav?: boolean;
 }
 
 const {
@@ -42,7 +44,15 @@ const {
   showToggleTheme = false,
   showRssFeed = false,
   position = 'center',
+  showServiceNav = false,
 } = Astro.props;
+
+// Determine current service for navigation highlighting
+const currentPath = Astro.url.pathname;
+let currentService: string | undefined;
+if (currentPath.startsWith('/services/')) {
+  currentService = currentPath.split('/')[2];
+}
 ---
 
 <header
@@ -122,5 +132,16 @@ const {
         }
       </div>
     </div>
+    
+    {showServiceNav && (
+      <div class="border-t border-border bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+          <ServiceNavigation 
+            currentService={currentService}
+            variant="horizontal"
+          />
+        </div>
+      </div>
+    )}
   </div>
 </header>

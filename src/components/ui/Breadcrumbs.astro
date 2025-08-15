@@ -1,0 +1,112 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface BreadcrumbItem {
+  text: string;
+  href?: string;
+  icon?: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+  separator?: string;
+  showHome?: boolean;
+  className?: string;
+}
+
+const { 
+  items, 
+  separator = 'tabler:chevron-right', 
+  showHome = true, 
+  className = '' 
+} = Astro.props;
+
+// Add home breadcrumb if enabled and not already present
+const breadcrumbItems: BreadcrumbItem[] = [];
+if (showHome && (!items.length || items[0].href !== '/')) {
+  breadcrumbItems.push({ text: 'Home', href: '/', icon: 'tabler:home' });
+}
+breadcrumbItems.push(...items);
+---
+
+<nav aria-label="Breadcrumb navigation" class={`breadcrumbs ${className}`}>
+  <ol class="flex items-center space-x-2 text-sm">
+    {breadcrumbItems.map((item, index) => (
+      <li class="flex items-center">
+        {index > 0 && (
+          <Icon 
+            name={separator} 
+            class="w-4 h-4 mx-2 text-muted-foreground" 
+            aria-hidden="true" 
+          />
+        )}
+        
+        {item.href ? (
+          <a 
+            href={item.href}
+            class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+            {index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {}}
+          >
+            {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+            <span>{item.text}</span>
+          </a>
+        ) : (
+          <span 
+            class="flex items-center gap-1 text-foreground font-semibold"
+            aria-current="page"
+          >
+            {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+            <span>{item.text}</span>
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    pointer-events: none;
+  }
+
+  /* Enhanced focus styles for accessibility */
+  .breadcrumbs a:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .breadcrumbs ol {
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    
+    .breadcrumbs ol li:first-child {
+      display: flex;
+    }
+    
+    /* Hide intermediate breadcrumbs on mobile, keep home and current */
+    .breadcrumbs ol li:nth-child(n+2):nth-last-child(n+2) {
+      display: none;
+    }
+    
+    /* Show ellipsis when items are hidden */
+    .breadcrumbs ol li:nth-child(2):nth-last-child(n+3)::before {
+      content: "...";
+      margin: 0 0.5rem;
+      color: var(--color-muted-foreground);
+    }
+  }
+</style>

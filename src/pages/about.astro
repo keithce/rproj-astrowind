@@ -6,12 +6,41 @@ import HeroText from '~/components/widgets/HeroText.astro';
 import Stats from '~/components/widgets/Stats.astro';
 import Steps2 from '~/components/widgets/Steps2.astro';
 import Layout from '~/layouts/PageLayout.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
 
 const metadata = {
   title: 'About - My Resonant Journey',
   description:
     'Discover the story behind Resonant Rhythm - from classical music beginnings to audio engineering mastery.',
 };
+
+// Strategic internal links from about page
+const aboutContextualLinks = [
+  {
+    text: 'Start Your Audio Project',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Professional music mixing and mastering services'
+  },
+  {
+    text: 'Creative Technology Consulting',
+    href: '/services/design', 
+    icon: 'tabler:settings',
+    description: 'Workflow optimization and tech stack consulting'
+  },
+  {
+    text: 'View Photography Portfolio',
+    href: '/services/color',
+    icon: 'tabler:camera',
+    description: 'Professional photography and visual services'
+  },
+  {
+    text: 'Film Post-Production',
+    href: '/services/motion',
+    icon: 'tabler:movie', 
+    description: 'Video editing and post-production services'
+  }
+];
 ---
 
 <Layout metadata={metadata}>
@@ -305,6 +334,21 @@ const metadata = {
       },
     ]}
   />
+
+  <!-- Strategic Service Links -->
+  <section class="py-12 bg-accent/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <h2 class="text-2xl font-bold text-foreground mb-6">Ready to Work Together?</h2>
+      <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        Discover how our services can help bring your creative vision to life with the same passion and expertise that has driven my journey.
+      </p>
+      
+      <ContextualLinks 
+        links={aboutContextualLinks}
+        inline={true}
+      />
+    </div>
+  </section>
 
   <!-- Call to Action ******************* -->
   <CallToAction

@@ -5,6 +5,8 @@ import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import Image from '~/components/common/Image.astro';
 import Button from '~/components/ui/Button.astro';
 import ItemGrid from '~/components/ui/ItemGrid.astro';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const {
   title = await Astro.slots.render('title'),
@@ -17,12 +19,17 @@ const {
   image = await Astro.slots.render('image'),
   isReversed = false,
   isAfterContent = false,
+  showRelated = false,
+  relatedTitle = 'Explore Related Services',
 
   id,
   isDark = false,
   classes = {},
   bg = await Astro.slots.render('bg'),
 } = Astro.props;
+
+// Get related pages if enabled
+const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
 ---
 
 <WidgetWrapper
@@ -90,5 +97,15 @@ const {
         }
       </div>
     </div>
+    
+    {showRelated && relatedPages.length > 0 && (
+      <div class="mt-12 pt-8 border-t border-border">
+        <RelatedPages 
+          pages={relatedPages}
+          title={relatedTitle}
+          variant="compact"
+        />
+      </div>
+    )}
   </div>
 </WidgetWrapper>

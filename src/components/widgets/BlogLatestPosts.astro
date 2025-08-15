@@ -8,6 +8,7 @@ import { findLatestPosts } from '~/utils/blog';
 import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import type { Widget } from '~/types';
 import Button from '~/components/ui/Button.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
 
 export interface Props extends Widget {
   title?: string;
@@ -15,6 +16,7 @@ export interface Props extends Widget {
   linkUrl?: string | URL;
   information?: string;
   count?: number;
+  showContextualLinks?: boolean;
 }
 
 const {
@@ -23,6 +25,7 @@ const {
   linkUrl = getBlogPermalink(),
   information = await Astro.slots.render('information'),
   count = 4,
+  showContextualLinks = false,
 
   id,
   isDark = false,
@@ -31,6 +34,28 @@ const {
 } = Astro.props;
 
 const posts = APP_BLOG.isEnabled ? await findLatestPosts({ count }) : [];
+
+// Contextual links to services based on blog content
+const blogContextualLinks = [
+  {
+    text: 'Audio Services',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Professional music production and mastering'
+  },
+  {
+    text: 'Creative Consulting', 
+    href: '/services/design',
+    icon: 'tabler:settings',
+    description: 'Workflow optimization and tech consulting'
+  },
+  {
+    text: 'Photography Portfolio',
+    href: '/services/color', 
+    icon: 'tabler:camera',
+    description: 'Visual storytelling and color work'
+  }
+];
 ---
 
 {
@@ -56,6 +81,16 @@ const posts = APP_BLOG.isEnabled ? await findLatestPosts({ count }) : [];
       </div>
 
       <Grid posts={posts} />
+      
+      {showContextualLinks && (
+        <div class="mt-8 pt-6 border-t border-border">
+          <ContextualLinks 
+            links={blogContextualLinks}
+            title="Interested in Our Services?"
+            inline={true}
+          />
+        </div>
+      )}
     </WidgetWrapper>
   ) : (
     <Fragment />

@@ -8,11 +8,39 @@ import CallToAction from '~/components/widgets/CallToAction.astro';
 import Testimonials from '~/components/widgets/Testimonials.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
   title: 'Rhythm',
   description: 'Music finishing, mixing, and mastering for artists ready to release their best work.',
 };
+
+// Get related service pages
+const relatedServices = getRelatedPages('/services/rhythm', 3, true);
+
+// Contextual links for music services
+const contextualLinks = [
+  {
+    text: 'Video Post-Production',
+    href: '/services/motion',
+    icon: 'tabler:movie',
+    description: 'Professional film finishing and sound design'
+  },
+  {
+    text: 'Creative Consulting',
+    href: '/services/design',
+    icon: 'tabler:settings',
+    description: 'Workflow optimization for creators'
+  },
+  {
+    text: 'Photography Services',
+    href: '/services/color',
+    icon: 'tabler:camera',
+    description: 'Visual storytelling and color work'
+  }
+];
 ---
 
 <PageLayout metadata={metadata}>
@@ -110,6 +138,24 @@ const metadata = {
       },
     ]}
   />
+
+  <!-- Cross-Service Promotion -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <RelatedPages 
+        pages={relatedServices}
+        title="Complete Your Creative Vision"
+        variant="cards"
+      />
+      
+      <div class="mt-8">
+        <ContextualLinks 
+          links={contextualLinks}
+          title="Expand Your Creative Toolkit"
+        />
+      </div>
+    </div>
+  </section>
 
   <NotionContact id="contact" defaultService="Rhythm" />
 </PageLayout>

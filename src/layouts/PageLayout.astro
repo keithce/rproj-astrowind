@@ -3,16 +3,24 @@ import Layout from '~/layouts/Layout.astro';
 import Header from '~/components/widgets/Header.astro';
 import Footer from '~/components/widgets/Footer.astro';
 import Announcement from '~/components/widgets/Announcement.astro';
+import Breadcrumbs from '~/components/ui/Breadcrumbs.astro';
 
 import { headerData, footerData } from '~/navigation';
+import { getBreadcrumbPath } from '~/utils/internal-linking';
 
 import type { MetaData } from '~/types';
 
 export interface Props {
   metadata?: MetaData;
+  showBreadcrumbs?: boolean;
+  breadcrumbItems?: Array<{text: string; href?: string; icon?: string}>;
 }
 
-const { metadata } = Astro.props;
+const { metadata, showBreadcrumbs = true, breadcrumbItems } = Astro.props;
+
+// Generate breadcrumbs if not provided
+const breadcrumbs = breadcrumbItems || getBreadcrumbPath(Astro.url.pathname);
+const shouldShowBreadcrumbs = showBreadcrumbs && breadcrumbs.length > 1;
 ---
 
 <Layout metadata={metadata}>
@@ -23,6 +31,11 @@ const { metadata } = Astro.props;
     <Header {...headerData} isSticky showRssFeed={false} showToggleTheme />
   </slot>
   <main id="main-content" role="main" tabindex="-1" aria-label="Main content">
+    {shouldShowBreadcrumbs && (
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-2">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    )}
     <slot />
   </main>
   <slot name="footer">
