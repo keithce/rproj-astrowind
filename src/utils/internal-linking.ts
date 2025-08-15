@@ -56,7 +56,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     title: 'Resonant Design',
     href: '/services/design',
     description: 'Bespoke consulting for creator solopreneurs and small businesses',
-    icon: 'tabler:design-services',
+    icon: 'tabler:vector-bezier-2',
     category: 'Consulting',
     priority: 9,
     tags: ['consulting', 'workflow', 'technology', 'business', 'optimization']
