@@ -38,7 +38,7 @@ class LinkAnalytics {
     document.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       const link = target.closest('a');
-      
+
       if (link) {
         this.trackLinkClick(link, event);
       }
@@ -54,13 +54,13 @@ class LinkAnalytics {
     const href = link.href;
     const linkText = link.textContent?.trim() || '';
     const source = window.location.pathname;
-    
+
     // Determine link type
     let linkType: LinkClickEvent['linkType'] = 'external';
-    
+
     if (href.includes(window.location.hostname) || href.startsWith('/')) {
       linkType = 'internal';
-      
+
       // Categorize internal links
       if (href.includes('/services/')) {
         linkType = 'service';
@@ -76,7 +76,7 @@ class LinkAnalytics {
       destination: href,
       source,
       timestamp: Date.now(),
-      linkType
+      linkType,
     };
 
     this.events.push(clickEvent);
@@ -88,7 +88,7 @@ class LinkAnalytics {
       url: window.location.pathname,
       loadTime: performance.now(),
       sessionId: this.sessionId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     // Send performance data
@@ -104,7 +104,7 @@ class LinkAnalytics {
         link_type: event.linkType,
         source_page: event.source,
         session_id: this.sessionId,
-        custom_event_category: 'navigation'
+        custom_event_category: 'navigation',
       });
     }
 
@@ -114,7 +114,7 @@ class LinkAnalytics {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event),
-        keepalive: true
+        keepalive: true,
       }).catch(() => {
         // Fail silently to not impact user experience
       });
@@ -132,7 +132,7 @@ class LinkAnalytics {
       gtag('event', 'page_load_complete', {
         page_location: data.url,
         load_time: Math.round(data.loadTime),
-        session_id: this.sessionId
+        session_id: this.sessionId,
       });
     }
   }
@@ -148,15 +148,18 @@ class LinkAnalytics {
     topDestinations: Array<{ url: string; clicks: number }>;
   } {
     const totalClicks = this.events.length;
-    const serviceClicks = this.events.filter(e => e.linkType === 'service').length;
-    const blogClicks = this.events.filter(e => e.linkType === 'blog').length;
-    
+    const serviceClicks = this.events.filter((e) => e.linkType === 'service').length;
+    const blogClicks = this.events.filter((e) => e.linkType === 'blog').length;
+
     // Calculate top destinations
-    const destinationCounts = this.events.reduce((acc, event) => {
-      acc[event.destination] = (acc[event.destination] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const destinationCounts = this.events.reduce(
+      (acc, event) => {
+        acc[event.destination] = (acc[event.destination] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     const topDestinations = Object.entries(destinationCounts)
       .map(([url, clicks]) => ({ url, clicks }))
       .sort((a, b) => b.clicks - a.clicks)
@@ -167,7 +170,7 @@ class LinkAnalytics {
       serviceClicks,
       blogClicks,
       conversionRate: 0, // Would need conversion tracking
-      topDestinations
+      topDestinations,
     };
   }
 
@@ -180,14 +183,18 @@ class LinkAnalytics {
     priority: 'high' | 'medium' | 'low';
   }> {
     const summary = this.getPerformanceSummary();
-    const recommendations = [];
+    const recommendations: Array<{
+      type: string;
+      message: string;
+      priority: 'high' | 'medium' | 'low';
+    }> = [];
 
     // Low service engagement
     if (summary.serviceClicks / summary.totalClicks < 0.3) {
       recommendations.push({
         type: 'service_promotion',
         message: 'Consider adding more prominent service links to increase service page engagement',
-        priority: 'high' as const
+        priority: 'high' as const,
       });
     }
 
@@ -196,7 +203,7 @@ class LinkAnalytics {
       recommendations.push({
         type: 'blog_optimization',
         message: 'Blog content is popular - add more service CTAs to blog posts',
-        priority: 'medium' as const
+        priority: 'medium' as const,
       });
     }
 

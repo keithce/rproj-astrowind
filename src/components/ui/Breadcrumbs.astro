@@ -45,7 +45,7 @@ breadcrumbItems.push(...items);
           <a 
             href={item.href}
             class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
-            {index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {}}
+            {...(index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {})}
           >
             {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
             <span>{item.text}</span>

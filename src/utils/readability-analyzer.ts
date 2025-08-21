@@ -29,7 +29,7 @@ class ReadabilityAnalyzer {
     const vowels = 'aeiouy';
     let count = 0;
     let previousIsVowel = false;
-    
+
     for (let i = 0; i < word.length; i++) {
       const isVowel = vowels.includes(word[i].toLowerCase());
       if (isVowel && !previousIsVowel) {
@@ -37,17 +37,17 @@ class ReadabilityAnalyzer {
       }
       previousIsVowel = isVowel;
     }
-    
+
     // Adjust for silent 'e'
     if (word.endsWith('e') && count > 1) {
       count--;
     }
-    
+
     return Math.max(1, count);
   }
 
   private getFleschReadingEase(avgSentenceLength: number, avgSyllables: number): number {
-    return 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgSyllables);
+    return 206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllables;
   }
 
   private getReadingLevel(fleschScore: number): string {
@@ -68,8 +68,8 @@ class ReadabilityAnalyzer {
       /\bwas\s+\w+ed\s+by\b/i,
       /\bwere\s+\w+ed\s+by\b/i,
     ];
-    
-    return passiveIndicators.some(pattern => pattern.test(sentence));
+
+    return passiveIndicators.some((pattern) => pattern.test(sentence));
   }
 
   public analyzeText(text: string): ReadabilityMetrics {
@@ -82,38 +82,38 @@ class ReadabilityAnalyzer {
     // Split into sentences
     const sentences = cleanText
       .split(/[.!?]+/)
-      .filter(s => s.trim().length > 0)
-      .map(s => s.trim());
+      .filter((s) => s.trim().length > 0)
+      .map((s) => s.trim());
 
     // Split into words
     const words = cleanText
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length > 0);
+      .filter((w) => w.length > 0);
 
     // Calculate metrics
     const totalSentences = sentences.length;
     const totalWords = words.length;
     const avgSentenceLength = totalWords / totalSentences;
-    
+
     // Syllable analysis
     const totalSyllables = words.reduce((sum, word) => sum + this.syllableCount(word), 0);
     const avgSyllables = totalSyllables / totalWords;
     const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / totalWords;
 
     // Complex words (3+ syllables)
-    const complexWords = words.filter(word => this.syllableCount(word) >= 3).length;
+    const complexWords = words.filter((word) => this.syllableCount(word) >= 3).length;
 
     // Passive voice detection
-    const passiveVoice = sentences.filter(sentence => this.detectPassiveVoice(sentence)).length;
+    const passiveVoice = sentences.filter((sentence) => this.detectPassiveVoice(sentence)).length;
 
     // Flesch Reading Ease Score
     const fleschScore = this.getFleschReadingEase(avgSentenceLength, avgSyllables);
     const readingLevel = this.getReadingLevel(fleschScore);
 
     // Generate recommendations
-    const recommendations = this.generateRecommendations({
+    const recommendations = this.generateReadabilityRecommendations({
       avgSentenceLength,
       fleschScore,
       passiveVoice,
@@ -135,7 +135,7 @@ class ReadabilityAnalyzer {
     };
   }
 
-  private generateRecommendations(metrics: {
+  private generateReadabilityRecommendations(metrics: {
     avgSentenceLength: number;
     fleschScore: number;
     passiveVoice: number;
@@ -143,7 +143,7 @@ class ReadabilityAnalyzer {
     complexWords: number;
     totalWords: number;
   }): string[] {
-    const recommendations = [];
+    const recommendations: string[] = [];
 
     // Sentence length recommendations
     if (metrics.avgSentenceLength > 20) {
@@ -179,16 +179,16 @@ class ReadabilityAnalyzer {
 
   public analyzeSEO(content: string, headings: string[]): SEOMetrics {
     const readability = this.analyzeText(content);
-    
+
     // Analyze heading structure
     const headingStructure = this.analyzeHeadings(headings);
-    
+
     // Calculate keyword density
     const keywordDensity = this.calculateKeywordDensity(content);
-    
+
     // Count internal links
     const internalLinks = (content.match(/href="\/[^"]*"/g) || []).length;
-    
+
     // Generate SEO recommendations
     const seoRecommendations = this.generateSEORecommendations({
       readability,
@@ -212,7 +212,7 @@ class ReadabilityAnalyzer {
     return headings.map((heading, index) => {
       const level = parseInt(heading.match(/^h([1-6])/i)?.[1] || '1');
       const text = heading.replace(/<[^>]*>/g, '').trim();
-      const issues = [];
+      const issues: string[] = [];
 
       // Check heading length
       if (text.length > 60) {
@@ -242,12 +242,12 @@ class ReadabilityAnalyzer {
       .replace(/<[^>]*>/g, ' ')
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length > 3); // Only count words longer than 3 characters
+      .filter((w) => w.length > 3); // Only count words longer than 3 characters
 
     const totalWords = words.length;
     const wordCounts: Record<string, number> = {};
 
-    words.forEach(word => {
+    words.forEach((word) => {
       wordCounts[word] = (wordCounts[word] || 0) + 1;
     });
 
@@ -255,7 +255,8 @@ class ReadabilityAnalyzer {
     const density: Record<string, number> = {};
     Object.entries(wordCounts).forEach(([word, count]) => {
       const densityPercent = (count / totalWords) * 100;
-      if (densityPercent >= 1) { // Only include words with 1%+ density
+      if (densityPercent >= 1) {
+        // Only include words with 1%+ density
         density[word] = Math.round(densityPercent * 100) / 100;
       }
     });
@@ -270,7 +271,7 @@ class ReadabilityAnalyzer {
     internalLinks: number;
     keywordDensity: Record<string, number>;
   }): string[] {
-    const recommendations = [];
+    const recommendations: string[] = [];
 
     // Content length
     if (data.contentLength < 1000) {
@@ -285,7 +286,7 @@ class ReadabilityAnalyzer {
     }
 
     // Heading structure issues
-    const headingIssues = data.headingStructure.flatMap(h => h.issues);
+    const headingIssues = data.headingStructure.flatMap((h) => h.issues);
     if (headingIssues.length > 0) {
       recommendations.push('Fix heading structure issues for better SEO and accessibility.');
     }
@@ -294,7 +295,7 @@ class ReadabilityAnalyzer {
     const highDensityKeywords = Object.entries(data.keywordDensity)
       .filter(([_, density]) => density > 3)
       .map(([word]) => word);
-    
+
     if (highDensityKeywords.length > 0) {
       recommendations.push(`Reduce keyword density for: ${highDensityKeywords.join(', ')} (>3% density detected).`);
     }
@@ -307,46 +308,45 @@ export const readabilityAnalyzer = new ReadabilityAnalyzer();
 
 // Content optimization helpers
 export function optimizeForReadability(text: string): string {
-  return text
-    // Break up long sentences at conjunctions
-    .replace(/,\s+and\s+/g, '. ')
-    .replace(/,\s+but\s+/g, '. However, ')
-    .replace(/,\s+so\s+/g, '. Therefore, ')
-    // Convert passive to active voice patterns
-    .replace(/was\s+(\w+ed)\s+by\s+/g, (match, verb) => {
-      // This is a simplified conversion - real implementation would be more complex
-      return `${verb.replace('ed', '')} `;
-    })
-    // Simplify complex phrases
-    .replace(/in order to/g, 'to')
-    .replace(/due to the fact that/g, 'because')
-    .replace(/at this point in time/g, 'now')
-    .replace(/a large number of/g, 'many')
-    .replace(/prior to/g, 'before');
+  return (
+    text
+      // Break up long sentences at conjunctions
+      .replace(/,\s+and\s+/g, '. ')
+      .replace(/,\s+but\s+/g, '. However, ')
+      .replace(/,\s+so\s+/g, '. Therefore, ')
+      // Convert passive to active voice patterns
+      .replace(/was\s+(\w+ed)\s+by\s+/g, (match, verb) => {
+        // This is a simplified conversion - real implementation would be more complex
+        return `${verb.replace('ed', '')} `;
+      })
+      // Simplify complex phrases
+      .replace(/in order to/g, 'to')
+      .replace(/due to the fact that/g, 'because')
+      .replace(/at this point in time/g, 'now')
+      .replace(/a large number of/g, 'many')
+      .replace(/prior to/g, 'before')
+  );
 }
 
 export function generateReadableAlternatives(text: string): string[] {
-  const alternatives = [];
-  
+  const alternatives: string[] = [];
+
   // Sentence structure variations
   if (text.length > 100) {
-    alternatives.push(
-      text.split('. ').join('.\n\n'),
-      text.replace(/,\s+(and|but|or)\s+/g, '.\n\n'),
-    );
+    alternatives.push(text.split('. ').join('.\n\n'), text.replace(/,\s+(and|but|or)\s+/g, '.\n\n'));
   }
-  
+
   // Active voice alternatives
   const passivePatterns = [
     { pattern: /(\w+)\s+was\s+(\w+ed)\s+by\s+(\w+)/g, replacement: '$3 $2 $1' },
     { pattern: /(\w+)\s+were\s+(\w+ed)\s+by\s+(\w+)/g, replacement: '$3 $2 $1' },
   ];
-  
+
   passivePatterns.forEach(({ pattern, replacement }) => {
     if (pattern.test(text)) {
       alternatives.push(text.replace(pattern, replacement));
     }
   });
-  
-  return alternatives.filter(alt => alt !== text);
+
+  return alternatives.filter((alt) => alt !== text);
 }
