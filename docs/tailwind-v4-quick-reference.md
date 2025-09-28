@@ -83,8 +83,8 @@
 
 ```html
 <!-- Fade animations -->
-<div class="animate-fade-in-up">Fade in from bottom</div>
-<div class="animate-fade-in-down">Fade in from top</div>
+<div class="-up">Fade in from bottom</div>
+<div class="-down">Fade in from top</div>
 
 <!-- Scale animations -->
 <div class="animate-scale-in">Scale in effect</div>

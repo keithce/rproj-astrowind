@@ -31,7 +31,7 @@ const {
         {
           tagline && (
             <p
-              class="text-secondary animate-fade-in text-base font-bold tracking-wide uppercase dark:text-blue-200"
+              class="text-base font-bold tracking-wide uppercase text-secondary dark:text-blue-200 "
               set:html={tagline}
             />
           )
@@ -39,17 +39,13 @@ const {
         {
           title && (
             <h1
-              class="leading-tighter font-heading animate-fade-in mb-4 text-5xl font-bold tracking-tighter md:text-6xl dark:text-gray-200"
+              class="mb-4 text-5xl font-bold tracking-tighter md:text-6xl leading-tighter font-heading dark:text-gray-200 "
               set:html={title}
             />
           )
         }
-        <div class="mx-auto max-w-3xl lg:max-w-none">
-          {
-            subtitle && (
-              <p class="text-muted dark:text-muted-foreground animate-fade-in mb-6 text-xl" set:html={subtitle} />
-            )
-          }
+        <div class="max-w-3xl mx-auto lg:max-w-none">
+          {subtitle && <p class="mb-6 text-xl text-muted dark:text-muted-foreground " set:html={subtitle} />}
 
           {
             actions && (
@@ -72,7 +68,7 @@ const {
       <div class="basis-1/2">
         {
           image && (
-            <div class="animate-fade-in relative m-auto max-w-5xl">
+            <div class="relative max-w-5xl m-auto ">
               {typeof image === 'string' ? (
                 <Fragment set:html={image} />
               ) : (

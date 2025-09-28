@@ -8,6 +8,7 @@
 ---
 
 [![Website](https://img.shields.io/badge/Visit%20Live%20Site-rproj.art-556bf2?style=flat-square&logo=vercel&logoColor=white)](https://rproj.art)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/keithce/rproj-astrowind?labelColor=171717&color=FF570A&link=https://coderabbit.ai&label=CodeRabbit+Reviews)
 
 ---
 

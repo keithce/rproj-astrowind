@@ -17,6 +17,7 @@ const {
   bg = await Astro.slots.render('bg'),
   showScrollIndicator = false,
   gradientBg = false,
+  centerImage = false,
 } = Astro.props;
 ---
 
@@ -41,13 +42,21 @@ const {
           <img
             src={image}
             alt=""
-            class="absolute bottom-0 left-1/2 min-h-full min-w-full -translate-x-1/2 object-cover object-bottom opacity-30"
+            class={
+              centerImage
+                ? 'absolute inset-0 object-cover object-center w-full h-full opacity-30'
+                : 'absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30'
+            }
             loading="eager"
             decoding="async"
           />
         ) : (
           <Image
-            class="absolute bottom-0 left-1/2 min-h-full min-w-full -translate-x-1/2 object-cover object-bottom opacity-30"
+            class={
+              centerImage
+                ? 'absolute inset-0 object-cover object-center w-full h-full opacity-30'
+                : 'absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30'
+            }
             widths={[400, 768, 1024, 2040]}
             sizes="100vw"
             loading="eager"
@@ -77,9 +86,7 @@ const {
         {
           tagline && (
             <p
-              class={`animate-fade-in text-base font-bold tracking-wide uppercase ${
-                gradientBg ? 'text-accent' : 'text-secondary'
-              }`}
+              class={`text-base font-bold tracking-wide uppercase  ${gradientBg ? 'text-accent' : 'text-secondary'}`}
               set:html={tagline}
             />
           )
@@ -87,7 +94,7 @@ const {
         {
           title && (
             <h1
-              class={`font-heading animate-fade-in text-foreground mb-4 leading-tight font-bold tracking-tighter break-words whitespace-normal ${
+              class={`break-words whitespace-normal font-bold leading-tight tracking-tighter mb-4 font-heading  text-foreground ${
                 gradientBg ? 'text-5xl md:text-7xl' : 'text-xl sm:text-3xl md:text-5xl lg:text-6xl'
               }`}
               set:html={title}
@@ -98,16 +105,14 @@ const {
           {
             subtitle && (
               <p
-                class={`animate-fade-in text-foreground/80 mb-6 leading-relaxed ${
-                  gradientBg ? 'text-xl md:text-2xl' : 'text-xl'
-                }`}
+                class={`mb-6  leading-relaxed text-foreground/80 ${gradientBg ? 'text-xl md:text-2xl' : 'text-xl'}`}
                 set:html={subtitle}
               />
             )
           }
           {
             actions && (
-              <div class="animate-fade-in m-auto mb-8 flex max-w-xs flex-col flex-nowrap gap-4 sm:max-w-md sm:flex-row sm:justify-center">
+              <div class="flex flex-col max-w-xs gap-4 m-auto mb-8 sm:max-w-md flex-nowrap sm:flex-row sm:justify-center ">
                 {Array.isArray(actions) ? (
                   actions.map(action => (
                     <div class="flex w-full sm:w-auto">

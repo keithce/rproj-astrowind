@@ -1,7 +1,0 @@
-onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - '@vercel/speed-insights'
-  - chromedriver
-  - esbuild
-  - puppeteer
-  - sharp

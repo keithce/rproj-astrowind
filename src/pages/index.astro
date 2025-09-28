@@ -8,7 +8,6 @@ import Features2 from '~/components/widgets/Features2.astro';
 import Steps from '~/components/widgets/Steps.astro';
 import Content from '~/components/widgets/Content.astro';
 import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
-import FAQs from '~/components/widgets/FAQs.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getPermalink } from '~/utils/permalinks';
 import Header from '~/components/widgets/Header.astro';
@@ -122,7 +121,7 @@ const metadata = {
         callToAction: {
           target: '_blank',
           text: 'Music Portfolio',
-          href: 'https://play.reelcrafter.com/resonantrhythm/portfolio',
+          href: 'https://play.reelcrafter.com/tJfSbOHRTXSXT2wf4rkcRw',
         },
       },
     ]}
@@ -254,59 +253,121 @@ const metadata = {
   <!-- Features2 Widget ************** -->
 
   <Features2
-    title="Most used widgets"
-    subtitle="Provides frequently used components for building websites using Tailwind CSS"
-    tagline="Components"
+    title="Creators & Resources I Trust"
+    subtitle="A curated collection of creators, educators, and resources that have influenced my creative journey and continue to inspire my work."
+    tagline="Recommendations"
     items={[
       {
-        title: 'Headers',
-        description: "Ever tried driving without GPS? Boom! That's why websites need headers for direction.",
-        icon: 'flat-color-icons:template',
-      },
-      {
-        title: 'Heros',
+        title: 'Andrew Huang',
         description:
-          "Picture a superhero landing – epic, right? That's the job of a Hero section, making grand entrances!",
-        icon: 'flat-color-icons:gallery',
+          'Prolific music producer and educator known for genre-hopping songs, creative sound design, and YouTube tutorials.',
+        icon: 'tabler:music',
+        callToAction: {
+          text: 'Visit Channel',
+          href: 'https://www.youtube.com/channel/UCdcemy56JtVTrsFIOoqvV8g',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
       },
       {
-        title: 'Features',
+        title: 'Cullen Kelly',
         description:
-          'Where websites strut their stuff and show off superpowers. No holding back on the bragging rights here!',
-        icon: 'flat-color-icons:approval',
+          'Professional colorist and educator sharing advanced DaVinci Resolve color management and look development.',
+        icon: 'tabler:palette',
+        callToAction: {
+          text: 'Visit Channel',
+          href: 'https://www.youtube.com/c/CullenKelly',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
       },
       {
-        title: 'Content',
+        title: 'Potato Jet',
+        description: 'Cinematography gear reviews and filmmaking tips with a fun, unpretentious vibe.',
+        icon: 'tabler:camera',
+        callToAction: {
+          text: 'Visit Channel',
+          href: 'https://www.youtube.com/potatojet',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
+      },
+      {
+        title: 'The Pragmatic Engineer',
         description:
-          "Dive into the meat and potatoes of a site; without it, you'd just be window shopping. Content is king.",
-        icon: 'flat-color-icons:document',
+          'Software engineering newsletter covering tech leadership, engineering culture, and industry trends.',
+        icon: 'tabler:code',
+        callToAction: {
+          text: 'Visit Site',
+          href: 'https://pragmaticengineer.com/',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
       },
       {
-        title: 'Call-to-Action',
+        title: 'EDMProd',
+        description: 'Electronic music production education with courses, articles, and podcasts for modern producers.',
+        icon: 'tabler:headphones',
+        callToAction: {
+          text: 'Visit Site',
+          href: 'https://www.edmprod.com/',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
+      },
+      {
+        title: 'Jim Nix',
+        description: 'Travel photographer sharing editing tutorials, creative workflows, and photo inspiration.',
+        icon: 'tabler:photo',
+        callToAction: {
+          text: 'Visit Channel',
+          href: 'https://www.youtube.com/@JimNix',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
+      },
+      {
+        title: 'MKBHD',
+        description: 'High-production tech reviews, cameras, EVs, and creator interviews.',
+        icon: 'tabler:device-mobile',
+        callToAction: {
+          text: 'Visit Channel',
+          href: 'https://www.youtube.com/MKBHD',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
+      },
+      {
+        title: 'Todd Henry',
+        description: 'Author and host of Accidental Creative on leadership and creating on demand.',
+        icon: 'tabler:bulb',
+        callToAction: {
+          text: 'Visit Site',
+          href: 'https://accidentalcreative.com/',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
+      },
+      {
+        title: 'Marc Champagne',
         description:
-          'That enthusiastic friend who\'s always urging, "Do it! Do it!"? Yeah, that\'s this button nudging you towards adventure.',
-        icon: 'flat-color-icons:advertising',
-      },
-      {
-        title: 'Pricing',
-        description: 'Behold the dessert menu of the website world. Tempting choices await, can you resist?',
-        icon: 'flat-color-icons:currency-exchange',
-      },
-      {
-        title: 'Testimonial',
-        description: 'Step into the gossip corner! Here, other visitors spill the beans and share the juicy details.',
-        icon: 'flat-color-icons:voice-presentation',
-      },
-      {
-        title: 'Contact',
-        description:
-          'Like a digital mailbox, but faster! Drop a line, ask a question, or send a virtual high-five. Ding! Message in.',
-        icon: 'flat-color-icons:business-contact',
-      },
-      {
-        title: 'Footers',
-        description: "The footer's like the credits of a movie but sprinkled with easter eggs. Time to hunt!",
-        icon: 'flat-color-icons:database',
+          'Mental fitness strategist and author of Personal Socrates, hosting thoughtful interviews and prompts.',
+        icon: 'tabler:brain',
+        callToAction: {
+          text: 'Visit Site',
+          href: 'https://www.marccchampagne.com/',
+          target: '_blank',
+          variant: 'link',
+          icon: 'tabler:external-link',
+        },
       },
     ]}
   >
@@ -320,47 +381,7 @@ const metadata = {
   <BlogLatestPosts
     title="Find More in My Blog"
     information={'Articles about my work and the tools I use to create it. Past Newsletters and other content.'}
-  />
-
-  <!-- FAQs Widget ******************* -->
-
-  <FAQs
-    title="Frequently Asked Questions"
-    subtitle="Dive into the following questions to gain insights into the powerful features that AstroWind offers and how it can elevate your web development journey."
-    tagline="FAQs"
-    classes={{ container: 'max-w-6xl' }}
-    items={[
-      {
-        title: 'Why AstroWind?',
-        description:
-          "Michael Knight a young loner on a crusade to champion the cause of the innocent. The helpless. The powerless in a world of criminals who operate above the law. Here he comes Here comes Speed Racer. He's a demon on wheels.",
-      },
-      {
-        title: 'What do I need to start?',
-        description:
-          'Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds. Many say exploration is part of our destiny, but it’s actually our duty to future generations.',
-      },
-      {
-        title: 'How to install the Astro + Tailwind CSS template?',
-        description:
-          "Well, the way they make shows is, they make one show. That show's called a pilot. Then they show that show to the people who make shows, and on the strength of that one show they decide if they're going to make more shows.",
-      },
-      {
-        title: "What's something that you don't understand?",
-        description:
-          "A flower in my garden, a mystery in my panties. Heart attack never stopped old Big Bear. I didn't even know we were calling him Big Bear.",
-      },
-      {
-        title: 'What is something that you would like to try again?',
-        description:
-          "A business big enough that it could be listed on the NASDAQ goes belly up. Disappears! It ceases to exist without me. No, you clearly don't know who you're talking to, so let me clue you in.",
-      },
-      {
-        title: 'If you could only ask one question to each person you meet, what would that question be?',
-        description:
-          "This is not about revenge. This is about justice. A lot of things can change in twelve years, Admiral. Well, that's certainly good to know. About four years. I got tired of hearing how young I looked.",
-      },
-    ]}
+    showContextualLinks={false}
   />
 
   <!-- CallToAction Widget *********** -->
@@ -375,13 +396,11 @@ const metadata = {
       },
     ]}
   >
-    <Fragment slot="title">
-      Astro&nbsp;+&nbsp;<br class="block sm:hidden" /><span class="sm:whitespace-nowrap">Tailwind CSS</span>
-    </Fragment>
+    <Fragment slot="title"> Ready to Create Something That Resonates? </Fragment>
 
     <Fragment slot="subtitle">
-      Be very surprised by these huge fake numbers you are seeing on this page. <br class="hidden md:inline" />Don't
-      waste more time! :P
+      Let's work together to bring your creative vision to life with the power of resonant design, audio, and visual
+      storytelling.
     </Fragment>
   </CallToAction>
 </Layout>

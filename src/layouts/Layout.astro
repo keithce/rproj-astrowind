@@ -414,7 +414,7 @@ const { language, textDirection } = I18N;
         /**
          * Manage focus within nested interactive containers
          */
-        manageNestedFocus(target, container) {
+        manageNestedFocus(_target, container) {
           // Store the active nested container
           container.setAttribute('data-active-nested', 'true');
 
@@ -575,10 +575,10 @@ const { language, textDirection } = I18N;
               this.handleGridNavigation(e, component);
               break;
             case 'tree':
-              this.handleTreeNavigation(e, component);
+              this.handleMenuNavigation(e, component);
               break;
             case 'tab-list':
-              this.handleTabListNavigation(e, component);
+              this.handleMenuNavigation(e, component);
               break;
           }
         }

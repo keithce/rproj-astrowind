@@ -7,19 +7,47 @@ import Steps from '~/components/widgets/Steps.astro';
 import Stats from '~/components/widgets/Stats.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
   title: 'Post Production Film Finishing | Professional Sound & Color Services',
   description:
     'Expert post-production film finishing services specializing in professional sound design and color grading. Transform your vision with industry-leading audio and visual enhancement.',
 };
+
+// Get related service pages
+const relatedServices = getRelatedPages('/services/motion', 3, true);
+
+// Contextual links specific to motion/video services
+const contextualLinks = [
+  {
+    text: 'Audio Engineering Services',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Professional music production and audio mixing',
+  },
+  {
+    text: 'Photography & Color Work',
+    href: '/services/color',
+    icon: 'tabler:camera',
+    description: 'Visual storytelling and color grading expertise',
+  },
+  {
+    text: 'Technical Consulting',
+    href: '/services/design',
+    icon: 'tabler:settings',
+    description: 'Workflow optimization and tech stack consulting',
+  },
+];
 ---
 
 <Layout metadata={metadata}>
   <!-- Hero Section -->
   <Hero
-    title="<span class='text-accent'>Post Production</span><br class='hidden lg:inline' />Film Finishing"
-    subtitle="Transform your raw footage into cinematic masterpieces with professional sound design and color grading that brings your vision to life."
+    title="<span class='text-accent'>Professional</span><br class='hidden lg:inline' />Film Finishing"
+    subtitle="Turn your raw footage into polished, professional content. We handle sound design and color grading so your vision comes to life on screen."
     tagline="Professional Film Finishing"
     actions={[
       {
@@ -30,7 +58,7 @@ const metadata = {
       },
       {
         variant: 'secondary',
-        text: 'View Portfolio',
+        text: 'See Our Work',
         href: '#portfolio',
         icon: 'tabler:eye',
       },
@@ -290,4 +318,15 @@ const metadata = {
     subtitle="Tell us about your vision and we'll provide a detailed proposal tailored to your specific needs and timeline."
     defaultService="Motion"
   />
+
+  <!-- Related Services Cross-Promotion -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <RelatedPages pages={relatedServices} title="Complete Your Production Pipeline" variant="cards" />
+
+      <div class="mt-8">
+        <ContextualLinks links={contextualLinks} title="Enhance Your Creative Process" />
+      </div>
+    </div>
+  </section>
 </Layout>
