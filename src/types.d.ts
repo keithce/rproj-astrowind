@@ -224,6 +224,7 @@ export interface Hero extends Omit<Headline, 'classes'>, Omit<Widget, 'isDark' |
   image?: string | unknown;
   showScrollIndicator?: boolean;
   gradientBg?: boolean;
+  centerImage?: boolean;
 }
 
 export interface Team extends Omit<Headline, 'classes'>, Widget {

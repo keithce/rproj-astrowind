@@ -17,6 +17,7 @@ const {
   bg = await Astro.slots.render('bg'),
   showScrollIndicator = false,
   gradientBg = false,
+  centerImage = false,
 } = Astro.props;
 ---
 
@@ -41,13 +42,21 @@ const {
           <img
             src={image}
             alt=""
-            class="absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30"
+            class={
+              centerImage
+                ? 'absolute inset-0 object-cover object-center w-full h-full opacity-30'
+                : 'absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30'
+            }
             loading="eager"
             decoding="async"
           />
         ) : (
           <Image
-            class="absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30"
+            class={
+              centerImage
+                ? 'absolute inset-0 object-cover object-center w-full h-full opacity-30'
+                : 'absolute bottom-0 object-cover object-bottom min-w-full min-h-full -translate-x-1/2 left-1/2 opacity-30'
+            }
             widths={[400, 768, 1024, 2040]}
             sizes="100vw"
             loading="eager"
