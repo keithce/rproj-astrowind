@@ -5,8 +5,15 @@ import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import ResonantWelcomeEmail from '~/utils/welcome-email';
 import React from 'react';
+// import { checkBotId } from 'botid/server';
+import {
+  ApiErrors,
+  jsonResponse,
+  classifyError,
+  createValidationErrorResponse,
+  createSuccessResponse,
+} from '../../utils/api-responses';
 
-console.log('RESEND_API_KEY', import.meta.env.RESEND_API_KEY);
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
 
@@ -19,23 +26,79 @@ const schema = z.object({
 });
 
 export const POST: APIRoute = async ({ request }) => {
+  // Set cache-control headers to prevent any caching
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'CDN-Cache-Control': 'max-age=10',
+    'Vercel-CDN-Cache-Control': 'max-age=10',
+    Pragma: 'no-cache',
+    Expires: '0',
+  });
+
+  console.log('[submit-to-notion] ⏩ Handler invoked - processing new request');
+  // const verification = await checkBotId();
+  // console.log('[submit-to-notion] 🤖 Bot verification result:', verification);
+
+  // if (verification.isBot) {
+  //   console.log('[submit-to-notion] 🚫 Bot detected - denying access');
+  //   // return jsonResponse(ApiErrors.botDetected(), 403);
+  // }
+
   const formData = await request.formData();
+  console.log('[submit-to-notion] 📥 Raw FormData received:', Object.fromEntries(formData.entries()));
   try {
     const data = Object.fromEntries(formData.entries());
+    console.log('[submit-to-notion] 🔄 Converted FormData to object:', data);
     const result = schema.safeParse(data);
+    console.log('[submit-to-notion] 🛂 Schema validation success:', result.success);
     if (!result.success) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: 'Validation failed',
-          errors: result.error.flatten().fieldErrors,
-        }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      console.log('[submit-to-notion] ❌ Validation failed with errors:', result.error.flatten().fieldErrors);
+      return jsonResponse(createValidationErrorResponse(result.error.flatten().fieldErrors), 400);
     }
     const { name, email, service, message } = result.data;
+    console.log('[submit-to-notion] ✅ Parsed form fields', { name, email, service, messageLength: message.length });
 
-    await notion.pages.create({
+    // Business logic validation (422 Unprocessable Entity)
+    console.log('[submit-to-notion] 🔍 Checking message length constraint (<5000)');
+    if (message.length > 5000) {
+      console.log('[submit-to-notion] ⚠️ Message too long:', message.length);
+      return jsonResponse(
+        ApiErrors.unprocessableEntity('Message is too long. Please keep it under 5000 characters.', {
+          field: 'message',
+          limit: 5000,
+          current: message.length,
+        }),
+        422
+      );
+    }
+
+    // Additional business logic checks
+    const prohibitedWords = ['spam', 'test123', 'dummy'];
+    console.log('[submit-to-notion] 🔎 Checking for prohibited words:', prohibitedWords);
+
+    let hasProhibitedContent = false;
+    for (const word of prohibitedWords) {
+      const present = message.toLowerCase().includes(word) || name.toLowerCase().includes(word);
+      console.log(`  [submit-to-notion] ➡️ Word check "${word}":`, present);
+      if (present) {
+        hasProhibitedContent = true;
+        break;
+      }
+    }
+
+    if (hasProhibitedContent) {
+      console.log('[submit-to-notion] 🚫 Prohibited content found in submission');
+      return jsonResponse(
+        ApiErrors.contentValidation(
+          'Your submission contains content that cannot be processed. Please revise and try again.'
+        ),
+        422
+      );
+    }
+
+    console.log('[submit-to-notion] 📝 Creating Notion page with submission data');
+    const notionResponse = await notion.pages.create({
       parent: { database_id: import.meta.env.NOTION_DATABASE_ID },
       properties: {
         Name: {
@@ -50,6 +113,7 @@ export const POST: APIRoute = async ({ request }) => {
         },
       },
     });
+    console.log('[submit-to-notion] ✅ Notion page created', notionResponse);
 
     // --- Compose personalized steps for the welcome email ---
     const steps = [
@@ -66,49 +130,71 @@ export const POST: APIRoute = async ({ request }) => {
         description: `Resource sharing. You'll receive curated resources, ideas, and opportunities to collaborate or learn more.`,
       },
     ];
+    console.log('[submit-to-notion] 📨 Welcome email steps composed', steps);
 
     // --- Render the welcome email to HTML ---
+    console.log('[submit-to-notion] 🖨️ Rendering welcome email HTML');
     const html = await render(React.createElement(ResonantWelcomeEmail, { steps }));
+    console.log('[submit-to-notion] 📄 Email HTML generated (length):', html.length);
 
     // --- Send the personalized welcome email to the user ---
-    console.log('Sending welcome email to:', email);
+    console.log('[submit-to-notion] ✉️ Sending welcome email to:', email);
     await resend.emails.send({
       from: 'info@rproj.art',
       to: email,
       subject: 'Welcome to Resonant Projects.art!',
       html,
     });
-    console.log('Welcome email sent to:', email);
+    console.log('[submit-to-notion] ✅ Welcome email dispatched to:', email);
 
-    // Redirect to thank you page with success param
-    return new Response(null, {
-      status: 303,
-      headers: { Location: '/thank-you' },
+    // Return JSON success response so client JS can handle redirect
+    console.log('[submit-to-notion] 🚀 Preparing success JSON response');
+    const redirectUrl = '/thank-you';
+    const body = createSuccessResponse({ redirect: redirectUrl }, 'Form submitted successfully');
+    console.log('[submit-to-notion] ↩️ Returning success response with redirect', redirectUrl);
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers,
     });
   } catch (error: unknown) {
-    console.error('Error submitting to Notion:', error);
-    const message =
-      typeof error === 'object' && error && 'message' in error
-        ? String((error as { message?: unknown }).message)
-        : 'Unknown error';
+    console.error('[submit-to-notion] ❗ Error encountered during processing:', error);
 
-    // Send error notification email
-    await resend.emails.send({
-      from: 'noreply@resonantprojects.art',
-      to: 'info@resonantprojects.art',
-      subject: 'Contact Form Error',
-      html: `
-        <h2>Contact Form Submission Error</h2>
-        <p><strong>Error Message:</strong> ${message}</p>
-        <h3>Form Data:</h3>
-        <pre>${JSON.stringify(formData, null, 2)}</pre>
-      `,
-    });
+    // Use standardized error classification
+    const { type, status, message: errorMessage } = classifyError(error);
+    console.log('[submit-to-notion] ⚠️ Classified error', { type, status, errorMessage });
 
-    // Redirect to thank you page
-    return new Response(null, {
-      status: 303,
-      headers: { Location: '/thank-you' },
-    });
+    // Send error notification email (non-blocking)
+    try {
+      console.log('[submit-to-notion] 📧 Sending error notification email');
+      await resend.emails.send({
+        from: 'noreply@resonantprojects.art',
+        to: 'info@resonantprojects.art',
+        subject: 'Contact Form Error',
+        html: `
+          <h2>Contact Form Submission Error</h2>
+          <p><strong>Error Type:</strong> ${type}</p>
+          <p><strong>Status Code:</strong> ${status}</p>
+          <p><strong>Error Message:</strong> ${errorMessage}</p>
+          <h3>Form Data:</h3>
+          <pre>${JSON.stringify(Object.fromEntries(formData.entries()), null, 2)}</pre>
+        `,
+      });
+      console.log('[submit-to-notion] ✅ Error notification email sent');
+    } catch (emailError) {
+      console.error('[submit-to-notion] ❌ Failed to send error notification email:', emailError);
+    }
+
+    console.log('[submit-to-notion] ↩️ Returning error JSON response');
+    // Return standardized error response
+    return jsonResponse(
+      {
+        success: false,
+        error: type,
+        message: errorMessage,
+        status: status,
+        timestamp: new Date().toISOString(),
+      },
+      status
+    );
   }
 };

@@ -7,6 +7,9 @@ import NotionContact from '~/components/widgets/NotionContact.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getCategoryImages, getCloudinaryImageUrl } from '~/utils/cloudinary';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
   title: "Photography Portfolio - Capturing Life's Beautiful Moments",
@@ -21,6 +24,25 @@ const landscapeImages = await getCategoryImages('landscape', 8);
 const portraitImages = await getCategoryImages('portrait', 7);
 const boudoirImages = await getCategoryImages('boudoir', 6);
 const maternityChildrenImages = await getCategoryImages('maternity', 7);
+
+// Get related service pages
+const relatedServices = getRelatedPages('/services/color', 3, true);
+
+// Contextual links for photography services
+const contextualLinks = [
+  {
+    text: 'Film & Video Production',
+    href: '/services/motion',
+    icon: 'tabler:movie',
+    description: 'Professional video post-production and editing',
+  },
+  {
+    text: 'Audio for Video',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Sound design and audio mixing for visual content',
+  },
+];
 
 // Testimonials data
 const testimonials = [
@@ -74,14 +96,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
     actions={[
       {
         variant: 'primary',
-        text: 'View Portfolio',
+        text: 'See Our Work',
         href: '#portfolio',
         class:
           'bg-white text-[var(--color-primary)] font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors duration-200 transform hover:scale-105',
       },
       {
         variant: 'secondary',
-        text: 'Book Session',
+        text: 'Start Your Session',
         href: '#contact',
         class:
           'border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-[var(--color-primary)] transition-all duration-200 transform hover:scale-105',
@@ -343,6 +365,17 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
   <!-- Contact Section -->
   <section id="contact" class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
     <NotionContact service="color" />
+  </section>
+
+  <!-- Related Services -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <RelatedPages pages={relatedServices} title="Complete Your Visual Story" variant="cards" />
+
+      <div class="mt-8">
+        <ContextualLinks links={contextualLinks} title="Enhance Your Visual Content" />
+      </div>
+    </div>
   </section>
 </Layout>
 

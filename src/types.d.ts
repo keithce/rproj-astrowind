@@ -288,6 +288,18 @@ export interface Content extends Omit<Headline, 'classes'>, Widget {
   isReversed?: boolean;
   isAfterContent?: boolean;
   callToAction?: CallToAction;
+  showRelated?: boolean;
+  relatedTitle?: string;
 }
 
 export interface Contact extends Omit<Headline, 'classes'>, Form, Widget {}
+
+// Global type definitions
+declare global {
+  function gtag(command: 'config', targetId: string, config?: Record<string, unknown>): void;
+  function gtag(command: 'event', eventName: string, parameters?: Record<string, unknown>): void;
+  function gtag(command: string, ...args: unknown[]): void;
+  interface Window {
+    gtag: typeof gtag;
+  }
+}

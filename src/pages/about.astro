@@ -1,227 +1,373 @@
 ---
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import Content from '~/components/widgets/Content.astro';
 import Features2 from '~/components/widgets/Features2.astro';
-import Features3 from '~/components/widgets/Features3.astro';
-import Hero from '~/components/widgets/Hero.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
 import Stats from '~/components/widgets/Stats.astro';
 import Steps2 from '~/components/widgets/Steps2.astro';
 import Layout from '~/layouts/PageLayout.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
 
 const metadata = {
-  title: 'About us',
+  title: 'About - My Resonant Journey',
+  description:
+    'Discover the story behind Resonant Rhythm - from classical music beginnings to audio engineering mastery.',
 };
+
+// Strategic internal links from about page
+const aboutContextualLinks = [
+  {
+    text: 'Start Your Audio Project',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Professional music mixing and mastering services',
+  },
+  {
+    text: 'Creative Technology Consulting',
+    href: '/services/design',
+    icon: 'tabler:settings',
+    description: 'Workflow optimization and tech stack consulting',
+  },
+  {
+    text: 'View Photography Portfolio',
+    href: '/services/color',
+    icon: 'tabler:camera',
+    description: 'Professional photography and visual services',
+  },
+  {
+    text: 'Film Post-Production',
+    href: '/services/motion',
+    icon: 'tabler:movie',
+    description: 'Video editing and post-production services',
+  },
+];
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero Widget ******************* -->
-
-  <Hero
-    tagline="About us"
-    image={{
-      src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      alt: 'Caos Image',
-    }}
-  >
-    <Fragment slot="title">
-      Elevate your online presence with our <br />
-      <span class="text-accent dark:text-white highlight"> Beautiful Website Templates</span>
-    </Fragment>
-
-    <Fragment slot="subtitle">
-      Donec efficitur, ipsum quis congue luctus, mauris magna convallis mauris, eu auctor nisi lectus non augue. Donec
-      quis lorem non massa vulputate efficitur ac at turpis. Sed tincidunt ex a nunc convallis, et lobortis nisi tempus.
-      Suspendisse vitae nisi eget tortor luctus maximus sed non lectus.
-    </Fragment>
-  </Hero>
-
-  <!-- Stats Widget ****************** -->
-
-  <Stats
-    title="Statistics about us"
-    stats={[
-      { title: 'Offices', amount: '4' },
-      { title: 'Employees', amount: '248' },
-      { title: 'Templates', amount: '12' },
-      { title: 'Awards', amount: '24' },
-    ]}
-  />
-
-  <!-- Features3 Widget ************** -->
-
-  <Features3
-    title="Our templates"
-    subtitle="Etiam scelerisque, enim eget vestibulum luctus, nibh mauris blandit nulla, nec vestibulum risus justo ut enim. Praesent lacinia diam et ante imperdiet euismod."
-    columns={3}
-    isBeforeContent={true}
-    items={[
-      {
-        title: 'Educational',
-        description:
-          'Morbi faucibus luctus quam, sit amet aliquet felis tempor id. Cras augue massa, ornare quis dignissim a, molestie vel nulla.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Interior Design',
-        description:
-          'Vivamus porttitor, tortor convallis aliquam pretium, turpis enim consectetur elit, vitae egestas purus erat ac nunc nulla.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Photography',
-        description:
-          'Duis sed lectus in nisl vehicula porttitor eget quis odio. Aliquam erat volutpat. Nulla eleifend nulla id sem fermentum.',
-        icon: 'tabler:template',
-      },
-    ]}
-  />
-
-  <!-- Features3 Widget ************** -->
-
-  <Features3
-    columns={3}
-    isAfterContent={true}
-    items={[
-      {
-        title: 'E-commerce',
-        description:
-          'Rutrum non odio at vehicula. Proin ipsum justo, dignissim in vehicula sit amet, dignissim id quam. Sed ac tincidunt sapien.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Blog',
-        description:
-          'Nullam efficitur volutpat sem sed fringilla. Suspendisse et enim eu orci volutpat laoreet ac vitae libero.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Business',
-        description:
-          'Morbi et elit finibus, facilisis justo ut, pharetra ipsum. Donec efficitur, ipsum quis congue luctus, mauris magna.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Branding',
-        description:
-          'Suspendisse vitae nisi eget tortor luctus maximus sed non lectus. Cras malesuada pretium placerat. Nullam venenatis dolor a ante rhoncus.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Medical',
-        description:
-          'Vestibulum malesuada lacus id nibh posuere feugiat. Nam volutpat nulla a felis ultrices, id suscipit mauris congue. In hac habitasse platea dictumst.',
-        icon: 'tabler:template',
-      },
-      {
-        title: 'Fashion Design',
-        description:
-          'Maecenas eu tellus eget est scelerisque lacinia et a diam. Aliquam velit lorem, vehicula id fermentum et, rhoncus et purus.',
-        icon: 'tabler:template',
-      },
-    ]}
-    image={{
-      src: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-      alt: 'Colorful Image',
-    }}
-  />
-
-  <!-- Steps2 Widget ****************** -->
-
-  <Steps2
-    title="Our values"
-    subtitle="Maecenas eu tellus eget est scelerisque lacinia et a diam. Aliquam velit lorem, vehicula id fermentum et, rhoncus et purus. Nulla facilisi. Vestibulum malesuada lacus."
-    items={[
-      {
-        title: 'Customer-centric approach',
-        description:
-          'Donec id nibh neque. Quisque et fermentum tortor. Fusce vitae dolor a mauris dignissim commodo. Ut eleifend luctus condimentum.',
-      },
-      {
-        title: 'Constant Improvement',
-        description:
-          'Phasellus laoreet fermentum venenatis. Vivamus dapibus pulvinar arcu eget mattis. Fusce eget mauris leo.',
-      },
-      {
-        title: 'Ethical Practices',
-        description:
-          'Vestibulum imperdiet libero et lectus molestie, et maximus augue porta. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.',
-      },
-    ]}
-  />
-
-  <!-- Steps2 Widget ****************** -->
-
-  <Steps2
-    title="Achievements"
-    subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla, sed porttitor est nibh at nulla."
-    isReversed={true}
+  <!-- Hero Section ******************* -->
+  <HeroText
+    tagline="My Story"
+    title="My Resonant Journey"
+    subtitle="From childhood symphonies to modern audio engineering - discover the path that led to creating art that resonates deeply with both creators and audiences."
     callToAction={{
-      text: 'See more',
-      href: '/',
+      text: 'Start Your Project',
+      href: '/contact',
+      variant: 'primary',
+    }}
+    callToAction2={{
+      text: 'Book a Call',
+      href: '/contact',
+      variant: 'secondary',
+    }}
+  />
+
+  <!-- Musical Beginnings ******************* -->
+  <Content
+    title="Musical Foundations"
+    subtitle="The Early Years"
+    content={`
+      <p class="text-lg mb-4">My musical journey started early. Classical music filled our home when I was young.</p>
+      
+      <p class="text-lg mb-4">I began playing violin at age six. Learning to read music opened up a whole new world. Soon after, I picked up the flute.</p>
+      
+      <p class="text-lg mb-4">Great teachers made all the difference. They encouraged me and helped build my confidence.</p>
+      
+      <p class="text-lg mb-4">When I joined school band, something special happened. The conductor saw potential and suggested I switch from flute to oboe.</p>
+      
+      <p class="text-lg mb-6">Another amazing teacher guided me through my teenage years. She pushed me to audition for the Youth Symphony.</p>
+      
+      <p class="text-lg mb-6">I earned First Chair Oboe. For three years, I experienced the magic of making music with a full orchestra. Those moments of being perfectly in sync with other musicians shaped everything that came after.</p>
+    `}
+    image={{
+      src: '~/assets/images/music-scale-v2.svg',
+      alt: 'Musical journey visualization',
     }}
     items={[
       {
-        title: 'Global reach',
-        description: 'Nam malesuada urna in enim imperdiet tincidunt. Phasellus non tincidunt nisi, at elementum mi.',
-        icon: 'tabler:globe',
+        icon: 'mdi:violin',
+        title: 'Early Start',
+        description: 'Violin and music reading at age six',
       },
       {
-        title: 'Positive customer feedback and reviews',
-        description:
-          'Cras semper nulla leo, eget laoreet erat cursus sed. Praesent faucibus massa in purus iaculis dictum.',
-        icon: 'tabler:message-star',
+        icon: 'mdi:music-clef-treble',
+        title: 'Youth Symphony',
+        description: 'First Chair Oboe - three amazing years',
       },
       {
-        title: 'Awards and recognition as industry experts',
+        icon: 'tabler:users',
+        title: 'Musical Connection',
+        description: 'Learned the power of making music together',
+      },
+    ]}
+  />
+
+  <!-- Transition Period ******************* -->
+  <Content
+    title="The Transition"
+    subtitle="Finding New Rhythms"
+    content={`
+      <p class="text-lg mb-6">When I was about 16 years old, my oboe teacher sadly passed away. This was a contributing factor to my losing the drive to play music. Around this time, I got into video games and also started rowing.</p>
+      
+      <p class="text-lg mb-6">We were competing statewide as a rowing team and did really well. I'm ambidextrous, so I was asked to row on both sides of the boat, and at the front to set the rhythm for the rest of the team. Those years of rowing helped develop my sense of rhythm and so contributed to my future career in electronic music.</p>
+      
+      <p class="text-lg mb-6">Then, one day, I didn't warm up properly before a race and tore several muscles in my back, which abruptly ended my rowing. During the weeks at home recovering, I spent time playing computer games and discovered electronic music through online streams of Daft Punk and Eiffel 65, opening up a whole new musical world for me.</p>
+    `}
+    image={{
+      src: '~/assets/images/purple_scale_river.svg',
+      alt: 'Rhythmic flow visualization',
+    }}
+    isReversed={true}
+    items={[
+      {
+        icon: 'tabler:trophy',
+        title: 'Competitive Rowing',
+        description: 'Statewide competition and rhythm development',
+      },
+      {
+        icon: 'tabler:headphones',
+        title: 'Electronic Discovery',
+        description: 'Daft Punk and Eiffel 65 opened new musical horizons',
+      },
+      {
+        icon: 'tabler:device-desktop',
+        title: 'Computer Skills',
+        description: 'Self-taught computer building in middle school',
+      },
+    ]}
+  />
+
+  <!-- Education Journey ******************* -->
+  <Steps2
+    title="Education & Career Foundation"
+    subtitle="Building Technical Excellence"
+    items={[
+      {
+        title: 'Villanova University',
         description:
-          'Phasellus lacinia cursus velit, eu malesuada magna pretium eu. Etiam aliquet tellus purus, blandit lobortis ex rhoncus vitae.',
+          'Studied Computer Engineering with minor in Mathematics, Electrical Engineering, and Computer Science. Took digital signal processing courses that would prove crucial later.',
+        icon: 'tabler:school',
+      },
+      {
+        title: 'Masters in DSP',
+        description:
+          'Extended to Masters degree focusing on digital signal processing and FPGAs. Worked closely with professor who was a field application engineer with Xilinx.',
         icon: 'tabler:award',
       },
+      {
+        title: 'Xilinx Colorado',
+        description:
+          'Landed a great job upon graduation in 2009. Part of team building software for creating digital processing systems using blocks to program FPGA chips.',
+        icon: 'tabler:briefcase',
+      },
     ]}
   />
 
-  <!-- Features2 Widget ************** -->
-
-  <Features2
-    title="Our locations"
-    tagline="Find us"
-    columns={4}
+  <!-- The Awakening ******************* -->
+  <Content
+    title="The Audio Engineering Awakening"
+    subtitle="Discovering My True Calling"
+    content={`
+      <p class="text-lg mb-6">In 2015, I started to feel burnt out from my engineering career. I was still listening to electronic music daily - it helped me focus, and my friends always asked me for music recommendations.</p>
+      
+      <p class="text-lg mb-6">That year, for my birthday, a friend booked time in a studio so we could listen to our favorite music on world-class speakers. I remember looking at this vast analog board and asking the audio assistant questions. When he said he was studying audio engineering in Denver, it was a lightbulb moment for me!</p>
+      
+      <p class="text-lg mb-6">I didn't even know audio engineering was a thing! I had spent my career studying computer engineering but had yet to hear of audio engineering. It seemed like the perfect combination of music and electrical engineering, and I knew I needed to understand it.</p>
+    `}
+    image={{
+      src: '~/assets/images/portrait_by_tutti.jpg',
+      alt: 'Portrait by Tutti',
+    }}
     items={[
       {
-        title: 'EE.UU',
-        description: '1234 Lorem Ipsum St, 12345, Miami',
+        icon: 'tabler:bulb',
+        title: 'Lightbulb Moment',
+        description: 'Discovered audio engineering as perfect fusion of music and technology',
       },
       {
-        title: 'Spain',
-        description: '5678 Lorem Ipsum St, 56789, Madrid',
+        icon: 'tabler:heart',
+        title: 'Passion Reignited',
+        description: 'Found the missing piece that combined all my interests',
       },
       {
-        title: 'Australia',
-        description: '9012 Lorem Ipsum St, 90123, Sydney',
-      },
-      {
-        title: 'Brazil',
-        description: '3456 Lorem Ipsum St, 34567, São Paulo',
+        icon: 'tabler:target',
+        title: 'Clear Direction',
+        description: 'Knew immediately this was the path to pursue',
       },
     ]}
   />
 
-  <!-- Features2 Widget ************** -->
+  <!-- Studio Years ******************* -->
+  <Content
+    title="Robert Lang Studios"
+    subtitle="Living the Dream"
+    content={`
+      <p class="text-lg mb-6">I started learning everything I could about audio engineering. I was ready to leave Colorado at this point, and with the help of a career coach, I got an apprenticeship at Robert Lang Studios in Seattle, which is famous for producing grunge rock.</p>
+      
+      <p class="text-lg mb-6">I lived in Lang's spare room for about a year and worked in the studio day and night. When I finally moved into my own apartment, I slowly acquired gear to mix at home in the evenings when I returned from the studio.</p>
+      
+      <p class="text-lg mb-6">This is when Resonant Rhythm was born. I named my business Resonant Rhythm because it illustrates the physics of what happens when things resonate with us, and when we are moved by music. My vision is to help artists create sound that does just that.</p>
+    `}
+    image={{
+      src: '~/assets/images/consulting_hero.png',
+      alt: 'Audio engineering setup',
+    }}
+    isReversed={true}
+    items={[
+      {
+        icon: 'tabler:home',
+        title: 'Studio Life',
+        description: 'Lived and breathed audio engineering at Robert Lang Studios',
+      },
+      {
+        icon: 'tabler:microphone',
+        title: 'Hands-On Learning',
+        description: 'Recorded and mixed albums, including opera and quartet work',
+      },
+      {
+        icon: 'tabler:rocket',
+        title: 'Resonant Rhythm Born',
+        description: 'Founded business based on physics of musical resonance',
+      },
+    ]}
+  />
 
+  <!-- Stats about the journey ******************* -->
+  <Stats
+    title="My Journey in Numbers"
+    stats={[
+      { title: 'Years of Music', amount: '30+' },
+      { title: 'Instruments Mastered', amount: '3' },
+      { title: 'Studios Worked', amount: '5+' },
+      { title: 'Artists Helped', amount: '50+' },
+    ]}
+  />
+
+  <!-- Current Work ******************* -->
+  <Content
+    title="Ringling College & Beyond"
+    subtitle="Present Day Innovation"
+    content={`
+      <p class="text-lg mb-6">In 2019, after attending AES conference in Dublin and Winter Music Conference in Miami, I received a call from Ringling College of Art and Design. They needed someone to run their brand new post-production building.</p>
+      
+      <p class="text-lg mb-6">As Technical Director, I've greatly expanded my knowledge of post-production audio and been introduced to the visual side of things - which is undoubtedly the future of media and entertainment. Learning about color reignited my passion for video and photography.</p>
+      
+      <p class="text-lg mb-6">Now I use my photography skills to capture precious moments, like the birth of our son in 2023. Everything I did as a child came back around in some way - it has truly been a journey of resonating with different things and people along my path.</p>
+    `}
+    image={{
+      src: '~/assets/images/journey-timeline-transparent.png',
+      alt: 'Journey timeline visualization',
+    }}
+    items={[
+      {
+        icon: 'tabler:building',
+        title: 'Technical Director',
+        description: 'Leading post-production at Ringling College of Art and Design',
+      },
+      {
+        icon: 'tabler:palette',
+        title: 'Visual Arts',
+        description: 'Expanded into color, video, and photography',
+      },
+      {
+        icon: 'material-symbols:family-restroom-rounded',
+        title: 'Life Moments',
+        description: "Captured our son's birth in 2023 using photography skills",
+      },
+    ]}
+  />
+
+  <!-- Resonant Projects ******************* -->
   <Features2
-    title="Technical Support"
-    tagline="Contact us"
+    title="Resonant Projects"
+    subtitle="Expanding Creative Horizons"
+    tagline="Our Services"
     columns={2}
     items={[
       {
-        title: 'Chat with us',
-        description:
-          'Integer luctus laoreet libero, auctor varius purus rutrum sit amet. Ut nec molestie nisi, quis eleifend mi.',
-        icon: 'tabler:messages',
+        title: 'Resonant Rhythm',
+        description: 'Audio engineering and music production that moves people at the cellular level.',
+        icon: 'tabler:music',
       },
       {
-        title: 'Call us',
-        description:
-          'Mauris faucibus finibus orci, in posuere elit viverra non. In hac habitasse platea dictumst. Cras lobortis metus a hendrerit congue.',
-        icon: 'tabler:headset',
+        title: 'Resonant Color',
+        description: 'Visual color work that creates emotional connections and brand resonance.',
+        icon: 'tabler:palette',
+      },
+      {
+        title: 'Resonant Motion',
+        description: 'Video and motion graphics that tell compelling stories through movement.',
+        icon: 'tabler:video',
+      },
+      {
+        title: 'Resonant Design',
+        description: 'Creative design solutions that resonate with audiences and achieve goals.',
+        icon: 'tabler:brush',
+      },
+    ]}
+  />
+
+  <!-- Philosophy ******************* -->
+  <Content
+    title="The Physics of Resonance"
+    subtitle="My Creative Philosophy"
+    content={`
+      <p class="text-lg mb-6">Musically, 'to resonate' means to be filled with or to produce a deep, full, or reverberating sound. When things resonate with you, you feel them. Literally. In the cells of your body. It's why glass shatters when a note vibrates at a specific frequency.</p>
+      
+      <p class="text-lg mb-6">So when you love the colors in a picture, a design that works, or a film that moves you, it illustrates the very physics of resonance. At Resonant Rhythm, I want to help people create art that resonates deeply with them and others.</p>
+      
+      <p class="text-lg mb-6">As my own resonance with different creative art forms has evolved, Resonant Projects was born. The more artists I can help on their journey of resonance, the more impact they can have in the world through their creations.</p>
+    `}
+    image={{
+      src: '~/assets/images/newsletter-metatron-cube.svg',
+      alt: 'Sacred geometry representing resonance',
+    }}
+    isReversed={true}
+    items={[
+      {
+        icon: 'tabler:atom',
+        title: 'Cellular Impact',
+        description: 'Art that resonates at the deepest physical level',
+      },
+      {
+        icon: 'tabler:wave-sine',
+        title: 'Vibrational Frequency',
+        description: 'Understanding the physics behind emotional connection',
+      },
+      {
+        icon: 'tabler:world',
+        title: 'Global Impact',
+        description: 'Helping artists create meaningful change through their work',
+      },
+    ]}
+  />
+
+  <!-- Strategic Service Links -->
+  <section class="py-12 bg-accent/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <h2 class="text-2xl font-bold text-foreground mb-6">Ready to Work Together?</h2>
+      <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        Discover how our services can help bring your creative vision to life with the same passion and expertise that
+        has driven my journey.
+      </p>
+
+      <ContextualLinks links={aboutContextualLinks} inline={true} />
+    </div>
+  </section>
+
+  <!-- Call to Action ******************* -->
+  <CallToAction
+    title="Ready to Create Something That Resonates?"
+    subtitle="Let's work together to bring your creative vision to life with the power of resonant design, audio, and visual storytelling."
+    actions={[
+      {
+        text: 'Start Your Project',
+        href: '/contact',
+        variant: 'primary',
+      },
+      {
+        text: 'Book a 1-on-1 Call',
+        href: '/contact',
+        variant: 'secondary',
       },
     ]}
   />

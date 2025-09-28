@@ -17,8 +17,6 @@ import pagefind from './src/utils/pagefind';
 
 import { lazyImagesRehypePlugin, readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
 
-import mcp from 'astro-mcp';
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
@@ -27,20 +25,12 @@ export default defineConfig({
     webAnalytics: {
       enabled: true,
     },
-    maxDuration: 4,
-    edgeMiddleware: true,
-    isr: true,
+    maxDuration: 10,
+    isr: false,
   }),
 
   build: {
     format: 'file',
-  },
-
-  session: {
-    driver: 'redis',
-    options: {
-      url: process.env.REDIS_URL,
-    },
   },
 
   integrations: [
@@ -82,7 +72,6 @@ export default defineConfig({
     astrowind({
       config: './src/config.yaml',
     }),
-    mcp(),
   ],
 
   image: {
@@ -97,7 +86,8 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins: [tailwindcss() as any],
     resolve: {
       alias: {
         '~': path.resolve(__dirname, './src'),
@@ -105,4 +95,4 @@ export default defineConfig({
       },
     },
   },
-});
+} as const);

@@ -39,27 +39,22 @@ Based on comprehensive Tabler Icons library research (5,944 available icons):
 ### Recommended Audio-Related Icons
 
 1. **`tabler:wave-square`** ✅ (USED AS REPLACEMENT)
-
    - Best visual representation for waveforms
    - Available in current version
 
 2. **`tabler:volume`** ✅
-
    - Sound/audio representation
    - Speaker with sound waves
 
 3. **`tabler:music`** ✅
-
    - Musical note representation
    - Good for general audio
 
 4. **`tabler:microphone`** ✅
-
    - Recording/input audio
    - Professional audio equipment
 
 5. **`tabler:headphones`** ✅
-
    - Audio consumption/monitoring
    - Professional audio context
 

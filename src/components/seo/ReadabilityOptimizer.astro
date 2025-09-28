@@ -1,0 +1,102 @@
+---
+/**
+ * Readability Optimizer Component
+ * Provides real-time content optimization suggestions
+ */
+
+export interface Props {
+  content: string;
+  targetLevel?: 'easy' | 'standard' | 'advanced';
+  showMetrics?: boolean;
+}
+
+const { /* content, */ /* targetLevel = 'standard', */ showMetrics = false } = Astro.props;
+
+// Import readability analyzer (would be imported in real implementation)
+// const metrics = readabilityAnalyzer.analyzeText(content);
+
+// For demo purposes, showing the component structure
+const mockMetrics = {
+  fleschScore: 65,
+  readingLevel: 'Standard (8th-9th grade)',
+  avgSentenceLength: 18.5,
+  passiveVoice: 12,
+  sentences: 25,
+  words: 462,
+  recommendations: [
+    'Consider breaking up 3 long sentences',
+    'Reduce passive voice in 2 sentences',
+    'Excellent reading level for web content',
+  ],
+};
+
+const getScoreColor = (score: number) => {
+  if (score >= 70) return 'text-green-600';
+  if (score >= 50) return 'text-yellow-600';
+  return 'text-red-600';
+};
+---
+
+{
+  showMetrics && (
+    <div class="readability-metrics bg-muted/20 border border-border rounded-lg p-4 mb-6">
+      <h4 class="font-semibold text-foreground mb-3 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        Content Readability Analysis
+      </h4>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div class="text-center">
+          <div class={`text-2xl font-bold ${getScoreColor(mockMetrics.fleschScore)}`}>{mockMetrics.fleschScore}</div>
+          <div class="text-muted-foreground">Flesch Score</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-bold text-foreground">{mockMetrics.avgSentenceLength}</div>
+          <div class="text-muted-foreground">Avg Sentence Length</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-bold text-foreground">{mockMetrics.passiveVoice}</div>
+          <div class="text-muted-foreground">Passive Sentences</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-bold text-foreground">{mockMetrics.words}</div>
+          <div class="text-muted-foreground">Total Words</div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-3 bg-background rounded border-l-4 border-primary">
+        <div class="font-medium text-foreground mb-2">Reading Level: {mockMetrics.readingLevel}</div>
+
+        {mockMetrics.recommendations.length > 0 && (
+          <div>
+            <div class="text-sm font-medium text-muted-foreground mb-1">Recommendations:</div>
+            <ul class="text-sm text-muted-foreground space-y-1">
+              {mockMetrics.recommendations.map((rec) => (
+                <li class="flex items-start gap-2">
+                  <span class="text-accent">•</span>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .readability-metrics {
+    font-feature-settings: 'tnum' 1; /* Use tabular numbers for alignment */
+  }
+</style>

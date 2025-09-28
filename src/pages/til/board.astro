@@ -1,0 +1,97 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import Header from '~/components/widgets/Header.astro';
+import TilViewToggle from '~/components/til/TilViewToggle.astro';
+import { headerData } from '~/navigation';
+import TilBoardControls from '~/components/til/TilBoardControls.astro';
+import TilKanbanView from '~/components/til/TilKanbanView.astro';
+import { fetchTilEntries } from '~/utils/til';
+
+export const prerender = false;
+
+Astro.response?.headers.set('Cache-Control', 'no-store, must-revalidate');
+
+// Get URL parameters
+const weekParam = Astro.url.searchParams.get('week');
+
+// Determine the week to display
+let currentDate: Date;
+if (weekParam) {
+  // Parse week parameter (format: YYYY-MM-DD)
+  currentDate = new Date(weekParam);
+  if (isNaN(currentDate.getTime())) {
+    currentDate = new Date(); // Default to current date if invalid
+  }
+} else {
+  currentDate = new Date(); // Default to current date
+}
+
+// Find Monday of the current week
+const monday = new Date(currentDate);
+monday.setDate(monday.getDate() - monday.getDay() + (monday.getDay() === 0 ? -6 : 1));
+
+// Find Sunday of the current week
+const sunday = new Date(monday);
+sunday.setDate(sunday.getDate() + 6);
+
+// Fetch all TIL entries
+const allEntries = await fetchTilEntries();
+
+// Filter entries to current week
+const weekEntries = allEntries.filter((entry) => {
+  const entryDate = entry.data.date;
+  return entryDate >= monday && entryDate <= sunday;
+});
+
+// Format date range for title
+const formatDateRange = () => {
+  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+  return `${monday.toLocaleDateString('en-US', options)} - ${sunday.toLocaleDateString('en-US', options)}`;
+};
+
+const dateRangeFormatted = formatDateRange();
+
+// Prepare metadata
+const metadata = {
+  title: `TIL Board: ${dateRangeFormatted}`,
+  description: 'Kanban view of Today I Learned entries organized by day of the week.',
+};
+---
+
+<Layout metadata={metadata}>
+  <Fragment slot="header">
+    <Header {...headerData} isSticky showRssFeed={false} showToggleTheme />
+  </Fragment>
+
+  <section class="px-4 py-8 sm:px-6 mx-auto max-w-7xl lg:px-8 lg:py-12">
+    <div class="mb-8">
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+        <h1 class="text-3xl md:text-4xl font-bold leading-tighter tracking-tighter mb-4 md:mb-0">
+          Today I Learned
+          <span class="text-primary">: {dateRangeFormatted}</span>
+        </h1>
+
+        <TilViewToggle currentView="kanban" />
+      </div>
+
+      <p class="text-lg text-muted-foreground mt-2 mb-6">
+        A collection of daily discoveries and quick lessons in web development and technology
+      </p>
+
+      <TilBoardControls currentDate={currentDate} class="mb-8" />
+
+      {
+        weekEntries.length > 0 ? (
+          <TilKanbanView entries={weekEntries} />
+        ) : (
+          <div class="bg-muted/30 rounded-lg p-8 text-center">
+            <Icon name="tabler:mood-empty" class="w-16 h-16 mx-auto text-muted-foreground" />
+            <h3 class="mt-4 text-xl font-medium text-foreground">No entries this week</h3>
+            <p class="mt-2 text-muted-foreground">There are no TIL entries for the week of {dateRangeFormatted}</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>

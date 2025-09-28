@@ -1,0 +1,111 @@
+---
+/**
+ * Internal Link Helper Component
+ * Provides intelligent internal linking with SEO-optimized attributes
+ */
+import { Icon } from 'astro-icon/components';
+
+interface LinkData {
+  href: string;
+  text: string;
+  title?: string;
+  className?: string;
+  icon?: string;
+  variant?: 'default' | 'button' | 'card' | 'subtle';
+}
+
+export interface Props extends LinkData {
+  prefetch?: boolean;
+  trackClick?: boolean;
+  rel?: string;
+}
+
+const {
+  href,
+  text,
+  title,
+  className = '',
+  icon,
+  variant = 'default',
+  prefetch = true,
+  trackClick = false,
+  rel,
+} = Astro.props;
+
+// Determine if link is external
+const isExternal = href.startsWith('http') || href.startsWith('//');
+
+// Build optimized attributes
+const linkAttributes = {
+  href,
+  title: title || text,
+  ...(isExternal
+    ? {
+        target: '_blank',
+        rel: rel || 'noopener noreferrer',
+        'aria-label': `${text} (opens in new tab)`,
+      }
+    : {
+        ...(prefetch ? { 'data-astro-prefetch': '' } : {}),
+        ...(rel ? { rel } : {}),
+      }),
+  ...(trackClick ? { 'data-track-click': text } : {}),
+};
+
+// Variant-based styling
+const getVariantClasses = () => {
+  switch (variant) {
+    case 'button':
+      return 'inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors duration-200';
+    case 'card':
+      return 'block p-4 rounded-lg border border-border bg-card hover:bg-accent/10 hover:border-primary/20 transition-all duration-200';
+    case 'subtle':
+      return 'text-muted-foreground hover:text-primary transition-colors duration-200 underline decoration-dotted';
+    default:
+      return 'text-primary hover:text-accent transition-colors duration-200 font-medium';
+  }
+};
+
+const variantClasses = getVariantClasses();
+---
+
+<a {...linkAttributes} class={`internal-link ${variantClasses} ${className}`}>
+  {icon && <Icon name={icon} class="w-4 h-4" aria-hidden="true" />}
+
+  <span>{text}</span>
+
+  {isExternal && <Icon name="tabler:external-link" class="w-3 h-3 opacity-70" aria-hidden="true" />}
+</a>
+
+<style>
+  .internal-link:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Prevent layout shift */
+  .internal-link {
+    text-decoration: none;
+  }
+
+  .internal-link:hover {
+    text-decoration: underline;
+  }
+
+  .internal-link[data-astro-prefetch] {
+    /* Indicate prefetched links subtly */
+    position: relative;
+  }
+
+  .internal-link[data-astro-prefetch]::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-primary), transparent);
+    opacity: 0.3;
+  }
+</style>

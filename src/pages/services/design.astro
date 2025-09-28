@@ -7,26 +7,54 @@ import Steps from '~/components/widgets/Steps.astro';
 import Testimonials from '~/components/widgets/Testimonials.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
   title: 'Resonant Design',
   description:
     'Bespoke consulting for creator solopreneurs and small businesses. Optimize your workflow and tech stack with decades of experience.',
 };
+
+// Get related service pages
+const relatedServices = getRelatedPages('/services/design', 3, true);
+
+// Contextual links for this service
+const contextualLinks = [
+  {
+    text: 'View Our Audio Services',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Music production and audio engineering services',
+  },
+  {
+    text: 'Check Out Our Blog',
+    href: '/blog',
+    icon: 'tabler:article',
+    description: 'Latest insights on creative technology',
+  },
+  {
+    text: 'Read My Story',
+    href: '/about',
+    icon: 'tabler:user',
+    description: 'Learn about the journey behind Resonant Projects',
+  },
+];
 ---
 
 <PageLayout metadata={metadata}>
   <Hero
     tagline="Resonant Design"
-    title="Bespoke Consulting for Creators"
-    subtitle="Enhance and optimize your workflow and tech stack. Personalized technology integration for solopreneurs and small businesses."
+    title="Streamline Your Creative Workflow"
+    subtitle="Get personalized consulting that saves time and boosts productivity. We help creators and small businesses choose the right tools and optimize their processes."
     actions={[{ text: 'Get Started', href: '#contact', variant: 'primary' }]}
     image={{ src: '~/assets/images/consulting_hero.png', alt: 'Consulting session' }}
     showScrollIndicator={true}
   />
 
   <Stats
-    title="Decades of Experience, Real Results"
+    title="Proven Results from Years of Experience"
     stats={[
       { amount: '20+', title: 'Years in Tech Integration', icon: 'tabler:device-desktop' },
       { amount: '100+', title: 'Businesses Empowered', icon: 'tabler:building-store' },
@@ -36,26 +64,27 @@ const metadata = {
 
   <Features
     title="What We Offer"
-    subtitle="Personalized consulting to help you thrive."
+    subtitle="Clear solutions that help your business thrive."
     items={[
       {
         title: 'Workflow Optimization',
-        description: 'Streamline your daily operations with proven systems tailored to your needs.',
+        description: 'We analyze how you work now. Then we create systems that save you hours every week.',
         icon: 'tabler:settings-cog',
       },
       {
         title: 'Tech Stack Consulting',
-        description: 'Choose and implement the right tools for your creative business.',
+        description:
+          'Stop wasting money on tools you do not need. We help you choose software that actually fits your workflow.',
         icon: 'tabler:stack-2',
       },
       {
         title: 'Automation & Integration',
-        description: 'Automate repetitive tasks and connect your favorite apps.',
+        description: 'Eliminate repetitive tasks. We connect your apps so they work together automatically.',
         icon: 'tabler:api-app',
       },
       {
         title: 'Personalized Support',
-        description: 'Ongoing guidance and troubleshooting as your business evolves.',
+        description: 'Get help when you need it. We provide ongoing support as your business grows and changes.',
         icon: 'tabler:heart-handshake',
       },
     ]}
@@ -64,12 +93,24 @@ const metadata = {
 
   <Steps
     title="How It Works"
-    subtitle="A simple, collaborative process."
+    subtitle="Four simple steps to transform your workflow."
     items={[
-      { title: 'Discovery Call', description: 'We learn about your goals, challenges, and current setup.' },
-      { title: 'Personalized Plan', description: 'Receive a tailored roadmap for your workflow and tech stack.' },
-      { title: 'Implementation', description: 'We guide you through setup, integration, and training.' },
-      { title: 'Ongoing Support', description: 'Continuous improvement and support as your needs grow.' },
+      {
+        title: 'Discovery Call',
+        description: 'Tell us about your goals and current challenges. We listen and ask the right questions.',
+      },
+      {
+        title: 'Custom Plan',
+        description: 'Get a clear roadmap designed specifically for your business. No generic solutions.',
+      },
+      {
+        title: 'Setup &amp; Training',
+        description: 'We handle the technical setup. Then we train you so you feel confident using everything.',
+      },
+      {
+        title: 'Ongoing Support',
+        description: 'Questions come up. Changes happen. We provide support as your business evolves.',
+      },
     ]}
   />
 
@@ -100,6 +141,17 @@ const metadata = {
     subtitle="Let's work together to make your next technology investment truly resonate."
     actions={[{ text: 'Contact Us', href: '#contact', variant: 'primary' }]}
   />
+
+  <!-- Related Services Section -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <RelatedPages pages={relatedServices} title="Explore Our Other Services" variant="cards" />
+
+      <div class="mt-8">
+        <ContextualLinks links={contextualLinks} title="Continue Your Journey" />
+      </div>
+    </div>
+  </section>
 
   <NotionContact id="contact" defaultService="Design" />
 </PageLayout>

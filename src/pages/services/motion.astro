@@ -1,11 +1,332 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Content from '~/components/widgets/Content.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import NotionContact from '~/components/widgets/NotionContact.astro';
+import RelatedPages from '~/components/ui/RelatedPages.astro';
+import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
-  title: 'Motion',
+  title: 'Post Production Film Finishing | Professional Sound & Color Services',
+  description:
+    'Expert post-production film finishing services specializing in professional sound design and color grading. Transform your vision with industry-leading audio and visual enhancement.',
 };
+
+// Get related service pages
+const relatedServices = getRelatedPages('/services/motion', 3, true);
+
+// Contextual links specific to motion/video services
+const contextualLinks = [
+  {
+    text: 'Audio Engineering Services',
+    href: '/services/rhythm',
+    icon: 'tabler:music',
+    description: 'Professional music production and audio mixing',
+  },
+  {
+    text: 'Photography & Color Work',
+    href: '/services/color',
+    icon: 'tabler:camera',
+    description: 'Visual storytelling and color grading expertise',
+  },
+  {
+    text: 'Technical Consulting',
+    href: '/services/design',
+    icon: 'tabler:settings',
+    description: 'Workflow optimization and tech stack consulting',
+  },
+];
 ---
 
 <Layout metadata={metadata}>
-  <h1>Motion</h1>
+  <!-- Hero Section -->
+  <Hero
+    title="<span class='text-accent'>Professional</span><br class='hidden lg:inline' />Film Finishing"
+    subtitle="Turn your raw footage into polished, professional content. We handle sound design and color grading so your vision comes to life on screen."
+    tagline="Professional Film Finishing"
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Start Your Project',
+        href: '#contact',
+        icon: 'tabler:player-play',
+      },
+      {
+        variant: 'secondary',
+        text: 'See Our Work',
+        href: '#portfolio',
+        icon: 'tabler:eye',
+      },
+    ]}
+    image={{
+      src: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80',
+      alt: 'Professional film editing suite with color grading monitors and audio equipment',
+    }}
+    gradientBg={true}
+    showScrollIndicator={true}
+  />
+
+  <!-- Core Services Overview -->
+  <Features2
+    title="Core <span class='text-accent'>Services</span>"
+    subtitle="Specialized expertise in the two most critical aspects of post-production finishing"
+    tagline="What We Do"
+    items={[
+      {
+        title: 'Post Production Sound',
+        description:
+          'Professional audio design, mixing, and mastering that creates immersive soundscapes and crystal-clear dialogue delivery.',
+        icon: 'tabler:volume',
+        classes: {
+          panel:
+            'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800',
+        },
+      },
+      {
+        title: 'Color Grading',
+        description:
+          'Expert color correction and creative grading that establishes mood, enhances storytelling, and achieves cinematic visual consistency.',
+        icon: 'tabler:palette',
+        classes: {
+          panel:
+            'bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-800',
+        },
+      },
+    ]}
+    columns={2}
+  />
+
+  <!-- Post Production Sound Detailed Section -->
+  <Content
+    id="sound-services"
+    title="Post Production <span class='text-blue-600'>Sound</span>"
+    subtitle="Crafting Audio Excellence That Moves Your Audience"
+    content="Every great film tells its story through both image and sound. Our post-production sound services ensure your project's audio matches the quality and impact of your visuals, creating an immersive experience that resonates with your audience."
+    items={[
+      {
+        title: 'Dialogue Enhancement',
+        description:
+          'Crystal-clear dialogue cleanup, ADR recording, and seamless integration for perfect vocal delivery.',
+        icon: 'tabler:microphone',
+      },
+      {
+        title: 'Sound Design',
+        description: 'Custom sound effects, foley artistry, and atmospheric design that brings your scenes to life.',
+        icon: 'tabler:wave-square',
+      },
+      {
+        title: 'Music Integration',
+        description: 'Professional music editing, mixing, and integration that supports your narrative flow.',
+        icon: 'tabler:music',
+      },
+      {
+        title: 'Final Mix & Master',
+        description: 'Theatre-ready final mixes optimized for any playback system, from mobile to cinema.',
+        icon: 'tabler:adjustments',
+      },
+    ]}
+    image={{
+      src: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+      alt: 'Professional audio mixing console in a recording studio',
+    }}
+    callToAction={{
+      text: 'Discuss Your Audio Needs',
+      href: '#contact',
+      variant: 'link',
+    }}
+  />
+
+  <!-- Color Grading Detailed Section -->
+  <Content
+    id="color-services"
+    title="Professional <span class='text-amber-600'>Color Grading</span>"
+    subtitle="Visual Storytelling Through Color Science"
+    content="Color grading is where technical precision meets artistic vision. We transform raw footage into visually stunning content that not only looks professional but also supports your story's emotional journey through carefully crafted color palettes and contrast."
+    items={[
+      {
+        title: 'Color Correction',
+        description: 'Technical color balancing, exposure correction, and shot matching for consistent footage.',
+        icon: 'tabler:contrast',
+      },
+      {
+        title: 'Creative Grading',
+        description: 'Artistic color enhancement that establishes mood, atmosphere, and visual identity.',
+        icon: 'tabler:brush',
+      },
+      {
+        title: 'LUT Development',
+        description: 'Custom Look-Up Tables creation for consistent color workflows and unique visual styles.',
+        icon: 'tabler:color-filter',
+      },
+      {
+        title: 'Delivery Optimization',
+        description: 'Format-specific color optimization for web, broadcast, cinema, and streaming platforms.',
+        icon: 'tabler:device-tv',
+      },
+    ]}
+    image={{
+      src: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+      alt: 'Color grading suite with professional monitors displaying footage',
+    }}
+    isReversed={true}
+    callToAction={{
+      text: 'Explore Color Options',
+      href: '#contact',
+      variant: 'link',
+    }}
+  />
+
+  <!-- Process Overview -->
+  <Steps
+    title="Our <span class='text-accent'>Process</span>"
+    subtitle="A streamlined workflow that ensures quality results and clear communication at every stage"
+    tagline="How We Work"
+    items={[
+      {
+        title: 'Project Consultation',
+        description:
+          'We discuss your vision, technical requirements, timeline, and creative goals to establish a clear roadmap for your project.',
+        icon: 'tabler:messages',
+      },
+      {
+        title: 'Asset Review & Analysis',
+        description:
+          'Comprehensive review of your footage and audio materials, identifying technical requirements and creative opportunities.',
+        icon: 'tabler:search',
+      },
+      {
+        title: 'Production & Refinement',
+        description:
+          'Hands-on post-production work with regular check-ins and revision rounds to ensure your vision is realized.',
+        icon: 'tabler:tools',
+      },
+      {
+        title: 'Final Delivery',
+        description:
+          'Professional delivery in all required formats with complete project documentation and archival materials.',
+        icon: 'tabler:check',
+      },
+    ]}
+    image={{
+      src: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+      alt: 'Film editor working on timeline in professional editing suite',
+    }}
+  />
+
+  <!-- Industry Stats -->
+  <Stats
+    title="Proven <span class='text-accent'>Excellence</span>"
+    subtitle="Our commitment to quality delivers measurable results for every project"
+    stats={[
+      {
+        amount: '500+',
+        title: 'Projects Completed',
+        icon: 'tabler:movie',
+      },
+      {
+        amount: '98%',
+        title: 'Client Satisfaction',
+        icon: 'tabler:heart',
+      },
+      {
+        amount: '24hr',
+        title: 'Typical Turnaround',
+        icon: 'tabler:clock',
+      },
+      {
+        amount: '15+',
+        title: 'Years Experience',
+        icon: 'tabler:award',
+      },
+    ]}
+    bg="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=400&q=80"
+    isDark={true}
+  />
+
+  <!-- Why Choose Professional Finishing -->
+  <Features2
+    title="Why Professional <span class='text-accent'>Finishing</span> Matters"
+    subtitle="The difference between amateur and professional post-production can make or break your project's impact"
+    items={[
+      {
+        title: 'Technical Excellence',
+        description:
+          'Industry-standard workflows, calibrated monitoring, and professional-grade tools ensure broadcast-quality results.',
+        icon: 'tabler:settings',
+      },
+      {
+        title: 'Creative Vision',
+        description:
+          'Years of experience translating creative concepts into visual and auditory reality that supports your storytelling.',
+        icon: 'tabler:bulb',
+      },
+      {
+        title: 'Time Efficiency',
+        description:
+          'Streamlined processes and professional expertise deliver faster turnarounds without compromising quality.',
+        icon: 'tabler:clock-bolt',
+      },
+      {
+        title: 'Future-Proof Delivery',
+        description: 'Optimized deliverables for current and emerging platforms, ensuring your content stays relevant.',
+        icon: 'tabler:rocket',
+      },
+      {
+        title: 'Collaborative Approach',
+        description: 'Regular communication and revision cycles ensure the final product exceeds your expectations.',
+        icon: 'tabler:users',
+      },
+      {
+        title: 'Complete Solutions',
+        description:
+          'End-to-end post-production services eliminate the need for multiple vendors and ensure consistency.',
+        icon: 'tabler:puzzle',
+      },
+    ]}
+    columns={3}
+  />
+
+  <!-- Call to Action -->
+  <CallToAction
+    title="Ready to Elevate Your <span class='text-accent'>Project</span>?"
+    subtitle="Let's discuss how professional post-production finishing can transform your footage into a compelling visual story that captivates your audience."
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Get Free Consultation',
+        href: '#contact',
+        icon: 'tabler:phone',
+      },
+      {
+        variant: 'secondary',
+        text: 'Request Quote',
+        href: '#contact',
+        icon: 'tabler:file-text',
+      },
+    ]}
+  />
+
+  <!-- Contact Form -->
+  <NotionContact
+    id="contact"
+    title="Start Your <span class='text-accent'>Project</span> Today"
+    subtitle="Tell us about your vision and we'll provide a detailed proposal tailored to your specific needs and timeline."
+    defaultService="Motion"
+  />
+
+  <!-- Related Services Cross-Promotion -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <RelatedPages pages={relatedServices} title="Complete Your Production Pipeline" variant="cards" />
+
+      <div class="mt-8">
+        <ContextualLinks links={contextualLinks} title="Enhance Your Creative Process" />
+      </div>
+    </div>
+  </section>
 </Layout>

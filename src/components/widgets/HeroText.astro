@@ -26,32 +26,19 @@ const {
   <div class="relative px-4 mx-auto max-w-7xl sm:px-6">
     <div class="pt-0 md:pt-[76px] pointer-events-none"></div>
     <div class="py-12 pb-8 md:py-20 md:pb-8">
-      <div class="max-w-5xl mx-auto text-center">
-        {
-          tagline && (
-            <p
-              class="text-base font-bold tracking-wide uppercase text-secondary dark:text-blue-200 animate-fade-in"
-              set:html={tagline}
-            />
-          )
-        }
+      <div class="mx-auto max-w-5xl text-center">
+        {tagline && <p class="text-base font-bold tracking-wide uppercase text-secondary" set:html={tagline} />}
         {
           title && (
             <h1
-              class="mb-4 text-5xl font-bold tracking-tighter md:text-6xl leading-tighter font-heading dark:text-gray-200 animate-fade-in"
+              class="mb-4 text-5xl font-bold tracking-tighter md:text-6xl leading-tighter font-heading text-foreground"
               set:html={title}
             />
           )
         }
-        <div class="max-w-3xl mx-auto">
-          {
-            subtitle && (
-              <p class="mb-6 text-xl text-muted dark:text-muted-foreground animate-fade-in" set:html={subtitle} />
-            )
-          }
-          <div
-            class="flex flex-col max-w-xs gap-4 m-auto sm:max-w-md flex-nowrap sm:flex-row sm:justify-center animate-fade-in"
-          >
+        <div class="mx-auto max-w-3xl">
+          {subtitle && <p class="mb-6 text-xl text-muted-foreground" set:html={subtitle} />}
+          <div class="flex flex-col flex-nowrap gap-4 m-auto max-w-xs sm:max-w-md sm:flex-row sm:justify-center">
             {
               callToAction && (
                 <div class="flex w-full sm:w-auto">

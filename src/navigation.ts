@@ -80,6 +80,10 @@ export const headerData = {
       ],
     },
     {
+      text: 'TIL',
+      href: getPermalink('/til'),
+    },
+    {
       text: 'My Story',
       href: getPermalink('/about'),
     },
