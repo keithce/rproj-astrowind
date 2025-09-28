@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Swiper from 'swiper';
 import { Pagination, Mousewheel, Navigation, Keyboard } from 'swiper/modules';
 import 'swiper/css';
@@ -18,14 +18,69 @@ interface Props {
 
 export default function PhotoSwiper({ images, className = '' }: Props) {
   const swiperRef = useRef<HTMLDivElement>(null);
+  const swiperInstanceRef = useRef<Swiper | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [modalSrc, setModalSrc] = useState<string | null>(null);
+  const [modalAlt, setModalAlt] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Function to open modal with proper focus management
+  const openModal = useCallback((fullSrc: string, alt: string) => {
+    previousActiveElementRef.current = document.activeElement as HTMLElement;
+    setModalSrc(fullSrc);
+    setModalAlt(alt);
+    setIsLoading(true);
+  }, []);
+
+  // Function to close modal and restore focus
+  const closeModal = useCallback(() => {
+    setModalSrc(null);
+    setModalAlt('');
+    setIsLoading(false);
+
+    // Restore focus to the previously active element
+    if (previousActiveElementRef.current) {
+      previousActiveElementRef.current.focus();
+      previousActiveElementRef.current = null;
+    }
+  }, []);
+
+  // Handle keyboard events for slides
+  const handleSlideKeyDown = useCallback(
+    (e: React.KeyboardEvent, fullSrc: string, alt: string) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(fullSrc, alt);
+      }
+    },
+    [openModal]
+  );
+
+  // Handle modal keyboard events
+  const handleModalKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeModal();
+      }
+    },
+    [closeModal]
+  );
+
+  // Focus management for modal
+  useEffect(() => {
+    if (modalSrc && modalRef.current) {
+      // Focus the modal when it opens
+      modalRef.current.focus();
+    }
+  }, [modalSrc]);
 
   useEffect(() => {
     if (!swiperRef.current) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = new Swiper(
+    // Create Swiper instance and store it in ref for proper cleanup
+    swiperInstanceRef.current = new Swiper(
       swiperRef.current as HTMLElement,
       {
         modules: [Pagination, Mousewheel, Navigation, Keyboard],
@@ -53,13 +108,20 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
     const handler = (e: Event) => {
       const t = e.target as HTMLElement;
       if (t instanceof HTMLImageElement && t.dataset.fullSrc) {
-        setIsLoading(true);
-        setModalSrc(t.dataset.fullSrc);
+        openModal(t.dataset.fullSrc, t.alt);
       }
     };
     swiperRef.current.addEventListener('click', handler);
+
     return () => {
+      // Clean up click event listener
       swiperRef.current?.removeEventListener('click', handler);
+
+      // Destroy Swiper instance to remove event listeners and timers
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+        swiperInstanceRef.current = null;
+      }
     };
   }, []);
 
@@ -68,7 +130,14 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
       <div ref={swiperRef} className={`swiper mySwiper ${className}`}>
         <div className="swiper-wrapper">
           {images.map((img) => (
-            <div className="swiper-slide" key={img.fullSrc}>
+            <div
+              className="swiper-slide"
+              key={img.fullSrc}
+              tabIndex={0}
+              role="button"
+              aria-label={`View full size image: ${img.alt}`}
+              onKeyDown={(e) => handleSlideKeyDown(e, img.fullSrc, img.alt)}
+            >
               <img
                 src={img.src}
                 data-full-src={img.fullSrc}
@@ -88,24 +157,75 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
       {/* Modal */}
       {modalSrc && (
         <div
+          ref={modalRef}
           className="modal active"
-          onClick={() => {
-            setModalSrc(null);
-            setIsLoading(false);
-          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
+          tabIndex={-1}
+          onClick={closeModal}
+          onKeyDown={handleModalKeyDown}
         >
+          <div id="modal-title" className="sr-only">
+            Full size image
+          </div>
+          <div id="modal-description" className="sr-only">
+            Press Escape to close this dialog
+          </div>
           {isLoading && <div className="modal-preloader"></div>}
-          <img src={modalSrc} className="modal-content" alt="Full resolution" onLoad={() => setIsLoading(false)} />
+          <img src={modalSrc} className="modal-content" alt={modalAlt} onLoad={() => setIsLoading(false)} />
         </div>
       )}
 
       <style>{`
         .swiper { width: 100%; height: 400px; }
-        .swiper-slide { display:flex;justify-content:center;align-items:center;overflow:hidden;background:transparent;}
+        .swiper-slide { 
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          overflow:hidden;
+          background:transparent;
+          outline: none;
+          border-radius: 8px;
+          transition: box-shadow 0.2s ease;
+        }
+        .swiper-slide:focus {
+          box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
         .slide-img { width:100%;height:100%;object-fit:cover;cursor:zoom-in; }
         /* modal */
-        .modal {position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:1000;cursor:zoom-out;}
-        .modal-content{max-width:90%;max-height:90%;object-fit:contain;}
+        .modal {
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,0.9);
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          z-index:1000;
+          cursor:zoom-out;
+          outline: none;
+        }
+        .modal:focus {
+          outline: none;
+        }
+        .modal-content{
+          max-width:90%;
+          max-height:90%;
+          object-fit:contain;
+        }
+        /* Screen reader only text */
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
         /* swiper lazy preloader default */
         .swiper-lazy-preloader{width:42px;height:42px;position:absolute;left:50%;top:50%;margin-left:-21px;margin-top:-21px;z-index:10;box-sizing:border-box;border:4px solid #fff;border-radius:50%;border-top-color:transparent;animation:swiper-preloader-spin 1s linear infinite;}
         @keyframes swiper-preloader-spin{100%{transform:rotate(360deg)}}

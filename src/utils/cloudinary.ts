@@ -157,7 +157,24 @@ export function getResponsiveImageUrls(
   const { preset = 'responsive', aspectRatio, ...baseOptions } = options;
 
   return RESPONSIVE_BREAKPOINTS.map((width) => {
-    const height = aspectRatio ? Math.round(width / parseFloat(aspectRatio.replace(':', '/'))) : undefined;
+    let height: number | undefined = undefined;
+
+    if (aspectRatio) {
+      // Parse aspect ratio string like "4:3", "4/3", "16:9", etc.
+      const aspectRatioStr = aspectRatio.trim();
+      const separator = aspectRatioStr.includes(':') ? ':' : '/';
+      const parts = aspectRatioStr.split(separator);
+
+      if (parts.length === 2) {
+        const widthRatio = Number(parts[0].trim());
+        const heightRatio = Number(parts[1].trim());
+
+        // Check if both numbers are valid
+        if (!isNaN(widthRatio) && !isNaN(heightRatio) && widthRatio > 0 && heightRatio > 0) {
+          height = Math.round(width * (heightRatio / widthRatio));
+        }
+      }
+    }
 
     return {
       width,

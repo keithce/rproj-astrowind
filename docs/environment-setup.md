@@ -23,12 +23,10 @@ CLOUDINARY_API_SECRET=your_api_secret_here
 ### 2. Getting Your Cloudinary Credentials
 
 1. **Sign up for Cloudinary**
-
    - Go to [https://cloudinary.com](https://cloudinary.com)
    - Create a free account (includes generous free tier)
 
 2. **Access Your Dashboard**
-
    - Go to [https://cloudinary.com/console](https://cloudinary.com/console)
    - Your credentials will be displayed on the dashboard
 
@@ -49,7 +47,6 @@ CLOUDINARY_API_SECRET=your_api_secret_here
 #### Optional Variables
 
 - **`PUBLIC_CLOUDINARY_API_KEY`**: Your API key
-
   - Required for upload functionality
   - Can be public (hence the `PUBLIC_` prefix)
   - Only needed if you plan to upload images from the frontend

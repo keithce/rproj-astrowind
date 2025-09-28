@@ -216,13 +216,11 @@ const landscapeImages = await getCategoryImages('landscape', 8);
 ### Common Issues
 
 1. **No Images Found**
-
    - Check folder names match `IMAGE_CATEGORIES`
    - Verify images are uploaded to correct folders
    - Check Cloudinary dashboard
 
 2. **Search API Errors**
-
    - Verify API credentials are correct
    - Check API key permissions
    - Monitor rate limits
@@ -246,19 +244,16 @@ console.log('Category images loaded:', landscapeImages.length);
 ### Potential Improvements
 
 1. **Metadata Integration**
-
    - Use Cloudinary tags for categorization
    - Extract EXIF data for image information
    - Implement custom metadata fields
 
 2. **Advanced Filtering**
-
    - Filter by upload date
    - Filter by image dimensions
    - Filter by tags or metadata
 
 3. **Caching Layer**
-
    - Implement Redis caching
    - Add cache invalidation
    - Background refresh of image lists
