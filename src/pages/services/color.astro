@@ -1,15 +1,14 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import PhotoSwiper from '~/components/ui/PhotoSwiper.tsx';
-import TestimonialCard from '~/components/ui/TestimonialCard.astro';
 import CategoryHero from '~/components/widgets/CategoryHero.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { getCategoryImages, getCloudinaryImageUrl } from '~/utils/cloudinary';
 import RelatedPages from '~/components/ui/RelatedPages.astro';
-import ContextualLinks from '~/components/ui/ContextualLinks.astro';
 import { getRelatedPages } from '~/utils/internal-linking';
+import colorHeroImage from '~/assets/images/color-hero.png';
 
 const metadata = {
   title: "Photography Portfolio - Capturing Life's Beautiful Moments",
@@ -19,47 +18,17 @@ const metadata = {
     'photography, portraits, landscapes, boudoir, maternity, children, professional photographer, San Francisco',
 };
 
-// Get optimized images from Cloudinary for each category
-const landscapeImages = await getCategoryImages('landscape', 8);
-const portraitImages = await getCategoryImages('portrait', 7);
-const boudoirImages = await getCategoryImages('boudoir', 6);
-const maternityChildrenImages = await getCategoryImages('maternity', 7);
+// Get optimized images from Cloudinary for each category in parallel
+const [landscapeImages, portraitImages, boudoirImages, maternityImages, childrenImages] = await Promise.all([
+  getCategoryImages('landscape', 8),
+  getCategoryImages('portrait', 7),
+  getCategoryImages('boudoir', 6),
+  getCategoryImages('maternity', 7),
+  getCategoryImages('children', 6),
+]);
 
 // Get related service pages
 const relatedServices = getRelatedPages('/services/color', 3, true);
-
-// Contextual links for photography services
-const contextualLinks = [
-  {
-    text: 'Film & Video Production',
-    href: '/services/motion',
-    icon: 'tabler:movie',
-    description: 'Professional video post-production and editing',
-  },
-  {
-    text: 'Audio for Video',
-    href: '/services/rhythm',
-    icon: 'tabler:music',
-    description: 'Sound design and audio mixing for visual content',
-  },
-];
-
-// Generate optimized hero image URL
-const heroImageUrl = getCloudinaryImageUrl('portfolio/landscape/mountain-sunset-vista', {
-  preset: 'hero',
-  format: 'webp',
-  quality: 85,
-});
-
-// Generate optimized about section image URL
-const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headshot', {
-  width: 600,
-  height: 750,
-  crop: 'fill',
-  gravity: 'face',
-  format: 'webp',
-  quality: 85,
-});
 ---
 
 <Layout metadata={metadata}>
@@ -67,7 +36,7 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
   <Hero
     title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)]">Beautiful Moments</span>`}
     subtitle="Professional photographer specializing in creating timeless memories through artistic vision, technical excellence, and a passion for storytelling."
-    image={heroImageUrl}
+    image={colorHeroImage.src}
     actions={[
       {
         variant: 'primary',
@@ -97,7 +66,7 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
           Explore our diverse collection of photography services, each crafted with artistic vision and professional
           expertise. All images are delivered through our optimized Cloudinary CDN for the best viewing experience.
         </p>
-        
+
         <!-- Navigation Buttons -->
         <div class="flex flex-wrap gap-3 justify-center sm:gap-4">
           <a
@@ -119,10 +88,16 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
             Boudoir
           </a>
           <a
-            href="#family"
+            href="#maternity"
             class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
           >
-            Family
+            Maternity
+          </a>
+          <a
+            href="#children"
+            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+          >
+            Children
           </a>
         </div>
       </div>
@@ -196,17 +171,40 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         </div>
       </div>
 
-      <!-- Maternity & Children Photography -->
-      <div id="family" class="mb-20">
+      <!-- Maternity Photography -->
+      <div id="maternity" class="mb-20">
         <CategoryHero
-          title="Maternity & Children"
-          subtitle="Life's Precious Moments"
-          description="Capturing the wonder of new life, from pregnancy glow to first smiles. Creating timeless memories of your family's most precious moments."
+          title="Maternity Photography"
+          subtitle="Celebrating New Life"
+          description="Capturing the beauty, grace, and anticipation of pregnancy. Creating timeless images that celebrate this miraculous journey and the connection between mother and baby."
         />
         <div>
           <PhotoSwiper
             client:visible
-            images={maternityChildrenImages.map((i) => ({
+            images={maternityImages.map((i) => ({
+              src: i.src,
+              fullSrc: getCloudinaryImageUrl(i.publicId, {
+                quality: 'auto',
+                format: 'auto',
+              }),
+              alt: i.alt,
+            }))}
+            className="mb-8"
+          />
+        </div>
+      </div>
+
+      <!-- Children Photography -->
+      <div id="children" class="mb-20">
+        <CategoryHero
+          title="Children Photography"
+          subtitle="Pure Joy & Wonder"
+          description="Capturing the innocence, curiosity, and boundless energy of childhood. From first steps to school portraits, preserving precious memories as your little ones grow."
+        />
+        <div>
+          <PhotoSwiper
+            client:visible
+            images={childrenImages.map((i) => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -221,63 +219,6 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
     </div>
   </section>
 
-  <!-- About Section -->
-  <section class="py-20 bg-[var(--color-background)] dark:bg-[var(--color-background)]">
-    <div class="px-4 mx-auto max-w-7xl">
-      <div class="grid grid-cols-1 gap-12 items-center lg:grid-cols-2">
-        <div>
-          <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6">About the Artist</h2>
-          <div class="space-y-6 text-lg text-[var(--color-foreground)]">
-            <p>
-              With over a decade of experience in professional photography, I specialize in creating visual stories that
-              capture the essence of life's most meaningful moments. My approach combines technical expertise with
-              artistic vision to deliver images that not only look beautiful but feel authentic.
-            </p>
-            <p>
-              Whether it's the raw power of a landscape, the intimate connection in a portrait, or the joy of a family
-              milestone, I believe every photograph should tell a story. My goal is to create images that you'll
-              treasure for generations to come.
-            </p>
-            <p>
-              Based in the San Francisco Bay Area, I work with clients locally and travel for destination sessions.
-              Every project is approached with passion, creativity, and a commitment to excellence. All images are
-              delivered through our optimized Cloudinary CDN for fast loading and superior quality.
-            </p>
-          </div>
-
-          <div class="mt-8">
-            <h3 class="text-xl font-semibold text-[var(--color-foreground)] mb-4">Achievements & Recognition</h3>
-            <ul class="space-y-2 text-[var(--color-muted-foreground)]">
-              <li>• Featured in Photography Magazine (2023)</li>
-              <li>• Winner - Bay Area Photography Awards (2022)</li>
-              <li>• 500+ satisfied clients and counting</li>
-              <li>• Professional Photography Association Member</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="aspect-[4/5] overflow-hidden rounded-lg shadow-2xl">
-            <img
-              src={aboutImageUrl}
-              alt="Professional photographer at work"
-              class="object-cover w-full h-full"
-              loading="lazy"
-              width="600"
-              height="750"
-            />
-          </div>
-          <div
-            class="absolute -bottom-6 -right-6 bg-[var(--color-card)] p-6 rounded-lg shadow-lg border border-[var(--color-border)]"
-          >
-            <p class="text-2xl font-bold text-[var(--color-primary)]">10+</p>
-            <p class="text-[var(--color-muted-foreground)]">Years Experience</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Call to Action -->
   <CallToAction
     title="Ready to Create Something Beautiful?"
@@ -287,18 +228,14 @@ const aboutImageUrl = getCloudinaryImageUrl('portfolio/portrait/business-headsho
         text: 'Get Started Today',
         href: '#contact',
         variant: 'primary',
-      },
-      {
-        text: 'Call Now',
-        href: 'tel:+15551234567',
-        variant: 'secondary',
-      },
+        icon: 'tabler:input-spark',
+      }
     ]}
   />
 
   <!-- Contact Section -->
   <section id="contact" class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
-    <NotionContact service="color" />
+    <NotionContact defaultService="Color" />
   </section>
 
   <!-- Related Services -->
