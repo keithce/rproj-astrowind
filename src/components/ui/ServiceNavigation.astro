@@ -16,12 +16,7 @@ export interface Props {
   showDescriptions?: boolean;
 }
 
-const { 
-  currentService, 
-  className = '', 
-  variant = 'horizontal',
-  showDescriptions = false 
-} = Astro.props;
+const { currentService, className = '', variant = 'horizontal', showDescriptions = false } = Astro.props;
 
 const services: ServiceNav[] = [
   {
@@ -29,29 +24,29 @@ const services: ServiceNav[] = [
     href: '/services/design',
     icon: 'tabler:settings',
     description: 'Consulting & workflow optimization',
-    isActive: currentService === 'design'
+    isActive: currentService === 'design',
   },
   {
-    title: 'Rhythm', 
+    title: 'Rhythm',
     href: '/services/rhythm',
     icon: 'tabler:music',
     description: 'Audio mixing & mastering',
-    isActive: currentService === 'rhythm'
+    isActive: currentService === 'rhythm',
   },
   {
     title: 'Color',
-    href: '/services/color', 
+    href: '/services/color',
     icon: 'tabler:camera',
     description: 'Photography & visual work',
-    isActive: currentService === 'color'
+    isActive: currentService === 'color',
   },
   {
     title: 'Motion',
     href: '/services/motion',
     icon: 'tabler:movie',
     description: 'Video post-production',
-    isActive: currentService === 'motion'
-  }
+    isActive: currentService === 'motion',
+  },
 ];
 
 const getVariantClasses = () => {
@@ -60,19 +55,19 @@ const getVariantClasses = () => {
       return {
         container: 'flex flex-col space-y-2',
         item: 'flex items-center p-3 rounded-lg border border-border bg-card hover:bg-accent/10 transition-all duration-200',
-        content: 'ml-3'
+        content: 'ml-3',
       };
     case 'grid':
       return {
         container: 'grid grid-cols-2 md:grid-cols-4 gap-4',
         item: 'flex flex-col items-center p-4 rounded-lg border border-border bg-card hover:bg-accent/10 hover:shadow-md transition-all duration-200 text-center',
-        content: 'mt-3'
+        content: 'mt-3',
       };
     default: // horizontal
       return {
         container: 'flex flex-wrap gap-4 justify-center',
         item: 'flex items-center px-4 py-2 rounded-full border border-border bg-card hover:bg-accent/10 transition-all duration-200',
-        content: 'ml-2'
+        content: 'ml-2',
       };
   }
 };
@@ -82,42 +77,36 @@ const classes = getVariantClasses();
 
 <nav aria-label="Service navigation" class={`service-navigation ${className}`}>
   <div class={classes.container}>
-    {services.map((service) => (
-      <a
-        href={service.href}
-        class={`${classes.item} ${
-          service.isActive 
-            ? 'bg-primary text-primary-foreground border-primary' 
-            : 'hover:border-primary/20'
-        }`}
-        aria-current={service.isActive ? 'page' : undefined}
-        title={`${service.title}: ${service.description}`}
-      >
-        <Icon 
-          name={service.icon} 
-          class={`w-5 h-5 ${
-            service.isActive ? 'text-primary-foreground' : 'text-primary'
-          }`} 
-          aria-hidden="true" 
-        />
-        
-        <div class={classes.content}>
-          <span class={`font-medium ${
-            service.isActive ? 'text-primary-foreground' : 'text-foreground'
-          }`}>
-            {service.title}
-          </span>
-          
-          {showDescriptions && variant !== 'horizontal' && (
-            <p class={`text-sm mt-1 ${
-              service.isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'
-            }`}>
-              {service.description}
-            </p>
-          )}
-        </div>
-      </a>
-    ))}
+    {
+      services.map((service) => (
+        <a
+          href={service.href}
+          class={`${classes.item} ${
+            service.isActive ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary/20'
+          }`}
+          aria-current={service.isActive ? 'page' : undefined}
+          title={`${service.title}: ${service.description}`}
+        >
+          <Icon
+            name={service.icon}
+            class={`w-5 h-5 ${service.isActive ? 'text-primary-foreground' : 'text-primary'}`}
+            aria-hidden="true"
+          />
+
+          <div class={classes.content}>
+            <span class={`font-medium ${service.isActive ? 'text-primary-foreground' : 'text-foreground'}`}>
+              {service.title}
+            </span>
+
+            {showDescriptions && variant !== 'horizontal' && (
+              <p class={`text-sm mt-1 ${service.isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                {service.description}
+              </p>
+            )}
+          </div>
+        </a>
+      ))
+    }
   </div>
 </nav>
 
@@ -135,7 +124,7 @@ const classes = getVariantClasses();
     transform: translateY(-1px);
   }
 
-  .service-navigation a[aria-current="page"] {
+  .service-navigation a[aria-current='page'] {
     font-weight: 600;
   }
 

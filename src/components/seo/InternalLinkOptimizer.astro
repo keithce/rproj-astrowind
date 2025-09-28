@@ -13,11 +13,11 @@ export interface Props {
   preserveExisting?: boolean;
 }
 
-const { 
-  content, 
+const {
+  content,
   currentPath = Astro.url.pathname,
-  maxLinks = 3,
-  preserveExisting = true 
+  // maxLinks = 3, // Unused parameter
+  // preserveExisting = true // Unused parameter
 } = Astro.props;
 
 // Optimize content with internal links
@@ -50,7 +50,7 @@ const optimizedContent = optimizeInternalLinks(content, currentPath);
   }
 
   /* Limit to reasonable number of links */
-  .seo-optimized-content a:nth-of-type(n+4) {
+  .seo-optimized-content a:nth-of-type(n + 4) {
     color: inherit;
     font-weight: inherit;
     text-decoration: none;

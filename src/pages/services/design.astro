@@ -26,20 +26,20 @@ const contextualLinks = [
     text: 'View Our Audio Services',
     href: '/services/rhythm',
     icon: 'tabler:music',
-    description: 'Music production and audio engineering services'
+    description: 'Music production and audio engineering services',
   },
   {
     text: 'Check Out Our Blog',
     href: '/blog',
     icon: 'tabler:article',
-    description: 'Latest insights on creative technology'
+    description: 'Latest insights on creative technology',
   },
   {
     text: 'Read My Story',
     href: '/about',
     icon: 'tabler:user',
-    description: 'Learn about the journey behind Resonant Projects'
-  }
+    description: 'Learn about the journey behind Resonant Projects',
+  },
 ];
 ---
 
@@ -73,7 +73,8 @@ const contextualLinks = [
       },
       {
         title: 'Tech Stack Consulting',
-        description: 'Stop wasting money on tools you do not need. We help you choose software that actually fits your workflow.',
+        description:
+          'Stop wasting money on tools you do not need. We help you choose software that actually fits your workflow.',
         icon: 'tabler:stack-2',
       },
       {
@@ -94,10 +95,22 @@ const contextualLinks = [
     title="How It Works"
     subtitle="Four simple steps to transform your workflow."
     items={[
-      { title: 'Discovery Call', description: 'Tell us about your goals and current challenges. We listen and ask the right questions.' },
-      { title: 'Custom Plan', description: 'Get a clear roadmap designed specifically for your business. No generic solutions.' },
-      { title: 'Setup &amp; Training', description: 'We handle the technical setup. Then we train you so you feel confident using everything.' },
-      { title: 'Ongoing Support', description: 'Questions come up. Changes happen. We provide support as your business evolves.' },
+      {
+        title: 'Discovery Call',
+        description: 'Tell us about your goals and current challenges. We listen and ask the right questions.',
+      },
+      {
+        title: 'Custom Plan',
+        description: 'Get a clear roadmap designed specifically for your business. No generic solutions.',
+      },
+      {
+        title: 'Setup &amp; Training',
+        description: 'We handle the technical setup. Then we train you so you feel confident using everything.',
+      },
+      {
+        title: 'Ongoing Support',
+        description: 'Questions come up. Changes happen. We provide support as your business evolves.',
+      },
     ]}
   />
 
@@ -132,17 +145,10 @@ const contextualLinks = [
   <!-- Related Services Section -->
   <section class="py-12 bg-muted/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <RelatedPages 
-        pages={relatedServices}
-        title="Explore Our Other Services"
-        variant="cards"
-      />
-      
+      <RelatedPages pages={relatedServices} title="Explore Our Other Services" variant="cards" />
+
       <div class="mt-8">
-        <ContextualLinks 
-          links={contextualLinks}
-          title="Continue Your Journey"
-        />
+        <ContextualLinks links={contextualLinks} title="Continue Your Journey" />
       </div>
     </div>
   </section>

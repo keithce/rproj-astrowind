@@ -31,7 +31,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Creative technology studio for tech consulting, mixing & mastering, photography, and film finishing',
     icon: 'tabler:home',
     priority: 10,
-    tags: ['home', 'landing', 'services', 'portfolio']
+    tags: ['home', 'landing', 'services', 'portfolio'],
   },
   '/about': {
     type: 'about',
@@ -40,7 +40,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Personal journey from classical music to audio engineering and creative technology',
     icon: 'tabler:user',
     priority: 8,
-    tags: ['biography', 'experience', 'background', 'story']
+    tags: ['biography', 'experience', 'background', 'story'],
   },
   '/services': {
     type: 'service',
@@ -49,7 +49,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Overview of all creative technology services offered',
     icon: 'tabler:briefcase',
     priority: 9,
-    tags: ['services', 'overview', 'portfolio']
+    tags: ['services', 'overview', 'portfolio'],
   },
   '/services/design': {
     type: 'service',
@@ -59,7 +59,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     icon: 'tabler:vector-bezier-2',
     category: 'Consulting',
     priority: 9,
-    tags: ['consulting', 'workflow', 'technology', 'business', 'optimization']
+    tags: ['consulting', 'workflow', 'technology', 'business', 'optimization'],
   },
   '/services/rhythm': {
     type: 'service',
@@ -69,7 +69,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     icon: 'tabler:music',
     category: 'Audio',
     priority: 9,
-    tags: ['music', 'audio', 'mixing', 'mastering', 'production']
+    tags: ['music', 'audio', 'mixing', 'mastering', 'production'],
   },
   '/services/color': {
     type: 'service',
@@ -79,7 +79,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     icon: 'tabler:camera',
     category: 'Visual',
     priority: 9,
-    tags: ['photography', 'color', 'visual', 'portfolio', 'grading']
+    tags: ['photography', 'color', 'visual', 'portfolio', 'grading'],
   },
   '/services/motion': {
     type: 'service',
@@ -89,7 +89,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     icon: 'tabler:movie',
     category: 'Video',
     priority: 9,
-    tags: ['video', 'film', 'post-production', 'sound', 'color']
+    tags: ['video', 'film', 'post-production', 'sound', 'color'],
   },
   '/contact': {
     type: 'landing',
@@ -98,7 +98,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Get in touch to start your creative project',
     icon: 'tabler:message-circle',
     priority: 8,
-    tags: ['contact', 'form', 'inquiry', 'project']
+    tags: ['contact', 'form', 'inquiry', 'project'],
   },
   '/blog': {
     type: 'blog',
@@ -107,7 +107,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Articles on creative technology, music production, and industry insights',
     icon: 'tabler:article',
     priority: 7,
-    tags: ['blog', 'articles', 'insights', 'technology']
+    tags: ['blog', 'articles', 'insights', 'technology'],
   },
   '/til': {
     type: 'til',
@@ -116,7 +116,7 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Daily discoveries and quick lessons in web development and technology',
     icon: 'tabler:bulb',
     priority: 6,
-    tags: ['learning', 'development', 'technology', 'discoveries']
+    tags: ['learning', 'development', 'technology', 'discoveries'],
   },
   '/pricing': {
     type: 'landing',
@@ -125,132 +125,125 @@ export const SITE_STRUCTURE: Record<string, PageRelationship> = {
     description: 'Transparent pricing for all creative technology services',
     icon: 'tabler:currency-dollar',
     priority: 7,
-    tags: ['pricing', 'cost', 'investment', 'packages']
-  }
+    tags: ['pricing', 'cost', 'investment', 'packages'],
+  },
 };
 
 /**
  * Get related pages based on current page context
  */
 export function getRelatedPages(
-  currentPath: string, 
+  currentPath: string,
   maxResults: number = 4,
   includeServices: boolean = true
 ): PageRelationship[] {
   const currentPage = SITE_STRUCTURE[currentPath];
-  const allPages = Object.values(SITE_STRUCTURE).filter(page => page.href !== currentPath);
-  
+  const allPages = Object.values(SITE_STRUCTURE).filter((page) => page.href !== currentPath);
+
   if (!currentPage) {
     // If page not found, return top priority pages
-    return allPages
-      .sort((a, b) => b.priority - a.priority)
-      .slice(0, maxResults);
+    return allPages.sort((a, b) => b.priority - a.priority).slice(0, maxResults);
   }
 
   // Score pages based on relationship strength
-  const scoredPages = allPages.map(page => {
+  const scoredPages = allPages.map((page) => {
     let score = 0;
-    
+
     // Type matching
     if (page.type === currentPage.type) {
       score += 3;
     }
-    
+
     // Category matching (for services)
     if (currentPage.category && page.category === currentPage.category) {
       score += 4;
     }
-    
+
     // Tag overlap
     const currentTags = currentPage.tags || [];
     const pageTags = page.tags || [];
-    const tagOverlap = currentTags.filter(tag => pageTags.includes(tag)).length;
+    const tagOverlap = currentTags.filter((tag) => pageTags.includes(tag)).length;
     score += tagOverlap * 2;
-    
+
     // Base priority
     score += page.priority / 10;
-    
+
     // Service page preference
     if (includeServices && page.type === 'service') {
       score += 2;
     }
-    
+
     return { ...page, score };
   });
 
-  return scoredPages
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxResults);
+  return scoredPages.sort((a, b) => b.score - a.score).slice(0, maxResults);
 }
 
 /**
  * Generate contextual link suggestions for content
  */
-export function generateLinkSuggestions(
-  content: string, 
-  currentPath: string
-): LinkSuggestion[] {
+export function generateLinkSuggestions(content: string, currentPath: string): LinkSuggestion[] {
   const suggestions: LinkSuggestion[] = [];
   const pages = Object.values(SITE_STRUCTURE);
-  
+
   // Keywords that suggest linking opportunities
   const linkKeywords = {
-    'consulting': '/services/design',
+    consulting: '/services/design',
     'workflow optimization': '/services/design',
     'tech stack': '/services/design',
     'business consulting': '/services/design',
-    
-    'music': '/services/rhythm',
-    'audio': '/services/rhythm',
-    'mixing': '/services/rhythm',
-    'mastering': '/services/rhythm',
+
+    music: '/services/rhythm',
+    audio: '/services/rhythm',
+    mixing: '/services/rhythm',
+    mastering: '/services/rhythm',
     'music production': '/services/rhythm',
     'sound design': '/services/rhythm',
-    
-    'photography': '/services/color',
+
+    photography: '/services/color',
     'color grading': '/services/color',
-    'visual': '/services/color',
-    'portrait': '/services/color',
-    'landscape': '/services/color',
-    
-    'video': '/services/motion',
-    'film': '/services/motion',
+    visual: '/services/color',
+    portrait: '/services/color',
+    landscape: '/services/color',
+
+    video: '/services/motion',
+    film: '/services/motion',
     'post-production': '/services/motion',
     'motion graphics': '/services/motion',
-    'editing': '/services/motion',
-    
-    'contact': '/contact',
+    editing: '/services/motion',
+
+    contact: '/contact',
     'get in touch': '/contact',
     'start project': '/contact',
-    
-    'blog': '/blog',
-    'articles': '/blog',
-    'insights': '/blog',
-    
-    'learn': '/til',
+
+    blog: '/blog',
+    articles: '/blog',
+    insights: '/blog',
+
+    learn: '/til',
     'today i learned': '/til',
-    'discovery': '/til',
-    
-    'pricing': '/pricing',
-    'cost': '/pricing',
-    'investment': '/pricing'
+    discovery: '/til',
+
+    pricing: '/pricing',
+    cost: '/pricing',
+    investment: '/pricing',
   };
-  
+
   Object.entries(linkKeywords).forEach(([keyword, href]) => {
     if (href !== currentPath && content.toLowerCase().includes(keyword.toLowerCase())) {
-      const page = pages.find(p => p.href === href);
+      const page = pages.find((p) => p.href === href);
       if (page) {
         suggestions.push({
           anchor: keyword,
           href,
           context: `Link to ${page.title}`,
           priority: page.priority,
-          type: 'contextual'
+          type: 'contextual',
         });
       }
     }
   });
-  
+
   return suggestions.sort((a, b) => b.priority - a.priority);
 }
 
@@ -260,9 +253,9 @@ export function generateLinkSuggestions(
 export function generateAnchorVariations(targetPage: string, context?: string): string[] {
   const page = SITE_STRUCTURE[targetPage];
   if (!page) return [];
-  
+
   const variations: string[] = [page.title];
-  
+
   // Add contextual variations based on page type
   switch (page.type) {
     case 'service':
@@ -273,38 +266,22 @@ export function generateAnchorVariations(targetPage: string, context?: string): 
         `${page.category} expertise`
       );
       break;
-      
+
     case 'blog':
-      variations.push(
-        'our blog',
-        'latest articles',
-        'read more insights',
-        'explore our content'
-      );
+      variations.push('our blog', 'latest articles', 'read more insights', 'explore our content');
       break;
-      
+
     case 'about':
-      variations.push(
-        'our story',
-        'about the team',
-        'learn about our background',
-        'discover our journey'
-      );
+      variations.push('our story', 'about the team', 'learn about our background', 'discover our journey');
       break;
-      
+
     case 'landing':
       if (targetPage === '/contact') {
-        variations.push(
-          'get in touch',
-          'contact us',
-          'start your project',
-          'book a consultation',
-          'reach out today'
-        );
+        variations.push('get in touch', 'contact us', 'start your project', 'book a consultation', 'reach out today');
       }
       break;
   }
-  
+
   // Add context-specific variations
   if (context) {
     const contextLower = context.toLowerCase();
@@ -316,41 +293,39 @@ export function generateAnchorVariations(targetPage: string, context?: string): 
       );
     }
   }
-  
+
   return [...new Set(variations)]; // Remove duplicates
 }
 
 /**
  * Get breadcrumb path for a given route
  */
-export function getBreadcrumbPath(pathname: string): Array<{text: string; href?: string; icon?: string}> {
+export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?: string; icon?: string }> {
   const segments = pathname.split('/').filter(Boolean);
-  const breadcrumbs: Array<{text: string; href?: string; icon?: string}> = [];
-  
+  const breadcrumbs: Array<{ text: string; href?: string; icon?: string }> = [];
+
   // Handle specific routes
   if (pathname === '/') {
     return [{ text: 'Home', icon: 'tabler:home' }];
   }
-  
+
   if (pathname.startsWith('/services/')) {
-    breadcrumbs.push(
-      { text: 'Services', href: '/services', icon: 'tabler:briefcase' }
-    );
-    
+    breadcrumbs.push({ text: 'Services', href: '/services', icon: 'tabler:briefcase' });
+
     const serviceName = segments[1];
     const servicePages = {
-      'design': 'Resonant Design',
-      'rhythm': 'Resonant Rhythm', 
-      'color': 'Resonant Color',
-      'motion': 'Resonant Motion'
+      design: 'Resonant Design',
+      rhythm: 'Resonant Rhythm',
+      color: 'Resonant Color',
+      motion: 'Resonant Motion',
     };
-    
+
     if (serviceName in servicePages) {
       breadcrumbs.push({ text: servicePages[serviceName as keyof typeof servicePages] });
     }
   } else if (pathname.startsWith('/blog')) {
     breadcrumbs.push({ text: 'Blog', href: '/blog', icon: 'tabler:article' });
-    
+
     if (segments.length > 1) {
       // Handle category or tag pages
       if (segments[1] === 'category') {
@@ -359,10 +334,7 @@ export function getBreadcrumbPath(pathname: string): Array<{text: string; href?:
           { text: segments[2]?.replace('-', ' ') || 'Category' }
         );
       } else if (segments[1] === 'tag') {
-        breadcrumbs.push(
-          { text: 'Tags', href: '/tag' },
-          { text: `#${segments[2]?.replace('-', ' ') || 'tag'}` }
-        );
+        breadcrumbs.push({ text: 'Tags', href: '/tag' }, { text: `#${segments[2]?.replace('-', ' ') || 'tag'}` });
       } else {
         // Individual post
         breadcrumbs.push({ text: 'Post' });
@@ -370,7 +342,7 @@ export function getBreadcrumbPath(pathname: string): Array<{text: string; href?:
     }
   } else if (pathname.startsWith('/til')) {
     breadcrumbs.push({ text: 'Today I Learned', href: '/til', icon: 'tabler:bulb' });
-    
+
     if (segments.length > 1) {
       if (segments[1] === 'board') {
         breadcrumbs.push({ text: 'Board View' });
@@ -388,15 +360,15 @@ export function getBreadcrumbPath(pathname: string): Array<{text: string; href?:
       segments.forEach((segment, index) => {
         const path = '/' + segments.slice(0, index + 1).join('/');
         const isLast = index === segments.length - 1;
-        
+
         breadcrumbs.push({
-          text: segment.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          href: isLast ? undefined : path
+          text: segment.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+          href: isLast ? undefined : path,
         });
       });
     }
   }
-  
+
   return breadcrumbs;
 }
 
@@ -406,19 +378,21 @@ export function getBreadcrumbPath(pathname: string): Array<{text: string; href?:
 export function optimizeInternalLinks(content: string, currentPath: string): string {
   let optimizedContent = content;
   const suggestions = generateLinkSuggestions(content, currentPath);
-  
+
   // Apply contextual links (limit to avoid over-optimization)
-  suggestions.slice(0, 3).forEach(suggestion => {
+  suggestions.slice(0, 3).forEach((suggestion) => {
     const page = SITE_STRUCTURE[suggestion.href];
     if (page) {
-      const linkPattern = new RegExp(`\\b${suggestion.anchor}\\b`, 'gi');
-      const replacement = `<a href="${suggestion.href}" title="${page.description}" class="text-primary hover:text-accent transition-colors font-medium">${suggestion.anchor}</a>`;
-      
+      // Escape regex metacharacters in the anchor text to prevent regex injection
+      const escapedAnchor = suggestion.anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const linkPattern = new RegExp(`\\b${escapedAnchor}\\b`, 'i');
+      const replacement = `<a href="${suggestion.href}" title="${page.description}" class="font-medium transition-colors text-primary hover:text-accent">${suggestion.anchor}</a>`;
+
       // Only replace first occurrence to avoid over-linking
       optimizedContent = optimizedContent.replace(linkPattern, replacement);
     }
   });
-  
+
   return optimizedContent;
 }
 
@@ -431,34 +405,30 @@ export function getNavigationContext(pathname: string): {
   children: PageRelationship[];
 } {
   const allPages = Object.values(SITE_STRUCTURE);
-  
+
   // Services have /services as parent
   if (pathname.startsWith('/services/')) {
     const parent = SITE_STRUCTURE['/services'];
-    const siblings = allPages.filter(page => 
-      page.href.startsWith('/services/') && page.href !== pathname
-    );
-    
+    const siblings = allPages.filter((page) => page.href.startsWith('/services/') && page.href !== pathname);
+
     return { parent, siblings, children: [] };
   }
-  
+
   // Blog posts have /blog as parent
   if (pathname.startsWith('/blog/') && pathname !== '/blog') {
     const parent = SITE_STRUCTURE['/blog'];
     return { parent, siblings: [], children: [] };
   }
-  
+
   // TIL entries have /til as parent
   if (pathname.startsWith('/til/') && pathname !== '/til') {
     const parent = SITE_STRUCTURE['/til'];
     return { parent, siblings: [], children: [] };
   }
-  
+
   // Top-level pages
-  const siblings = allPages.filter(page => 
-    !page.href.includes('/', 1) && page.href !== pathname
-  );
-  
+  const siblings = allPages.filter((page) => !page.href.includes('/', 1) && page.href !== pathname);
+
   return { siblings, children: [] };
 }
 
@@ -472,10 +442,10 @@ export function trackInternalLink(linkText: string, destination: string, source:
       link_text: linkText,
       link_destination: destination,
       source_page: source,
-      event_category: 'navigation'
+      event_category: 'navigation',
     });
   }
-  
+
   // Console log for development
   if (import.meta.env.DEV) {
     console.log('Internal link clicked:', { linkText, destination, source });

@@ -1,6 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Button from './Button.astro';
+// import Button from './Button.astro'; // Unused import
 
 interface RelatedPage {
   title: string;
@@ -18,13 +18,7 @@ export interface Props {
   showIcon?: boolean;
 }
 
-const { 
-  pages, 
-  title = 'Related Pages', 
-  className = '', 
-  variant = 'cards',
-  showIcon = true 
-} = Astro.props;
+const { pages, title = 'Related Pages', className = '', variant = 'cards', showIcon = true } = Astro.props;
 
 const getVariantClasses = () => {
   switch (variant) {
@@ -34,7 +28,7 @@ const getVariantClasses = () => {
         item: 'flex items-start gap-3 p-4 rounded-lg border border-border bg-card hover:bg-accent/10 transition-colors',
         content: 'flex-1',
         title: 'font-semibold text-foreground hover:text-primary text-base',
-        description: 'text-sm text-muted-foreground mt-1'
+        description: 'text-sm text-muted-foreground mt-1',
       };
     case 'compact':
       return {
@@ -42,7 +36,7 @@ const getVariantClasses = () => {
         item: 'flex items-center gap-2 p-3 rounded-lg border border-border bg-card hover:bg-accent/10 transition-colors',
         content: 'flex-1 min-w-0',
         title: 'font-medium text-foreground hover:text-primary text-sm truncate',
-        description: 'text-xs text-muted-foreground truncate'
+        description: 'text-xs text-muted-foreground truncate',
       };
     default: // cards
       return {
@@ -50,7 +44,7 @@ const getVariantClasses = () => {
         item: 'p-6 rounded-lg border border-border bg-card hover:shadow-md hover:bg-accent/5 transition-all duration-200',
         content: '',
         title: 'font-semibold text-foreground hover:text-primary text-lg mb-2',
-        description: 'text-muted-foreground'
+        description: 'text-muted-foreground',
       };
   }
 };
@@ -58,52 +52,44 @@ const getVariantClasses = () => {
 const classes = getVariantClasses();
 ---
 
-{pages.length > 0 && (
-  <section class={`related-pages ${className}`}>
-    <h3 class="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-      <Icon name="tabler:link" class="w-5 h-5 text-primary" aria-hidden="true" />
-      {title}
-    </h3>
-    
-    <div class={classes.container}>
-      {pages.map((page) => (
-        <article class={classes.item}>
-          <a href={page.href} class="block">
-            <div class={`flex items-start gap-3 ${classes.content}`}>
-              {showIcon && page.icon && (
-                <div class="flex-shrink-0 mt-1">
-                  <Icon 
-                    name={page.icon} 
-                    class="w-5 h-5 text-primary" 
-                    aria-hidden="true" 
-                  />
+{
+  pages.length > 0 && (
+    <section class={`related-pages ${className}`}>
+      <h3 class="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+        <Icon name="tabler:link" class="w-5 h-5 text-primary" aria-hidden="true" />
+        {title}
+      </h3>
+
+      <div class={classes.container}>
+        {pages.map((page) => (
+          <article class={classes.item}>
+            <a href={page.href} class="block">
+              <div class={`flex items-start gap-3 ${classes.content}`}>
+                {showIcon && page.icon && (
+                  <div class="flex-shrink-0 mt-1">
+                    <Icon name={page.icon} class="w-5 h-5 text-primary" aria-hidden="true" />
+                  </div>
+                )}
+
+                <div class="flex-1 min-w-0">
+                  <h4 class={classes.title}>{page.title}</h4>
+
+                  {page.description && <p class={classes.description}>{page.description}</p>}
+
+                  {page.category && variant === 'cards' && (
+                    <span class="inline-block mt-2 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+                      {page.category}
+                    </span>
+                  )}
                 </div>
-              )}
-              
-              <div class="flex-1 min-w-0">
-                <h4 class={classes.title}>
-                  {page.title}
-                </h4>
-                
-                {page.description && (
-                  <p class={classes.description}>
-                    {page.description}
-                  </p>
-                )}
-                
-                {page.category && variant === 'cards' && (
-                  <span class="inline-block mt-2 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
-                    {page.category}
-                  </span>
-                )}
               </div>
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
-  </section>
-)}
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
 
 <style>
   .related-pages a {

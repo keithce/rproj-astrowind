@@ -41,20 +41,20 @@ const blogContextualLinks = [
     text: 'Audio Services',
     href: '/services/rhythm',
     icon: 'tabler:music',
-    description: 'Professional music production and mastering'
+    description: 'Professional music production and mastering',
   },
   {
-    text: 'Creative Consulting', 
+    text: 'Creative Consulting',
     href: '/services/design',
     icon: 'tabler:settings',
-    description: 'Workflow optimization and tech consulting'
+    description: 'Workflow optimization and tech consulting',
   },
   {
     text: 'Photography Portfolio',
-    href: '/services/color', 
+    href: '/services/color',
     icon: 'tabler:camera',
-    description: 'Visual storytelling and color work'
-  }
+    description: 'Visual storytelling and color work',
+  },
 ];
 ---
 
@@ -81,14 +81,10 @@ const blogContextualLinks = [
       </div>
 
       <Grid posts={posts} />
-      
+
       {showContextualLinks && (
         <div class="mt-8 pt-6 border-t border-border">
-          <ContextualLinks 
-            links={blogContextualLinks}
-            title="Interested in Our Services?"
-            inline={true}
-          />
+          <ContextualLinks links={blogContextualLinks} title="Interested in Our Services?" inline={true} />
         </div>
       )}
     </WidgetWrapper>

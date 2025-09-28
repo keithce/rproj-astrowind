@@ -36,7 +36,7 @@ March has been productive on the technical front as well:
 Life doesn't stop for technical projects and vacation planning:
 
 - **Homeownership Adventures:** The joys of owning a house continue - this month featured the unexpected task of replacing our dishwasher. Homeownership always seems to have a surprise waiting around the corner!
-- **Hugo's Development:** It's been amazing watching Hugo's significant development lately. He's understanding more complex sequences of events, growing stronger physically, and running with greater independence. His [our]  excitement about our upcoming Italy trip is contagious!
+- **Hugo's Development:** It's been amazing watching Hugo's significant development lately. He's understanding more complex sequences of events, growing stronger physically, and running with greater independence. His [our] excitement about our upcoming Italy trip is contagious!
 
 ## Philosophical Corner
 

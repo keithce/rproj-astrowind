@@ -56,7 +56,7 @@ export const READABILITY_FIXES = {
   longSentences: [
     {
       pattern: /^(.{80,}?),\s+(and|but|or|so)\s+(.+)$/,
-      fix: (match: string, p1: string, conjunction: string, p3: string) =>
+      fix: (_match: string, p1: string, conjunction: string, p3: string) =>
         `${p1}. ${conjunction === 'and' ? 'Also, ' : conjunction === 'but' ? 'However, ' : ''}${p3.charAt(0).toUpperCase()}${p3.slice(1)}`,
     },
   ],
@@ -65,7 +65,7 @@ export const READABILITY_FIXES = {
   passiveVoice: [
     {
       pattern: /(.*)\s+(?:was|were|is|are|been|being)\s+(\w+ed)\s+by\s+(.*)/,
-      fix: (match: string, subject: string, verb: string, agent: string) =>
+      fix: (_match: string, subject: string, verb: string, agent: string) =>
         `${agent} ${verb.replace('ed', '')} ${subject}`,
     },
   ],
@@ -146,7 +146,7 @@ export function convertPassiveToActive(text: string): string {
     {
       // "was done by X" -> "X did"
       regex: /(.*?)\s+(?:was|were)\s+(\w+ed)\s+by\s+(.+?)(\.|,|$)/g,
-      replacement: (match: string, subject: string, verb: string, agent: string, punctuation: string) => {
+      replacement: (_match: string, subject: string, verb: string, agent: string, punctuation: string) => {
         const activeVerb = verb.replace(/ed$/, '');
         return `${agent} ${activeVerb} ${subject}${punctuation}`;
       },
@@ -154,7 +154,7 @@ export function convertPassiveToActive(text: string): string {
     {
       // "is being done by X" -> "X is doing"
       regex: /(.*?)\s+(?:is|are)\s+being\s+(\w+ed)\s+by\s+(.+?)(\.|,|$)/g,
-      replacement: (match: string, subject: string, verb: string, agent: string, punctuation: string) => {
+      replacement: (_match: string, subject: string, verb: string, agent: string, punctuation: string) => {
         const activeVerb = verb.replace(/ed$/, 'ing');
         return `${agent} is ${activeVerb} ${subject}${punctuation}`;
       },

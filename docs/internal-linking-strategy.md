@@ -7,23 +7,27 @@ This document outlines the comprehensive internal linking strategy implemented f
 ## Current Site Structure Analysis
 
 ### Primary Pages (High Priority)
+
 - **Home** (`/`) - Main landing page
 - **Services Overview** (`/services`) - Service category page
 - **About** (`/about`) - Personal story and credibility
 - **Contact** (`/contact`) - Conversion endpoint
 
 ### Service Pages (High Priority)
+
 - **Design** (`/services/design`) - Consulting services
-- **Rhythm** (`/services/rhythm`) - Audio services  
+- **Rhythm** (`/services/rhythm`) - Audio services
 - **Color** (`/services/color`) - Photography services
 - **Motion** (`/services/motion`) - Video services
 
 ### Content Pages (Medium Priority)
+
 - **Blog** (`/blog`) - Article listings and individual posts
 - **TIL** (`/til`) - Learning content and board view
 - **Categories/Tags** - Content organization
 
 ### Utility Pages (Lower Priority)
+
 - **Pricing** (`/pricing`) - Service pricing
 - **Privacy/Terms** - Legal pages
 
@@ -34,12 +38,14 @@ This document outlines the comprehensive internal linking strategy implemented f
 **Implementation**: Added to all pages via `PageLayout.astro`
 
 **Benefits**:
+
 - Improved user navigation
 - SEO hierarchy signals
 - Reduced bounce rate
 - Better crawl efficiency
 
 **Features**:
+
 - Responsive design (mobile-optimized)
 - Accessibility compliant
 - Contextual icons
@@ -50,17 +56,15 @@ This document outlines the comprehensive internal linking strategy implemented f
 **Purpose**: Cross-promote related content and services
 
 **Variants**:
+
 - **Cards**: Full-featured with descriptions (service pages)
 - **List**: Compact with icons (blog posts)
 - **Compact**: Minimal for sidebars
 
 **Usage**:
+
 ```astro
-<RelatedPages 
-  pages={relatedServices}
-  title="Explore Our Other Services"
-  variant="cards"
-/>
+<RelatedPages pages={relatedServices} title="Explore Our Other Services" variant="cards" />
 ```
 
 ### 3. Contextual Links
@@ -70,6 +74,7 @@ This document outlines the comprehensive internal linking strategy implemented f
 **Implementation**: Smart keyword detection and relevant service suggestions
 
 **Best Practices**:
+
 - Maximum 3-4 contextual links per page
 - Varied anchor text
 - Descriptive titles
@@ -81,18 +86,19 @@ This document outlines the comprehensive internal linking strategy implemented f
 
 **Cross-Linking Matrix**:
 
-| From | To | Rationale |
-|------|----|---------| 
+| From   | To                    | Rationale                                            |
+| ------ | --------------------- | ---------------------------------------------------- |
 | Design | Rhythm, Motion, Color | Tech consulting clients often need creative services |
-| Rhythm | Motion, Color | Audio projects often pair with video/photography |
-| Color | Motion, Rhythm | Photography clients may need video/audio |
-| Motion | Rhythm, Color | Video projects need audio and visual expertise |
+| Rhythm | Motion, Color         | Audio projects often pair with video/photography     |
+| Color  | Motion, Rhythm        | Photography clients may need video/audio             |
+| Motion | Rhythm, Color         | Video projects need audio and visual expertise       |
 
 ### 5. Blog-to-Service Integration
 
 **Implementation**: Added service promotion sections to blog posts
 
 **Features**:
+
 - Contextual service suggestions based on content
 - "Interested in Working Together?" sections
 - Direct conversion paths
@@ -102,33 +108,32 @@ This document outlines the comprehensive internal linking strategy implemented f
 ### Link Attributes
 
 **Internal Links**:
+
 ```html
-<a href="/services/design" 
-   title="Workflow optimization consulting for creators"
-   data-astro-prefetch>
-   Creative Consulting
+<a href="/services/design" title="Workflow optimization consulting for creators" data-astro-prefetch>
+  Creative Consulting
 </a>
 ```
 
 **External Links**:
+
 ```html
-<a href="https://example.com" 
-   target="_blank" 
-   rel="noopener noreferrer"
-   aria-label="External link (opens in new tab)">
-   External Resource
+<a href="https://example.com" target="_blank" rel="noopener noreferrer" aria-label="External link (opens in new tab)">
+  External Resource
 </a>
 ```
 
 ### Anchor Text Variations
 
 **For Service Pages**:
+
 - Primary: "Resonant Design", "Resonant Rhythm", etc.
 - Descriptive: "our creative consulting services", "professional audio mixing"
 - Action-oriented: "optimize your workflow", "master your music"
 - Contextual: "workflow consulting", "music production expertise"
 
 **For Content Pages**:
+
 - "latest insights", "read our blog", "creative technology articles"
 - "today I learned", "development discoveries", "quick tech lessons"
 - "our story", "about the team", "learn our background"
@@ -136,13 +141,15 @@ This document outlines the comprehensive internal linking strategy implemented f
 ### URL Structure Optimization
 
 **Current Structure** (SEO-friendly):
+
 - Services: `/services/{service-name}`
-- Blog: `/{post-slug}` 
+- Blog: `/{post-slug}`
 - Categories: `/category/{category-slug}`
 - Tags: `/tag/{tag-slug}`
 - TIL: `/til/{entry-slug}`
 
 **Benefits**:
+
 - Short, descriptive URLs
 - Logical hierarchy
 - Keyword-rich paths
@@ -170,24 +177,28 @@ This document outlines the comprehensive internal linking strategy implemented f
 ### Strategic Link Placement
 
 **Homepage**:
+
 - Hero CTA to contact
 - Service feature grid with direct links
 - About link for credibility
 - Blog link for content engagement
 
 **Service Pages**:
+
 - Cross-service promotion
 - Related content links
 - Multiple contact touchpoints
 - Breadcrumb navigation
 
 **Blog Posts**:
+
 - Service promotion sections
 - Related post suggestions
 - Author bio with service links
 - Contact encouragement
 
 **About Page**:
+
 - Service showcase
 - Portfolio links
 - Contact integration
@@ -198,6 +209,7 @@ This document outlines the comprehensive internal linking strategy implemented f
 ### Link Performance Tracking
 
 **Implemented**:
+
 ```javascript
 // Track internal link clicks
 function trackInternalLink(linkText, destination, source) {
@@ -205,12 +217,13 @@ function trackInternalLink(linkText, destination, source) {
     link_text: linkText,
     link_destination: destination,
     source_page: source,
-    event_category: 'navigation'
+    event_category: 'navigation',
   });
 }
 ```
 
 **Key Metrics to Monitor**:
+
 - Click-through rates between pages
 - Service page engagement from blog
 - Contact form conversion rates
@@ -221,11 +234,9 @@ function trackInternalLink(linkText, destination, source) {
 1. **Anchor Text Variations**
    - Test different CTA phrasing
    - Compare descriptive vs. action-oriented text
-   
 2. **Link Placement**
    - Above vs. below fold positioning
    - Inline vs. dedicated sections
-   
 3. **Visual Treatment**
    - Button vs. text links
    - Icon usage effectiveness
@@ -303,12 +314,14 @@ function trackInternalLink(linkText, destination, source) {
 ### Monitoring & Optimization
 
 **Tools Recommended**:
+
 - Google Search Console for crawl data
 - Google Analytics for user flow
 - Ahrefs/SEMrush for link analysis
 - Internal broken link checkers
 
 **Key Performance Indicators**:
+
 - Average session duration
 - Pages per session
 - Service page conversion rates

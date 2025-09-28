@@ -132,16 +132,15 @@ if (currentPath.startsWith('/services/')) {
         }
       </div>
     </div>
-    
-    {showServiceNav && (
-      <div class="border-t border-border bg-muted/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-          <ServiceNavigation 
-            currentService={currentService}
-            variant="horizontal"
-          />
+
+    {
+      showServiceNav && (
+        <div class="border-t border-border bg-muted/30">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+            <ServiceNavigation currentService={currentService} variant="horizontal" />
+          </div>
         </div>
-      </div>
-    )}
+      )
+    }
   </div>
 </header>

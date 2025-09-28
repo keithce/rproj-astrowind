@@ -10,11 +10,13 @@ import FAQs from '~/components/widgets/FAQs.astro';
 import NotionContact from '~/components/widgets/NotionContact.astro';
 import RelatedPages from '~/components/ui/RelatedPages.astro';
 import ContextualLinks from '~/components/ui/ContextualLinks.astro';
+import ServiceNavigation from '~/components/ui/ServiceNavigation.astro';
 import { getRelatedPages } from '~/utils/internal-linking';
 
 const metadata = {
-  title: 'Rhythm',
-  description: 'Music finishing, mixing, and mastering for artists ready to release their best work.',
+  title: 'Rhythm - Music Finishing, Mixing & Mastering | Resonant Rhythm',
+  description:
+    'Professional music finishing, mixing, and mastering for artists ready to release their best work. Transform your tracks into label-ready hits.',
 };
 
 // Get related service pages
@@ -26,136 +28,251 @@ const contextualLinks = [
     text: 'Video Post-Production',
     href: '/services/motion',
     icon: 'tabler:movie',
-    description: 'Professional film finishing and sound design'
+    description: 'Professional film finishing and sound design',
   },
   {
     text: 'Creative Consulting',
     href: '/services/design',
     icon: 'tabler:settings',
-    description: 'Workflow optimization for creators'
+    description: 'Workflow optimization for creators',
   },
   {
     text: 'Photography Services',
     href: '/services/color',
     icon: 'tabler:camera',
-    description: 'Visual storytelling and color work'
-  }
+    description: 'Visual storytelling and color work',
+  },
+];
+
+// Music production process steps from the live website
+const musicProcessSteps = [
+  {
+    title: 'Idea / Producing',
+    description:
+      "Click on the stage of production you're currently going through for a guide that will spark your inspiration and propel you forward!",
+  },
+  {
+    title: 'Arranging and Ear Candy',
+    description:
+      'Add the magic touches that make your track stand out and capture listeners with professional guidance.',
+  },
+  {
+    title: 'Mixing / Mastering',
+    description: 'Polish and finalize your song for professional release quality with industry-standard equipment.',
+  },
+  {
+    title: 'Choosing a Label or Self-Releasing',
+    description: 'Get your music into the world with confidence and industry-standard polish.',
+  },
+];
+
+// Core service features from the live website
+const serviceFeatures = [
+  {
+    title: 'Go back to the basics of the original vision for your song',
+    description: 'Rediscover what made your song special and return to the heart of your creative vision.',
+  },
+  {
+    title: "Polish your song's intro to a catchy label-worthy standard",
+    description:
+      'Transform your track into a professional, label-ready masterpiece that stands up to commercial releases.',
+  },
+  {
+    title: "Master the track until you're entirely happy with it",
+    description: 'Achieve complete satisfaction with your sound through professional mastering and finishing.',
+  },
+];
+
+// Enhanced testimonials from the live website
+const enhancedTestimonials = [
+  {
+    testimonial:
+      "It's unbelievable how much the song has improved. Everything is much more intense, feels really expanded on the high end but the low end is still in the middle as I like. Somehow I think now I really understand what you meant you could do with the bass, like round it you said. I have been testing it in different sound systems, and I really love it.",
+    name: 'Independent Artist',
+    clientTitle: 'Electronic Producer',
+  },
+  {
+    testimonial:
+      "I couldn't be happier with Keith's service. He provided me with very positive and in-depth feedback on my latest song, which has been incredibly helpful in improving my craft. He took the time to understand my needs and personal preferences, which made the experience feel personalized and tailored to my specific goals.",
+    name: 'Singer-Songwriter',
+    clientTitle: 'Folk/Acoustic Artist',
+  },
+  {
+    testimonial:
+      "I highly recommend Keith's services to anyone looking to improve their music. He is a skilled professional who truly cares about his clients, and I am grateful for the guidance he provided me.",
+    name: 'Band Leader',
+    clientTitle: 'Rock Band',
+  },
+];
+
+// Comprehensive FAQ section from the live website
+const comprehensiveFAQs = [
+  {
+    title: 'What happens after we have our initial call?',
+    description:
+      "You'll share your track and vision with me during our first call. If we're a good fit to move forward, I'll send you a contract and details to make the first payment. Then I'll provide a detailed document of feedback for you to get started.",
+  },
+  {
+    title: "What if I don't feel ready to improve my track yet?",
+    description:
+      "There is no time like the present! Often, the reason we don't feel ready to take action is because we don't have clear next steps. It's easy to start a project - to complete it is the real victory. So, if you're prepared to take a leap of faith and work together, you'll soon feel confident and excited because you'll see what's truly possible for your music.",
+  },
+  {
+    title: 'How long does it take to complete a song?',
+    description:
+      'On average, at a steady pace, a song takes around one month from start to finish, completing the required step once per week. However, if you have a deadline, we can complete your track as quickly as one week! Because I want to work with dedicated musicians, there is a six-month re-start fee to protect my time and capacity in the contract.',
+  },
+  {
+    title: 'What if I never like my song?!',
+    description:
+      "If after giving everything to a track, you just can't fall in love with it, I'll offer 50% off the initial payment of a new contract to start over on a brand new record.",
+  },
+  {
+    title: "What's your refund policy?",
+    description:
+      'If after the first round of written feedback, you are not satisfied then I will refund the initial payment. Once the project moves beyond this stage no refund will be issued as my time has been invested. If you cancel before the end of the finishing process, you simply will not receive the final master.',
+  },
 ];
 ---
 
 <PageLayout metadata={metadata}>
+  <!-- Enhanced Hero Section -->
   <Hero
-    title="Your Music Deserves Professional Finishing"
-    subtitle="Stuck with a track that doesn't sound right? We help musicians turn good songs into label-ready hits."
-    actions={[{ text: 'Start Your Project', href: '#contact' }]}
+    title="You were born to make music that counts"
+    subtitle="Whether you've been at it for years or are newer to the game, sometimes a track just doesn't sound like you want it to. Let's finish your song together."
+    actions={[{ text: 'START YOUR PROJECT', href: '#contact' }]}
     gradientBg={true}
     showScrollIndicator={true}
   />
 
+  <!-- Service Navigation -->
+  <div class="border-b bg-muted/30 border-border">
+    <div class="px-4 py-4 mx-auto max-w-7xl sm:px-6">
+      <ServiceNavigation currentService="rhythm" variant="horizontal" showDescriptions={true} />
+    </div>
+  </div>
+
+  <!-- Pain Points Section from live website -->
   <Content
     title="Does This Sound Familiar?"
-    content="<ul class='pl-6 space-y-3 list-disc text-lg'><li><strong>Studio vs. Real World:</strong> Your song sounds great in the studio. But on your phone or car speakers, it falls flat.</li><li><strong>Reference Track Goals:</strong> You want to match that professional sound. No matter what you try, you can't get there.</li><li><strong>Missing Magic:</strong> Something's off, but you can't identify what needs fixing.</li><li><strong>Fresh Ears Needed:</strong> You've heard your song too many times. You've lost perspective.</li><li><strong>Label Feedback:</strong> 'It's not quite there yet.' You need professional polish.</li></ul>"
+    subtitle="Common challenges artists face before professional finishing"
+    content="<ul class='pl-6 space-y-3 text-lg list-disc'><li><strong>Studio vs. Real World:</strong> Maybe your song sounds stellar in the studio but not on your phone or in the car.</li><li><strong>Reference Track Goals:</strong> Perhaps you want to emulate a specific sound, but no matter how much you tweak things, you just can't emulate it.</li><li><strong>Missing Magic:</strong> You started out your production process inspired, but something is missing that you can't put your finger on.</li><li><strong>Fresh Ears Needed:</strong> And now you've listened to your song so many times you can no longer hear what needs improving.</li><li><strong>Label Feedback:</strong> Perhaps you've sent your song to a label, only to have a reply with: 'It's not quite there' or 'It's not the right fit for us.'</li></ul><p class='mt-4 text-lg'>All of the above can be crushingly disappointing and frustrating.</p>"
   />
 
+  <!-- Personal Introduction from live website -->
   <Content
-    title="We Get Your Music Unstuck"
-    subtitle="Hi, I'm Keith. I've been where you are - staring at a track that's almost great but not quite ready."
-    content="<p class='text-lg mb-4'>You need more than technical fixes. You need someone who understands your vision.</p><p class='text-lg mb-4'><strong>We provide:</strong></p><ul class='pl-6 space-y-2 list-disc text-lg'><li>Professional mixing and mastering</li><li>Fresh ears and honest feedback</li><li>Label-ready polish and confidence</li></ul><p class='text-lg mt-4'>Our goal is simple: help you create music that moves people. We tap into the heart of your song and bring out its full emotional impact.</p>"
+    title="Let's Finish Your Song"
+    subtitle="I'm Keith, the face behind Resonant Rhythm, and I know what it feels like to get stuck in your creative process when crafting a hit song and not know what steps to take next."
+    content="<p class='mb-4 text-lg'>Whether you want help with mixing and mastering, an extra set of ears, or you need a boost in confidence to send your track off to your dream label, Resonant Rhythm helps musicians complete their music with absolute excellence by tapping into the heart behind it and capturing in a way to move their listeners.</p>"
   />
 
-  <Steps
-    title="How We Bring Your Music to Life"
-    items={[
-      { title: 'Idea / Producing', description: 'Spark your inspiration and propel your project forward.' },
-      { title: 'Arranging and Ear Candy', description: 'Add the magic touches that make your track stand out.' },
-      { title: 'Mixing / Mastering', description: 'Polish and finalize your song for release.' },
-      { title: 'Choosing a Label or Self-Releasing', description: 'Get your music into the world with confidence.' },
-    ]}
+  <!-- Polish & Release Section from live website -->
+  <Content
+    title="Polish & Release in Just a Few Weeks"
+    subtitle="The power of music to move the soul and speak to our emotions is so mighty that just one song can create significant change in the world."
+    content="<p class='mb-4 text-lg'>With Resonant Rhythm's music finishing service, I come alongside artists and offer my ear and feedback to help artists finish tracks at their highest potential.</p><p class='mb-4 text-lg'>Together, we identify the roadblocks holding them back, then I coach the artist and make suggestions to help them complete their mix. We then master the track until it's ready to be taken to a label or self-released.</p><p class='text-lg'>You can also get support with mixing as an additional service if you need it.</p>"
   />
 
+  <!-- Finishing Service Features from live website -->
   <Features
     title="Resonant Rhythm's Finishing Service"
-    items={[
-      { title: 'Go back to the basics of the original vision for your song' },
-      { title: "Polish your song's intro to a catchy label-worthy standard" },
-      { title: "Master the track until you're entirely happy with it" },
-    ]}
+    subtitle="What you'll walk away with"
+    items={serviceFeatures}
+    columns={3}
   />
 
+  <!-- Walk Away With Section from live website -->
+  <Content
+    title="Walk Away With"
+    subtitle="A finished, fully-mastered hit song ready to send to labels or to be self-released"
+    content="<p class='text-lg'>Our holistic approach to finishing music means a focus on the vision behind the song-in-progress. Resonant Rhythm will help you create that next hit with authenticity and meaning.</p>"
+  />
+
+  <!-- Right Fit Section from live website -->
+  <Content
+    title="Is the Right Fit for You If:"
+    subtitle="We meet artists where they are and take the time to get to know the whole story behind their music"
+    content="<ul class='pl-6 space-y-3 text-lg list-disc'><li>You want a personalized service with a professional audio engineer with over ten years of experience & exceptional technical expertise.</li><li>You're ready to swap feelings of frustration for elation, finish that hit song, and get it into the hands of a record label.</li><li>Musicians need tailored-to-them support to release their unique sound into the world.</li><li>We'll meet virtually and evaluate your track using the best industry-standard audio equipment.</li><li>Throughout several remote sessions together, you'll receive feedback from my well-trained ear.</li><li>I'll coach you to implement changes until the production is 100% complete and you have a signable track that you're wholeheartedly proud of.</li></ul><p class='mt-4 text-lg'>With Resonant Rhythm, you get more than just another conveyor-belt mediocre track. Together, let's harness your vision for the music that resonates with you & make it a reality on playlists worldwide!</p>"
+  />
+
+  <!-- Call to Action -->
   <CallToAction
     title="Ready to finish that track & turn it into a signable hit today?"
-    actions={[{ text: 'Start Your Project', href: '#contact' }]}
+    subtitle="You're just one click away from breaking up with overwhelm & creative frustration & just a few short weeks away from your final masterpiece."
+    actions={[{ text: 'START YOUR PROJECT', href: '#contact' }]}
   />
 
+  <!-- Music Production Process from live website -->
+  <Steps
+    title="How We Bring Your Music to Life"
+    subtitle="Resonant Rhythm supports musicians at every stage of their creative journey"
+    items={musicProcessSteps}
+  />
+
+  <!-- Inspirational Section from live website -->
+  <Content
+    title="Just imagine how you'll feel when you press play and those melodies roll out"
+    subtitle="From the chime of the first note of the intro through to the punchy vocals, your chart-topping song will get you (and your friends) dancing around your kitchen."
+    content="<p class='text-lg'>And YOU wrote it. It's YOUR song. All you needed was a little steering in the right direction.</p>"
+  />
+
+  <!-- Enhanced Testimonials -->
   <Testimonials
     title="What Artists Are Saying"
-    testimonials={[
-      {
-        testimonial:
-          "It's unbelievable how much the song has improved. Everything is much more intense, feels really expanded on the high end but the low end is still in the middle as I like. Somehow I think now I really understand what you meant you could do with the bass, like round it you said. I have been testing it in different sound systems, and I really love it.",
-        name: 'Artist 1',
-      },
-      {
-        testimonial:
-          "I couldn't be happier with Keith's service. He provided me with very positive and in-depth feedback on my latest song, which has been incredibly helpful in improving my craft. He took the time to understand my needs and personal preferences, which made the experience feel personalized and tailored to my specific goals.",
-        name: 'Artist 2',
-      },
-      {
-        testimonial:
-          "I highly recommend Keith's services to anyone looking to improve their music. He is a skilled professional who truly cares about his clients, and I am grateful for the guidance he provided me.",
-        name: 'Artist 3',
-      },
-    ]}
+    subtitle="Real feedback from musicians who've worked with us"
+    testimonials={enhancedTestimonials}
   />
 
+  <!-- About Keith Section from live website -->
+  <Content
+    title="Who's behind Resonant Rhythm?"
+    subtitle="I'm Keith, a music-infatuated post-production technical director, audio engineer, and entrepreneur"
+    content="<p class='mb-4 text-lg'>I possess an uncanny intuition for anything electronic, and I help artists create music that resonates with their audience.</p><p class='mb-4 text-lg'>Throughout my career, I have seen countless creatives stop short of their potential due to hurdles and knocked confidence at the finishing stage of their music. I help musicians succeed by offering my ear and feedback, technical troubleshooting, and advice regarding the various aspects of the music production process.</p><p class='mb-4 text-lg'>Believe me when I say you absolutely CAN confidently release that record as a polished, finished masterpiece. The world needs your music!</p><p class='mb-4 text-lg'>In the same way that all musicians release unique sounds, I also understand that artists have different needs, timescales, goals, and styles of working. I always meet artists where they are at and take the time to get to know the whole story behind their music.</p><p class='text-lg'>When we work together I show you the necessary steps to complete your music so you can add them to your skillset and continue using them yourself moving forward.</p>"
+  />
+
+  <!-- Why Work With Me Section from live website -->
+  <Content
+    title="Why Work with me?"
+    subtitle="My primary goal is to produce music of outstanding quality"
+    content="<ul class='pl-6 space-y-2 text-lg list-disc'><li>Benefit from a wealth of experience across countless music genres</li><li>Get bespoke support tailored to YOUR creative needs</li><li>Collaborate with an industry-lead technical and musical professional</li><li>Throughout all my years in music production, there's not much I haven't seen in terms of roadblocks to perfecting that final mix (I also know because I've been there myself)</li><li>You're just one step away from getting the helping hand you need to help you overcome those hurdles and finally finish that song</li></ul>"
+  />
+
+  <!-- Ready to Make the Leap Section from live website -->
+  <Content
+    title="Ready to make the leap?"
+    subtitle="Whatever your goal, Resonant Rhythm is ready to help you reach it - YOUR way"
+    content="<p class='text-lg'>Let's work together and help you become a signed artist for your dream label today.</p>"
+  />
+
+  <!-- Comprehensive FAQ Section -->
   <FAQs
     title="Frequently Asked Questions"
-    items={[
-      {
-        title: 'What happens after we have our initial call?',
-        description:
-          "You'll share your track and vision with me during our first call. If we're a good fit to move forward, I'll send you a contract and details to make the first payment. Then I'll provide a detailed document of feedback for you to get started.",
-      },
-      {
-        title: "What if I don't feel ready to improve my track yet?",
-        description:
-          "There is no time like the present! Often, the reason we don't feel ready to take action is because we don't have clear next steps. It's easy to start a project- to complete it is the real victory.",
-      },
-      {
-        title: 'How long does it take to complete a song?',
-        description:
-          'On average, at a steady pace, a song takes around one month from start to finish, completing the required step once per week. However, if you have a deadline, we can complete your track as quickly as one week!',
-      },
-      {
-        title: 'What if I never like my song?!',
-        description:
-          "If after giving everything to a track, you just can't fall in love with it, I'll offer 50% off the initial payment of a new contract to start over on a brand new record.",
-      },
-      {
-        title: "What's your refund policy?",
-        description:
-          'If after the first round of written feedback, you are not satisfied then I will refund the initial payment. Once the project moves beyond this stage no refund will be issued as my time has been invested.',
-      },
-    ]}
+    subtitle="Everything you need to know about our music finishing services"
+    items={comprehensiveFAQs}
+    columns={2}
   />
 
   <!-- Cross-Service Promotion -->
   <section class="py-12 bg-muted/30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <RelatedPages 
-        pages={relatedServices}
-        title="Complete Your Creative Vision"
-        variant="cards"
-      />
-      
-      <div class="mt-8">
-        <ContextualLinks 
-          links={contextualLinks}
-          title="Expand Your Creative Toolkit"
-        />
+    <div class="px-4 mx-auto max-w-7xl sm:px-6">
+      <div class="mb-8 text-center">
+        <h3 class="mb-2 text-2xl font-bold text-foreground">Complete Your Creative Vision</h3>
+        <p class="text-muted-foreground">Explore our other services to bring your projects to life</p>
+      </div>
+
+      <RelatedPages pages={relatedServices} title="Our Services" variant="cards" showIcon={true} />
+
+      <div class="mt-12">
+        <div class="mb-6 text-center">
+          <h4 class="mb-2 text-xl font-semibold text-foreground">Expand Your Creative Toolkit</h4>
+          <p class="text-muted-foreground">Complementary services that enhance your creative workflow</p>
+        </div>
+
+        <ContextualLinks links={contextualLinks} title="" />
       </div>
     </div>
   </section>
 
+  <!-- Contact Section -->
   <NotionContact id="contact" defaultService="Rhythm" />
 </PageLayout>

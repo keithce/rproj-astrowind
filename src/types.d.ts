@@ -296,8 +296,10 @@ export interface Contact extends Omit<Headline, 'classes'>, Form, Widget {}
 
 // Global type definitions
 declare global {
-  function gtag(...args: any[]): void;
+  function gtag(command: 'config', targetId: string, config?: Record<string, unknown>): void;
+  function gtag(command: 'event', eventName: string, parameters?: Record<string, unknown>): void;
+  function gtag(command: string, ...args: unknown[]): void;
   interface Window {
-    gtag: (...args: any[]) => void;
+    gtag: typeof gtag;
   }
 }

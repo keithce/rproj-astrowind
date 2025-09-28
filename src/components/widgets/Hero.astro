@@ -77,9 +77,7 @@ const {
         {
           tagline && (
             <p
-              class={`text-base font-bold tracking-wide uppercase animate-fade-in ${
-                gradientBg ? 'text-accent' : 'text-secondary'
-              }`}
+              class={`text-base font-bold tracking-wide uppercase  ${gradientBg ? 'text-accent' : 'text-secondary'}`}
               set:html={tagline}
             />
           )
@@ -87,7 +85,7 @@ const {
         {
           title && (
             <h1
-              class={`break-words whitespace-normal font-bold leading-tight tracking-tighter mb-4 font-heading animate-fade-in text-foreground ${
+              class={`break-words whitespace-normal font-bold leading-tight tracking-tighter mb-4 font-heading  text-foreground ${
                 gradientBg ? 'text-5xl md:text-7xl' : 'text-xl sm:text-3xl md:text-5xl lg:text-6xl'
               }`}
               set:html={title}
@@ -98,16 +96,14 @@ const {
           {
             subtitle && (
               <p
-                class={`mb-6 animate-fade-in leading-relaxed text-foreground/80 ${
-                  gradientBg ? 'text-xl md:text-2xl' : 'text-xl'
-                }`}
+                class={`mb-6  leading-relaxed text-foreground/80 ${gradientBg ? 'text-xl md:text-2xl' : 'text-xl'}`}
                 set:html={subtitle}
               />
             )
           }
           {
             actions && (
-              <div class="flex flex-col max-w-xs gap-4 m-auto mb-8 sm:max-w-md flex-nowrap sm:flex-row sm:justify-center animate-fade-in">
+              <div class="flex flex-col max-w-xs gap-4 m-auto mb-8 sm:max-w-md flex-nowrap sm:flex-row sm:justify-center ">
                 {Array.isArray(actions) ? (
                   actions.map((action) => (
                     <div class="flex w-full sm:w-auto">

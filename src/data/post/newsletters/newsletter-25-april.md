@@ -27,7 +27,7 @@ This month, I had the privilege of attending NAB 2025, an incredible experience 
 - David Stump
 - Jeff Greenburg
 
- whose insights and time were invaluable. Friends, I hope to make over time!
+whose insights and time were invaluable. Friends, I hope to make over time!
 
 My key takeaways include:
 

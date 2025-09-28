@@ -30,7 +30,7 @@ class LinkAnalytics {
   }
 
   private generateSessionId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
   private setupEventListeners(): void {
@@ -50,7 +50,7 @@ class LinkAnalytics {
     });
   }
 
-  private trackLinkClick(link: HTMLAnchorElement, event: MouseEvent): void {
+  private trackLinkClick(link: HTMLAnchorElement, _event: MouseEvent): void {
     const href = link.href;
     const linkText = link.textContent?.trim() || '';
     const source = window.location.pathname;
@@ -126,7 +126,7 @@ class LinkAnalytics {
     }
   }
 
-  private sendPerformanceData(data: any): void {
+  private sendPerformanceData(data: { url: string; loadTime: number; sessionId: string; timestamp: number }): void {
     // Track page performance
     if (typeof gtag !== 'undefined') {
       gtag('event', 'page_load_complete', {

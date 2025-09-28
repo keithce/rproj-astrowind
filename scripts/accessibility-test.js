@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
 import lighthouse from 'lighthouse';
-import axeCore from 'axe-core';
+// import axeCore from 'axe-core'; // Unused import
 import config from '../accessibility.config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -326,7 +326,7 @@ class AccessibilityTester {
    * Test color contrast ratios
    */
   async testColorContrast(page, url) {
-    const contrastTests = await page.evaluate((minRatios) => {
+    const contrastTests = await page.evaluate(() => {
       const results = [];
 
       // Get all text elements

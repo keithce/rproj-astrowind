@@ -26,20 +26,20 @@ const contextualLinks = [
     text: 'Audio Engineering Services',
     href: '/services/rhythm',
     icon: 'tabler:music',
-    description: 'Professional music production and audio mixing'
+    description: 'Professional music production and audio mixing',
   },
   {
     text: 'Photography & Color Work',
     href: '/services/color',
     icon: 'tabler:camera',
-    description: 'Visual storytelling and color grading expertise'
+    description: 'Visual storytelling and color grading expertise',
   },
   {
     text: 'Technical Consulting',
     href: '/services/design',
     icon: 'tabler:settings',
-    description: 'Workflow optimization and tech stack consulting'
-  }
+    description: 'Workflow optimization and tech stack consulting',
+  },
 ];
 ---
 
@@ -322,17 +322,10 @@ const contextualLinks = [
   <!-- Related Services Cross-Promotion -->
   <section class="py-12 bg-muted/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <RelatedPages 
-        pages={relatedServices}
-        title="Complete Your Production Pipeline"
-        variant="cards"
-      />
-      
+      <RelatedPages pages={relatedServices} title="Complete Your Production Pipeline" variant="cards" />
+
       <div class="mt-8">
-        <ContextualLinks 
-          links={contextualLinks}
-          title="Enhance Your Creative Process"
-        />
+        <ContextualLinks links={contextualLinks} title="Enhance Your Creative Process" />
       </div>
     </div>
   </section>

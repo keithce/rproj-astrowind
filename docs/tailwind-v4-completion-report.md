@@ -104,8 +104,8 @@ class ThemeManager {
 
 #### **Animation Utilities:**
 
-- `animate-fade-in-up`, `animate-fade-in-down`
-- `animate-fade-in-left`, `animate-fade-in-right`
+- `-up`, `-down`
+- `-left`, `-right`
 - `animate-scale-in`, `animate-bounce-in`
 
 #### **Interaction Utilities:**

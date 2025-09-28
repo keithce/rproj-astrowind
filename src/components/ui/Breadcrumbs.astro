@@ -14,12 +14,7 @@ export interface Props {
   className?: string;
 }
 
-const { 
-  items, 
-  separator = 'tabler:chevron-right', 
-  showHome = true, 
-  className = '' 
-} = Astro.props;
+const { items, separator = 'tabler:chevron-right', showHome = true, className = '' } = Astro.props;
 
 // Add home breadcrumb if enabled and not already present
 const breadcrumbItems: BreadcrumbItem[] = [];
@@ -31,36 +26,29 @@ breadcrumbItems.push(...items);
 
 <nav aria-label="Breadcrumb navigation" class={`breadcrumbs ${className}`}>
   <ol class="flex items-center space-x-2 text-sm">
-    {breadcrumbItems.map((item, index) => (
-      <li class="flex items-center">
-        {index > 0 && (
-          <Icon 
-            name={separator} 
-            class="w-4 h-4 mx-2 text-muted-foreground" 
-            aria-hidden="true" 
-          />
-        )}
-        
-        {item.href ? (
-          <a 
-            href={item.href}
-            class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
-            {...(index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {})}
-          >
-            {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
-            <span>{item.text}</span>
-          </a>
-        ) : (
-          <span 
-            class="flex items-center gap-1 text-foreground font-semibold"
-            aria-current="page"
-          >
-            {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
-            <span>{item.text}</span>
-          </span>
-        )}
-      </li>
-    ))}
+    {
+      breadcrumbItems.map((item, index) => (
+        <li class="flex items-center">
+          {index > 0 && <Icon name={separator} class="w-4 h-4 mx-2 text-muted-foreground" aria-hidden="true" />}
+
+          {item.href ? (
+            <a
+              href={item.href}
+              class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              {...(index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {})}
+            >
+              {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+              <span>{item.text}</span>
+            </a>
+          ) : (
+            <span class="flex items-center gap-1 text-foreground font-semibold" aria-current="page">
+              {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+              <span>{item.text}</span>
+            </span>
+          )}
+        </li>
+      ))
+    }
   </ol>
 </nav>
 
@@ -75,7 +63,7 @@ breadcrumbItems.push(...items);
     text-decoration: underline;
   }
 
-  .breadcrumbs [aria-current="page"] {
+  .breadcrumbs [aria-current='page'] {
     pointer-events: none;
   }
 
@@ -92,19 +80,19 @@ breadcrumbItems.push(...items);
       flex-wrap: wrap;
       gap: 0.25rem;
     }
-    
+
     .breadcrumbs ol li:first-child {
       display: flex;
     }
-    
+
     /* Hide intermediate breadcrumbs on mobile, keep home and current */
-    .breadcrumbs ol li:nth-child(n+2):nth-last-child(n+2) {
+    .breadcrumbs ol li:nth-child(n + 2):nth-last-child(n + 2) {
       display: none;
     }
-    
+
     /* Show ellipsis when items are hidden */
-    .breadcrumbs ol li:nth-child(2):nth-last-child(n+3)::before {
-      content: "...";
+    .breadcrumbs ol li:nth-child(2):nth-last-child(n + 3)::before {
+      content: '...';
       margin: 0 0.5rem;
       color: var(--color-muted-foreground);
     }

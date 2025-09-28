@@ -27,14 +27,14 @@ const contextualLinks = [
     text: 'Film & Video Production',
     href: '/services/motion',
     icon: 'tabler:movie',
-    description: 'Professional video post-production and editing'
+    description: 'Professional video post-production and editing',
   },
   {
     text: 'Audio for Video',
     href: '/services/rhythm',
     icon: 'tabler:music',
-    description: 'Sound design and audio mixing for visual content'
-  }
+    description: 'Sound design and audio mixing for visual content',
+  },
 ];
 
 // Sample image data for each category
@@ -423,17 +423,10 @@ const testimonials = [
   <!-- Related Services -->
   <section class="py-12 bg-muted/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <RelatedPages 
-        pages={relatedServices}
-        title="Complete Your Visual Story"
-        variant="cards"
-      />
-      
+      <RelatedPages pages={relatedServices} title="Complete Your Visual Story" variant="cards" />
+
       <div class="mt-8">
-        <ContextualLinks 
-          links={contextualLinks}
-          title="Enhance Your Visual Content"
-        />
+        <ContextualLinks links={contextualLinks} title="Enhance Your Visual Content" />
       </div>
     </div>
   </section>

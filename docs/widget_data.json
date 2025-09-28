@@ -1,0 +1,100 @@
+{
+  "Andrew Huang": {
+    "name": "Andrew Huang",
+    "type": "rhythm",
+    "description": "Prolific music producer and educator known for genre-hopping songs, creative sound design, and YouTube tutorials.",
+    "url": "https://www.youtube.com/channel/UCdcemy56JtVTrsFIOoqvV8g",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqOe-AndrewHuang-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Potato Jet": {
+    "name": "Potato Jet (Gene Nagata)",
+    "type": "motion",
+    "description": "Cinematography gear reviews and filmmaking tips with a fun, unpretentious vibe.",
+    "url": "https://www.youtube.com/potatojet",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqNagata-PotatoJet-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Dunna Did It": {
+    "name": "Dunna Did It",
+    "type": "motion",
+    "description": "Creator-focused filmmaking and photography tutorials, gear reviews, and Resolve workflow tips.",
+    "url": "https://www.youtube.com/c/dunnadidit",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqDunnaDidIt-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Chris Brockhurst": {
+    "name": "Chris Brockhurst",
+    "type": "motion",
+    "description": "Filmmaking and camera tutorials, gear breakdowns, and practical creator workflows.",
+    "url": "https://www.youtube.com/chrisbrockhurst",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqChrisBrockhurst-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Cullen Kelly": {
+    "name": "Cullen Kelly",
+    "type": "color",
+    "description": "Professional colorist and educator sharing advanced DaVinci Resolve color management and look development.",
+    "url": "https://www.youtube.com/c/CullenKelly",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqCullenKelly-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "EDMProd": {
+    "name": "EDMProd",
+    "type": "rhythm",
+    "description": "Electronic music production education with courses, articles, and podcasts for modern producers.",
+    "url": "https://www.edmprod.com/",
+    "image": "https://www.edmprod.com/wp-content/uploads/2020/02/edmprod-icon-512.png"
+  },
+  "Pragmatic Engineer": {
+    "name": "The Pragmatic Engineer",
+    "type": "design",
+    "description": "Software engineering newsletter covering tech leadership, engineering culture, and industry trends.",
+    "url": "https://pragmaticengineer.com/",
+    "image": "https://pragmaticengineer.com/images/icon-512.png"
+  },
+  "Unsupervised Learning": {
+    "name": "Unsupervised Learning (Daniel Miessler)",
+    "type": "design",
+    "description": "Newsletter and podcast on AI, security, and the future of technology and society.",
+    "url": "https://danielmiessler.com/p/ul/",
+    "image": "https://danielmiessler.com/wp-content/uploads/2023/05/ul-logo-512.png"
+  },
+  "Jim Nix": {
+    "name": "Jim Nix",
+    "type": "color",
+    "description": "Travel photographer sharing editing tutorials, creative workflows, and photo inspiration.",
+    "url": "https://www.youtube.com/@JimNix",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqJimNix-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Monstercat Silk Showcase": {
+    "name": "Monstercat Silk Showcase",
+    "type": "rhythm",
+    "description": "Deep, progressive, and chill electronic mixes from Monstercat’s Silk imprint.",
+    "url": "https://www.youtube.com/@MonstercatSilk",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqMonstercatSilk-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Bobby Owsinski": {
+    "name": "Bobby Owsinski",
+    "type": "rhythm",
+    "description": "Author and educator covering music production, mixing, and the music business.",
+    "url": "https://www.bobbyowsinski.com/",
+    "image": "https://www.bobbyowsinski.com/wp-content/uploads/2020/06/cropped-bobby-owsinski-favicon-192x192.png"
+  },
+  "MKBHD": {
+    "name": "MKBHD (Marques Brownlee)",
+    "type": "motion",
+    "description": "High-production tech reviews, cameras, EVs, and creator interviews.",
+    "url": "https://www.youtube.com/MKBHD",
+    "image": "https://yt3.googleusercontent.com/ytc/AGIKgqMKBHD-brand=s88-c-k-c0x00ffffff-no-rj"
+  },
+  "Todd Henry": {
+    "name": "Todd Henry",
+    "type": "design",
+    "description": "Author and host of Accidental Creative on leadership and creating on demand.",
+    "url": "https://accidentalcreative.com/",
+    "image": "https://accidentalcreative.com/wp-content/uploads/2020/06/cropped-ac-favicon-192x192.png"
+  },
+  "Marc Champagne": {
+    "name": "Marc Champagne",
+    "type": "design",
+    "description": "Mental fitness strategist and author of Personal Socrates, hosting thoughtful interviews and prompts.",
+    "url": "https://www.marccchampagne.com/",
+    "image": "https://images.squarespace-cdn.com/content/v1/5f0f01d5110b8e5fef9c2c1b/1600271439271-7I6H1M6QWZ0Q/icon-512.png"
+  }
+}

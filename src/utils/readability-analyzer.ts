@@ -315,7 +315,7 @@ export function optimizeForReadability(text: string): string {
       .replace(/,\s+but\s+/g, '. However, ')
       .replace(/,\s+so\s+/g, '. Therefore, ')
       // Convert passive to active voice patterns
-      .replace(/was\s+(\w+ed)\s+by\s+/g, (match, verb) => {
+      .replace(/was\s+(\w+ed)\s+by\s+/g, (_match, verb) => {
         // This is a simplified conversion - real implementation would be more complex
         return `${verb.replace('ed', '')} `;
       })

@@ -46,32 +46,35 @@ class ContentAnalyzer {
    */
   calculateReadabilityMetrics(text) {
     // Remove HTML and normalize text
-    const cleanText = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    
+    const cleanText = text
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
     // Sentence analysis
-    const sentences = cleanText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
-    
+    const sentences = cleanText.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+    const words = cleanText.split(/\s+/).filter((w) => w.length > 0);
+
     // Calculate metrics
     const avgSentenceLength = words.length / sentences.length;
     const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / words.length;
-    
+
     // Syllable count (simplified)
     const syllables = words.reduce((sum, word) => {
       return sum + Math.max(1, word.match(/[aeiouy]+/gi)?.length || 1);
     }, 0);
     const avgSyllables = syllables / words.length;
-    
+
     // Flesch Reading Ease Score
-    const fleschScore = 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgSyllables);
-    
+    const fleschScore = 206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllables;
+
     // Passive voice detection (simplified)
-    const passiveCount = sentences.filter(sentence => {
+    const passiveCount = sentences.filter((sentence) => {
       return /\b(was|were|is|are|been|being)\s+\w*ed\b/i.test(sentence);
     }).length;
-    
+
     // Complex words (3+ syllables)
-    const complexWords = words.filter(word => {
+    const complexWords = words.filter((word) => {
       const syllableCount = word.match(/[aeiouy]+/gi)?.length || 1;
       return syllableCount >= 3;
     }).length;
@@ -101,20 +104,20 @@ class ContentAnalyzer {
 
   identifyIssues(avgSentenceLength, fleschScore, passiveCount, totalSentences) {
     const issues = [];
-    
+
     if (avgSentenceLength > 20) {
       issues.push('Long sentences detected - consider breaking up for better readability');
     }
-    
+
     if (fleschScore < 60) {
       issues.push('Reading level too high - simplify language for web audience');
     }
-    
+
     const passivePercentage = (passiveCount / totalSentences) * 100;
     if (passivePercentage > 20) {
       issues.push(`High passive voice usage (${Math.round(passivePercentage)}%) - use more active voice`);
     }
-    
+
     return issues;
   }
 
@@ -123,39 +126,38 @@ class ContentAnalyzer {
    */
   async analyzePage(url, pageName) {
     console.log(`📄 Analyzing: ${pageName} (${url})`);
-    
+
     const page = await this.browser.newPage();
-    
+
     try {
       await page.goto(url, { waitUntil: 'networkidle0' });
-      
+
       // Extract content for analysis
       const pageData = await page.evaluate(() => {
         // Get main content
         const mainContent = document.querySelector('main, article, .prose, [role="main"]') || document.body;
-        
+
         // Extract text content
         const textContent = mainContent.textContent || '';
-        
+
         // Extract headings
-        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
-          .map(h => ({
-            level: parseInt(h.tagName.charAt(1)),
-            text: h.textContent.trim(),
-            tag: h.tagName.toLowerCase(),
-          }));
-        
+        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map((h) => ({
+          level: parseInt(h.tagName.charAt(1)),
+          text: h.textContent.trim(),
+          tag: h.tagName.toLowerCase(),
+        }));
+
         // Extract meta information
         const title = document.querySelector('title')?.textContent || '';
         const metaDescription = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-        
+
         // Count internal links
         const internalLinks = Array.from(document.querySelectorAll('a[href^="/"], a[href*="rproj.art"]')).length;
-        
+
         // Extract key content sections
         const heroText = document.querySelector('[class*="hero"] h1, [class*="hero"] h2')?.textContent || '';
         const firstParagraph = document.querySelector('p')?.textContent || '';
-        
+
         return {
           textContent: textContent.substring(0, 10000), // Limit for analysis
           headings,
@@ -167,35 +169,35 @@ class ContentAnalyzer {
           contentLength: textContent.length,
         };
       });
-      
+
       // Analyze content
       const readabilityMetrics = this.calculateReadabilityMetrics(pageData.textContent);
-      
+
       // SEO analysis
       const seoIssues = [];
-      
+
       // Title length
       if (pageData.title.length > 60) {
         seoIssues.push('Title too long for SEO (>60 characters)');
       } else if (pageData.title.length < 30) {
         seoIssues.push('Title too short for SEO (<30 characters)');
       }
-      
+
       // Meta description
       if (pageData.metaDescription.length > 160) {
         seoIssues.push('Meta description too long (>160 characters)');
       } else if (pageData.metaDescription.length < 120) {
         seoIssues.push('Meta description too short (<120 characters)');
       }
-      
+
       // Heading structure
-      const h1Count = pageData.headings.filter(h => h.level === 1).length;
+      const h1Count = pageData.headings.filter((h) => h.level === 1).length;
       if (h1Count === 0) {
         seoIssues.push('Missing H1 tag');
       } else if (h1Count > 1) {
         seoIssues.push('Multiple H1 tags detected');
       }
-      
+
       // Internal linking
       if (pageData.internalLinks < 3) {
         seoIssues.push('Insufficient internal links (<3)');
@@ -219,16 +221,12 @@ class ContentAnalyzer {
           firstParagraph: pageData.firstParagraph,
           totalLength: pageData.contentLength,
         },
-        recommendations: [
-          ...readabilityMetrics.issues,
-          ...seoIssues,
-        ],
+        recommendations: [...readabilityMetrics.issues, ...seoIssues],
       };
-      
+
       this.results.pages.push(pageResult);
-      
+
       console.log(`  ✅ Analysis complete - ${readabilityMetrics.issues.length + seoIssues.length} issues found`);
-      
     } catch (error) {
       console.error(`  ❌ Error analyzing ${pageName}:`, error.message);
     } finally {
@@ -241,45 +239,46 @@ class ContentAnalyzer {
    */
   generateReport() {
     const totalIssues = this.results.pages.reduce((sum, page) => sum + page.recommendations.length, 0);
-    const avgReadability = this.results.pages.reduce((sum, page) => sum + page.readability.fleschScore, 0) / this.results.pages.length;
-    
+    const avgReadability =
+      this.results.pages.reduce((sum, page) => sum + page.readability.fleschScore, 0) / this.results.pages.length;
+
     this.results.summary = {
       avgReadabilityScore: Math.round(avgReadability),
       totalIssues: totalIssues,
       pagesAnalyzed: this.results.pages.length,
     };
-    
+
     // Generate site-wide recommendations
     this.results.recommendations = this.generateSiteRecommendations();
-    
+
     return this.results;
   }
 
   generateSiteRecommendations() {
     const recommendations = [];
     const pages = this.results.pages;
-    
+
     // Readability consistency
-    const readabilityScores = pages.map(p => p.readability.fleschScore);
+    const readabilityScores = pages.map((p) => p.readability.fleschScore);
     const minScore = Math.min(...readabilityScores);
     const maxScore = Math.max(...readabilityScores);
-    
+
     if (maxScore - minScore > 30) {
       recommendations.push('Large variation in readability across pages - standardize writing style');
     }
-    
+
     // SEO consistency
-    const pagesWithSEOIssues = pages.filter(p => p.seo.issues.length > 0).length;
+    const pagesWithSEOIssues = pages.filter((p) => p.seo.issues.length > 0).length;
     if (pagesWithSEOIssues > pages.length * 0.5) {
       recommendations.push('Over 50% of pages have SEO issues - implement systematic optimization');
     }
-    
+
     // Internal linking opportunities
     const avgInternalLinks = pages.reduce((sum, p) => sum + p.seo.internalLinks, 0) / pages.length;
     if (avgInternalLinks < 5) {
       recommendations.push('Increase internal linking across all pages for better SEO');
     }
-    
+
     return recommendations;
   }
 
@@ -334,7 +333,9 @@ class ContentAnalyzer {
     </div>
   </div>
 
-  ${this.results.pages.map(page => `
+  ${this.results.pages
+    .map(
+      (page) => `
     <div class="page-analysis">
       <div class="page-title">
         ${page.name}
@@ -368,27 +369,40 @@ class ContentAnalyzer {
         </div>
       </div>
 
-      ${page.content.heroText && `
+      ${
+        page.content.heroText &&
+        `
         <div class="content-preview">
           <strong>Hero Text:</strong> ${page.content.heroText.substring(0, 200)}...
         </div>
-      `}
+      `
+      }
 
-      ${page.recommendations.length > 0 ? `
+      ${
+        page.recommendations.length > 0
+          ? `
         <div class="issues">
           <h4>Issues & Recommendations</h4>
-          ${page.recommendations.map(rec => `<div class="issue-item">• ${rec}</div>`).join('')}
+          ${page.recommendations.map((rec) => `<div class="issue-item">• ${rec}</div>`).join('')}
         </div>
-      ` : ''}
+      `
+          : ''
+      }
     </div>
-  `).join('')}
+  `
+    )
+    .join('')}
 
-  ${this.results.recommendations.length > 0 ? `
+  ${
+    this.results.recommendations.length > 0
+      ? `
     <div class="recommendations">
       <h3>Site-Wide Recommendations</h3>
-      ${this.results.recommendations.map(rec => `<div class="issue-item">• ${rec}</div>`).join('')}
+      ${this.results.recommendations.map((rec) => `<div class="issue-item">• ${rec}</div>`).join('')}
     </div>
-  ` : ''}
+  `
+      : ''
+  }
 </body>
 </html>`;
   }
@@ -430,7 +444,6 @@ class ContentAnalyzer {
       console.log(`  Avg Readability: ${report.summary.avgReadabilityScore} (Flesch Score)`);
       console.log(`  Total Issues: ${report.summary.totalIssues}`);
       console.log(`\n📄 Report saved to: ${outputDir}`);
-
     } catch (error) {
       console.error('❌ Analysis failed:', error);
       process.exit(1);

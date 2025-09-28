@@ -78,12 +78,12 @@ const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
       <div aria-hidden="true" class="mt-10 md:mt-0 md:basis-1/2">
         {
           image && (
-            <div class="relative max-w-4xl m-auto">
+            <div class="relative m-auto max-w-4xl">
               {typeof image === 'string' ? (
                 <Fragment set:html={image} />
               ) : (
                 <Image
-                  class="w-full mx-auto bg-gray-500 rounded-lg shadow-lg"
+                  class="mx-auto w-full bg-gray-500 rounded-lg shadow-lg"
                   width={500}
                   height={500}
                   widths={[400, 768]}
@@ -97,15 +97,13 @@ const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
         }
       </div>
     </div>
-    
-    {showRelated && relatedPages.length > 0 && (
-      <div class="mt-12 pt-8 border-t border-border">
-        <RelatedPages 
-          pages={relatedPages}
-          title={relatedTitle}
-          variant="compact"
-        />
-      </div>
-    )}
+
+    {
+      showRelated && relatedPages.length > 0 && (
+        <div class="pt-8 mt-12 border-t border-border">
+          <RelatedPages pages={relatedPages} title={relatedTitle} variant="compact" />
+        </div>
+      )
+    }
   </div>
 </WidgetWrapper>
