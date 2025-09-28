@@ -29,20 +29,20 @@ breadcrumbItems.push(...items);
     {
       breadcrumbItems.map((item, index) => (
         <li class="flex items-center">
-          {index > 0 && <Icon name={separator} class="w-4 h-4 mx-2 text-muted-foreground" aria-hidden="true" />}
+          {index > 0 && <Icon name={separator} class="text-muted-foreground mx-2 h-4 w-4" aria-hidden="true" />}
 
           {item.href ? (
             <a
               href={item.href}
-              class="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              class="text-muted-foreground hover:text-primary flex items-center gap-1 font-medium transition-colors duration-200"
               {...(index === breadcrumbItems.length - 1 ? { 'aria-current': 'page' } : {})}
             >
-              {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+              {item.icon && <Icon name={item.icon} class="h-4 w-4" aria-hidden="true" />}
               <span>{item.text}</span>
             </a>
           ) : (
-            <span class="flex items-center gap-1 text-foreground font-semibold" aria-current="page">
-              {item.icon && <Icon name={item.icon} class="w-4 h-4" aria-hidden="true" />}
+            <span class="text-foreground flex items-center gap-1 font-semibold" aria-current="page">
+              {item.icon && <Icon name={item.icon} class="h-4 w-4" aria-hidden="true" />}
               <span>{item.text}</span>
             </span>
           )}

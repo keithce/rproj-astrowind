@@ -7,8 +7,8 @@ import { trim } from '~/utils/utils';
 export const trimSlash = (s: string) => trim(trim(s, '/'));
 const createPath = (...params: string[]) => {
   const paths = params
-    .map(el => trimSlash(el))
-    .filter(el => !!el)
+    .map((el) => trimSlash(el))
+    .filter((el) => !!el)
     .join('/');
   return `/${paths}${SITE.trailingSlash && paths ? '/' : ''}`;
 };
@@ -18,7 +18,7 @@ const BASE_PATHNAME = SITE.base || '/';
 export const cleanSlug = (text = '') =>
   trimSlash(text)
     .split('/')
-    .map(slug => slugify(slug))
+    .map((slug) => slugify(slug))
     .join('/');
 
 export const BLOG_BASE = cleanSlug(APP_BLOG?.list?.pathname);
@@ -99,19 +99,19 @@ export const getBlogTagPermalink = (): string => getPermalink(TAG_BASE);
 /** */
 export const getAsset = (path: string): string =>
   `/${[BASE_PATHNAME, path]
-    .map(el => trimSlash(el))
-    .filter(el => !!el)
+    .map((el) => trimSlash(el))
+    .filter((el) => !!el)
     .join('/')}`;
 
 /** */
 const definitivePermalink = (permalink: string): string => createPath(BASE_PATHNAME, permalink);
 
 /** */
-export const applyGetPermalinks = (menu: object = {}) => {
+export const applyGetPermalinks = (menu: any = {}): any => {
   if (Array.isArray(menu)) {
-    return menu.map(item => applyGetPermalinks(item));
+    return menu.map((item) => applyGetPermalinks(item));
   } else if (typeof menu === 'object' && menu !== null) {
-    const obj = {};
+    const obj: Record<string, any> = {};
     for (const key in menu) {
       if (key === 'href') {
         if (typeof menu[key] === 'string') {

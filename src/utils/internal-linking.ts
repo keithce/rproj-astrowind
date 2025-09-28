@@ -358,7 +358,7 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
     } else {
       // Generic breadcrumb for unknown pages
       segments.forEach((segment, index) => {
-        const path = '/' + segments.slice(0, index + 1).join('/');
+        const path = `/${segments.slice(0, index + 1).join('/')}`;
         const isLast = index === segments.length - 1;
 
         breadcrumbs.push({

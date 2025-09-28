@@ -22,9 +22,16 @@ async function fetchItems(): Promise<RREntry[]> {
   }
   try {
     const live = (await getLiveCollection('rrresources' as unknown as string)) as unknown as {
-      data?: RREntry[];
+      entries?: RREntry[];
+      error?: Error | null;
     };
-    return Array.isArray(live?.data) ? (live!.data as RREntry[]) : [];
+
+    if (live?.error) {
+      console.error('Live collection error:', live.error);
+      return [];
+    }
+
+    return Array.isArray(live?.entries) ? (live!.entries as RREntry[]) : [];
   } catch {
     return [] as RREntry[];
   }

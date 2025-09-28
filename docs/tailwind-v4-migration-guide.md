@@ -72,7 +72,7 @@ src/
 
 ```astro
 <!-- Old Pattern - Hardcoded classes -->
-<button class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"> Click me </button>
+<button class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"> Click me </button>
 ```
 
 ### After: Semantic Token System
@@ -103,11 +103,7 @@ const variants = {
 };
 ---
 
-<button
-  class={variants[variant]}
-  disabled={disabled || loading}
-  aria-busy={loading}
->
+<button class={variants[variant]} disabled={disabled || loading} aria-busy={loading}>
   {loading && <LoadingSpinner />}
   <slot />
 </button>
@@ -270,7 +266,7 @@ const variants = {
 <!-- Use utility classes instead of hardcoded values -->
 <div class="bg-background text-foreground">
   <!-- ✅ Good -->
-  <div class="text-black bg-white"><!-- ❌ Avoid --></div>
+  <div class="bg-white text-black"><!-- ❌ Avoid --></div>
 </div>
 ```
 
@@ -296,5 +292,4 @@ const variants = {
 
 ---
 
-**Migration Status**: ✅ Foundation Complete | 🔄 Components In Progress | ��
-Testing Required
+**Migration Status**: ✅ Foundation Complete | 🔄 Components In Progress | 🧪 Testing Required

@@ -52,8 +52,8 @@ class ContentAnalyzer {
       .trim();
 
     // Sentence analysis
-    const sentences = cleanText.split(/[.!?]+/).filter((s) => s.trim().length > 0);
-    const words = cleanText.split(/\s+/).filter((w) => w.length > 0);
+    const sentences = cleanText.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
 
     // Calculate metrics
     const avgSentenceLength = words.length / sentences.length;
@@ -69,12 +69,12 @@ class ContentAnalyzer {
     const fleschScore = 206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllables;
 
     // Passive voice detection (simplified)
-    const passiveCount = sentences.filter((sentence) => {
+    const passiveCount = sentences.filter(sentence => {
       return /\b(was|were|is|are|been|being)\s+\w*ed\b/i.test(sentence);
     }).length;
 
     // Complex words (3+ syllables)
-    const complexWords = words.filter((word) => {
+    const complexWords = words.filter(word => {
       const syllableCount = word.match(/[aeiouy]+/gi)?.length || 1;
       return syllableCount >= 3;
     }).length;
@@ -141,7 +141,7 @@ class ContentAnalyzer {
         const textContent = mainContent.textContent || '';
 
         // Extract headings
-        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map((h) => ({
+        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(h => ({
           level: parseInt(h.tagName.charAt(1)),
           text: h.textContent.trim(),
           tag: h.tagName.toLowerCase(),
@@ -191,7 +191,7 @@ class ContentAnalyzer {
       }
 
       // Heading structure
-      const h1Count = pageData.headings.filter((h) => h.level === 1).length;
+      const h1Count = pageData.headings.filter(h => h.level === 1).length;
       if (h1Count === 0) {
         seoIssues.push('Missing H1 tag');
       } else if (h1Count > 1) {
@@ -259,7 +259,7 @@ class ContentAnalyzer {
     const pages = this.results.pages;
 
     // Readability consistency
-    const readabilityScores = pages.map((p) => p.readability.fleschScore);
+    const readabilityScores = pages.map(p => p.readability.fleschScore);
     const minScore = Math.min(...readabilityScores);
     const maxScore = Math.max(...readabilityScores);
 
@@ -268,7 +268,7 @@ class ContentAnalyzer {
     }
 
     // SEO consistency
-    const pagesWithSEOIssues = pages.filter((p) => p.seo.issues.length > 0).length;
+    const pagesWithSEOIssues = pages.filter(p => p.seo.issues.length > 0).length;
     if (pagesWithSEOIssues > pages.length * 0.5) {
       recommendations.push('Over 50% of pages have SEO issues - implement systematic optimization');
     }
@@ -335,7 +335,7 @@ class ContentAnalyzer {
 
   ${this.results.pages
     .map(
-      (page) => `
+      page => `
     <div class="page-analysis">
       <div class="page-title">
         ${page.name}
@@ -383,7 +383,7 @@ class ContentAnalyzer {
           ? `
         <div class="issues">
           <h4>Issues & Recommendations</h4>
-          ${page.recommendations.map((rec) => `<div class="issue-item">• ${rec}</div>`).join('')}
+          ${page.recommendations.map(rec => `<div class="issue-item">• ${rec}</div>`).join('')}
         </div>
       `
           : ''
@@ -398,7 +398,7 @@ class ContentAnalyzer {
       ? `
     <div class="recommendations">
       <h3>Site-Wide Recommendations</h3>
-      ${this.results.recommendations.map((rec) => `<div class="issue-item">• ${rec}</div>`).join('')}
+      ${this.results.recommendations.map(rec => `<div class="issue-item">• ${rec}</div>`).join('')}
     </div>
   `
       : ''

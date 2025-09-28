@@ -10,7 +10,7 @@ export function rehypeUnescapePunctuation() {
     visit(tree, (node: any) => {
       if (!node || typeof node !== 'object') return;
       if (node.type !== 'element') return;
-      if (UNSAFE_PARENTS.has(node.tagName)) return;
+      if (UNSAFE_PARENTS.has(node.tagName)) return visit.SKIP;
       const children = Array.isArray(node.children) ? node.children : [];
       for (const child of children) {
         if (child && child.type === 'text' && typeof child.value === 'string') {

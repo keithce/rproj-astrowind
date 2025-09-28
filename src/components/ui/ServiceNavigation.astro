@@ -78,7 +78,7 @@ const classes = getVariantClasses();
 <nav aria-label="Service navigation" class={`service-navigation ${className}`}>
   <div class={classes.container}>
     {
-      services.map((service) => (
+      services.map(service => (
         <a
           href={service.href}
           class={`${classes.item} ${
@@ -89,7 +89,7 @@ const classes = getVariantClasses();
         >
           <Icon
             name={service.icon}
-            class={`w-5 h-5 ${service.isActive ? 'text-primary-foreground' : 'text-primary'}`}
+            class={`h-5 w-5 ${service.isActive ? 'text-primary-foreground' : 'text-primary'}`}
             aria-hidden="true"
           />
 
@@ -99,7 +99,7 @@ const classes = getVariantClasses();
             </span>
 
             {showDescriptions && variant !== 'horizontal' && (
-              <p class={`text-sm mt-1 ${service.isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+              <p class={`mt-1 text-sm ${service.isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                 {service.description}
               </p>
             )}

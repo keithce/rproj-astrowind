@@ -16,7 +16,7 @@ export async function propertiesSchemaForDatabase(client: Client, databaseId: st
     } catch (e: any) {
       lastError = e;
       const msg = String(e?.message || e);
-      if (msg.includes('rate limited')) {
+      if (e?.code === 'rate_limited' || msg.toLowerCase().includes('rate limited')) {
         const wait = Math.min(1000 * Math.pow(2, attempts), 15000);
         await sleep(wait);
         attempts++;

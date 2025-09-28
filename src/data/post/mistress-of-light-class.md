@@ -13,7 +13,7 @@ tags:
 
 There's something magical about that moment when you finally understand how to
 shape light. For years, I relied on natural lighting or basic on-camera flashes,
-producing decent but often flat images. That all changed after attending the the
+producing decent but often flat images. That all changed after attending the
 [FCCC 2025 Annual Conference](https://dpi-sig.org/Members/f3c25/mainpage.html),
 where I had the incredible opportunity to learn from the renowned photographer
 Bobbi Lane, widely known by her moniker, "The Mistress of Light."

@@ -1,4 +1,4 @@
-import type { Client, isFullPage, isFullDatabase } from '@notionhq/client';
+import { Client, isFullPage, isFullDatabase } from '@notionhq/client';
 
 /**
  * @module

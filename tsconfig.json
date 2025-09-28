@@ -10,22 +10,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    // Strict type checking - temporarily disabled to fix existing code
-    "strict": false,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictPropertyInitialization": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
-    "noUncheckedIndexedAccess": false,
-
-    // Additional checks - temporarily disabled
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false,
-    "noImplicitOverride": false,
-
     // Performance optimizations
     "incremental": true,
     "skipLibCheck": true,

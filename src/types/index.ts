@@ -38,4 +38,5 @@ export type {
 } from '../types.d.js';
 
 // Export types from other type files
-export type { RrResourceData, isRrResourceData } from './rr-resources.js';
+export type { RrResourceData } from './rr-resources.js';
+export { isRrResourceData } from './rr-resources.js';

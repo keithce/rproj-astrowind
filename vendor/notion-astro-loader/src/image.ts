@@ -72,7 +72,7 @@ export async function saveImageFromAWS(url: string, dir: string, options: SaveOp
     // If ignoreCache is true or the file doesn't exist, download it
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
-    fse.writeFile(filePath, new Uint8Array(buffer));
+    await fse.writeFile(filePath, new Uint8Array(buffer));
 
     log?.(`Saved image \`${fileName}\` ${dim(`created \`${filePath}\``)}`);
     tag?.('download');

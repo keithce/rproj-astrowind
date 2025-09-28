@@ -69,7 +69,7 @@ class ReadabilityAnalyzer {
       /\bwere\s+\w+ed\s+by\b/i,
     ];
 
-    return passiveIndicators.some((pattern) => pattern.test(sentence));
+    return passiveIndicators.some(pattern => pattern.test(sentence));
   }
 
   public analyzeText(text: string): ReadabilityMetrics {
@@ -82,15 +82,15 @@ class ReadabilityAnalyzer {
     // Split into sentences
     const sentences = cleanText
       .split(/[.!?]+/)
-      .filter((s) => s.trim().length > 0)
-      .map((s) => s.trim());
+      .filter(s => s.trim().length > 0)
+      .map(s => s.trim());
 
     // Split into words
     const words = cleanText
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter((w) => w.length > 0);
+      .filter(w => w.length > 0);
 
     // Calculate metrics
     const totalSentences = sentences.length;
@@ -103,10 +103,10 @@ class ReadabilityAnalyzer {
     const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / totalWords;
 
     // Complex words (3+ syllables)
-    const complexWords = words.filter((word) => this.syllableCount(word) >= 3).length;
+    const complexWords = words.filter(word => this.syllableCount(word) >= 3).length;
 
     // Passive voice detection
-    const passiveVoice = sentences.filter((sentence) => this.detectPassiveVoice(sentence)).length;
+    const passiveVoice = sentences.filter(sentence => this.detectPassiveVoice(sentence)).length;
 
     // Flesch Reading Ease Score
     const fleschScore = this.getFleschReadingEase(avgSentenceLength, avgSyllables);
@@ -242,12 +242,12 @@ class ReadabilityAnalyzer {
       .replace(/<[^>]*>/g, ' ')
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter((w) => w.length > 3); // Only count words longer than 3 characters
+      .filter(w => w.length > 3); // Only count words longer than 3 characters
 
     const totalWords = words.length;
     const wordCounts: Record<string, number> = {};
 
-    words.forEach((word) => {
+    words.forEach(word => {
       wordCounts[word] = (wordCounts[word] || 0) + 1;
     });
 
@@ -286,7 +286,7 @@ class ReadabilityAnalyzer {
     }
 
     // Heading structure issues
-    const headingIssues = data.headingStructure.flatMap((h) => h.issues);
+    const headingIssues = data.headingStructure.flatMap(h => h.issues);
     if (headingIssues.length > 0) {
       recommendations.push('Fix heading structure issues for better SEO and accessibility.');
     }
@@ -348,5 +348,5 @@ export function generateReadableAlternatives(text: string): string[] {
     }
   });
 
-  return alternatives.filter((alt) => alt !== text);
+  return alternatives.filter(alt => alt !== text);
 }

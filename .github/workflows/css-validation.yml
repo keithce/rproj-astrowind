@@ -62,6 +62,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Start development server
         run: |

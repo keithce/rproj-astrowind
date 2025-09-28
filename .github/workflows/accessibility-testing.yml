@@ -391,7 +391,7 @@ jobs:
           cp -r accessibility-reports current-reports
       - name: '🛑 Stop dev server (current)'
         run: |
-          kill ${{ steps.dev.outputs.PID }} || true
+          kill ${{ steps.dev_current.outputs.PID }} || true
 
       # -------- base branch --------
       - name: '📥 Checkout base branch'
@@ -417,7 +417,7 @@ jobs:
           cp -r accessibility-reports base-reports
       - name: '🛑 Stop dev server (base)'
         run: |
-          kill ${{ steps.dev.outputs.PID }} || true
+          kill ${{ steps.dev_base.outputs.PID }} || true
 
       - name: '🔍 Compare Results'
         run: |

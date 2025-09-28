@@ -160,8 +160,8 @@ This can be used instead of the automatic inference.
 // src/content/config.ts
 import { z } from 'astro/zod';
 import { defineCollection } from 'astro:content';
-import { notionLoader } from 'notion-astro-loader';
-import { notionPageSchema, propertySchema, transformedPropertySchema } from 'notion-astro-loader/schemas';
+import { notionLoader } from '@chlorinec-pkgs/notion-astro-loader';
+import { notionPageSchema, propertySchema, transformedPropertySchema } from '@chlorinec-pkgs/notion-astro-loader/schemas';
 
 const database = defineCollection({
   loader: notionLoader({

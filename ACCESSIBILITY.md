@@ -43,20 +43,10 @@ exceed WCAG 2.1 AA standards. Our accessibility implementation includes:
 
 ```html
 <!-- Status updates -->
-<div
-  id="form-status"
-  aria-live="polite"
-  aria-atomic="true"
-  class="sr-only"
-></div>
+<div id="form-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
 <!-- Error announcements -->
-<div
-  id="form-errors"
-  aria-live="assertive"
-  aria-atomic="true"
-  class="sr-only"
-></div>
+<div id="form-errors" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
 ```
 
 ### 2. Skip Links and Navigation Enhancement
@@ -247,13 +237,7 @@ When creating new components, follow these accessibility guidelines:
 
 ```astro
 <!-- Form inputs -->
-<input
-  type="email"
-  id="email"
-  aria-label="Email address"
-  aria-describedby="email-help"
-  aria-required="true"
-/>
+<input type="email" id="email" aria-label="Email address" aria-describedby="email-help" aria-required="true" />
 <div id="email-help">We'll never share your email</div>
 
 <!-- Buttons -->

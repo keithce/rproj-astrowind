@@ -82,6 +82,10 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
     }
 
     const vFile = (await chain.process({ data: blocks } as unknown as Record<string, unknown>)) as VFile;
+    
+    // Populate headings from vFile.data
+    headings = (vFile.data?.headings as MarkdownHeading[]) || [];
+    
     if (globalThis?.process?.env?.NOTION_TRACE === '1') {
       try {
         const output = String(vFile);

@@ -205,7 +205,7 @@ const getBreakpoints = ({
       width,
       doubleWidth,
       // Filter out any resolutions that are larger than the double-res image
-      ...(breakpoints || config.deviceSizes).filter(w => w < doubleWidth),
+      ...(breakpoints || config.deviceSizes).filter((w) => w < doubleWidth),
     ];
   }
 
@@ -233,13 +233,7 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     );
   }
 
-  const getImage = (
-    astroAssets as {
-      getImage?: (
-        args: Record<string, unknown>
-      ) => Promise<{ src?: string; attributes?: { width?: number; height?: number } }>;
-    }
-  )?.getImage;
+  const getImage = (astroAssets as any)?.getImage;
   if (typeof getImage !== 'function') {
     // Fallback: return untransformed URLs
     return Promise.all(
@@ -254,9 +248,8 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     breakpoints.map(async (w: number) => {
       const result = await getImage({ src: image, width: w, ...(format ? { format } : {}) });
       return {
-        src: result?.src,
+        src: result?.src || '',
         width: result?.attributes?.width ?? w,
-        height: result?.attributes?.height,
       };
     })
   );

@@ -36,14 +36,7 @@ export default [
   ...eslintPluginAstro.configs['flat/recommended'],
   ...tseslint.configs.recommended,
   {
-    ignores: [
-      'dist/**',
-      '.astro/**',
-      'vendor/**',
-      'react-email-starter/**',
-      '.vercel/**',
-      'node_modules/**',
-    ],
+    ignores: ['dist/**', '.astro/**', 'vendor/**', 'react-email-starter/**', '.vercel/**', 'node_modules/**'],
   },
 ];
 ```
@@ -188,9 +181,14 @@ metadata: metadata as MetaData,
 
 ### TypeScript
 
-- **Errors**: 0 (down from 393)
+- **Errors**: 0 (down from 393 - suppressed via tsconfig overrides)
 - **Warnings**: 6 (minor type inference hints)
-- **Status**: ✅ All compilation errors resolved
+- **Status**: ⚠️ Compilation errors suppressed via strict mode overrides
+
+**Note**: The 393 TypeScript errors were suppressed by disabling strict compiler options in tsconfig.json (lines 13-28). To properly resolve these issues, either:
+
+1. Re-enable strict checks and fix errors incrementally, or
+2. Create a separate tsconfig for incremental fixes while maintaining strict mode in the main config
 
 ### Prettier
 

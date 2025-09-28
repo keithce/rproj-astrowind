@@ -54,13 +54,17 @@ export function dateToDateObjects(
     end?: string | null;
     time_zone?: string | null;
   } | null
-) {
+): {
+  start: Date | undefined;
+  end: Date | null;
+  time_zone: string | null;
+} | null {
   if (dateResponse === null) {
     return null;
   }
 
   return {
-    start: dateResponse.start ? new Date(dateResponse.start) : (undefined as unknown as Date),
+    start: dateResponse.start ? new Date(dateResponse.start) : undefined,
     end: dateResponse.end ? new Date(dateResponse.end) : null,
     time_zone: dateResponse.time_zone ?? null,
   };

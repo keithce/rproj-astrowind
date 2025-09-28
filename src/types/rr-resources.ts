@@ -30,10 +30,12 @@ export function isRrResourceData(obj: unknown): obj is RrResourceData {
     (data.Name === undefined || typeof data.Name === 'string') &&
     (data.Source === undefined || typeof data.Source === 'string') &&
     (data['User Defined URL'] === undefined || typeof data['User Defined URL'] === 'string') &&
-    (data.Category === undefined || Array.isArray(data.Category)) &&
-    (data.Type === undefined || Array.isArray(data.Type)) &&
-    (data.Tags === undefined || Array.isArray(data.Tags)) &&
-    (data.Keywords === undefined || Array.isArray(data.Keywords)) &&
+    (data.Category === undefined ||
+      (Array.isArray(data.Category) && data.Category.every(item => typeof item === 'string'))) &&
+    (data.Type === undefined || (Array.isArray(data.Type) && data.Type.every(item => typeof item === 'string'))) &&
+    (data.Tags === undefined || (Array.isArray(data.Tags) && data.Tags.every(item => typeof item === 'string'))) &&
+    (data.Keywords === undefined ||
+      (Array.isArray(data.Keywords) && data.Keywords.every(item => typeof item === 'string'))) &&
     (data.Status === undefined ||
       ['Needs Review', 'Writing', 'Needs Update', 'Up-to-Date'].includes(data.Status as string)) &&
     (data.Length === undefined || ['Short', 'Medium', 'Long'].includes(data.Length as string)) &&

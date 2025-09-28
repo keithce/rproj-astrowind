@@ -30,11 +30,11 @@ const metadata = {
 
     {
       allCategories.length > 0 ? (
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 -up">
-          {allCategories.map((category) => (
-            <article class="relative overflow-hidden transition-all border rounded-lg shadow-sm group hover:shadow-md">
-              <div class="flex flex-col h-full">
-                <h3 class="mb-3 heading-md text-foreground group-hover:text-primary">
+        <div class="-up grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {allCategories.map(category => (
+            <article class="group relative overflow-hidden rounded-lg border shadow-sm transition-all hover:shadow-md">
+              <div class="flex h-full flex-col">
+                <h3 class="heading-md text-foreground group-hover:text-primary mb-3">
                   <a href={`${getBlogCategoryPermalink()}/${category.slug}`} class="stretched-link focus-ring">
                     {category.title}
                   </a>
