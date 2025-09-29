@@ -83,7 +83,7 @@
     "notion-client": "^7.6.0",
     "notion-utils": "^7.6.0",
     "postcss": "^8.5.6",
-    "resend": "^4.8.0",
+    "resend": "^6.1.0",
     "sirv": "^3.0.2",
     "sirv-cli": "^3.0.1",
     "swiper": "^12.0.2",
