@@ -34,22 +34,22 @@ const href = `/resources/${slug}`;
   class={`resource-card group rounded-lg border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-900 dark:border-gray-700 ${className}`}
 >
   <div class="mb-3">
-    <h3 class="mb-2 text-lg font-semibold leading-tight">
-      <a href={href} class="transition-colors text-foreground hover:text-primary group-hover:underline">
+    <h3 class="mb-2 text-lg leading-tight font-semibold">
+      <a href={href} class="text-foreground hover:text-primary transition-colors group-hover:underline">
         {title}
       </a>
     </h3>
 
-    {summary && <p class="text-sm leading-relaxed text-muted-foreground line-clamp-3">{summary}</p>}
+    {summary && <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">{summary}</p>}
   </div>
 
-  <div class="flex flex-wrap gap-2 mb-3">
-    {category && <span class="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">{category}</span>}
-    {type && <span class="px-3 py-1 text-xs font-medium rounded-full bg-muted text-muted-foreground">{type}</span>}
+  <div class="mb-3 flex flex-wrap gap-2">
+    {category && <span class="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">{category}</span>}
+    {type && <span class="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">{type}</span>}
   </div>
 
-  <div class="flex justify-between items-center">
-    <div class="text-xs text-muted-foreground">
+  <div class="flex items-center justify-between">
+    <div class="text-muted-foreground text-xs">
       {
         type && category && (
           <span>
@@ -67,7 +67,7 @@ const href = `/resources/${slug}`;
           href={source}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-xs font-medium transition-colors text-primary hover:text-accent"
+          class="text-primary hover:text-accent text-xs font-medium transition-colors"
         >
           View Source →
         </a>

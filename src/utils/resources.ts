@@ -55,12 +55,12 @@ export const findResourceCategories = async (): Promise<string[]> => {
   const entries = await fetchResourceEntries();
   const categorySet = new Set<string>();
 
-  entries.forEach((entry) => {
+  entries.forEach(entry => {
     const data = entry.data as any;
     const categories = data.Category;
 
     if (Array.isArray(categories)) {
-      categories.forEach((category) => {
+      categories.forEach(category => {
         if (category && typeof category === 'string') {
           categorySet.add(category);
         }
@@ -80,12 +80,12 @@ export const findResourceTypes = async (): Promise<string[]> => {
   const entries = await fetchResourceEntries();
   const typeSet = new Set<string>();
 
-  entries.forEach((entry) => {
+  entries.forEach(entry => {
     const data = entry.data as any;
     const types = data.Type;
 
     if (Array.isArray(types)) {
-      types.forEach((type) => {
+      types.forEach(type => {
         if (type && typeof type === 'string') {
           typeSet.add(type);
         }
@@ -104,7 +104,7 @@ export const findResourceTypes = async (): Promise<string[]> => {
 export const filterResourcesByCategory = async (category: string): Promise<ResourceEntry[]> => {
   const entries = await fetchResourceEntries();
 
-  return entries.filter((entry) => {
+  return entries.filter(entry => {
     const data = entry.data as any;
     const categories = data.Category;
 
@@ -121,7 +121,7 @@ export const filterResourcesByCategory = async (category: string): Promise<Resou
 export const filterResourcesByType = async (type: string): Promise<ResourceEntry[]> => {
   const entries = await fetchResourceEntries();
 
-  return entries.filter((entry) => {
+  return entries.filter(entry => {
     const data = entry.data as any;
     const types = data.Type;
 
@@ -138,7 +138,7 @@ export const filterResourcesByType = async (type: string): Promise<ResourceEntry
 export const filterResourcesByCategoryAndType = async (category: string, type: string): Promise<ResourceEntry[]> => {
   const entries = await fetchResourceEntries();
 
-  return entries.filter((entry) => {
+  return entries.filter(entry => {
     const data = entry.data as any;
     const categories = data.Category;
     const types = data.Type;
@@ -158,7 +158,7 @@ export const searchResources = async (query: string): Promise<ResourceEntry[]> =
   const entries = await fetchResourceEntries();
   const searchTerm = query.toLowerCase();
 
-  return entries.filter((entry) => {
+  return entries.filter(entry => {
     const data = entry.data as any;
     const name = data.Name || '';
     const summary = data['AI summary'] || '';
@@ -168,8 +168,12 @@ export const searchResources = async (query: string): Promise<ResourceEntry[]> =
     return (
       name.toLowerCase().includes(searchTerm) ||
       summary.toLowerCase().includes(searchTerm) ||
-      categories.some((cat: string) => cat?.toLowerCase().includes(searchTerm)) ||
-      types.some((type: string) => type?.toLowerCase().includes(searchTerm))
+      (Array.isArray(categories) ? categories : []).some(
+        (cat: any) => cat && typeof cat === 'string' && cat.toLowerCase().includes(searchTerm)
+      ) ||
+      (Array.isArray(types) ? types : []).some(
+        (type: any) => type && typeof type === 'string' && type.toLowerCase().includes(searchTerm)
+      )
     );
   });
 };
@@ -186,7 +190,7 @@ export const filterResources = async (options: {
 
   // Apply category filter
   if (options.category) {
-    entries = entries.filter((entry) => {
+    entries = entries.filter(entry => {
       const data = entry.data as any;
       const categories = data.Category;
       return Array.isArray(categories) ? categories.includes(options.category) : categories === options.category;
@@ -195,7 +199,7 @@ export const filterResources = async (options: {
 
   // Apply type filter
   if (options.type) {
-    entries = entries.filter((entry) => {
+    entries = entries.filter(entry => {
       const data = entry.data as any;
       const types = data.Type;
       return Array.isArray(types) ? types.includes(options.type) : types === options.type;
@@ -205,7 +209,7 @@ export const filterResources = async (options: {
   // Apply search filter
   if (options.search) {
     const searchTerm = options.search.toLowerCase();
-    entries = entries.filter((entry) => {
+    entries = entries.filter(entry => {
       const data = entry.data as any;
       const name = data.Name || '';
       const summary = data['AI summary'] || '';
@@ -215,8 +219,12 @@ export const filterResources = async (options: {
       return (
         name.toLowerCase().includes(searchTerm) ||
         summary.toLowerCase().includes(searchTerm) ||
-        categories.some((cat: string) => cat?.toLowerCase().includes(searchTerm)) ||
-        types.some((type: string) => type?.toLowerCase().includes(searchTerm))
+        (Array.isArray(categories) ? categories : []).some(
+          (cat: any) => cat && typeof cat === 'string' && cat.toLowerCase().includes(searchTerm)
+        ) ||
+        (Array.isArray(types) ? types : []).some(
+          (type: any) => type && typeof type === 'string' && type.toLowerCase().includes(searchTerm)
+        )
       );
     });
   }

@@ -2,14 +2,14 @@ import { config } from 'dotenv';
 
 // Load environment variables explicitly
 export function loadEnvVars() {
-  // Load .env file
+  // Load base .env file first
   config();
 
-  // Load .env.development.local file if it exists
-  config({ path: '.env.development.local' });
+  // Load .env.development.local file if it exists (can override base values)
+  config({ path: '.env.development.local', override: true });
 
-  // Load .env.local file if it exists
-  config({ path: '.env.local' });
+  // Load .env.local file if it exists (highest priority, can override all previous values)
+  config({ path: '.env.local', override: true });
 
   return {
     NOTION_TOKEN: process.env.NOTION_TOKEN,

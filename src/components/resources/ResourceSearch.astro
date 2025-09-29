@@ -36,20 +36,27 @@ const { class: className = '', placeholder = 'Search RR Resources...' } = Astro.
   // Client-side search functionality
   document.addEventListener('DOMContentLoaded', () => {
     const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    const searchInputElement = document.querySelector('input#search-input');
+
+    // Runtime type guard to ensure we have a valid input element
+    if (!searchInputElement) {
+      return;
+    }
 
     // Check URL for search query
     const urlParams = new URLSearchParams(window.location.search);
     const queryParam = urlParams.get('q');
     if (queryParam) {
-      searchInput.value = queryParam;
+      // Use setAttribute to set the value
+      searchInputElement.setAttribute('value', queryParam);
     }
 
     searchForm?.addEventListener('submit', e => {
       e.preventDefault();
-      const query = searchInput.value.trim();
-      if (query) {
-        window.location.href = `/resources?q=${encodeURIComponent(query)}`;
+      // Get the input value directly from the input element
+      const queryValue = searchInputElement.getAttribute('value') || '';
+      if (queryValue.trim()) {
+        window.location.href = `/resources?q=${encodeURIComponent(queryValue.trim())}`;
       } else {
         window.location.href = '/resources';
       }
