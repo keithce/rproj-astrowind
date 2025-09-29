@@ -3,6 +3,7 @@ import { defineCollection, z } from 'astro:content';
 import { notionLoader } from '../../vendor/notion-astro-loader/src';
 import type { Loader } from 'astro/loaders';
 import { glob } from 'astro/loaders';
+import { envVars } from '../utils/env-loader';
 
 // Shared metadataDefinition for collections
 const metadataDefinition = () =>
@@ -86,10 +87,11 @@ const tilCollection = defineCollection({
 export const collections = {
   post: postCollection,
   til: tilCollection,
-  rrresources: defineCollection({
+  resources: defineCollection({
     loader: (() => {
-      const token = import.meta.env.NOTION_TOKEN;
-      const db = import.meta.env.NOTION_RR_RESOURCES_ID;
+      const token = envVars.NOTION_TOKEN;
+      const db = envVars.NOTION_RR_RESOURCES_ID;
+
       if (!token || !db) {
         // Gracefully no-op when secrets are absent (CI/docs preview)
         const emptyLoader: Loader = {
@@ -104,6 +106,7 @@ export const collections = {
         };
         return emptyLoader;
       }
+
       return notionLoader({
         auth: token,
         database_id: db,

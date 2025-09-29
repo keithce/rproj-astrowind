@@ -2,6 +2,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { defineConfig } from 'astro/config';
+import { config } from 'dotenv';
+
+// Load environment variables explicitly
+config();
 
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';

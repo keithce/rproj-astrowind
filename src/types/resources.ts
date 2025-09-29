@@ -1,4 +1,4 @@
-export interface RrResourceData {
+export interface ResourceData {
   Name?: string;
   Source?: string;
   'User Defined URL'?: string;
@@ -15,9 +15,9 @@ export interface RrResourceData {
 }
 
 /**
- * Type guard to check if an object is RrResourceData
+ * Type guard to check if an object is ResourceData
  */
-export function isRrResourceData(obj: unknown): obj is RrResourceData {
+export function isResourceData(obj: unknown): obj is ResourceData {
   if (obj === null || typeof obj !== 'object') {
     return false;
   }

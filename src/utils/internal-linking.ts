@@ -138,7 +138,7 @@ export function getRelatedPages(
   includeServices: boolean = true
 ): PageRelationship[] {
   const currentPage = SITE_STRUCTURE[currentPath];
-  const allPages = Object.values(SITE_STRUCTURE).filter((page) => page.href !== currentPath);
+  const allPages = Object.values(SITE_STRUCTURE).filter(page => page.href !== currentPath);
 
   if (!currentPage) {
     // If page not found, return top priority pages
@@ -146,7 +146,7 @@ export function getRelatedPages(
   }
 
   // Score pages based on relationship strength
-  const scoredPages = allPages.map((page) => {
+  const scoredPages = allPages.map(page => {
     let score = 0;
 
     // Type matching
@@ -162,7 +162,7 @@ export function getRelatedPages(
     // Tag overlap
     const currentTags = currentPage.tags || [];
     const pageTags = page.tags || [];
-    const tagOverlap = currentTags.filter((tag) => pageTags.includes(tag)).length;
+    const tagOverlap = currentTags.filter(tag => pageTags.includes(tag)).length;
     score += tagOverlap * 2;
 
     // Base priority
@@ -231,7 +231,7 @@ export function generateLinkSuggestions(content: string, currentPath: string): L
 
   Object.entries(linkKeywords).forEach(([keyword, href]) => {
     if (href !== currentPath && content.toLowerCase().includes(keyword.toLowerCase())) {
-      const page = pages.find((p) => p.href === href);
+      const page = pages.find(p => p.href === href);
       if (page) {
         suggestions.push({
           anchor: keyword,
@@ -362,7 +362,7 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
         const isLast = index === segments.length - 1;
 
         breadcrumbs.push({
-          text: segment.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+          text: segment.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
           href: isLast ? undefined : path,
         });
       });
@@ -380,7 +380,7 @@ export function optimizeInternalLinks(content: string, currentPath: string): str
   const suggestions = generateLinkSuggestions(content, currentPath);
 
   // Apply contextual links (limit to avoid over-optimization)
-  suggestions.slice(0, 3).forEach((suggestion) => {
+  suggestions.slice(0, 3).forEach(suggestion => {
     const page = SITE_STRUCTURE[suggestion.href];
     if (page) {
       // Escape regex metacharacters in the anchor text to prevent regex injection
@@ -409,7 +409,7 @@ export function getNavigationContext(pathname: string): {
   // Services have /services as parent
   if (pathname.startsWith('/services/')) {
     const parent = SITE_STRUCTURE['/services'];
-    const siblings = allPages.filter((page) => page.href.startsWith('/services/') && page.href !== pathname);
+    const siblings = allPages.filter(page => page.href.startsWith('/services/') && page.href !== pathname);
 
     return { parent, siblings, children: [] };
   }
@@ -427,7 +427,7 @@ export function getNavigationContext(pathname: string): {
   }
 
   // Top-level pages
-  const siblings = allPages.filter((page) => !page.href.includes('/', 1) && page.href !== pathname);
+  const siblings = allPages.filter(page => !page.href.includes('/', 1) && page.href !== pathname);
 
   return { siblings, children: [] };
 }

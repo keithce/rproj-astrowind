@@ -1,12 +1,12 @@
 declare module 'astro:content' {
-  // Augment DataEntryMap for the rrresources data collection (Notion loader)
+  // Augment DataEntryMap for the resources data collection (Notion loader)
   interface DataEntryMap {
-    rrresources: {
+    resources: {
       id: string;
       slug: string;
       body: string;
-      collection: 'rrresources';
-      data: import('~/types/rr-resources').RrResourceData;
+      collection: 'resources';
+      data: import('~/types/resources').ResourceData;
       render(): Promise<{
         Content: import('astro').ComponentInstance;
         headings: import('astro').MarkdownHeading[];
