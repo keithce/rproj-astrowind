@@ -428,31 +428,50 @@ function getErrorMessage(error: unknown): string {
 
 // Extremely defensive minimal renderer used only as a last-resort fallback
 function minimalHtmlFromBlocks(blocks: any[]): string {
-  const parts: string[] = [];
+  const out: string[] = [];
+  let listBuf: string[] = [];
+
+  const flushList = () => {
+    if (listBuf.length > 0) {
+      out.push(`<ul>${listBuf.join('\n')}</ul>`);
+      listBuf = [];
+    }
+  };
+
   for (const b of blocks) {
     const t = b?.type;
+
+    // Accumulate list items
+    if (t === 'bulleted_list_item' || t === 'numbered_list_item') {
+      const texts = b?.[t]?.rich_text || [];
+      const content = texts.map((rt: any) => rt?.plain_text || '').join('');
+      listBuf.push(`<li>${escapeHtml(content)}</li>`);
+      continue;
+    }
+
+    // Flush any pending list before handling non-list block
+    flushList();
+
     if (t === 'paragraph') {
       const texts = b?.paragraph?.rich_text || [];
       const content = texts.map((rt: any) => rt?.plain_text || '').join('');
-      parts.push(`<p>${escapeHtml(content)}</p>`);
+      out.push(`<p>${escapeHtml(content)}</p>`);
     } else if (t === 'heading_1' || t === 'heading_2' || t === 'heading_3') {
       const level = t === 'heading_1' ? 'h1' : t === 'heading_2' ? 'h2' : 'h3';
       const texts = b?.[t]?.rich_text || [];
       const content = texts.map((rt: any) => rt?.plain_text || '').join('');
-      parts.push(`<${level}>${escapeHtml(content)}</${level}>`);
-    } else if (t === 'bulleted_list_item' || t === 'numbered_list_item') {
-      const texts = b?.[t]?.rich_text || [];
-      const content = texts.map((rt: any) => rt?.plain_text || '').join('');
-      parts.push(`<li>${escapeHtml(content)}</li>`);
+      out.push(`<${level}>${escapeHtml(content)}</${level}>`);
     } else if (t === 'quote') {
       const texts = b?.quote?.rich_text || [];
       const content = texts.map((rt: any) => rt?.plain_text || '').join('');
-      parts.push(`<blockquote>${escapeHtml(content)}</blockquote>`);
+      out.push(`<blockquote>${escapeHtml(content)}</blockquote>`);
     }
   }
-  // Join list items into a single <ul> if present
-  const html = parts.join('\n');
-  return html.includes('<li>') ? `<ul>${html}</ul>` : html;
+
+  // Flush any remaining list items at end
+  flushList();
+
+  return out.join('\n');
 }
 
 function escapeHtml(s: string): string {
