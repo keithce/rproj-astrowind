@@ -82,14 +82,14 @@ class VisualVerificationTester {
    */
   calculateContrastRatio(color1, color2) {
     const getLuminance = (r, g, b) => {
-      const [rs, gs, bs] = [r, g, b].map((c) => {
+      const [rs, gs, bs] = [r, g, b].map(c => {
         c = c / 255;
         return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
       });
       return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
     };
 
-    const parseColor = (color) => {
+    const parseColor = color => {
       const hex = color.replace('#', '');
       return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
     };
@@ -119,7 +119,7 @@ class VisualVerificationTester {
         const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
         if (rgbMatch) {
           const [, r, g, b] = rgbMatch;
-          return '#' + [r, g, b].map((x) => parseInt(x).toString(16).padStart(2, '0')).join('');
+          return '#' + [r, g, b].map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
         }
 
         return color;
@@ -202,7 +202,7 @@ class VisualVerificationTester {
       // Test first 5 elements
       try {
         // Get element info
-        const elementInfo = await element.evaluate((el) => ({
+        const elementInfo = await element.evaluate(el => ({
           tagName: el.tagName,
           className: el.className,
           id: el.id,
@@ -244,7 +244,7 @@ class VisualVerificationTester {
    * Switch theme programmatically
    */
   async switchTheme(page, theme) {
-    await page.evaluate((targetTheme) => {
+    await page.evaluate(targetTheme => {
       if (targetTheme === 'dark') {
         document.documentElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
@@ -348,8 +348,8 @@ class VisualVerificationTester {
         totalErrors: this.results.errors.length,
       },
       contrastAnalysis: {
-        passed: this.results.contrastTests.filter((t) => t.passes.AA_NORMAL).length,
-        failed: this.results.contrastTests.filter((t) => !t.passes.AA_NORMAL).length,
+        passed: this.results.contrastTests.filter(t => t.passes.AA_NORMAL).length,
+        failed: this.results.contrastTests.filter(t => !t.passes.AA_NORMAL).length,
         details: this.results.contrastTests,
       },
       screenshots: this.results.screenshots,
@@ -430,7 +430,7 @@ class VisualVerificationTester {
         <h2>🔍 Contrast Analysis</h2>
         ${report.contrastAnalysis.details
           .map(
-            (test) => `
+            test => `
             <div class="contrast-test ${test.passes.AA_NORMAL ? 'pass' : 'fail'}">
                 <h4>${test.element} - ${test.page} (${test.theme})</h4>
                 <p>
@@ -460,7 +460,7 @@ class VisualVerificationTester {
         <h2>❌ Errors</h2>
         ${report.errors
           .map(
-            (error) => `
+            error => `
             <div class="error">
                 <h4>Page: ${error.page}</h4>
                 <p>${error.error}</p>
@@ -478,7 +478,7 @@ class VisualVerificationTester {
         <div class="screenshot-grid">
             ${report.screenshots
               .map(
-                (screenshot) => `
+                screenshot => `
                 <div class="screenshot-item">
                     <img src="${path.basename(screenshot.aboveTheFold)}" alt="${screenshot.page} - ${screenshot.theme} - ${screenshot.viewport}">
                     <div class="screenshot-meta">
@@ -539,7 +539,7 @@ class VisualVerificationTester {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new VisualVerificationTester();
 
-  tester.run().catch((error) => {
+  tester.run().catch(error => {
     console.error('Fatal error:', error);
     process.exit(1);
   });

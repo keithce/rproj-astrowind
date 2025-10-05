@@ -1,4 +1,7 @@
 import { defineCollection, z } from 'astro:content';
+// Use vendored loader source so we can modify locally
+import { notionLoader } from '../../vendor/notion-astro-loader/src';
+import type { Loader } from 'astro/loaders';
 import { glob } from 'astro/loaders';
 
 // Shared metadataDefinition for collections
@@ -83,4 +86,57 @@ const tilCollection = defineCollection({
 export const collections = {
   post: postCollection,
   til: tilCollection,
+  resources: defineCollection({
+    loader: (() => {
+      // Load environment variables at runtime instead of module initialization
+      const token = process.env.NOTION_TOKEN;
+      const db = process.env.NOTION_RR_RESOURCES_ID;
+
+      if (!token || !db) {
+        // Gracefully no-op when secrets are absent (CI/docs preview)
+        const emptyLoader: Loader = {
+          name: 'notion-loader/disabled',
+          async schema() {
+            return z.object({}).optional();
+          },
+          async load(ctx) {
+            // ensure store cleared to avoid stale content
+            for (const id of ctx.store.keys()) ctx.store.delete(id);
+          },
+        };
+        return emptyLoader;
+      }
+
+      return notionLoader({
+        auth: token,
+        database_id: db,
+        imageSavePath: 'assets/images/notion',
+        filter: {
+          property: 'Status',
+          status: { equals: 'Up-to-Date' },
+        },
+      });
+    })(),
+    // Schema: start from Notion property types; refine as needed
+    schema: () =>
+      z.object({
+        // Include raw Notion properties so we can derive titles when needed
+        properties: z.any().optional(),
+        // Flattened map of all property values for convenient access
+        flat: z.record(z.unknown()).optional(),
+        Name: z.string().optional(),
+        Source: z.string().url().optional(),
+        'User Defined URL': z.string().url().optional(),
+        Category: z.array(z.string()).optional(),
+        Type: z.array(z.string()).optional(),
+        Tags: z.array(z.string()).optional(),
+        Keywords: z.array(z.string()).optional(),
+        Status: z.enum(['Needs Review', 'Writing', 'Needs Update', 'Up-to-Date']).optional(),
+        Length: z.enum(['Short', 'Medium', 'Long']).optional(),
+        'AI summary': z.string().optional(),
+        'Last Updated': z.union([z.date(), z.string()]).optional(),
+        'Skill Level': z.enum(['Beginner', 'Intermediate', 'Advanced', 'Any']).optional(),
+        Favorite: z.boolean().optional(),
+      }),
+  }),
 };

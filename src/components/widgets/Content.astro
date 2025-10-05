@@ -48,14 +48,14 @@ const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
       subtitle: 'max-w-3xl mx-auto sm:text-center text-xl text-muted-foreground',
     }}
   />
-  <div class="p-4 mx-auto max-w-7xl md:px-8">
+  <div class="mx-auto max-w-7xl p-4 md:px-8">
     <div class={`md:flex ${isReversed ? 'md:flex-row-reverse' : ''} md:gap-16`}>
       <div class="self-center md:basis-1/2">
-        {content && <div class="mb-12 text-lg text-foreground/70" set:html={content} />}
+        {content && <div class="text-foreground/70 mb-12 text-lg" set:html={content} />}
 
         {
           callToAction && (
-            <div class="mt-[-40px] mb-8 text-primary">
+            <div class="text-primary mt-[-40px] mb-8">
               <Button variant="link" {...callToAction} />
             </div>
           )
@@ -83,13 +83,13 @@ const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
                 <Fragment set:html={image} />
               ) : (
                 <Image
-                  class="mx-auto w-full bg-gray-500 rounded-lg shadow-lg"
+                  class="mx-auto w-full rounded-lg bg-gray-500 shadow-lg"
                   width={500}
                   height={500}
                   widths={[400, 768]}
                   sizes="(max-width: 768px) 100vw, 432px"
                   layout="responsive"
-                  {...image}
+                  {...(typeof image === 'object' && image !== null ? image : {})}
                 />
               )}
             </div>
@@ -100,7 +100,7 @@ const relatedPages = showRelated ? getRelatedPages(Astro.url.pathname, 3) : [];
 
     {
       showRelated && relatedPages.length > 0 && (
-        <div class="pt-8 mt-12 border-t border-border">
+        <div class="border-border mt-12 border-t pt-8">
           <RelatedPages pages={relatedPages} title={relatedTitle} variant="compact" />
         </div>
       )

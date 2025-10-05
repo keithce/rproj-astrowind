@@ -156,7 +156,7 @@ export function getResponsiveImageUrls(
 ): Array<{ width: number; url: string }> {
   const { preset = 'responsive', aspectRatio, ...baseOptions } = options;
 
-  return RESPONSIVE_BREAKPOINTS.map((width) => {
+  return RESPONSIVE_BREAKPOINTS.map(width => {
     let height: number | undefined = undefined;
 
     if (aspectRatio) {
@@ -226,7 +226,7 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         publicId,
         src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
         alt: `${category} photography - ${filename}`,
-        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         thumbnail: getCloudinaryImageUrl(publicId, { preset: 'thumbnail' }),
         responsive: getResponsiveImageUrls(publicId, {
           preset: 'responsive',

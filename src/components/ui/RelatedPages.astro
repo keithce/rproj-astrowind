@@ -55,29 +55,29 @@ const classes = getVariantClasses();
 {
   pages.length > 0 && (
     <section class={`related-pages ${className}`}>
-      <h3 class="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-        <Icon name="tabler:link" class="w-5 h-5 text-primary" aria-hidden="true" />
+      <h3 class="text-foreground mb-6 flex items-center gap-2 text-xl font-bold">
+        <Icon name="tabler:link" class="text-primary h-5 w-5" aria-hidden="true" />
         {title}
       </h3>
 
       <div class={classes.container}>
-        {pages.map((page) => (
+        {pages.map(page => (
           <article class={classes.item}>
             <a href={page.href} class="block">
               <div class={`flex items-start gap-3 ${classes.content}`}>
                 {showIcon && page.icon && (
-                  <div class="flex-shrink-0 mt-1">
-                    <Icon name={page.icon} class="w-5 h-5 text-primary" aria-hidden="true" />
+                  <div class="mt-1 flex-shrink-0">
+                    <Icon name={page.icon} class="text-primary h-5 w-5" aria-hidden="true" />
                   </div>
                 )}
 
-                <div class="flex-1 min-w-0">
+                <div class="min-w-0 flex-1">
                   <h4 class={classes.title}>{page.title}</h4>
 
                   {page.description && <p class={classes.description}>{page.description}</p>}
 
                   {page.category && variant === 'cards' && (
-                    <span class="inline-block mt-2 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+                    <span class="bg-primary/10 text-primary mt-2 inline-block rounded-full px-2 py-1 text-xs">
                       {page.category}
                     </span>
                   )}

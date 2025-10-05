@@ -17,15 +17,15 @@ const image = await findImage(post.image);
 const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : '';
 ---
 
-<article class="mb-6 transition intersect-once intersect-quarter">
-  <div class="relative mb-6 rounded-sm shadow-lg md:h-64 bg-muted dark:bg-muted">
+<article class="intersect-once intersect-quarter mb-6 transition">
+  <div class="bg-muted dark:bg-muted relative mb-6 rounded-sm shadow-lg md:h-64">
     {
       image &&
         (link ? (
           <a href={link}>
             <Image
               src={image}
-              class="w-full rounded-sm shadow-lg md:h-full bg-muted dark:bg-muted"
+              class="bg-muted dark:bg-muted w-full rounded-sm shadow-lg md:h-full"
               widths={[400, 900]}
               width={400}
               sizes="(max-width: 900px) 400px, 900px"
@@ -39,7 +39,7 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
         ) : (
           <Image
             src={image}
-            class="w-full rounded-sm shadow-lg md:h-full bg-muted"
+            class="bg-muted w-full rounded-sm shadow-lg md:h-full"
             widths={[400, 900]}
             width={400}
             sizes="(max-width: 900px) 400px, 900px"
@@ -53,10 +53,10 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
     }
   </div>
 
-  <h3 class="mb-2 text-xl font-bold leading-tight sm:text-2xl font-heading dark:text-foreground">
+  <h3 class="font-heading dark:text-foreground mb-2 text-xl leading-tight font-bold sm:text-2xl">
     {
       link ? (
-        <a class="inline-block transition duration-200 ease-in hover:text-accent" href={link}>
+        <a class="hover:text-accent inline-block transition duration-200 ease-in" href={link}>
           {post.title}
         </a>
       ) : (
@@ -65,5 +65,5 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
     }
   </h3>
 
-  <p class="text-lg text-foreground/70">{post.excerpt}</p>
+  <p class="text-foreground/70 text-lg">{post.excerpt}</p>
 </article>

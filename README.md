@@ -1,7 +1,9 @@
 # 🎨 Resonant Projects .ART
 
-> **A creative technology studio—your hub for tech consulting, mixing & mastering, photography, and short film finishing.**  
-> Bringing together technical expertise and artistic vision to help creators finish and present their work at the highest level.
+> **A creative technology studio—your hub for tech consulting, mixing &
+> mastering, photography, and short film finishing.**  
+> Bringing together technical expertise and artistic vision to help creators
+> finish and present their work at the highest level.
 
 ---
 
@@ -12,8 +14,11 @@
 
 ## ✨ What is Resonant Projects .ART?
 
-Resonant Projects .ART is a multidisciplinary platform by Keith Elliott, designed to help artists, creators, and businesses finish and elevate their creative and technical projects.  
-Whether you're a musician, filmmaker, photographer, or content creator, this is your one-stop shop for:
+Resonant Projects .ART is a multidisciplinary platform by Keith Elliott,
+designed to help artists, creators, and businesses finish and elevate their
+creative and technical projects.  
+Whether you're a musician, filmmaker, photographer, or content creator, this is
+your one-stop shop for:
 
 - 🎚️ **Audio Mixing & Mastering**
 - 📸 **Photography**
@@ -50,7 +55,8 @@ Whether you're a musician, filmmaker, photographer, or content creator, this is 
 ## 📬 Contact
 
 Questions, collaborations, or want to request a service?  
-**Email Keith Elliott:** [keith@resonantrhythm.com](mailto:keith@resonantrhythm.com)
+**Email Keith Elliott:**
+[keith@resonantrhythm.com](mailto:keith@resonantrhythm.com)
 
 ---
 

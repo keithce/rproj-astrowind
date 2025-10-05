@@ -1,6 +1,7 @@
 # 🛡️ Accessibility Implementation Guide
 
-This document provides comprehensive information about the accessibility features implemented in this project and how to maintain and test them.
+This document provides comprehensive information about the accessibility
+features implemented in this project and how to maintain and test them.
 
 ## 📋 Table of Contents
 
@@ -13,7 +14,8 @@ This document provides comprehensive information about the accessibility feature
 
 ## 🌟 Overview
 
-This project implements comprehensive accessibility features that meet and exceed WCAG 2.1 AA standards. Our accessibility implementation includes:
+This project implements comprehensive accessibility features that meet and
+exceed WCAG 2.1 AA standards. Our accessibility implementation includes:
 
 - **ARIA Live Regions** for dynamic content announcements
 - **Advanced Focus Management** with skip links and focus trapping
@@ -350,8 +352,8 @@ function openModal(modal) {
 
 #### 1. Skip Links Not Working
 
-**Problem**: Skip links don't navigate to target elements
-**Solution**: Ensure target elements have proper IDs and tabindex="-1"
+**Problem**: Skip links don't navigate to target elements **Solution**: Ensure
+target elements have proper IDs and tabindex="-1"
 
 ```html
 <main id="main-content" tabindex="-1">
@@ -361,8 +363,8 @@ function openModal(modal) {
 
 #### 2. Screen Reader Not Announcing Changes
 
-**Problem**: Dynamic content changes aren't announced
-**Solution**: Use proper ARIA live regions
+**Problem**: Dynamic content changes aren't announced **Solution**: Use proper
+ARIA live regions
 
 ```html
 <div aria-live="polite" id="status-updates"></div>
@@ -370,11 +372,11 @@ function openModal(modal) {
 
 #### 3. Focus Trapped in Modal
 
-**Problem**: Can't escape modal with keyboard
-**Solution**: Implement proper escape key handling
+**Problem**: Can't escape modal with keyboard **Solution**: Implement proper
+escape key handling
 
 ```javascript
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modalOpen) {
     closeModal();
   }
@@ -383,8 +385,8 @@ document.addEventListener('keydown', (e) => {
 
 #### 4. Poor Color Contrast
 
-**Problem**: Text doesn't meet contrast requirements
-**Solution**: Use tools to verify contrast ratios
+**Problem**: Text doesn't meet contrast requirements **Solution**: Use tools to
+verify contrast ratios
 
 ```bash
 npm run test:contrast
@@ -472,4 +474,5 @@ For accessibility-related questions or issues:
 3. Review the troubleshooting section
 4. Create an issue with accessibility testing results
 
-Remember: Accessibility is not a feature to be added later—it should be considered from the beginning of the development process.
+Remember: Accessibility is not a feature to be added later—it should be
+considered from the beginning of the development process.
