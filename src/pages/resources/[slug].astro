@@ -89,7 +89,8 @@ function flattenProperties(props: Record<string, NotionProp> | undefined): Recor
           : '';
         break;
       case 'date':
-        value = (prop as { date?: { start?: string } }).date?.start ?? undefined;
+        // Use the full date object structure (start, end, time_zone) from transformed properties
+        value = (prop as { date?: { start?: Date; end?: Date | null; time_zone?: string | null } }).date ?? null;
         break;
       case 'created_time':
         value = prop.created_time ?? undefined;

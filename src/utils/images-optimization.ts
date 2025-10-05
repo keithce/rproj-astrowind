@@ -233,7 +233,10 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
     );
   }
 
-  const getImage = (astroAssets as any)?.getImage;
+  const getImage =
+    typeof astroAssets === 'object' && astroAssets !== null && 'getImage' in astroAssets
+      ? (astroAssets as { getImage: unknown }).getImage
+      : undefined;
   if (typeof getImage !== 'function') {
     // Fallback: return untransformed URLs
     return Promise.all(

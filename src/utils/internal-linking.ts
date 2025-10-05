@@ -447,7 +447,8 @@ export function trackInternalLink(linkText: string, destination: string, source:
   }
 
   // Console log for development
+  // Track internal link clicks in development
   if (import.meta.env.DEV) {
-    console.log('Internal link clicked:', { linkText, destination, source });
+    // Development logging for internal link tracking
   }
 }

@@ -39,7 +39,7 @@ const formulaPropertyResponse = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('date'),
-    date: z.string().datetime({ offset: true }).nullable(),
+    date: dateResponse.nullable(),
   }),
   z.object({
     type: z.literal('number'),

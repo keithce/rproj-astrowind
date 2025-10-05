@@ -263,8 +263,8 @@ export class NotionPageRenderer {
             value = richTextToPlainText(prop.rich_text as ReadonlyArray<{ plain_text?: string }>);
             break;
           case 'date':
-            // Provide a simple scalar for schemas expecting string/date
-            value = (prop.date?.start as string | undefined) ?? undefined;
+            // Preserve the full date object structure (start, end, time_zone)
+            value = dateToDateObjects(prop.date as any);
             break;
           case 'created_time':
             value = new Date(prop.created_time);
@@ -338,7 +338,7 @@ export class NotionPageRenderer {
           [
             `Found ${this.#imageAnalytics.download} images to download`,
             this.#imageAnalytics.cached > 0 && dim(`${this.#imageAnalytics.cached} already cached`),
-          ].join(' ')
+          ].filter(Boolean).join(' ')
         );
       }
 

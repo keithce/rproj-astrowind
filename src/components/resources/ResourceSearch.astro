@@ -36,10 +36,10 @@ const { class: className = '', placeholder = 'Search RR Resources...' } = Astro.
   // Client-side search functionality
   document.addEventListener('DOMContentLoaded', () => {
     const searchForm = document.getElementById('search-form');
-    const searchInputElement = document.querySelector('input#search-input');
+    const searchInputElement = document.querySelector<HTMLInputElement>('input#search-input');
 
     // Runtime type guard to ensure we have a valid input element
-    if (!searchInputElement) {
+    if (!searchInputElement || !(searchInputElement instanceof HTMLInputElement)) {
       return;
     }
 
@@ -47,19 +47,23 @@ const { class: className = '', placeholder = 'Search RR Resources...' } = Astro.
     const urlParams = new URLSearchParams(window.location.search);
     const queryParam = urlParams.get('q');
     if (queryParam) {
-      // Use setAttribute to set the value
-      searchInputElement.setAttribute('value', queryParam);
+      // Set the .value property instead of using setAttribute
+      searchInputElement.value = queryParam;
     }
 
-    searchForm?.addEventListener('submit', e => {
-      e.preventDefault();
-      // Get the input value directly from the input element
-      const queryValue = searchInputElement.getAttribute('value') || '';
-      if (queryValue.trim()) {
-        window.location.href = `/resources?q=${encodeURIComponent(queryValue.trim())}`;
-      } else {
-        window.location.href = '/resources';
-      }
-    });
+    // Ensure searchForm is non-null before adding the submit listener
+    if (searchForm) {
+      searchForm.addEventListener('submit', e => {
+        e.preventDefault();
+        // Read .value (not getAttribute) from the HTMLInputElement
+        const queryValue = searchInputElement.value || '';
+        const trimmedValue = queryValue.trim();
+        if (trimmedValue) {
+          window.location.href = `/resources?q=${encodeURIComponent(trimmedValue)}`;
+        } else {
+          window.location.href = '/resources';
+        }
+      });
+    }
   });
 </script>

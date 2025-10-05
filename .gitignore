@@ -2,7 +2,7 @@
 dist/
 .output/
 public/pagefind/
-src/assets/images/notion
+src/content/notion/images
 
 # dependencies
 node_modules/
@@ -37,6 +37,8 @@ src/assets/images/notion/
 # Build metadata and temp working dirs
 tmp/
 **/*.tsbuildinfo
+test-results/
+playwright-report/
 
 # Vendored package build artifacts (keep only sources)
 vendor/notion-astro-loader/src/dist/

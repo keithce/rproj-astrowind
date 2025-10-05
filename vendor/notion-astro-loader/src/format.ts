@@ -43,7 +43,7 @@ export async function fileToImageAsset(file: FileObject): Promise<GetImageResult
     remotePatterns: [
       { protocol: 'https', hostname: '**.notion.so' },
       { protocol: 'https', hostname: '**.notion-static.com' },
-      { protocol: 'https', hostname: '**.amazonaws.com' }, // Keep existing S3 support
+      { protocol: 'https', hostname: '**.amazonaws.com' }, // Add S3 support for Notion file storage
     ],
   });
 }

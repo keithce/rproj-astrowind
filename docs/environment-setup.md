@@ -1,8 +1,8 @@
-# Environment Setup for Cloudinary Integration
+# Environment Setup for Project Integrations
 
 ## Required Environment Variables
 
-To use the Cloudinary integration, you need to set up the following environment variables:
+This document covers the environment variables needed for both Cloudinary integration and the Resources section powered by Notion.
 
 ### 1. Create Environment File
 
@@ -18,6 +18,13 @@ PUBLIC_CLOUDINARY_API_KEY=your_api_key_here
 
 # Optional: API secret for server-side operations (private)
 CLOUDINARY_API_SECRET=your_api_secret_here
+
+# Notion Configuration for Resources
+# Required: Notion API token (private)
+NOTION_TOKEN=your_notion_api_token_here
+
+# Required: Notion database ID for resources (private)
+NOTION_RR_RESOURCES_ID=your_notion_database_id_here
 ```
 
 ### 2. Getting Your Cloudinary Credentials
@@ -35,6 +42,43 @@ CLOUDINARY_API_SECRET=your_api_secret_here
    - **API Key**: Used for client-side operations (optional)
    - **API Secret**: Used for server-side operations (optional, keep private)
 
+### 2.1. Getting Your Notion Credentials
+
+1. **Create a Notion Integration**
+   - Go to [https://www.notion.so/my-integrations](https://www.notion.so/my-integrations)
+   - Click "New integration"
+   - Give it a name (e.g., "Website Resources")
+   - Select the workspace where your database is located
+   - Click "Submit" and copy the "Internal Integration Token"
+
+2. **Set Up Your Resources Database**
+   - Create a new Notion database
+   - Add the following properties (see [Resources Documentation](./resources-documentation.md) for details):
+     - Name (Title)
+     - Source (URL)
+     - User Defined URL (URL)
+     - Category (Multi-select)
+     - Type (Multi-select)
+     - Tags (Multi-select)
+     - Keywords (Multi-select)
+     - Status (Select)
+     - Length (Select)
+     - AI summary (Text)
+     - Last Updated (Date)
+     - Skill Level (Select)
+     - Favorite (Checkbox)
+
+3. **Share Database with Integration**
+   - Open your database
+   - Click "Share" in the top right
+   - Click "Invite" and search for your integration name
+   - Select your integration and give it access
+
+4. **Get Database ID**
+   - Copy the database URL from your browser
+   - Extract the database ID (32-character string between the last `/` and `?`)
+   - Example: `https://www.notion.so/workspace/DATABASE_ID?v=...`
+
 ### 3. Environment Variable Details
 
 #### Required Variables
@@ -43,6 +87,16 @@ CLOUDINARY_API_SECRET=your_api_secret_here
   - This is required for basic image delivery
   - Must be prefixed with `PUBLIC_` to be available in client-side code
   - Example: `demo` (if your cloud name is "demo")
+
+- **`NOTION_TOKEN`**: Your Notion API token
+  - Required for accessing the Resources database
+  - Keep this private (no `PUBLIC_` prefix)
+  - Get this from your Notion integration settings
+
+- **`NOTION_RR_RESOURCES_ID`**: Your Notion database ID for resources
+  - Required for loading resources content
+  - Keep this private (no `PUBLIC_` prefix)
+  - Extract this from your Notion database URL
 
 #### Optional Variables
 
@@ -65,6 +119,8 @@ CLOUDINARY_API_SECRET=your_api_secret_here
 vercel env add PUBLIC_CLOUDINARY_CLOUD_NAME
 vercel env add PUBLIC_CLOUDINARY_API_KEY
 vercel env add CLOUDINARY_API_SECRET
+vercel env add NOTION_TOKEN
+vercel env add NOTION_RR_RESOURCES_ID
 ```
 
 #### Netlify
@@ -74,6 +130,8 @@ vercel env add CLOUDINARY_API_SECRET
 PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name_here
 PUBLIC_CLOUDINARY_API_KEY=your_api_key_here
 CLOUDINARY_API_SECRET=your_api_secret_here
+NOTION_TOKEN=your_notion_api_token_here
+NOTION_RR_RESOURCES_ID=your_notion_database_id_here
 ```
 
 #### Other Platforms
@@ -129,6 +187,20 @@ For local development:
 - Ensure `PUBLIC_CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set
 - Check that your API credentials have the necessary permissions
 - Verify your Cloudinary account limits haven't been exceeded
+
+#### Resources Not Loading
+
+- Check that `NOTION_TOKEN` and `NOTION_RR_RESOURCES_ID` are set correctly
+- Verify your Notion integration has access to the database
+- Ensure the database has the correct properties (see Resources Documentation)
+- Check that resources have "Up-to-Date" status to appear on the site
+
+#### Notion API Issues
+
+- Verify your integration token is valid and not expired
+- Check that the database ID is correct (32-character string)
+- Ensure your Notion integration has the necessary permissions
+- Check Notion's API status page for any service issues
 
 ### 9. Free Tier Limits
 

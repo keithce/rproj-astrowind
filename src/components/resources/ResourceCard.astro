@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import type { ResourceData } from '../../types/resources.ts';
+import { getNotionEntryTitle } from '../../utils/notion';
+import { cleanSlug } from '../../utils/permalinks';
 
 export interface Props {
   entry: CollectionEntry<'resources'>;
@@ -17,17 +19,10 @@ const category = Array.isArray(data.Category) ? data.Category[0] : data.Category
 const source = data.Source || data['User Defined URL'];
 const summary = data['AI summary'];
 
-// Create a slug for the resource link
-const cleanSlug = (text: string) => {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
-
-const slug = cleanSlug(title);
-const href = `/resources/${slug}`;
+// Generate the canonical slug using the same logic as the dynamic route
+const entryTitle = getNotionEntryTitle(entry);
+const canonicalSlug = cleanSlug(entryTitle);
+const href = `/resources/${canonicalSlug}`;
 ---
 
 <article

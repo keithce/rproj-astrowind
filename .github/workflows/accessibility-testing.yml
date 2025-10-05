@@ -43,6 +43,7 @@ jobs:
     name: '🏗️ Build & sanity-check'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
 
     steps:
       - name: '📥 Checkout repository'
@@ -93,6 +94,7 @@ jobs:
     needs: build-site
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
     strategy:
       matrix:
         test-type: [axe-core, lighthouse, custom]
@@ -267,6 +269,7 @@ jobs:
     name: '⚡ Performance Impact on Accessibility'
     needs: build-site
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
 
     steps:
       - uses: actions/checkout@v4
@@ -320,6 +323,7 @@ jobs:
     name: '📱 Mobile Accessibility Testing'
     needs: build-site
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
 
     steps:
       - uses: actions/checkout@v4
@@ -375,7 +379,7 @@ jobs:
   # ================================================================
   accessibility-regression:
     name: '🔄 Accessibility Regression Testing'
-    if: github.event_name == 'pull_request'
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false }}
     needs: build-site
     runs-on: ubuntu-latest
     timeout-minutes: 40

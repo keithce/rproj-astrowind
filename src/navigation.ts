@@ -80,6 +80,10 @@ export const headerData = {
       ],
     },
     {
+      text: 'Resources',
+      href: getPermalink('/resources'),
+    },
+    {
       text: 'TIL',
       href: getPermalink('/til'),
     },
@@ -102,7 +106,7 @@ export const footerData = {
         { text: 'Enterprise', href: '#' },
         { text: 'Customer stories', href: '#' },
         { text: 'Pricing', href: '#' },
-        { text: 'Resources', href: '#' },
+        { text: 'Resources', href: getPermalink('/resources') },
       ],
     },
     {

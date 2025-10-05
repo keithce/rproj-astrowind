@@ -122,7 +122,7 @@ class LinkAnalytics {
 
     // Development logging
     if (import.meta.env.DEV) {
-      console.log('Link click tracked:', event);
+      // Development logging for link tracking
     }
   }
 

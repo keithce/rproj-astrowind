@@ -1,7 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 // Use vendored loader source so we can modify locally
 import { notionLoader } from '../../vendor/notion-astro-loader/src';
-import type { Loader } from 'astro/loaders';
 import { glob } from 'astro/loaders';
 
 // Shared metadataDefinition for collections
@@ -72,51 +71,31 @@ const postCollection = defineCollection({
 
 const tilCollection = defineCollection({
   type: 'content',
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-    tags: z.array(z.string()),
-    description: z.string(),
-    draft: z.boolean().optional(),
-    image: z.string().optional(),
-    metadata: metadataDefinition(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      date: z.date(),
+      tags: z.array(z.string()),
+      description: z.string(),
+      draft: z.boolean().optional(),
+      image: image().optional(),
+      metadata: metadataDefinition(),
+    }),
 });
 
 export const collections = {
   post: postCollection,
   til: tilCollection,
   resources: defineCollection({
-    loader: (() => {
-      // Load environment variables at runtime instead of module initialization
-      const token = process.env.NOTION_TOKEN;
-      const db = process.env.NOTION_RR_RESOURCES_ID;
-
-      if (!token || !db) {
-        // Gracefully no-op when secrets are absent (CI/docs preview)
-        const emptyLoader: Loader = {
-          name: 'notion-loader/disabled',
-          async schema() {
-            return z.object({}).optional();
-          },
-          async load(ctx) {
-            // ensure store cleared to avoid stale content
-            for (const id of ctx.store.keys()) ctx.store.delete(id);
-          },
-        };
-        return emptyLoader;
-      }
-
-      return notionLoader({
-        auth: token,
-        database_id: db,
-        imageSavePath: 'assets/images/notion',
-        filter: {
-          property: 'Status',
-          status: { equals: 'Up-to-Date' },
-        },
-      });
-    })(),
+    loader: notionLoader({
+      auth: process.env.NOTION_TOKEN!,
+      database_id: process.env.NOTION_RR_RESOURCES_ID!,
+      imageSavePath: 'content/notion/images',
+      filter: {
+        property: 'Status',
+        status: { equals: 'Up-to-Date' },
+      },
+    }),
     // Schema: start from Notion property types; refine as needed
     schema: () =>
       z.object({
@@ -134,7 +113,19 @@ export const collections = {
         Status: z.enum(['Needs Review', 'Writing', 'Needs Update', 'Up-to-Date']).optional(),
         Length: z.enum(['Short', 'Medium', 'Long']).optional(),
         'AI summary': z.string().optional(),
-        'Last Updated': z.union([z.date(), z.string()]).optional(),
+        'Last Updated': z
+          .union([
+            z.date(),
+            z.string(),
+            z
+              .object({
+                start: z.date().optional(),
+                end: z.date().nullable(),
+                time_zone: z.string().nullable(),
+              })
+              .nullable(),
+          ])
+          .optional(),
         'Skill Level': z.enum(['Beginner', 'Intermediate', 'Advanced', 'Any']).optional(),
         Favorite: z.boolean().optional(),
       }),

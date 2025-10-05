@@ -9,7 +9,7 @@ export interface ResourceData {
   Status?: 'Needs Review' | 'Writing' | 'Needs Update' | 'Up-to-Date';
   Length?: 'Short' | 'Medium' | 'Long';
   'AI summary'?: string;
-  'Last Updated'?: Date | string;
+  'Last Updated'?: Date | string | { start?: Date; end?: Date | null; time_zone?: string | null } | null;
   'Skill Level'?: 'Beginner' | 'Intermediate' | 'Advanced' | 'Any';
   Favorite?: boolean;
 }
@@ -41,8 +41,12 @@ export function isResourceData(obj: unknown): obj is ResourceData {
     (data.Length === undefined || ['Short', 'Medium', 'Long'].includes(data.Length as string)) &&
     (data['AI summary'] === undefined || typeof data['AI summary'] === 'string') &&
     (data['Last Updated'] === undefined ||
+      data['Last Updated'] === null ||
       typeof data['Last Updated'] === 'string' ||
-      data['Last Updated'] instanceof Date) &&
+      data['Last Updated'] instanceof Date ||
+      (typeof data['Last Updated'] === 'object' &&
+        data['Last Updated'] !== null &&
+        ('start' in data['Last Updated'] || 'end' in data['Last Updated'] || 'time_zone' in data['Last Updated']))) &&
     (data['Skill Level'] === undefined ||
       ['Beginner', 'Intermediate', 'Advanced', 'Any'].includes(data['Skill Level'] as string)) &&
     (data.Favorite === undefined || typeof data.Favorite === 'boolean');

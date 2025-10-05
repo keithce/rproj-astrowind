@@ -111,6 +111,7 @@
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/tabler": "^1.2.23",
     "@jsdevtools/rehype-toc": "^3.0.2",
+    "@playwright/test": "^1.55.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/fs-extra": "^11.0.4",
     "@types/js-yaml": "^4.0.9",

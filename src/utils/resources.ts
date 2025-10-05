@@ -1,5 +1,6 @@
 import { getCollection, getLiveCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import type { ResourceData } from '../types/resources';
 
 export type ResourceEntry = CollectionEntry<'resources'>;
 
@@ -7,19 +8,24 @@ export type ResourceEntry = CollectionEntry<'resources'>;
  * Fetch all RR Resource entries
  */
 export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
+  console.log('🔍 [RESOURCES] Starting to fetch resource entries...');
   try {
     // Try stable content first
     const getCollectionLoose = getCollection as unknown as (c: string) => Promise<ResourceEntry[]>;
     const entries = await getCollectionLoose('resources');
+    console.log('🔍 [RESOURCES] Stable collection entries:', entries.length);
     if (Array.isArray(entries) && entries.length > 0) {
-      return entries.sort((a, b) => {
+      const sorted = entries.sort((a, b) => {
         // Sort by name alphabetically as a default
-        const nameA = (a.data as any).Name || '';
-        const nameB = (b.data as any).Name || '';
+        const nameA = (a.data as ResourceData).Name || '';
+        const nameB = (b.data as ResourceData).Name || '';
         return nameA.localeCompare(nameB);
       });
+      console.log('🔍 [RESOURCES] Returning stable collection entries:', sorted.length);
+      return sorted;
     }
-  } catch {
+  } catch (error) {
+    console.log('🔍 [RESOURCES] Stable collection failed:', error instanceof Error ? error.message : String(error));
     // Stable collection failed, trying live collection
   }
 
@@ -30,19 +36,30 @@ export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
       error?: Error | null;
     };
 
+    console.log('🔍 [RESOURCES] Live collection result:', {
+      hasEntries: !!live?.entries,
+      entriesLength: live?.entries?.length || 0,
+      hasError: !!live?.error,
+    });
+
     if (live?.error) {
+      console.log('🔍 [RESOURCES] Live collection error:', live.error.message);
       return [];
     }
 
-    const entries = Array.isArray(live?.entries) ? live!.entries : [];
+    const entries = Array.isArray(live?.entries) ? live.entries : [];
+    console.log('🔍 [RESOURCES] Live collection entries:', entries.length);
 
-    return entries.sort((a, b) => {
+    const sorted = entries.sort((a, b) => {
       // Sort by name alphabetically as a default
-      const nameA = (a.data as any).Name || '';
-      const nameB = (b.data as any).Name || '';
+      const nameA = (a.data as ResourceData).Name || '';
+      const nameB = (b.data as ResourceData).Name || '';
       return nameA.localeCompare(nameB);
     });
-  } catch {
+    console.log('🔍 [RESOURCES] Returning live collection entries:', sorted.length);
+    return sorted;
+  } catch (error) {
+    console.log('🔍 [RESOURCES] Live collection failed:', error instanceof Error ? error.message : String(error));
     // Temporary fallback for development/testing
     return [];
   }
@@ -56,7 +73,7 @@ export const findResourceCategories = async (): Promise<string[]> => {
   const categorySet = new Set<string>();
 
   entries.forEach(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const categories = data.Category;
 
     if (Array.isArray(categories)) {
@@ -81,7 +98,7 @@ export const findResourceTypes = async (): Promise<string[]> => {
   const typeSet = new Set<string>();
 
   entries.forEach(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const types = data.Type;
 
     if (Array.isArray(types)) {
@@ -105,7 +122,7 @@ export const filterResourcesByCategory = async (category: string): Promise<Resou
   const entries = await fetchResourceEntries();
 
   return entries.filter(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const categories = data.Category;
 
     if (Array.isArray(categories)) {
@@ -122,7 +139,7 @@ export const filterResourcesByType = async (type: string): Promise<ResourceEntry
   const entries = await fetchResourceEntries();
 
   return entries.filter(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const types = data.Type;
 
     if (Array.isArray(types)) {
@@ -139,7 +156,7 @@ export const filterResourcesByCategoryAndType = async (category: string, type: s
   const entries = await fetchResourceEntries();
 
   return entries.filter(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const categories = data.Category;
     const types = data.Type;
 
@@ -159,21 +176,29 @@ export const searchResources = async (query: string): Promise<ResourceEntry[]> =
   const searchTerm = query.toLowerCase();
 
   return entries.filter(entry => {
-    const data = entry.data as any;
+    const data = entry.data as ResourceData;
     const name = data.Name || '';
     const summary = data['AI summary'] || '';
-    const categories = Array.isArray(data.Category) ? data.Category : [data.Category];
-    const types = Array.isArray(data.Type) ? data.Type : [data.Type];
+
+    // Normalize categories to ensure they're strings
+    const categories = Array.isArray(data.Category)
+      ? data.Category.filter(Boolean).map(String)
+      : data.Category
+        ? [String(data.Category)]
+        : [];
+
+    // Normalize types to ensure they're strings
+    const types = Array.isArray(data.Type)
+      ? data.Type.filter(Boolean).map(String)
+      : data.Type
+        ? [String(data.Type)]
+        : [];
 
     return (
       name.toLowerCase().includes(searchTerm) ||
       summary.toLowerCase().includes(searchTerm) ||
-      (Array.isArray(categories) ? categories : []).some(
-        (cat: any) => cat && typeof cat === 'string' && cat.toLowerCase().includes(searchTerm)
-      ) ||
-      (Array.isArray(types) ? types : []).some(
-        (type: any) => type && typeof type === 'string' && type.toLowerCase().includes(searchTerm)
-      )
+      categories.some((cat: string) => cat.toLowerCase().includes(searchTerm)) ||
+      types.some((type: string) => type.toLowerCase().includes(searchTerm))
     );
   });
 };
@@ -190,19 +215,21 @@ export const filterResources = async (options: {
 
   // Apply category filter
   if (options.category) {
+    const category = options.category;
     entries = entries.filter(entry => {
-      const data = entry.data as any;
+      const data = entry.data as ResourceData;
       const categories = data.Category;
-      return Array.isArray(categories) ? categories.includes(options.category) : categories === options.category;
+      return Array.isArray(categories) ? categories.includes(category) : categories === category;
     });
   }
 
   // Apply type filter
   if (options.type) {
+    const type = options.type;
     entries = entries.filter(entry => {
-      const data = entry.data as any;
+      const data = entry.data as ResourceData;
       const types = data.Type;
-      return Array.isArray(types) ? types.includes(options.type) : types === options.type;
+      return Array.isArray(types) ? types.includes(type) : types === type;
     });
   }
 
@@ -210,21 +237,29 @@ export const filterResources = async (options: {
   if (options.search) {
     const searchTerm = options.search.toLowerCase();
     entries = entries.filter(entry => {
-      const data = entry.data as any;
+      const data = entry.data as ResourceData;
       const name = data.Name || '';
       const summary = data['AI summary'] || '';
-      const categories = Array.isArray(data.Category) ? data.Category : [data.Category];
-      const types = Array.isArray(data.Type) ? data.Type : [data.Type];
+
+      // Normalize categories to ensure they're strings
+      const categories = Array.isArray(data.Category)
+        ? data.Category.filter(Boolean).map(String)
+        : data.Category
+          ? [String(data.Category)]
+          : [];
+
+      // Normalize types to ensure they're strings
+      const types = Array.isArray(data.Type)
+        ? data.Type.filter(Boolean).map(String)
+        : data.Type
+          ? [String(data.Type)]
+          : [];
 
       return (
         name.toLowerCase().includes(searchTerm) ||
         summary.toLowerCase().includes(searchTerm) ||
-        (Array.isArray(categories) ? categories : []).some(
-          (cat: any) => cat && typeof cat === 'string' && cat.toLowerCase().includes(searchTerm)
-        ) ||
-        (Array.isArray(types) ? types : []).some(
-          (type: any) => type && typeof type === 'string' && type.toLowerCase().includes(searchTerm)
-        )
+        categories.some((cat: string) => cat.toLowerCase().includes(searchTerm)) ||
+        types.some((type: string) => type.toLowerCase().includes(searchTerm))
       );
     });
   }

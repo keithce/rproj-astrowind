@@ -9,7 +9,7 @@ export const checkbox = propertyType.checkbox.transform((property) => property.c
 
 export const select = propertyType.select.transform((property) => property.select?.name ?? null);
 export const multi_select = propertyType.multi_select.transform(
-  (property) => property.multi_select.map((option) => option.name) ?? []
+  (property) => property.multi_select?.map((option) => option.name) ?? []
 );
 export const status = propertyType.status.transform((property) => property.status?.name ?? null);
 

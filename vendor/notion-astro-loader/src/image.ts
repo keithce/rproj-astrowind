@@ -43,7 +43,7 @@ export async function saveImageFromAWS(url: string, dir: string, options: SaveOp
   const contentRootAbs = path.resolve(process.cwd(), VIRTUAL_CONTENT_ROOT);
   const dirAbs = path.resolve(process.cwd(), dir);
   if (!fse.existsSync(dirAbs)) fse.ensureDirSync(dirAbs);
-  if (!dirAbs.startsWith(contentRootAbs + path.sep)) {
+  if (!dirAbs.startsWith(contentRootAbs + path.sep) && dirAbs !== contentRootAbs) {
     throw new Error(`Target dir must be within ${VIRTUAL_CONTENT_ROOT}`);
   }
 

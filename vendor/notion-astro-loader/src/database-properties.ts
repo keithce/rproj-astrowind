@@ -9,9 +9,10 @@ export async function propertiesSchemaForDatabase(client: Client, databaseId: st
   // Retry with exponential backoff to withstand transient Notion rate limits
   let attempts = 0;
   let lastError: unknown;
+  let database: any = null;
   while (attempts < 6) {
     try {
-      var database = await client.databases.retrieve({ database_id: databaseId });
+      database = await client.databases.retrieve({ database_id: databaseId });
       break;
     } catch (e: any) {
       lastError = e;
@@ -35,10 +36,11 @@ export async function propertiesSchemaForDatabase(client: Client, databaseId: st
   ) => rawPropertyType[propertyConfig.type];
 
   const schema = Object.fromEntries(
-    Object.entries(database.properties).map(([key, value]: [string, DatabasePropertyConfigResponse]) => {
-      let propertySchema = schemaForDatabaseProperty(value);
-      if (value.description) {
-        propertySchema = propertySchema.describe(value.description);
+    Object.entries(database.properties).map(([key, value]) => {
+      const typedValue = value as DatabasePropertyConfigResponse;
+      let propertySchema = schemaForDatabaseProperty(typedValue);
+      if (typedValue.description) {
+        propertySchema = propertySchema.describe(typedValue.description);
       }
       if (key !== 'Name') {
         // propertySchema = propertySchema.optional();

@@ -133,8 +133,8 @@ export function getCloudinaryImageUrl(
       src: publicId,
       ...finalOptions,
     });
-  } catch (error) {
-    console.error('Error generating Cloudinary URL:', error);
+  } catch {
+    // Error generating Cloudinary URL - using fallback
     // Return a fallback URL
     return `https://via.placeholder.com/${finalOptions.width || 400}x${finalOptions.height || 300}?text=Image+Error`;
   }
@@ -213,7 +213,7 @@ export async function getCategoryImages(category: ImageCategory, count: number =
 
     // If no images found in the folder, return sample data
     if (!searchResult.resources || searchResult.resources.length === 0) {
-      console.warn(`No images found in Cloudinary folder: ${categoryFolder}`);
+      // No images found in Cloudinary folder, using fallback
       return generateFallbackImages(category, count);
     }
 
@@ -234,8 +234,8 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         }),
       };
     });
-  } catch (error) {
-    console.error(`Error fetching images from Cloudinary for category ${category}:`, error);
+  } catch {
+    // Error fetching images from Cloudinary, using fallback
     // Return fallback images if search fails
     return generateFallbackImages(category, count);
   }
@@ -308,8 +308,8 @@ export function getOgImageUrl(title: string, subtitle?: string, backgroundImage?
       format: 'jpg',
       quality: 'auto',
     });
-  } catch (error) {
-    console.error('Error generating OG image URL:', error);
+  } catch {
+    // Error generating OG image URL
     return '';
   }
 }

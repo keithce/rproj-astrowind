@@ -67,6 +67,9 @@ jobs:
           sleep 20
           cat dev.log
           curl -f http://localhost:4321 || (cat dev.log && exit 1)
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run contrast validation
@@ -192,6 +195,9 @@ jobs:
 
       - name: Build project
         run: pnpm run build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: Start server for accessibility testing
         run: |
@@ -209,6 +215,9 @@ jobs:
               exit 1
             fi
           done
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: Run accessibility tests
         run: pnpm run axe:scan
