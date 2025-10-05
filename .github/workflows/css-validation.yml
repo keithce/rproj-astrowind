@@ -31,8 +31,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install pnpm
-        run: npm install -g pnpm@10.11.0
+      - name: Install Bun
+        run: curl -fsSL https://bun.sh/install | bash
+        shell: bash
+
+      - name: Add Bun to PATH
+        run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
       - name: Install browser dependencies
         run: |
@@ -52,10 +56,10 @@ jobs:
             libxtst6
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build project
-        run: pnpm run build
+        run: bun run build
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
@@ -63,7 +67,7 @@ jobs:
 
       - name: Start development server
         run: |
-          pnpm run dev > dev.log 2>&1 &
+          bun run dev > dev.log 2>&1 &
           sleep 20
           cat dev.log
           curl -f http://localhost:4321 || (cat dev.log && exit 1)
@@ -73,21 +77,21 @@ jobs:
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run contrast validation
-        run: pnpm run test:contrast
+        run: bun run test:contrast
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run CSS variable validation
-        run: pnpm run validate:css
+        run: bun run validate:css
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run visual verification (headless)
-        run: pnpm run visual-verify:ci
+        run: bun run visual-verify:ci
         env:
           DISPLAY: ''
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Generate documentation
-        run: pnpm run docs:css
+        run: bun run docs:css
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Upload validation reports
@@ -167,11 +171,15 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install pnpm
-        run: npm install -g pnpm@10.11.0
+      - name: Install Bun
+        run: curl -fsSL https://bun.sh/install | bash
+        shell: bash
+
+      - name: Add Bun to PATH
+        run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Install browser dependencies (Chrome)
         run: |
@@ -194,14 +202,14 @@ jobs:
         run: npx browser-driver-manager install chrome
 
       - name: Build project
-        run: pnpm run build
+        run: bun run build
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: Start server for accessibility testing
         run: |
-          pnpm dev --port 4321 --host &
+          bun dev --port 4321 --host &
           # Wait for server readiness (max ~60 s)
           for i in {1..30}; do
             sleep 2
@@ -220,7 +228,7 @@ jobs:
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
 
       - name: Run accessibility tests
-        run: pnpm run axe:scan
+        run: bun run axe:scan
 
       - name: Upload accessibility report
         uses: actions/upload-artifact@v4
