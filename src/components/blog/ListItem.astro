@@ -25,7 +25,7 @@ const link = APP_BLOG?.post?.isEnabled ? getPermalink(post.permalink, 'post') : 
   {
     image &&
       (link ? (
-        <a class="group relative block" href={link ?? 'javascript:void(0)'}>
+        <a class="group relative block" href={link}>
           <div class="bg-muted relative h-0 overflow-hidden rounded-sm pb-[56.25%] shadow-lg md:h-72 md:pb-[75%] lg:pb-[56.25%]">
             {image && (
               <Image

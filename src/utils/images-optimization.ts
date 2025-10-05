@@ -33,7 +33,7 @@ export type ImagesOptimizer = (
   width?: number,
   height?: number,
   format?: string
-) => Promise<Array<{ src: string; width: number }>>;
+) => Promise<Array<{ src: string; width: number } | null>>;
 
 /* ******* */
 const config = {
@@ -247,8 +247,11 @@ export const astroAssetsOptimizer: ImagesOptimizer = async (
   return Promise.all(
     breakpoints.map(async (w: number) => {
       const result = await getImage({ src: image, width: w, ...(format ? { format } : {}) });
+      if (!result?.src) {
+        return null;
+      }
       return {
-        src: result?.src || '',
+        src: result.src,
         width: result?.attributes?.width ?? w,
       };
     })
@@ -344,7 +347,15 @@ export async function getImagesOptimized(
   let breakpoints = getBreakpoints({ width, breakpoints: widths, layout });
   breakpoints = [...new Set(breakpoints)].sort((a, b) => a - b);
 
-  const srcset = (await transform(image, breakpoints, Number(width) || undefined, Number(height) || undefined, format))
+  const transformedImages = await transform(
+    image,
+    breakpoints,
+    Number(width) || undefined,
+    Number(height) || undefined,
+    format
+  );
+  const srcset = transformedImages
+    .filter((item): item is { src: string; width: number } => item !== null)
     .map(({ src, width }) => `${src} ${width}w`)
     .join(', ');
 

@@ -1,7 +1,7 @@
 import type { RehypePlugins } from 'astro';
 import type { Loader } from 'astro/loaders';
 
-import { Client, isFullPage, iteratePaginatedAPI } from '@notionhq/client';
+import { Client, isFullPage } from '@notionhq/client';
 import { dim } from 'kleur/colors';
 import * as path from 'node:path';
 

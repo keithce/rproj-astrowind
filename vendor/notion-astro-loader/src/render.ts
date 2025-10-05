@@ -201,14 +201,17 @@ export class NotionPageRenderer {
     let cover = page.cover;
     // transform cover image file
     if (cover && transformCoverImage && cover.type === 'file') {
-      const transformedUrl = `${rootAlias}/${transformImagePathForCover(await this.#fetchImage(cover))}`;
-      cover = {
-        ...cover,
-        file: {
-          ...cover.file,
-          url: transformedUrl,
-        },
-      };
+      const fetchedImagePath = await this.#fetchImage(cover);
+      if (fetchedImagePath) {
+        const transformedUrl = `${rootAlias}/${transformImagePathForCover(fetchedImagePath)}`;
+        cover = {
+          ...cover,
+          file: {
+            ...cover.file,
+            url: transformedUrl,
+          },
+        };
+      }
     }
     // Transform Notion raw properties to simple values and also expose them at top-level for convenience
     const transformed: Record<string, unknown> = {};

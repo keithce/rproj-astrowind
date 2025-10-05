@@ -16,11 +16,38 @@ export function rehypeCleanText() {
       const tag = isElement ? node.tagName : undefined;
       const nextInCode = inCode || (isElement && (tag === 'code' || tag === 'pre'));
 
-      // Normalize anchor hrefs
+      // Normalize anchor hrefs - only decode safe segments to preserve query/hash params
       if (isElement && tag === 'a' && node.properties?.href) {
         try {
-          node.properties.href = decodeURI(String(node.properties.href));
-        } catch {}
+          const href = String(node.properties.href);
+          // Only decode if it appears to be a valid URL with encoded characters
+          if (href.includes('%') && (href.startsWith('http') || href.startsWith('/') || href.startsWith('#'))) {
+            try {
+              // Parse the URL to safely decode only the pathname
+              const url = new URL(href, 'http://example.com');
+              const originalPathname = url.pathname;
+              const decodedPathname = decodeURIComponent(originalPathname);
+              
+              // Only update if decoding actually changed the pathname
+              if (originalPathname !== decodedPathname) {
+                // Remove the temporary base URL and reconstruct the original URL structure
+                if (href.startsWith('http')) {
+                  // For absolute URLs, reconstruct with original protocol/domain
+                  const newUrl = new URL(href);
+                  newUrl.pathname = decodedPathname;
+                  node.properties.href = newUrl.href;
+                } else {
+                  // For relative URLs, reconstruct without the base URL
+                  node.properties.href = decodedPathname + (url.search || '') + (url.hash || '');
+                }
+              }
+            } catch {
+              // If URL parsing fails, leave href as-is
+            }
+          }
+        } catch {
+          // If any processing fails, leave href as-is
+        }
       }
 
       // Clean visible text

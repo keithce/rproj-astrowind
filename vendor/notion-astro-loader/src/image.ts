@@ -40,8 +40,11 @@ export const VIRTUAL_CONTENT_ROOT = 'src/content/notion';
 export async function saveImageFromAWS(url: string, dir: string, options: SaveOptions = {}) {
   const { ignoreCache, log, tag } = options;
 
-  if (!fse.existsSync(dir)) {
-    throw new Error(`Directory ${dir} does not exist`);
+  const contentRootAbs = path.resolve(process.cwd(), VIRTUAL_CONTENT_ROOT);
+  const dirAbs = path.resolve(process.cwd(), dir);
+  if (!fse.existsSync(dirAbs)) fse.ensureDirSync(dirAbs);
+  if (!dirAbs.startsWith(contentRootAbs + path.sep)) {
+    throw new Error(`Target dir must be within ${VIRTUAL_CONTENT_ROOT}`);
   }
 
   // Validate and parse the URL
@@ -70,28 +73,68 @@ export async function saveImageFromAWS(url: string, dir: string, options: SaveOp
 
   if (ignoreCache || !fse.existsSync(filePath)) {
     // If ignoreCache is true or the file doesn't exist, download it
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
-    await fse.writeFile(filePath, new Uint8Array(buffer));
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-    log?.(`Saved image \`${fileName}\` ${dim(`created \`${filePath}\``)}`);
-    tag?.('download');
+      const response = await fetch(url, {
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      }
+
+      const buffer = await response.arrayBuffer();
+      await fse.writeFile(filePath, new Uint8Array(buffer));
+
+      log?.(`Saved image \`${fileName}\` ${dim(`created \`${filePath}\``)}`);
+      tag?.('download');
+    } catch (error: unknown) {
+      // Clean up any partial file that might have been created
+      if (fse.existsSync(filePath)) {
+        fse.removeSync(filePath);
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error(`Timeout downloading image: ${fileName}`);
+        }
+        throw new Error(`Failed to download image \`${fileName}\`: ${error.message}`);
+      }
+      throw new Error(`Unknown error downloading image: ${fileName}`);
+    }
   } else {
     log?.(`Skipped caching image \`${fileName}\` ${dim(`cached at \`${filePath}\``)}`);
     tag?.('cached');
   }
 
-  const relBasePath = path.resolve(process.cwd(), VIRTUAL_CONTENT_ROOT);
+  const relBasePath = contentRootAbs;
 
   // Relative path of the image from the virtual content root
-  return path.relative(relBasePath, filePath);
+  const rel = path.relative(relBasePath, filePath);
+  if (rel.startsWith('..')) throw new Error('Resolved image path escaped content root');
+  return rel.split(path.sep).join('/');
 }
 
 /**
  * Transforms a raw image path into a relative path from the 'src' directory.
  */
 export function transformImagePathForCover(rawPath: string): string {
+  const contentRootAbs = path.resolve(process.cwd(), VIRTUAL_CONTENT_ROOT);
+  const srcAbs = path.resolve(process.cwd(), 'src');
+  
   // get abs path from relative path to VIRTUAL_CONTENT_ROOT
-  const absPath = path.resolve(process.cwd(), VIRTUAL_CONTENT_ROOT, rawPath);
-  return path.relative(path.resolve(process.cwd(), 'src'), absPath);
+  const absPath = path.resolve(contentRootAbs, rawPath);
+  
+  // Ensure the resolved path is within the content root
+  if (!absPath.startsWith(contentRootAbs + path.sep) && absPath !== contentRootAbs) {
+    throw new Error(`Image path escaped content root: ${rawPath}`);
+  }
+  
+  const rel = path.relative(srcAbs, absPath);
+  if (rel.startsWith('..')) throw new Error('Resolved image path escaped src directory');
+  return rel.split(path.sep).join('/');
 }

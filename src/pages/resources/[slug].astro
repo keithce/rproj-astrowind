@@ -23,7 +23,7 @@ type RREntry = { id: string; data: RRData } & Record<string, unknown>;
 
 export const getStaticPaths = (async () => {
   const getCollectionLoose = getCollection as unknown as (c: string) => Promise<RREntry[]>;
-  const entries = await getCollectionLoose('rrresources');
+  const entries = await getCollectionLoose('resources');
   const used = new Map<string, number>();
   return entries.map((entry: RREntry) => {
     const name = getNotionEntryTitle(entry);
@@ -133,17 +133,19 @@ const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Rec
 // Normalize commonly displayed fields using top-level, flat, or property fallback
 const flat = flatDataForDebug as Record<string, unknown>;
 const aiSummary = (data['AI summary'] as string | undefined) ?? (flat?.['AI summary'] as string | undefined);
-const types = Array.isArray(data.Type) ? data.Type : Array.isArray(flat?.['Type']) ? (flat['Type'] as string[]) : [];
-const categories = Array.isArray(data.Category)
-  ? data.Category
-  : Array.isArray(flat?.['Category'])
-    ? (flat['Category'] as string[])
-    : [];
-const tags = Array.isArray((data as { Tags?: string[] }).Tags)
-  ? ((data as { Tags?: string[] }).Tags as string[])
-  : Array.isArray(flat?.['Tags'])
-    ? (flat['Tags'] as string[])
-    : [];
+
+// Helper function to normalize fields to string[]
+const normalizeToStringArray = (value: unknown, flatValue?: unknown): string[] => {
+  if (Array.isArray(value)) return value as string[];
+  if (typeof value === 'string') return [value];
+  if (Array.isArray(flatValue)) return flatValue as string[];
+  if (typeof flatValue === 'string') return [flatValue];
+  return [];
+};
+
+const types = normalizeToStringArray(data.Type, flat?.['Type']);
+const categories = normalizeToStringArray(data.Category, flat?.['Category']);
+const tags = normalizeToStringArray((data as { Tags?: string[] }).Tags, flat?.['Tags']);
 const sourceUrl =
   (data.Source as string | undefined) ??
   (typeof flat?.['Source'] === 'string' ? (flat['Source'] as string) : undefined);

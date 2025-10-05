@@ -1,17 +1,15 @@
+import type { RenderResult } from 'astro';
+
 declare module 'astro:content' {
-  // Augment DataEntryMap for the resources data collection (Notion loader)
-  interface DataEntryMap {
+  // Augment ContentEntryMap for the resources content collection (Notion loader)
+  interface ContentEntryMap {
     resources: {
       id: string;
       slug: string;
       body: string;
       collection: 'resources';
       data: import('~/types/resources').ResourceData;
-      render(): Promise<{
-        Content: import('astro').ComponentInstance;
-        headings: import('astro').MarkdownHeading[];
-        remarkPluginFrontmatter: Record<string, any>;
-      }>;
+      render(): Promise<RenderResult>;
     };
   }
 }

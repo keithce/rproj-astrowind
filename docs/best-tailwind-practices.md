@@ -23,15 +23,33 @@ Your config should be the only place for defining CSS-related settings. Leverage
 TypeScript: Use the typed Config object from 'tailwindcss' for autocompletion
 and type safety. Theme Extension: Always place customizations inside
 theme.extend. This preserves Tailwind's sensible defaults while allowing you to
-add your brand's colors, fonts, and spacing. typescript// tailwind.config.ts
-import type { Config } from "tailwindcss";
+add your brand's colors, fonts, and spacing.
 
-export default { content:
-["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"], theme: { extend: {
-// Add your custom design tokens here colors: { brand: { primary: "#0052FF", //
-Example primary color secondary: "#FFC107", }, }, fontFamily: { // Ensure you
-load these fonts in your layout sans: ["Inter", "sans-serif"], serif: ["Source
-Serif Pro", "serif"], }, }, }, plugins: [], } satisfies Config;
+```ts
+// tailwind.config.ts
+import type { Config } from 'tailwindcss';
+
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    extend: {
+      // Add your custom design tokens here
+      colors: {
+        brand: {
+          primary: '#0052FF', // Example primary color
+          secondary: '#FFC107',
+        },
+      },
+      fontFamily: {
+        // Ensure you load these fonts in your layout
+        sans: ['Inter', 'sans-serif'],
+        serif: ['Source Serif Pro', 'serif'],
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config;
+```
 
 ### 1.2. Utility-First, with Scoped @apply for Components
 

@@ -131,7 +131,7 @@ export const rollup = propertySchema(
     z.object({
       function: z.string(),
       type: z.literal('date'),
-      date: z.string().datetime({ offset: true }).nullable(),
+      date: dateResponse.nullable(),
     }),
     z.object({
       function: z.string(),
@@ -153,6 +153,75 @@ export const rollup = propertySchema(
           z.object({
             type: z.literal('relation'),
             relation: z.array(relationResponse),
+          }),
+          z.object({
+            type: z.literal('number'),
+            number: z.number().nullable(),
+          }),
+          z.object({
+            type: z.literal('checkbox'),
+            checkbox: z.boolean(),
+          }),
+          z.object({
+            type: z.literal('date'),
+            date: dateResponse.nullable(),
+          }),
+          z.object({
+            type: z.literal('files'),
+            files: z.array(
+              z.discriminatedUnion('type', [
+                filePropertyResponse.extend({ name: z.string() }),
+                externalPropertyResponse.extend({ name: z.string() }),
+              ])
+            ),
+          }),
+          z.object({
+            type: z.literal('status'),
+            status: selectPropertyResponse.nullable(),
+          }),
+          z.object({
+            type: z.literal('select'),
+            select: selectPropertyResponse.nullable(),
+          }),
+          z.object({
+            type: z.literal('multi_select'),
+            multi_select: z.array(selectPropertyResponse),
+          }),
+          z.object({
+            type: z.literal('formula'),
+            formula: formulaPropertyResponse,
+          }),
+          z.object({
+            type: z.literal('url'),
+            url: z.string().nullable(),
+          }),
+          z.object({
+            type: z.literal('email'),
+            email: z.string().nullable(),
+          }),
+          z.object({
+            type: z.literal('phone_number'),
+            phone_number: z.string().nullable(),
+          }),
+          z.object({
+            type: z.literal('created_by'),
+            created_by: userObjectResponse,
+          }),
+          z.object({
+            type: z.literal('created_time'),
+            created_time: z.string().datetime({ offset: true }),
+          }),
+          z.object({
+            type: z.literal('last_edited_by'),
+            last_edited_by: userObjectResponse,
+          }),
+          z.object({
+            type: z.literal('last_edited_time'),
+            last_edited_time: z.string().datetime({ offset: true }),
+          }),
+          z.object({
+            type: z.literal('unique_id'),
+            unique_id: z.any(),
           }),
         ])
       ),

@@ -78,13 +78,21 @@ export const adaptOpenGraphImages = async (
           (resolvedImage.startsWith('http://') || resolvedImage.startsWith('https://')) &&
           isUnpicCompatible(resolvedImage)
         ) {
-          _image = (await unpicOptimizer(resolvedImage, [defaultWidth], defaultWidth, defaultHeight, 'jpg'))[0];
+          const unpicResult = await unpicOptimizer(resolvedImage, [defaultWidth], defaultWidth, defaultHeight, 'jpg');
+          _image = unpicResult[0] || undefined;
         } else if (resolvedImage) {
           const dimensions =
             typeof resolvedImage !== 'string' && resolvedImage?.width <= defaultWidth
               ? [resolvedImage?.width, resolvedImage?.height]
               : [defaultWidth, defaultHeight];
-          _image = (await astroAssetsOptimizer(resolvedImage, [dimensions[0]], dimensions[0], dimensions[1], 'jpg'))[0];
+          const astroResult = await astroAssetsOptimizer(
+            resolvedImage,
+            [dimensions[0]],
+            dimensions[0],
+            dimensions[1],
+            'jpg'
+          );
+          _image = astroResult[0] || undefined;
         }
 
         if (typeof _image === 'object') {

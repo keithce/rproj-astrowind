@@ -35,7 +35,7 @@ export type {
   Steps,
   Content,
   Contact,
-} from '../types.d.js';
+} from '../types.d.ts';
 
 // Export types from other type files
 export type { ResourceData } from './resources.js';

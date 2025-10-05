@@ -34,7 +34,7 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm@10.11.0
 
-      - name: Install browser dependencies (Chromium)
+      - name: Install browser dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -49,13 +49,10 @@ jobs:
             libxcursor1 \
             libxdamage1 \
             libxi6 \
-            libxtst6 \
-            chromium-browser
+            libxtst6
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
 
       - name: Build project
         run: pnpm run build
@@ -70,25 +67,29 @@ jobs:
           sleep 20
           cat dev.log
           curl -f http://localhost:4321 || (cat dev.log && exit 1)
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run contrast validation
         run: pnpm run test:contrast
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run CSS variable validation
         run: pnpm run validate:css
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Run visual verification (headless)
         run: pnpm run visual-verify:ci
         env:
-          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
           DISPLAY: ''
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Generate documentation
         run: pnpm run docs:css
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
 
       - name: Upload validation reports
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false)
         with:
           name: css-validation-reports
           path: |
@@ -98,7 +99,7 @@ jobs:
           retention-days: 30
 
       - name: Comment PR with results
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
         uses: actions/github-script@v7
         with:
           script: |

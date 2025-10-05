@@ -71,7 +71,7 @@ const {
   }
 
   <!-- Optional BG slot (e.g., overlays, gradients) -->
-  <div class="pointer-events-none absolute inset-0 z-4" aria-hidden="true">
+  <div class="pointer-events-none absolute inset-0 z-[4]" aria-hidden="true">
     <slot name="bg">
       {bg ? <Fragment set:html={bg} /> : null}
     </slot>
