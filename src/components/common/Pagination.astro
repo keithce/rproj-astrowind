@@ -1,0 +1,155 @@
+---
+import {
+  Pagination as StarwindPagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '~/components/starwind/pagination';
+
+interface Props {
+  currentPage: number;
+  lastPage: number;
+  prevUrl?: string;
+  nextUrl?: string;
+  firstUrl?: string;
+  lastUrl?: string;
+  baseUrl: string;
+  queryParams: URLSearchParams;
+}
+
+const { 
+  currentPage, 
+  lastPage, 
+  prevUrl, 
+  nextUrl, 
+  firstUrl, 
+  lastUrl, 
+  baseUrl, 
+  queryParams 
+} = Astro.props;
+
+// Generate page numbers to show
+const generatePageNumbers = (current: number, total: number): (number | string)[] => {
+  const delta = 2; // Number of pages to show on each side of current page
+  const range = [];
+  const rangeWithDots = [];
+
+  for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+    range.push(i);
+  }
+
+  if (current - delta > 2) {
+    rangeWithDots.push(1, '...');
+  } else {
+    rangeWithDots.push(1);
+  }
+
+  rangeWithDots.push(...range);
+
+  if (current + delta < total - 1) {
+    rangeWithDots.push('...', total);
+  } else if (total > 1) {
+    rangeWithDots.push(total);
+  }
+
+  return rangeWithDots;
+};
+
+// Build URL for a specific page
+const buildPageUrl = (pageNum: number | string): string => {
+  if (typeof pageNum === 'string') return '#';
+  
+  if (pageNum === 1) {
+    // For page 1, use the base URL without /1
+    const url = new URL(baseUrl, Astro.site);
+    queryParams.forEach((value, key) => {
+      url.searchParams.set(key, value);
+    });
+    return url.pathname + url.search;
+  }
+  
+  // For other pages, use /page/2, /page/3, etc.
+  const url = new URL(`${baseUrl}/${pageNum}`, Astro.site);
+  queryParams.forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
+  return url.pathname + url.search;
+};
+
+const pageNumbers = generatePageNumbers(currentPage, lastPage);
+---
+
+{lastPage > 1 && (
+  <StarwindPagination>
+    <PaginationContent>
+      <!-- First Page -->
+      {firstUrl && currentPage > 1 && (
+        <PaginationItem>
+          <PaginationLink href={firstUrl} aria-label="Go to first page">
+            ««
+          </PaginationLink>
+        </PaginationItem>
+      )}
+
+      <!-- Previous Page -->
+      {prevUrl && (
+        <PaginationItem>
+          <PaginationPrevious href={prevUrl} />
+        </PaginationItem>
+      )}
+
+      <!-- Page Numbers -->
+      {pageNumbers.map((pageNum) => {
+        if (pageNum === '...') {
+          return (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          );
+        }
+
+        const isCurrentPage = pageNum === currentPage;
+        const pageUrl = buildPageUrl(pageNum);
+
+        return (
+          <PaginationItem>
+            <PaginationLink 
+              href={pageUrl}
+              isActive={isCurrentPage}
+              aria-label={`Go to page ${pageNum}`}
+              aria-current={isCurrentPage ? 'page' : undefined}
+            >
+              {pageNum}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      })}
+
+      <!-- Next Page -->
+      {nextUrl && (
+        <PaginationItem>
+          <PaginationNext href={nextUrl} />
+        </PaginationItem>
+      )}
+
+      <!-- Last Page -->
+      {lastUrl && currentPage < lastPage && (
+        <PaginationItem>
+          <PaginationLink href={lastUrl} aria-label="Go to last page">
+            »»
+          </PaginationLink>
+        </PaginationItem>
+      )}
+    </PaginationContent>
+  </StarwindPagination>
+)}
+
+<!-- Page Info -->
+{lastPage > 1 && (
+  <div class="mt-4 text-sm text-center text-gray-600">
+    Showing page {currentPage} of {lastPage}
+  </div>
+)}

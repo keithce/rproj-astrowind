@@ -15,7 +15,7 @@ const { tags, selectedTag, class: className = '' } = Astro.props;
     <h2 class="text-foreground text-xl font-bold">Filter by Tag</h2>
     {
       selectedTag && (
-        <a href="/til" class="text-primary hover:text-accent text-sm transition-colors">
+        <a href="/til/all/1" class="text-primary hover:text-accent text-sm transition-colors">
           Clear filter
         </a>
       )
@@ -26,7 +26,7 @@ const { tags, selectedTag, class: className = '' } = Astro.props;
     {
       tags.map(tag => (
         <a
-          href={`/til?tag=${tag.slug}`}
+          href={`/til/${tag.slug}/1`}
           class={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
             selectedTag === tag.slug ? 'bg-primary text-white' : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
           }`}

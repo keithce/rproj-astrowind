@@ -14,8 +14,14 @@ test.describe('Data Loading Debug', () => {
     await page.goto('/til');
     await page.waitForLoadState('networkidle');
 
-    // Wait a bit more for any async operations
-    await page.waitForTimeout(3000);
+    // Deterministic wait for entries or empty state or a successful Notion/API response
+    await Promise.race([
+      page.waitForSelector('.til-card, [data-til], .til-item, text=No entries found', {
+        state: 'visible',
+        timeout: 10000,
+      }),
+      page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 10000 }),
+    ]);
 
     // Filter TIL-related logs
     const tilLogs = consoleLogs.filter(log => log.includes('[TIL]') || log.includes('TIL') || log.includes('til'));
@@ -31,8 +37,9 @@ test.describe('Data Loading Debug', () => {
     const emptyState = await page.locator('text=No entries found').isVisible();
     console.log(`📭 Empty state visible: ${emptyState}`);
 
-    // Check for any error messages
-    const errorMessages = await page.locator('text=Error, text=error, text=Failed').count();
+    // Check for any error messages (combined with .or())
+    const errorLocator = page.locator('text=Error').or(page.locator('text=error')).or(page.locator('text=Failed'));
+    const errorMessages = await errorLocator.count();
     console.log(`❌ Error messages found: ${errorMessages}`);
   });
 
@@ -49,8 +56,14 @@ test.describe('Data Loading Debug', () => {
     await page.goto('/resources');
     await page.waitForLoadState('networkidle');
 
-    // Wait longer for Notion API calls
-    await page.waitForTimeout(5000);
+    // Deterministic wait for entries or empty state or a successful Notion/API response
+    await Promise.race([
+      page.waitForSelector('.resource-card, [data-resource], .resource-item, text=No resources found', {
+        state: 'visible',
+        timeout: 12000,
+      }),
+      page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 12000 }),
+    ]);
 
     // Filter Resources-related logs
     const resourceLogs = consoleLogs.filter(
@@ -73,8 +86,9 @@ test.describe('Data Loading Debug', () => {
     const emptyState = await page.locator('text=No resources found').isVisible();
     console.log(`📭 Empty state visible: ${emptyState}`);
 
-    // Check for any error messages
-    const errorMessages = await page.locator('text=Error, text=error, text=Failed').count();
+    // Check for any error messages (combined with .or())
+    const errorLocator = page.locator('text=Error').or(page.locator('text=error')).or(page.locator('text=Failed'));
+    const errorMessages = await errorLocator.count();
     console.log(`❌ Error messages found: ${errorMessages}`);
   });
 
@@ -99,8 +113,8 @@ test.describe('Data Loading Debug', () => {
     await page.goto('/resources');
     await page.waitForLoadState('networkidle');
 
-    // Wait for any pending requests
-    await page.waitForTimeout(3000);
+    // Deterministic wait for network to be idle
+    await page.waitForLoadState('networkidle');
 
     console.log('📡 Network requests made:');
     requests.forEach(req => console.log(`  ${req}`));
@@ -108,8 +122,12 @@ test.describe('Data Loading Debug', () => {
     console.log('📡 Network responses received:');
     responses.forEach(res => console.log(`  ${res}`));
 
-    // Check for any failed requests
-    const failedRequests = responses.filter(res => res.startsWith('4') || res.startsWith('5'));
+    // Check for any failed requests by parsing status code
+    const failedRequests = responses.filter(res => {
+      const statusPart = res.split(' ')[0];
+      const status = parseInt(statusPart, 10);
+      return Number.isFinite(status) && status >= 400;
+    });
     if (failedRequests.length > 0) {
       console.log('❌ Failed requests:');
       failedRequests.forEach(req => console.log(`  ${req}`));

@@ -26,11 +26,11 @@ const href = `/resources/${canonicalSlug}`;
 ---
 
 <article
-  class={`resource-card group rounded-lg border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-900 dark:border-gray-700 ${className}`}
+  class={`resource-card group rounded-lg border bg-card border-border p-6 shadow-sm transition-all hover:shadow-lg ${className}`}
 >
   <div class="mb-3">
     <h3 class="mb-2 text-lg leading-tight font-semibold">
-      <a href={href} class="text-foreground hover:text-primary transition-colors group-hover:underline">
+      <a href={href} class="text-card-foreground hover:text-primary transition-colors group-hover:underline">
         {title}
       </a>
     </h3>

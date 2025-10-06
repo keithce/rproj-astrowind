@@ -14,7 +14,7 @@ const url = new URL(Astro.url);
 url.searchParams.delete('view');
 
 // Build URLs for each view
-let feedUrl = new URL('/til', url.origin);
+let feedUrl = new URL('/til/all/1', url.origin);
 let kanbanUrl = new URL('/til/board', url.origin);
 
 // Preserve specified query parameters

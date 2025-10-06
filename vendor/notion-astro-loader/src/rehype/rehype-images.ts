@@ -10,6 +10,8 @@ export function rehypeImages(options?: Config) {
   
   return function (tree: any, file: VFile) {
     const imageOccurrenceMap = new Map();
+    
+    console.log('rehypeImages called with imagePaths:', imagePaths?.length || 0, 'paths');
 
     visit(tree, (node) => {
       if (node.type !== 'element') return;
@@ -17,12 +19,39 @@ export function rehypeImages(options?: Config) {
 
       if (node.properties?.src) {
         node.properties.src = decodeURI(node.properties.src);
+        console.log('Processing image:', node.properties.src);
+        
         if (file.data.astro) {
           // Use a typed-friendly property to avoid TS errors
           (file.data.astro as any).localImagePaths = imagePaths;
         }
 
-        if (imagePaths?.includes(node.properties.src)) {
+        // Check if this image should be processed by Astro
+        // This includes both local paths and AWS S3 URLs that have been saved locally
+        const shouldProcess = imagePaths?.some(localPath => {
+          // Check if the src matches a local path
+          if (node.properties.src === localPath) return true;
+          
+          // Check if the src is an AWS S3 URL that corresponds to a local path
+          // AWS URLs have format: .../pageId/fileId/filename?params
+          // Local files have format: .../fileId.filename
+          if (node.properties.src.includes('prod-files-secure.s3.us-west-2.amazonaws.com')) {
+            // Extract the file ID from the AWS URL path
+            // Pattern: /pageId/fileId/filename
+            const awsPathMatch = node.properties.src.match(/\/[a-f0-9-]+\/([a-f0-9-]+)\/[^?]+/i);
+            if (awsPathMatch) {
+              const fileId = awsPathMatch[1];
+              // Check if any local path contains this file ID
+              if (localPath.includes(fileId)) {
+                return true;
+              }
+            }
+          }
+          
+          return false;
+        });
+
+        if (shouldProcess) {
           // Preserve original img props to ensure HTML rendering remains intact while tagging for Astro
           const originalProps = { ...node.properties } as Record<string, any>;
 

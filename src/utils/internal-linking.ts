@@ -304,6 +304,14 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
   const segments = pathname.split('/').filter(Boolean);
   const breadcrumbs: Array<{ text: string; href?: string; icon?: string }> = [];
 
+  // Helper function to decode and format segment text
+  const formatSegmentText = (segment: string): string => {
+    // Decode URL-encoded characters (e.g., %20 -> space, %2D -> hyphen)
+    const decoded = decodeURIComponent(segment);
+    // Replace hyphens with spaces and capitalize words
+    return decoded.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
   // Handle specific routes
   if (pathname === '/') {
     return [{ text: 'Home', icon: 'tabler:home' }];
@@ -331,10 +339,10 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
       if (segments[1] === 'category') {
         breadcrumbs.push(
           { text: 'Categories', href: '/category' },
-          { text: segments[2]?.replace('-', ' ') || 'Category' }
+          { text: formatSegmentText(segments[2] || 'Category') }
         );
       } else if (segments[1] === 'tag') {
-        breadcrumbs.push({ text: 'Tags', href: '/tag' }, { text: `#${segments[2]?.replace('-', ' ') || 'tag'}` });
+        breadcrumbs.push({ text: 'Tags', href: '/tag' }, { text: `#${formatSegmentText(segments[2] || 'tag')}` });
       } else {
         // Individual post
         breadcrumbs.push({ text: 'Post' });
@@ -344,10 +352,44 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
     breadcrumbs.push({ text: 'Today I Learned', href: '/til', icon: 'tabler:bulb' });
 
     if (segments.length > 1) {
-      if (segments[1] === 'board') {
+      if (segments[1] === 'all') {
+        breadcrumbs.push({ text: 'All Entries' });
+      } else if (segments[1] === 'board') {
         breadcrumbs.push({ text: 'Board View' });
       } else {
-        breadcrumbs.push({ text: 'Entry' });
+        // Handle tag pages (e.g., /til/web-development/1)
+        const tagText = formatSegmentText(segments[1]);
+        breadcrumbs.push({ text: `#${tagText}` });
+      }
+    }
+  } else if (pathname.startsWith('/resources')) {
+    breadcrumbs.push({ text: 'Resources', href: '/resources', icon: 'tabler:database' });
+
+    if (segments.length > 1) {
+      if (segments[1] === 'all') {
+        breadcrumbs.push({ text: 'All Resources' });
+      } else if (segments[1] === 'category') {
+        const categoryText = formatSegmentText(segments[2] || 'Category');
+
+        // Check if this is a combined category/type route
+        // Pattern: /resources/category/Post%20Production/type/YouTube%20Video/1
+        if (segments.length > 3 && segments[3] === 'type') {
+          const typeText = formatSegmentText(segments[4] || 'Type');
+          // For combined routes, show a more concise breadcrumb
+          breadcrumbs.push({ text: categoryText });
+          breadcrumbs.push({ text: typeText });
+        } else {
+          // For category-only routes, show the full path
+          breadcrumbs.push({ text: 'Categories', href: '/resources/category' }, { text: categoryText });
+        }
+      } else if (segments[1] === 'type') {
+        breadcrumbs.push(
+          { text: 'Types', href: '/resources/type' },
+          { text: formatSegmentText(segments[2] || 'Type') }
+        );
+      } else {
+        // Direct category or type (e.g., /resources/Sound%20Design/1)
+        breadcrumbs.push({ text: formatSegmentText(segments[1]) });
       }
     }
   } else {
@@ -362,7 +404,7 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
         const isLast = index === segments.length - 1;
 
         breadcrumbs.push({
-          text: segment.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          text: formatSegmentText(segment),
           href: isLast ? undefined : path,
         });
       });

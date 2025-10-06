@@ -1,0 +1,115 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import RrSearch from '~/components/resources/ResourceSearch.astro';
+import RrFilterSheet from '~/components/resources/ResourceFilterSheet.astro';
+import ResourceGrid from '~/components/resources/ResourceGrid.astro';
+import Pagination from '~/components/common/Pagination.astro';
+import { getCollection } from 'astro:content';
+import { findResourceCategories, findResourceTypes } from '~/utils/resources';
+
+export const prerender = true;
+
+export async function getStaticPaths({ paginate }: any) {
+  const allEntries = await (getCollection as any)('resources');
+  
+  // Generate paginated routes for all entries
+  return paginate(allEntries, {
+    params: { filter: 'all' },
+    pageSize: 12
+  });
+}
+
+const { page } = Astro.props as { page: any };
+const params = Astro.params as { filter: string; page: string };
+
+// Get URL parameters
+const searchQuery = Astro.url.searchParams.get('search') || null;
+
+// Filter entries based on search query (client-side filtering for search)
+let displayEntries = page.data;
+if (searchQuery) {
+  const searchTerm = searchQuery.toLowerCase();
+  displayEntries = page.data.filter((entry: any) => {
+    const data = entry.data;
+    const name = data.Name || '';
+    const summary = data['AI summary'] || '';
+    return (
+      name.toLowerCase().includes(searchTerm) ||
+      summary.toLowerCase().includes(searchTerm)
+    );
+  });
+}
+
+// Update pagination info for search results
+const totalEntries = searchQuery ? displayEntries.length : page.total;
+const totalPages = Math.ceil(totalEntries / page.size);
+const currentPage = parseInt(params.page);
+
+// Generate title
+const title = 'RR Resources';
+const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
+
+// SEO metadata
+const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
+const seoDescription = `All RR Resources. ${page.total} resources found.`;
+---
+
+<Layout metadata={{
+  title: seoTitle,
+  description: seoDescription,
+  canonical: Astro.url.href,
+}}>
+  <div class="px-6 py-8 mx-auto max-w-7xl md:px-8">
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold tracking-tighter leading-tighter md:text-4xl">
+          {title}
+          {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
+          <span class="text-lg font-normal text-muted-foreground">(Page {currentPage} of {totalPages})</span>
+        </h1>
+        <RrFilterSheet 
+          categories={await findResourceCategories()}
+          types={await findResourceTypes()}
+        />
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-8">
+      <RrSearch />
+    </div>
+
+    <!-- Search Results or Content -->
+    {displayEntries.length > 0 ? (
+      <div>
+        <ResourceGrid entries={displayEntries} />
+        
+        <!-- Pagination -->
+        <div class="mt-8">
+          <Pagination 
+            currentPage={currentPage}
+            lastPage={totalPages}
+            prevUrl={page.url.prev}
+            nextUrl={page.url.next}
+            firstUrl={page.url.first}
+            lastUrl={page.url.last}
+            baseUrl="/resources/all"
+            queryParams={Astro.url.searchParams}
+          />
+        </div>
+      </div>
+    ) : (
+      <div class="py-12 text-center">
+        <h2 class="mb-2 text-xl font-semibold text-muted-foreground">
+          {searchQuery ? 'No search results found' : 'No resources found'}
+        </h2>
+        <p class="mb-4 text-muted-foreground">
+          {searchQuery 
+            ? `Try searching for something else or browse all resources.`
+            : `No resources available.`
+          }
+        </p>
+      </div>
+    )}
+  </div>
+</Layout>

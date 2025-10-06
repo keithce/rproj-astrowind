@@ -43,20 +43,13 @@ test.describe('Collections Diagnosis', () => {
       const entryCount = await tilEntries.count();
       console.log(`📊 TIL entries found on page: ${entryCount}`);
 
-      // Check console for any errors
-      const consoleErrors = [];
-      page.on('console', msg => {
-        if (msg.type() === 'error') {
-          consoleErrors.push(msg.text());
-        }
-      });
-
-      console.log('🔍 Checking for TIL-related console errors...');
-      await page.waitForTimeout(2000); // Wait for any async operations
-
-      if (consoleErrors.length > 0) {
-        console.log('❌ Console errors found:', consoleErrors);
-      }
+      // Wait deterministically for either entries to appear or the empty state to be visible
+      console.log('🔍 Waiting for TIL entries or empty state...');
+      await Promise.race([
+        page.waitForSelector('[data-testid="til-entry"], .til-card, .til-item', { state: 'visible', timeout: 10000 }),
+        page.waitForSelector('text=No entries found', { state: 'visible', timeout: 10000 }),
+        page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 10000 }),
+      ]);
     } else {
       console.log('✅ TIL Collection has entries');
 
@@ -87,20 +80,16 @@ test.describe('Collections Diagnosis', () => {
       const entryCount = await resourceEntries.count();
       console.log(`📊 Resource entries found on page: ${entryCount}`);
 
-      // Check for Notion-related errors
-      const consoleErrors = [];
-      page.on('console', msg => {
-        if (msg.type() === 'error') {
-          consoleErrors.push(msg.text());
-        }
-      });
-
-      console.log('🔍 Checking for Resources-related console errors...');
-      await page.waitForTimeout(3000); // Wait for Notion API calls
-
-      if (consoleErrors.length > 0) {
-        console.log('❌ Console errors found:', consoleErrors);
-      }
+      // Wait deterministically for either entries to appear or the empty state to be visible
+      console.log('🔍 Waiting for Resource entries or empty state...');
+      await Promise.race([
+        page.waitForSelector('[data-testid="resource-entry"], .resource-card, .resource-item', {
+          state: 'visible',
+          timeout: 12000,
+        }),
+        page.waitForSelector('text=No resources found', { state: 'visible', timeout: 12000 }),
+        page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 12000 }),
+      ]);
     } else {
       console.log('✅ Resources Collection has entries');
 
@@ -155,27 +144,21 @@ test.describe('Collections Diagnosis', () => {
       console.log('✅ No obvious API errors detected');
     }
 
-    // Check console for specific error patterns
-    const consoleMessages = [];
-    page.on('console', msg => {
-      consoleMessages.push(`${msg.type()}: ${msg.text()}`);
-    });
+    // Instead of duplicating console listeners, deterministically check page content for error signals
+    await Promise.race([
+      page.waitForSelector('text=Notion', { timeout: 5000 }).catch(() => null),
+      page.waitForSelector('text=API', { timeout: 5000 }).catch(() => null),
+      page.waitForSelector('text=authentication', { timeout: 5000 }).catch(() => null),
+      page.waitForLoadState('networkidle'),
+    ]);
 
-    await page.waitForTimeout(2000);
+    const content = await page.content();
+    const hasConsoleLikeErrors = /error|Error|NOTION|API|auth/i.test(content);
 
-    const errorMessages = consoleMessages.filter(
-      msg =>
-        msg.includes('error') ||
-        msg.includes('Error') ||
-        msg.includes('NOTION') ||
-        msg.includes('API') ||
-        msg.includes('auth')
-    );
-
-    if (errorMessages.length > 0) {
-      console.log('❌ Console errors related to API/auth:', errorMessages);
+    if (hasConsoleLikeErrors) {
+      console.log('❌ Signals of API/auth issues detected in page content');
     } else {
-      console.log('✅ No API/auth related console errors');
+      console.log('✅ No API/auth related signals detected in page content');
     }
   });
 

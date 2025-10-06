@@ -12,12 +12,17 @@ const { categories, types, selectedCategory, selectedType, class: className = ''
 // Helper function to create filter URL
 const createFilterUrl = (category?: string, type?: string, search?: string) => {
   const params = new URLSearchParams();
-  if (category) params.set('category', category);
-  if (type) params.set('type', type);
   if (search) params.set('q', search);
 
   const queryString = params.toString();
-  return `/resources${queryString ? `?${queryString}` : ''}`;
+
+  if (category) {
+    return `/resources/category/${category}/1${queryString ? `?${queryString}` : ''}`;
+  } else if (type) {
+    return `/resources/type/${type}/1${queryString ? `?${queryString}` : ''}`;
+  } else {
+    return `/resources/all/1${queryString ? `?${queryString}` : ''}`;
+  }
 };
 
 // Get current search query from URL

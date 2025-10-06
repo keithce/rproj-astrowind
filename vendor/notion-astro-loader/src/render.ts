@@ -65,6 +65,8 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
     chain = (chain as any).use(rehypeCleanText() as any);
 
     // Handle images before katex/stringify
+    console.log('buildProcessor: imagePaths length:', imagePaths.length);
+    console.log('buildProcessor: imagePaths:', imagePaths);
     chain = (chain as any).use(rehypeImages() as any, { imagePaths } as any);
 
     // Ensure props again in case upstream plugins introduced new elements
@@ -146,12 +148,12 @@ async function* listBlocks(client: Client, blockId: string, fetchImage: (file: F
     if (block.type === 'image') {
       // Fetch remote image and store it locally
       const url = await fetchImage(block.image);
-      // notion-rehype-k incorrectly expects "file" to be a string instead of an object
+      // Force all images to be treated as file type so they get processed by rehypeImages
       yield {
         ...block,
         image: {
-          type: block.image.type,
-          [block.image.type]: url,
+          type: 'file', // Force file type instead of original type
+          file: url,    // Use 'file' property instead of dynamic property
           caption: block.image.caption,
         },
       };
@@ -393,15 +395,24 @@ export class NotionPageRenderer {
    */
   #fetchImage: (imageFileObject: FileObject) => Promise<string> = async (imageFileObject) => {
     try {
-      // only file type will be processed
-      if (imageFileObject.type === 'external') {
-        return imageFileObject.external.url;
-      }
-
+      // Always try to download and save images locally, regardless of type
+      // This ensures all images are processed by the rehypeImages plugin
       fse.ensureDirSync(this.imageSavePath);
 
-      // 文件需要下载到本地的指定目录中
-      const imageUrl = await saveImageFromAWS(imageFileObject.file.url, this.imageSavePath, {
+      let imageUrl: string;
+      
+      if (imageFileObject.type === 'external') {
+        // For external images, use the external URL
+        imageUrl = imageFileObject.external.url;
+      } else {
+        // For file images, use the file URL
+        imageUrl = imageFileObject.file.url;
+      }
+
+      console.log('fetchImage: Processing image URL:', imageUrl);
+
+      // Download and save the image locally
+      const localPath = await saveImageFromAWS(imageUrl, this.imageSavePath, {
         log: (message) => {
           this.#logger.debug(message);
         },
@@ -409,8 +420,11 @@ export class NotionPageRenderer {
           this.#imageAnalytics[type]++;
         },
       });
-      this.#imagePaths.push(imageUrl);
-      return imageUrl;
+      
+      console.log('fetchImage: Saved image to local path:', localPath);
+      this.#imagePaths.push(localPath);
+      console.log('fetchImage: Total imagePaths:', this.#imagePaths.length);
+      return localPath;
     } catch (error) {
       this.#logger.error(`Failed to fetch image: ${getErrorMessage(error)}`);
       // Fall back to using the remote URL directly.
@@ -432,28 +446,49 @@ function getErrorMessage(error: unknown): string {
 // Extremely defensive minimal renderer used only as a last-resort fallback
 function minimalHtmlFromBlocks(blocks: any[]): string {
   const out: string[] = [];
-  let listBuf: string[] = [];
+  let bulletedBuf: string[] = [];
+  let numberedBuf: string[] = [];
 
-  const flushList = () => {
-    if (listBuf.length > 0) {
-      out.push(`<ul>${listBuf.join('\n')}</ul>`);
-      listBuf = [];
+  const flushLists = () => {
+    if (bulletedBuf.length > 0) {
+      out.push(`<ul>${bulletedBuf.join('\n')}</ul>`);
+      bulletedBuf = [];
+    }
+    if (numberedBuf.length > 0) {
+      out.push(`<ol>${numberedBuf.join('\n')}</ol>`);
+      numberedBuf = [];
     }
   };
 
   for (const b of blocks) {
     const t = b?.type;
 
-    // Accumulate list items
-    if (t === 'bulleted_list_item' || t === 'numbered_list_item') {
+    if (t === 'bulleted_list_item') {
       const texts = b?.[t]?.rich_text || [];
       const content = texts.map((rt: any) => rt?.plain_text || '').join('');
-      listBuf.push(`<li>${escapeHtml(content)}</li>`);
+      // If switching from numbered to bulleted, flush the numbered list first
+      if (numberedBuf.length > 0) {
+        out.push(`<ol>${numberedBuf.join('\n')}</ol>`);
+        numberedBuf = [];
+      }
+      bulletedBuf.push(`<li>${escapeHtml(content)}</li>`);
       continue;
     }
 
-    // Flush any pending list before handling non-list block
-    flushList();
+    if (t === 'numbered_list_item') {
+      const texts = b?.[t]?.rich_text || [];
+      const content = texts.map((rt: any) => rt?.plain_text || '').join('');
+      // If switching from bulleted to numbered, flush the bulleted list first
+      if (bulletedBuf.length > 0) {
+        out.push(`<ul>${bulletedBuf.join('\n')}</ul>`);
+        bulletedBuf = [];
+      }
+      numberedBuf.push(`<li>${escapeHtml(content)}</li>`);
+      continue;
+    }
+
+    // Flush any pending lists before other block types
+    flushLists();
 
     if (t === 'paragraph') {
       const texts = b?.paragraph?.rich_text || [];
@@ -471,8 +506,8 @@ function minimalHtmlFromBlocks(blocks: any[]): string {
     }
   }
 
-  // Flush any remaining list items at end
-  flushList();
+  // Flush any remaining lists at the end
+  flushLists();
 
   return out.join('\n');
 }
