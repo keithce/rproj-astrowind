@@ -17,11 +17,20 @@ const { class: className, ...rest } = Astro.props;
     private closeButtons: HTMLButtonElement[] = [];
     private backdrop: HTMLElement | null = null;
     private dialogId: string;
+    private _closeTimeout: ReturnType<typeof setTimeout> | null = null;
+    private _isClosing = false;
     /**
      * The duration of the animation in milliseconds. This is used to calculate the
      * duration of close animation before hiding the dialog and backdrop
      */
     private animationDuration: number;
+
+    // Store bound handlers for cleanup
+    private boundOpenHandler: (e: Event) => void = () => {};
+    private boundCloseHandler: (e: Event) => void = () => {};
+    private boundBackdropHandler: (e: MouseEvent) => void = () => {};
+    private boundKeydownHandler: (e: KeyboardEvent) => void = () => {};
+    private boundFormHandler: (e: SubmitEvent) => void = () => {};
 
     constructor(dialogWrapper: HTMLElement, dialogNumber: number) {
       this.dialog = dialogWrapper.querySelector('dialog');
@@ -40,27 +49,23 @@ const { class: className, ...rest } = Astro.props;
 
       // animationDuration is set with inline styles through passed prop to DialogContent
       // if no animationDuration, check data-close-duration
-      const animationDurationString = this.dialog.style.animationDuration;
-      if (animationDurationString.endsWith('ms')) {
-        this.animationDuration = parseFloat(animationDurationString);
-      } else if (animationDurationString.endsWith('s')) {
-        // using something like @playform/compress might optimize to use "s" instead of "ms"
-        this.animationDuration = parseFloat(animationDurationString) * 1000;
-      } else {
-        this.animationDuration = this.dialog.dataset.closeDuration
-          ? parseFloat(this.dialog.dataset.closeDuration)
-          : 200;
-      }
+      const animationDurationString = this.dialog.style.animationDuration?.trim() || '';
+      this.animationDuration = this.parseAnimationDuration(animationDurationString);
 
       // Find internal triggers and handle them
       const internalTriggers = dialogWrapper.querySelectorAll('.starwind-dialog-trigger');
       internalTriggers.forEach(triggerElement => {
         const tempTrigger = triggerElement as HTMLElement;
-        let trigger: HTMLButtonElement;
+        let trigger: HTMLButtonElement | null = null;
 
         if (tempTrigger?.hasAttribute('data-as-child')) {
-          trigger = tempTrigger.firstElementChild as HTMLButtonElement;
-        } else {
+          const firstChild = tempTrigger.firstElementChild;
+          if (firstChild && (firstChild instanceof HTMLButtonElement || firstChild.tagName === 'BUTTON')) {
+            trigger = firstChild as HTMLButtonElement;
+          } else if (tempTrigger.querySelector('button')) {
+            trigger = tempTrigger.querySelector('button') as HTMLButtonElement;
+          }
+        } else if (tempTrigger && (tempTrigger instanceof HTMLButtonElement || tempTrigger.tagName === 'BUTTON')) {
           trigger = tempTrigger as HTMLButtonElement;
         }
 
@@ -82,7 +87,6 @@ const { class: className, ...rest } = Astro.props;
             button.parentNode?.replaceChild(childElement, button);
           }
         }
-        return button;
       });
 
       // Convert NodeList to Array for consistency with triggers
@@ -134,28 +138,87 @@ const { class: className, ...rest } = Astro.props;
       });
     }
 
+    private parseAnimationDuration(animationDurationString: string): number {
+      // Early return for empty or falsy values
+      if (!animationDurationString) {
+        const fallback = this.dialog?.dataset.closeDuration ? parseFloat(this.dialog.dataset.closeDuration) : 200;
+        return isFinite(fallback) ? fallback : 200;
+      }
+
+      // Check for explicit unit patterns
+      if (/^\d+(\.\d+)?ms$/i.test(animationDurationString)) {
+        const value = parseFloat(animationDurationString);
+        return isFinite(value) ? value : 200;
+      }
+
+      if (/^\d+(\.\d+)?s$/i.test(animationDurationString)) {
+        const value = parseFloat(animationDurationString) * 1000;
+        return isFinite(value) ? value : 200;
+      }
+
+      // Check for plain number
+      if (/^\d+(\.\d+)?$/.test(animationDurationString)) {
+        const value = parseFloat(animationDurationString);
+        return isFinite(value) ? value : 200;
+      }
+
+      // Fallback for unrecognized formats
+      const fallback = this.dialog?.dataset.closeDuration ? parseFloat(this.dialog.dataset.closeDuration) : 200;
+      return isFinite(fallback) ? fallback : 200;
+    }
+
+    public cleanup(): void {
+      // Clear any pending timeout
+      if (this._closeTimeout) {
+        clearTimeout(this._closeTimeout);
+        this._closeTimeout = null;
+      }
+
+      // Reset closing flag
+      this._isClosing = false;
+
+      // Remove event listeners
+      this.triggers.forEach(trigger => {
+        if (this.boundOpenHandler) {
+          trigger.removeEventListener('click', this.boundOpenHandler);
+        }
+      });
+
+      this.closeButtons.forEach(button => {
+        if (this.boundCloseHandler) {
+          button.removeEventListener('click', this.boundCloseHandler);
+        }
+      });
+
+      if (this.dialog && this.boundBackdropHandler) {
+        this.dialog.removeEventListener('click', this.boundBackdropHandler);
+      }
+
+      if (this.dialog && this.boundKeydownHandler) {
+        this.dialog.removeEventListener('keydown', this.boundKeydownHandler);
+      }
+
+      // Remove form listeners
+      const forms = this.dialog?.querySelectorAll('form');
+      forms?.forEach(form => {
+        if (this.boundFormHandler) {
+          form.removeEventListener('submit', this.boundFormHandler);
+        }
+      });
+    }
+
     private setupEvents(): void {
       if (!this.dialog) return;
-      // Add click listeners to all triggers
-      this.triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-          this.open();
-        });
-      });
 
-      // Add click handlers to all close buttons
-      this.closeButtons?.forEach(button => {
-        button.addEventListener('click', () => {
-          // Only close if this is the topmost dialog
-          const openDialogs = document.querySelectorAll('dialog[open]');
-          if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
-            this.close();
-          }
-        });
-      });
-
-      // Close on click outside
-      this.dialog.addEventListener('click', e => {
+      // Create bound handlers for cleanup
+      this.boundOpenHandler = () => this.open();
+      this.boundCloseHandler = () => {
+        const openDialogs = document.querySelectorAll('dialog[open]');
+        if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
+          this.close();
+        }
+      };
+      this.boundBackdropHandler = (e: MouseEvent) => {
         if (!this.dialog) return;
         const dialogDimensions = this.dialog.getBoundingClientRect();
         const clickedInDialog =
@@ -165,47 +228,52 @@ const { class: className, ...rest } = Astro.props;
           e.clientY <= dialogDimensions.bottom;
 
         if (!clickedInDialog) {
-          // Only close if this is the topmost dialog
           const openDialogs = document.querySelectorAll('dialog[open]');
           if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
             this.close();
           }
         }
+      };
+      this.boundKeydownHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          const openDialogs = document.querySelectorAll('dialog[open]');
+          if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
+            this.close();
+          }
+        }
+      };
+      this.boundFormHandler = (e: SubmitEvent) => {
+        const form = e.target as HTMLFormElement;
+        if (form.method === 'dialog') {
+          e.preventDefault();
+          const openDialogs = document.querySelectorAll('dialog[open]');
+          if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
+            this.close();
+          }
+        }
+      };
+
+      // Add click listeners to all triggers
+      this.triggers.forEach(trigger => {
+        trigger.addEventListener('click', this.boundOpenHandler);
       });
 
-      // Handle escape key
-      this.dialog.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          // prevent default dialog closing behavior so we can add closing animation
-          e.preventDefault();
-          // Only close if this is the topmost dialog
-          const openDialogs = document.querySelectorAll('dialog[open]');
-          if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
-            this.close();
-          }
-        }
+      // Add click handlers to all close buttons
+      this.closeButtons?.forEach(button => {
+        button.addEventListener('click', this.boundCloseHandler);
       });
+
+      // Close on click outside
+      this.dialog.addEventListener('click', this.boundBackdropHandler);
+
+      // Handle escape key
+      this.dialog.addEventListener('keydown', this.boundKeydownHandler);
 
       // Intercept form submissions to handle dialog close
       const forms = this.dialog.querySelectorAll('form');
       forms.forEach(form => {
-        form.addEventListener('submit', e => {
-          /**
-           * Default form.method = "dialog" submissions cause the dialog to close
-           * Default form.method = "post" submissions do not close the dialog
-           * Here we intercept the form submission and manage the dialog closing if method = "dialog"
-           * so we can add closing animation
-           * Normal form event listeners for "submit" will still get the form data
-           */
-          if (form.method === 'dialog') {
-            e.preventDefault();
-            // Only close if this is the topmost dialog
-            const openDialogs = document.querySelectorAll('dialog[open]');
-            if (openDialogs.length > 0 && openDialogs[openDialogs.length - 1] === this.dialog) {
-              this.close();
-            }
-          }
-        });
+        form.addEventListener('submit', this.boundFormHandler);
       });
     }
 
@@ -220,31 +288,52 @@ const { class: className, ...rest } = Astro.props;
 
     private close(): void {
       if (!this.dialog || !this.backdrop) return;
+
+      // Check if backdrop already has hidden class or is already closing
+      if (this.backdrop.classList.contains('hidden') || this._isClosing) {
+        return;
+      }
+
+      this._isClosing = true;
       this.dialog.dataset.state = 'closed';
       this.backdrop.dataset.state = 'closed';
 
+      // Clear any existing timeout before scheduling a new one
+      if (this._closeTimeout) {
+        clearTimeout(this._closeTimeout);
+      }
+
       // Wait for animation to finish before hiding backdrop
-      setTimeout(() => {
+      this._closeTimeout = setTimeout(() => {
         this.backdrop?.classList.add('hidden');
         this.dialog?.close();
         const stillOpen = document.querySelectorAll('dialog[open]').length;
         if (stillOpen === 0) {
           document.body.classList.remove('overflow-hidden');
         }
+        // Reset flags when timeout callback runs
+        this._isClosing = false;
+        this._closeTimeout = null;
       }, this.animationDuration);
     }
   }
 
-  // Store instances in a WeakMap to avoid memory leaks
-  const dialogInstances = new WeakMap<HTMLElement, DialogHandler>();
+  // Store instances in a Map for cleanup management
+  const dialogInstances = new Map<HTMLElement, DialogHandler>();
 
   // Initialize all dialogs
   const setupDialogs = () => {
     document.querySelectorAll('.starwind-dialog').forEach((dialogWrapper, idx) => {
       const wrapper = dialogWrapper as HTMLElement;
-      if (!dialogInstances.has(wrapper)) {
-        dialogInstances.set(wrapper, new DialogHandler(wrapper, idx));
+
+      // Clean up existing instance if it exists
+      const existingInstance = dialogInstances.get(wrapper);
+      if (existingInstance) {
+        existingInstance.cleanup();
       }
+
+      // Create new instance
+      dialogInstances.set(wrapper, new DialogHandler(wrapper, idx));
     });
   };
 

@@ -65,8 +65,6 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
     chain = (chain as any).use(rehypeCleanText() as any);
 
     // Handle images before katex/stringify
-    console.log('buildProcessor: imagePaths length:', imagePaths.length);
-    console.log('buildProcessor: imagePaths:', imagePaths);
     chain = (chain as any).use(rehypeImages() as any, { imagePaths } as any);
 
     // Ensure props again in case upstream plugins introduced new elements

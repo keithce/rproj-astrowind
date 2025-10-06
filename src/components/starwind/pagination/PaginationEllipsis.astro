@@ -10,7 +10,7 @@ export const paginationEllipsis = tv({ base: 'flex h-9 w-9 items-center justify-
 const { class: className, ...rest } = Astro.props;
 ---
 
-<span aria-hidden class={paginationEllipsis({ class: className })} data-slot="pagination-ellipsis" {...rest}>
-  <Dots class="size-4" />
+<span class={paginationEllipsis({ class: className })} data-slot="pagination-ellipsis" {...rest}>
+  <Dots class="size-4" aria-hidden="true" />
   <span class="sr-only">More pages</span>
 </span>

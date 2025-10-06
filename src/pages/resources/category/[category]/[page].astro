@@ -4,55 +4,70 @@ import RrSearch from '~/components/resources/ResourceSearch.astro';
 import RrFilterSheet from '~/components/resources/ResourceFilterSheet.astro';
 import ResourceGrid from '~/components/resources/ResourceGrid.astro';
 import Pagination from '~/components/common/Pagination.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { findResourceCategories, findResourceTypes } from '~/utils/resources';
+
+type ResourceEntry = CollectionEntry<'resources'>;
 
 export const prerender = true;
 
-export async function getStaticPaths({ paginate }: { paginate: any }) {
-  const allEntries = await (getCollection as any)('resources');
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: (data: ResourceEntry[], options: { params: Record<string, string>; pageSize: number }) => unknown[];
+}) {
+  const allEntries = await getCollection('resources');
   const allCategories = await findResourceCategories();
-  
+
   // For every category, return a `paginate()` result.
   // Make sure that you pass `{ params: { category }}` to `paginate()`
   // so that Astro knows which category grouping the result is for.
-  return allCategories.flatMap((category) => {
-    const filteredEntries = allEntries.filter((entry: any) => {
+  return allCategories.flatMap(category => {
+    const filteredEntries = allEntries.filter((entry: ResourceEntry) => {
       const data = entry.data;
       const entryCategories = data.Category;
       return Array.isArray(entryCategories) ? entryCategories.includes(category) : entryCategories === category;
     });
-    
+
     // Always generate paths, even for empty results
     if (filteredEntries.length > 0) {
       return paginate(filteredEntries, {
         params: { category },
-        pageSize: 12
+        pageSize: 12,
       });
     } else {
       // Generate a single page for empty results
-      return [{
-        params: { category, page: '1' },
-        props: {
-          page: {
-            data: [],
-            url: {
-              current: 1,
-              prev: undefined,
-              next: undefined,
-              first: undefined,
-              last: undefined,
+      return [
+        {
+          params: { category, page: '1' },
+          props: {
+            page: {
+              data: [],
+              url: {
+                current: 1,
+                prev: undefined,
+                next: undefined,
+                first: undefined,
+                last: undefined,
+              },
+              size: 12,
+              total: 0,
             },
-            size: 12,
-            total: 0,
-          }
-        }
-      }];
+          },
+        },
+      ];
     }
   });
 }
 
-const { page } = Astro.props as { page: any };
+const { page } = Astro.props as {
+  page: {
+    data: ResourceEntry[];
+    total: number;
+    size: number;
+    url: { prev?: string; next?: string; first?: string; last?: string };
+  };
+};
 const params = Astro.params as { category: string; page: string };
 
 // Get the category and type information
@@ -67,14 +82,11 @@ const searchQuery = Astro.url.searchParams.get('search') || null;
 let displayEntries = page.data;
 if (searchQuery) {
   const searchTerm = searchQuery.toLowerCase();
-  displayEntries = page.data.filter((entry: any) => {
+  displayEntries = page.data.filter((entry: ResourceEntry) => {
     const data = entry.data;
     const name = data.Name || '';
     const summary = data['AI summary'] || '';
-    return (
-      name.toLowerCase().includes(searchTerm) ||
-      summary.toLowerCase().includes(searchTerm)
-    );
+    return name.toLowerCase().includes(searchTerm) || summary.toLowerCase().includes(searchTerm);
   });
 }
 
@@ -92,25 +104,27 @@ const seoTitle = searchQuery ? `${title}: ${decodedCategory} - "${searchQuery}" 
 const seoDescription = `Resources in the ${decodedCategory} category. ${page.total} resources found.`;
 ---
 
-<Layout metadata={{
-  title: seoTitle,
-  description: seoDescription,
-  canonical: Astro.url.href,
-}}>
-  <div class="mx-auto max-w-7xl px-6 py-8 md:px-8">
+<Layout
+  metadata={{
+    title: seoTitle,
+    description: seoDescription,
+    canonical: Astro.url.href,
+  }}
+>
+  <div class="px-6 py-8 mx-auto max-w-7xl md:px-8">
     <div class="mb-8">
-      <div class="flex items-center justify-between">
+      <div class="flex justify-between items-center">
         <div>
-          <h1 class="leading-tighter text-3xl font-bold tracking-tighter md:text-4xl">
+          <h1 class="text-3xl font-bold tracking-tighter leading-tighter md:text-4xl">
             {title}: {decodedCategory}
             {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
-            <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
+            <span class="text-lg font-normal text-muted-foreground">(Page {currentPage} of {totalPages})</span>
           </h1>
-          <p class="text-muted-foreground mt-2">
+          <p class="mt-2 text-muted-foreground">
             {page.total} resources in the {decodedCategory} category
           </p>
         </div>
-        <RrFilterSheet 
+        <RrFilterSheet
           categories={allCategories}
           types={await findResourceTypes()}
           selectedCategory={decodedCategory || undefined}
@@ -119,73 +133,88 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
       </div>
     </div>
 
-    <!-- Search -->
+    {/* Search*/}
     <div class="mb-8">
       <RrSearch />
     </div>
 
-    <!-- Search Results or Content -->
-    {displayEntries.length > 0 ? (
-      <div>
-        <ResourceGrid entries={displayEntries} />
-        
-        <!-- Pagination -->
-        <div class="mt-8">
-          <Pagination 
-            currentPage={currentPage}
-            lastPage={totalPages}
-            prevUrl={page.url.prev}
-            nextUrl={page.url.next}
-            firstUrl={page.url.first}
-            lastUrl={page.url.last}
-            baseUrl={`/resources/category/${encodeURIComponent(decodedCategory)}`}
-            queryParams={Astro.url.searchParams}
-          />
-        </div>
-      </div>
-    ) : (
-      <div class="text-center py-16">
-        <div class="mx-auto max-w-md">
-          <div class="mb-6">
-            <div class="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-              <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <h2 class="text-2xl font-semibold text-foreground mb-2">
-              {searchQuery ? 'No search results found' : `No resources in ${decodedCategory} yet`}
-            </h2>
-            <p class="text-muted-foreground mb-6">
-              {searchQuery 
-                ? `We couldn't find any resources matching "${searchQuery}" in the ${decodedCategory} category.`
-                : `We don't have any resources in the ${decodedCategory} category yet, but we're always adding new content.`
-              }
-            </p>
+    {/* Search Results or Content*/}
+    {
+      displayEntries.length > 0 ? (
+        <div>
+          <ResourceGrid entries={displayEntries} />
+
+          {/* Pagination*/}
+          <div class="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              lastPage={totalPages}
+              prevUrl={page.url.prev}
+              nextUrl={page.url.next}
+              firstUrl={page.url.first}
+              lastUrl={page.url.last}
+              baseUrl={`/resources/category/${encodeURIComponent(decodedCategory)}`}
+              queryParams={Astro.url.searchParams}
+            />
           </div>
-          
-          <div class="space-y-4">
-            <a href="/resources/all/1" 
-               class="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              Browse all resources
-            </a>
-            
-            <div class="pt-4 border-t border-border">
-              <p class="text-sm text-muted-foreground mb-3">Or explore by type:</p>
-              <div class="flex flex-wrap gap-2 justify-center">
-                {allTypes.slice(0, 4).map((type: string) => (
-                  <a href={`/resources/type/${encodeURIComponent(type)}/1`}
-                     class="inline-flex items-center px-3 py-1 text-sm bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors">
-                    {type}
-                  </a>
-                ))}
+        </div>
+      ) : (
+        <div class="py-16 text-center">
+          <div class="mx-auto max-w-md">
+            <div class="mb-6">
+              <div class="flex justify-center items-center mx-auto mb-4 w-16 h-16 rounded-full bg-muted">
+                <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <h2 class="mb-2 text-2xl font-semibold text-foreground">
+                {searchQuery ? 'No search results found' : `No resources in ${decodedCategory} yet`}
+              </h2>
+              <p class="mb-6 text-muted-foreground">
+                {searchQuery
+                  ? `We couldn't find any resources matching "${searchQuery}" in the ${decodedCategory} category.`
+                  : `We don't have any resources in the ${decodedCategory} category yet, but we're always adding new content.`}
+              </p>
+            </div>
+
+            <div class="space-y-4">
+              <a
+                href="/resources/all/1"
+                class="inline-flex justify-center items-center px-6 py-3 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+                Browse all resources
+              </a>
+
+              <div class="pt-4 border-t border-border">
+                <p class="mb-3 text-sm text-muted-foreground">Or explore by type:</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                  {allTypes.slice(0, 4).map((type: string) => (
+                    <a
+                      href={`/resources/type/${encodeURIComponent(type)}/1`}
+                      class="inline-flex items-center px-3 py-1 text-sm rounded-full transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    >
+                      {type}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
+      )
+    }
   </div>
 </Layout>

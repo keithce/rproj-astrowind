@@ -12,13 +12,7 @@ export const breadcrumbEllipsis = tv({
 const { class: className, ...rest } = Astro.props;
 ---
 
-<span
-  role="presentation"
-  aria-hidden="true"
-  class={breadcrumbEllipsis({ class: className })}
-  data-slot="breadcrumb-ellipsis"
-  {...rest}
->
+<span role="presentation" class={breadcrumbEllipsis({ class: className })} data-slot="breadcrumb-ellipsis" {...rest}>
   <Dots />
   <span class="sr-only">More</span>
 </span>

@@ -307,7 +307,13 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
   // Helper function to decode and format segment text
   const formatSegmentText = (segment: string): string => {
     // Decode URL-encoded characters (e.g., %20 -> space, %2D -> hyphen)
-    const decoded = decodeURIComponent(segment);
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(segment);
+    } catch {
+      // If decoding fails, use the original segment
+      decoded = segment;
+    }
     // Replace hyphens with spaces and capitalize words
     return decoded.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };

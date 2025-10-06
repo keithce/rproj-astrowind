@@ -20,16 +20,7 @@ interface Props {
   queryParams: URLSearchParams;
 }
 
-const { 
-  currentPage, 
-  lastPage, 
-  prevUrl, 
-  nextUrl, 
-  firstUrl, 
-  lastUrl, 
-  baseUrl, 
-  queryParams 
-} = Astro.props;
+const { currentPage, lastPage, prevUrl, nextUrl, firstUrl, lastUrl, baseUrl, queryParams } = Astro.props;
 
 // Generate page numbers to show
 const generatePageNumbers = (current: number, total: number): (number | string)[] => {
@@ -61,7 +52,7 @@ const generatePageNumbers = (current: number, total: number): (number | string)[
 // Build URL for a specific page
 const buildPageUrl = (pageNum: number | string): string => {
   if (typeof pageNum === 'string') return '#';
-  
+
   if (pageNum === 1) {
     // For page 1, use the base URL without /1
     const url = new URL(baseUrl, Astro.site);
@@ -70,7 +61,7 @@ const buildPageUrl = (pageNum: number | string): string => {
     });
     return url.pathname + url.search;
   }
-  
+
   // For other pages, use /page/2, /page/3, etc.
   const url = new URL(`${baseUrl}/${pageNum}`, Astro.site);
   queryParams.forEach((value, key) => {
@@ -82,74 +73,78 @@ const buildPageUrl = (pageNum: number | string): string => {
 const pageNumbers = generatePageNumbers(currentPage, lastPage);
 ---
 
-{lastPage > 1 && (
-  <StarwindPagination>
-    <PaginationContent>
-      <!-- First Page -->
-      {firstUrl && currentPage > 1 && (
-        <PaginationItem>
-          <PaginationLink href={firstUrl} aria-label="Go to first page">
-            ««
-          </PaginationLink>
-        </PaginationItem>
-      )}
-
-      <!-- Previous Page -->
-      {prevUrl && (
-        <PaginationItem>
-          <PaginationPrevious href={prevUrl} />
-        </PaginationItem>
-      )}
-
-      <!-- Page Numbers -->
-      {pageNumbers.map((pageNum) => {
-        if (pageNum === '...') {
-          return (
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-          );
-        }
-
-        const isCurrentPage = pageNum === currentPage;
-        const pageUrl = buildPageUrl(pageNum);
-
-        return (
+{
+  lastPage > 1 && (
+    <StarwindPagination>
+      <PaginationContent>
+        {/** First Page */}
+        {firstUrl && currentPage > 1 && (
           <PaginationItem>
-            <PaginationLink 
-              href={pageUrl}
-              isActive={isCurrentPage}
-              aria-label={`Go to page ${pageNum}`}
-              aria-current={isCurrentPage ? 'page' : undefined}
-            >
-              {pageNum}
+            <PaginationLink href={firstUrl} aria-label="Go to first page">
+              ««
             </PaginationLink>
           </PaginationItem>
-        );
-      })}
+        )}
 
-      <!-- Next Page -->
-      {nextUrl && (
-        <PaginationItem>
-          <PaginationNext href={nextUrl} />
-        </PaginationItem>
-      )}
+        {/** Previous Page */}
+        {prevUrl && (
+          <PaginationItem>
+            <PaginationPrevious href={prevUrl} />
+          </PaginationItem>
+        )}
 
-      <!-- Last Page -->
-      {lastUrl && currentPage < lastPage && (
-        <PaginationItem>
-          <PaginationLink href={lastUrl} aria-label="Go to last page">
-            »»
-          </PaginationLink>
-        </PaginationItem>
-      )}
-    </PaginationContent>
-  </StarwindPagination>
-)}
+        {/** Page Numbers */}
+        {pageNumbers.map(pageNum => {
+          if (pageNum === '...') {
+            return (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            );
+          }
 
-<!-- Page Info -->
-{lastPage > 1 && (
-  <div class="mt-4 text-sm text-center text-gray-600">
-    Showing page {currentPage} of {lastPage}
-  </div>
-)}
+          const isCurrentPage = pageNum === currentPage;
+          const pageUrl = buildPageUrl(pageNum);
+
+          return (
+            <PaginationItem>
+              <PaginationLink
+                href={pageUrl}
+                isActive={isCurrentPage}
+                aria-label={`Go to page ${pageNum}`}
+                aria-current={isCurrentPage ? 'page' : undefined}
+              >
+                {pageNum}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
+
+        {/** Next Page */}
+        {nextUrl && (
+          <PaginationItem>
+            <PaginationNext href={nextUrl} />
+          </PaginationItem>
+        )}
+
+        {/** Last Page */}
+        {lastUrl && currentPage < lastPage && (
+          <PaginationItem>
+            <PaginationLink href={lastUrl} aria-label="Go to last page">
+              »»
+            </PaginationLink>
+          </PaginationItem>
+        )}
+      </PaginationContent>
+    </StarwindPagination>
+  )
+}
+
+{/** Page Info */}
+{
+  lastPage > 1 && (
+    <div class="mt-4 text-center text-sm text-gray-600">
+      Showing page {currentPage} of {lastPage}
+    </div>
+  )
+}

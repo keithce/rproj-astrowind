@@ -5,37 +5,48 @@ import TilViewToggle from '~/components/til/TilViewToggle.astro';
 import TilSocialFeed from '~/components/til/TilSocialFeed.astro';
 import TilKanbanView from '~/components/til/TilKanbanView.astro';
 import Pagination from '~/components/common/Pagination.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { findTilTags } from '~/utils/til';
+
+type TilEntry = CollectionEntry<'til'>;
 
 export const prerender = true;
 
-export async function getStaticPaths({ paginate }: any) {
-  const allEntries = await (getCollection as any)('til');
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: (data: TilEntry[], options: { params: Record<string, string>; pageSize: number }) => unknown[];
+}) {
+  const allEntries = await getCollection('til');
   const allTags = await findTilTags();
-  
+
   // For every tag, return a `paginate()` result.
   // Make sure that you pass `{ params: { tag }}` to `paginate()`
   // so that Astro knows which tag grouping the result is for.
-  return allTags.flatMap((tag) => {
-    const filteredEntries = allEntries.filter((entry: any) => {
+  return allTags.flatMap(tag => {
+    const filteredEntries = allEntries.filter((entry: CollectionEntry<'til'>) => {
       const entryTags = entry.data.tags || [];
-      return entryTags.some((entryTag: string) => 
-        entryTag.toLowerCase().replace(/\s+/g, '-') === tag.slug
-      );
+      return entryTags.some((entryTag: string) => entryTag.toLowerCase().replace(/\s+/g, '-') === tag.slug);
     });
-    
+
     if (filteredEntries.length > 0) {
       return paginate(filteredEntries, {
         params: { tag: tag.slug },
-        pageSize: 10
+        pageSize: 10,
       });
     }
     return [];
   });
 }
 
-const { page } = Astro.props as { page: any };
+const { page } = Astro.props as {
+  page: {
+    data: TilEntry[];
+    total: number;
+    size: number;
+    url: { prev?: string; next?: string; first?: string; last?: string };
+  };
+};
 const params = Astro.params as { tag: string; page: string };
 
 // Get the tag information
@@ -50,31 +61,28 @@ const viewParam = Astro.url.searchParams.get('view') || 'feed';
 let displayEntries = page.data;
 if (searchQuery) {
   const searchTerm = searchQuery.toLowerCase();
-  displayEntries = page.data.filter((entry: any) => {
+  displayEntries = page.data.filter((entry: CollectionEntry<'til'>) => {
     const data = entry.data;
     const title = data.title || '';
-    const summary = data.summary || '';
-    return (
-      title.toLowerCase().includes(searchTerm) ||
-      summary.toLowerCase().includes(searchTerm)
-    );
+    const summary = data.description || '';
+    return title.toLowerCase().includes(searchTerm) || summary.toLowerCase().includes(searchTerm);
   });
 }
 
 // Update pagination info for search results
 const totalEntries = searchQuery ? displayEntries.length : page.total;
 const totalPages = Math.ceil(totalEntries / page.size);
-const currentPage = parseInt(params.page);
+const currentPage = parseInt(params.page, 10);
 
 // Generate title
 const title = currentTag ? `TIL: #${currentTag.title}` : 'Today I Learned';
-const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
+// const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
 
-// SEO metadata
-const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
-const seoDescription = currentTag 
-  ? `Today I Learned entries tagged with ${currentTag.title}. ${page.total} entries found.`
-  : `Today I Learned entries. ${page.total} entries found.`;
+// SEO metadata - currently unused but kept for future use
+// const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
+// const seoDescription = currentTag
+//   ? `Today I Learned entries tagged with ${currentTag.title}. ${page.total} entries found.`
+//   : `Today I Learned entries. ${page.total} entries found.`;
 ---
 
 <Layout>
@@ -85,58 +93,59 @@ const seoDescription = currentTag
         {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
         <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
       </h1>
-      
-      {currentTag && (
-        <p class="text-muted-foreground mb-4">
-          {page.total} entries tagged with #{currentTag.title}
-        </p>
-      )}
+
+      {
+        currentTag && (
+          <p class="text-muted-foreground mb-4">
+            {page.total} entries tagged with #{currentTag.title}
+          </p>
+        )
+      }
     </div>
 
-    <!-- Filters and View Toggle -->
+    {/* Filters and View Toggle*/}
     <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <TilFilterSheet tags={allTags} selectedTag={currentTag?.slug || undefined} />
-      <TilViewToggle currentView={viewParam as "feed" | "kanban"} />
+      <TilViewToggle currentView={viewParam as 'feed' | 'kanban'} />
     </div>
 
-    <!-- Search Results or Content -->
-    {displayEntries.length > 0 ? (
-      <div>
-        {viewParam === 'feed' ? (
-          <TilSocialFeed entries={displayEntries} />
-        ) : (
-          <TilKanbanView entries={displayEntries} />
-        )}
-        
-        <!-- Pagination -->
-        <div class="mt-8">
-          <Pagination 
-            currentPage={currentPage}
-            lastPage={totalPages}
-            prevUrl={page.url.prev}
-            nextUrl={page.url.next}
-            firstUrl={page.url.first}
-            lastUrl={page.url.last}
-            baseUrl={`/til/${params.tag}`}
-            queryParams={Astro.url.searchParams}
-          />
+    {/* Search Results or Content*/}
+    {
+      displayEntries.length > 0 ? (
+        <div>
+          {viewParam === 'feed' ? (
+            <TilSocialFeed entries={displayEntries} />
+          ) : (
+            <TilKanbanView entries={displayEntries} />
+          )}
+
+          {/* Pagination*/}
+          <div class="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              lastPage={totalPages}
+              prevUrl={page.url.prev}
+              nextUrl={page.url.next}
+              firstUrl={page.url.first}
+              lastUrl={page.url.last}
+              baseUrl={`/til/${params.tag}`}
+              queryParams={Astro.url.searchParams}
+            />
+          </div>
         </div>
-      </div>
-    ) : (
-      <div class="text-center py-12">
-        <h2 class="text-xl font-semibold text-muted-foreground mb-2">
-          {searchQuery ? 'No search results found' : 'No entries found'}
-        </h2>
-        <p class="text-muted-foreground mb-4">
-          {searchQuery 
-            ? `Try searching for something else or browse all entries.`
-            : `No entries found for this tag.`
-          }
-        </p>
-        <a href="/til/all/1" class="text-primary hover:text-accent mt-4 inline-block">
-          View all entries
-        </a>
-      </div>
-    )}
+      ) : (
+        <div class="py-12 text-center">
+          <h2 class="text-muted-foreground mb-2 text-xl font-semibold">
+            {searchQuery ? 'No search results found' : 'No entries found'}
+          </h2>
+          <p class="text-muted-foreground mb-4">
+            {searchQuery ? `Try searching for something else or browse all entries.` : `No entries found for this tag.`}
+          </p>
+          <a href="/til/all/1" class="text-primary hover:text-accent mt-4 inline-block">
+            View all entries
+          </a>
+        </div>
+      )
+    }
   </div>
 </Layout>

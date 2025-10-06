@@ -32,7 +32,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero Section -->
+  {/* Hero Section*/}
   <Hero
     title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)]">Beautiful Moments</span>`}
     subtitle="Professional photographer specializing in creating timeless memories through artistic vision, technical excellence, and a passion for storytelling."
@@ -58,7 +58,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     showScrollIndicator={true}
   />
 
-  <!-- Portfolio Section -->
+  {/* Portfolio Section*/}
   <section id="portfolio" class="bg-[var(--color-background)] py-20 dark:bg-[var(--color-background)]">
     <div class="mx-auto max-w-7xl px-4">
       <div class="mb-16 text-center">
@@ -68,7 +68,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
           expertise. All images are delivered through our optimized Cloudinary CDN for the best viewing experience.
         </p>
 
-        <!-- Navigation Buttons -->
+        {/* Navigation Buttons*/}
         <div class="flex flex-wrap justify-center gap-3 sm:gap-4">
           <a
             href="#landscape"
@@ -103,7 +103,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Landscape Photography -->
+      {/* Landscape Photography*/}
       <div id="landscape" class="mb-20">
         <CategoryHero
           title="Landscape Photography"
@@ -126,7 +126,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Portrait Photography -->
+      {/* Portrait Photography*/}
       <div id="portrait" class="mb-20">
         <CategoryHero
           title="Portrait Photography"
@@ -149,7 +149,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Boudoir Photography -->
+      {/* Boudoir Photography*/}
       <div id="boudoir" class="mb-20">
         <CategoryHero
           title="Boudoir Photography"
@@ -172,7 +172,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Maternity Photography -->
+      {/* Maternity Photography*/}
       <div id="maternity" class="mb-20">
         <CategoryHero
           title="Maternity Photography"
@@ -195,7 +195,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Children Photography -->
+      {/* Children Photography*/}
       <div id="children" class="mb-20">
         <CategoryHero
           title="Children Photography"
@@ -220,7 +220,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     </div>
   </section>
 
-  <!-- Call to Action -->
+  {/* Call to Action*/}
   <CallToAction
     title="Ready to Create Something Beautiful?"
     subtitle="Let's work together to capture your vision and create memories that will last a lifetime."
@@ -234,12 +234,12 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     ]}
   />
 
-  <!-- Contact Section -->
+  {/* Contact Section*/}
   <section id="contact" class="bg-[var(--color-card)] py-20 dark:bg-[var(--color-card)]">
     <NotionContact defaultService="Color" />
   </section>
 
-  <!-- Related Services -->
+  {/* Related Services*/}
   <section class="bg-muted/30 py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6">
       <RelatedPages pages={relatedServices} title="Complete Your Visual Story" variant="cards" />

@@ -4,43 +4,49 @@ import RrSearch from '~/components/resources/ResourceSearch.astro';
 import RrFilterSheet from '~/components/resources/ResourceFilterSheet.astro';
 import ResourceGrid from '~/components/resources/ResourceGrid.astro';
 import Pagination from '~/components/common/Pagination.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { findResourceCategories, findResourceTypes } from '~/utils/resources';
+
+type ResourceEntry = CollectionEntry<'resources'>;
 
 export const prerender = true;
 
-export async function getStaticPaths({ paginate }: { paginate: any }) {
-  const allEntries = await (getCollection as any)('resources');
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: (data: ResourceEntry[], options: { params: Record<string, string>; pageSize: number }) => unknown[];
+}) {
+  const allEntries = await getCollection('resources');
   const allCategories = await findResourceCategories();
   const allTypes = await findResourceTypes();
-  
+
   // Generate paths for every combination of category and type
   const paths = [];
-  
+
   for (const category of allCategories) {
     for (const type of allTypes) {
-      const filteredEntries = allEntries.filter((entry: any) => {
+      const filteredEntries = allEntries.filter((entry: ResourceEntry) => {
         const data = entry.data;
         const entryCategories = data.Category;
         const entryTypes = data.Type;
-        
-        const categoryMatch = Array.isArray(entryCategories) 
-          ? entryCategories.includes(category) 
+
+        const categoryMatch = Array.isArray(entryCategories)
+          ? entryCategories.includes(category)
           : entryCategories === category;
-          
-        const typeMatch = Array.isArray(entryTypes) 
-          ? entryTypes.includes(type) 
-          : entryTypes === type;
-          
+
+        const typeMatch = Array.isArray(entryTypes) ? entryTypes.includes(type) : entryTypes === type;
+
         return categoryMatch && typeMatch;
       });
-      
+
       // Always generate paths, even for empty results
       if (filteredEntries.length > 0) {
-        paths.push(...paginate(filteredEntries, {
-          params: { category, type },
-          pageSize: 12
-        }));
+        paths.push(
+          ...paginate(filteredEntries, {
+            params: { category, type },
+            pageSize: 12,
+          })
+        );
       } else {
         // Generate a single page for empty results
         paths.push({
@@ -57,17 +63,24 @@ export async function getStaticPaths({ paginate }: { paginate: any }) {
               },
               size: 12,
               total: 0,
-            }
-          }
+            },
+          },
         });
       }
     }
   }
-  
+
   return paths;
 }
 
-const { page } = Astro.props as { page: any };
+const { page } = Astro.props as {
+  page: {
+    data: ResourceEntry[];
+    total: number;
+    size: number;
+    url: { prev?: string; next?: string; first?: string; last?: string };
+  };
+};
 const params = Astro.params as { category: string; type: string; page: string };
 
 // Get the category and type information
@@ -83,14 +96,11 @@ const searchQuery = Astro.url.searchParams.get('search') || null;
 let displayEntries = page.data;
 if (searchQuery) {
   const searchTerm = searchQuery.toLowerCase();
-  displayEntries = page.data.filter((entry: any) => {
+  displayEntries = page.data.filter((entry: ResourceEntry) => {
     const data = entry.data;
     const name = data.Name || '';
     const summary = data['AI summary'] || '';
-    return (
-      name.toLowerCase().includes(searchTerm) ||
-      summary.toLowerCase().includes(searchTerm)
-    );
+    return name.toLowerCase().includes(searchTerm) || summary.toLowerCase().includes(searchTerm);
   });
 }
 
@@ -104,15 +114,19 @@ const title = 'RR Resources';
 const pageTitle = `${title}: ${decodedCategory} - ${decodedType} (Page ${currentPage} of ${totalPages})`;
 
 // SEO metadata
-const seoTitle = searchQuery ? `${title}: ${decodedCategory} - ${decodedType} - "${searchQuery}" - Page ${currentPage}` : pageTitle;
+const seoTitle = searchQuery
+  ? `${title}: ${decodedCategory} - ${decodedType} - "${searchQuery}" - Page ${currentPage}`
+  : pageTitle;
 const seoDescription = `Resources in the ${decodedCategory} category of type ${decodedType}. ${page.total} resources found.`;
 ---
 
-<Layout metadata={{
-  title: seoTitle,
-  description: seoDescription,
-  canonical: Astro.url.href,
-}}>
+<Layout
+  metadata={{
+    title: seoTitle,
+    description: seoDescription,
+    canonical: Astro.url.href,
+  }}
+>
   <div class="mx-auto max-w-7xl px-6 py-8 md:px-8">
     <div class="mb-8">
       <div class="flex items-center justify-between">
@@ -126,7 +140,7 @@ const seoDescription = `Resources in the ${decodedCategory} category of type ${d
             {page.total} resources in the {decodedCategory} category of type {decodedType}
           </p>
         </div>
-        <RrFilterSheet 
+        <RrFilterSheet
           categories={allCategories}
           types={allTypes}
           selectedCategory={decodedCategory || undefined}
@@ -135,75 +149,92 @@ const seoDescription = `Resources in the ${decodedCategory} category of type ${d
       </div>
     </div>
 
-    <!-- Search -->
+    {/* Search*/}
     <div class="mb-8">
       <RrSearch />
     </div>
 
-    <!-- Search Results or Content -->
-    {displayEntries.length > 0 ? (
-      <div>
-        <ResourceGrid entries={displayEntries} />
-        
-        <!-- Pagination -->
-        <div class="mt-8">
-          <Pagination 
-            currentPage={currentPage}
-            lastPage={totalPages}
-            prevUrl={page.url.prev}
-            nextUrl={page.url.next}
-            firstUrl={page.url.first}
-            lastUrl={page.url.last}
-            baseUrl={`/resources/category/${encodeURIComponent(decodedCategory)}/type/${encodeURIComponent(decodedType)}`}
-            queryParams={Astro.url.searchParams}
-          />
-        </div>
-      </div>
-    ) : (
-      <div class="text-center py-16">
-        <div class="mx-auto max-w-md">
-          <div class="mb-6">
-            <div class="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-              <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <h2 class="text-2xl font-semibold text-foreground mb-2">
-              {searchQuery ? 'No search results found' : 'No resources in this combination'}
-            </h2>
-            <p class="text-muted-foreground mb-6">
-              {searchQuery 
-                ? `We couldn't find any resources matching "${searchQuery}" in ${decodedCategory} - ${decodedType}.`
-                : `We don't have any resources in the ${decodedCategory} category of type ${decodedType} yet.`
-              }
-            </p>
+    {/* Search Results or Content*/}
+    {
+      displayEntries.length > 0 ? (
+        <div>
+          <ResourceGrid entries={displayEntries} />
+
+          {/* Pagination*/}
+          <div class="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              lastPage={totalPages}
+              prevUrl={page.url.prev}
+              nextUrl={page.url.next}
+              firstUrl={page.url.first}
+              lastUrl={page.url.last}
+              baseUrl={`/resources/category/${encodeURIComponent(decodedCategory)}/type/${encodeURIComponent(decodedType)}`}
+              queryParams={Astro.url.searchParams}
+            />
           </div>
-          
-          <div class="space-y-4">
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href={`/resources/category/${encodeURIComponent(decodedCategory)}/1`} 
-                 class="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-                View all {decodedCategory} resources
-              </a>
-              <a href={`/resources/type/${encodeURIComponent(decodedType)}/1`} 
-                 class="inline-flex items-center justify-center px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors">
-                View all {decodedType} resources
-              </a>
-            </div>
-            
-            <div class="pt-4 border-t border-border">
-              <p class="text-sm text-muted-foreground mb-3">Or explore our full collection:</p>
-              <a href="/resources/all/1" 
-                 class="inline-flex items-center text-primary hover:text-primary/80 transition-colors">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </div>
+      ) : (
+        <div class="py-16 text-center">
+          <div class="mx-auto max-w-md">
+            <div class="mb-6">
+              <div class="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                <svg class="text-muted-foreground h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
-                Browse all resources
-              </a>
+              </div>
+              <h2 class="text-foreground mb-2 text-2xl font-semibold">
+                {searchQuery ? 'No search results found' : 'No resources in this combination'}
+              </h2>
+              <p class="text-muted-foreground mb-6">
+                {searchQuery
+                  ? `We couldn't find any resources matching "${searchQuery}" in ${decodedCategory} - ${decodedType}.`
+                  : `We don't have any resources in the ${decodedCategory} category of type ${decodedType} yet.`}
+              </p>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex flex-col justify-center gap-3 sm:flex-row">
+                <a
+                  href={`/resources/category/${encodeURIComponent(decodedCategory)}/1`}
+                  class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 transition-colors"
+                >
+                  View all {decodedCategory} resources
+                </a>
+                <a
+                  href={`/resources/type/${encodeURIComponent(decodedType)}/1`}
+                  class="bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex items-center justify-center rounded-md px-4 py-2 transition-colors"
+                >
+                  View all {decodedType} resources
+                </a>
+              </div>
+
+              <div class="border-border border-t pt-4">
+                <p class="text-muted-foreground mb-3 text-sm">Or explore our full collection:</p>
+                <a
+                  href="/resources/all/1"
+                  class="text-primary hover:text-primary/80 inline-flex items-center transition-colors"
+                >
+                  <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                  Browse all resources
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
+      )
+    }
   </div>
 </Layout>

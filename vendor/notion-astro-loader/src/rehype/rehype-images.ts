@@ -10,8 +10,6 @@ export function rehypeImages(options?: Config) {
   
   return function (tree: any, file: VFile) {
     const imageOccurrenceMap = new Map();
-    
-    console.log('rehypeImages called with imagePaths:', imagePaths?.length || 0, 'paths');
 
     visit(tree, (node) => {
       if (node.type !== 'element') return;
@@ -19,7 +17,6 @@ export function rehypeImages(options?: Config) {
 
       if (node.properties?.src) {
         node.properties.src = decodeURI(node.properties.src);
-        console.log('Processing image:', node.properties.src);
         
         if (file.data.astro) {
           // Use a typed-friendly property to avoid TS errors

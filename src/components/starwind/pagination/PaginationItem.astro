@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'astro/types';
 import { tv } from 'tailwind-variants';
 
 type Props = HTMLAttributes<'li'> & {
-  children: any;
+  children?: unknown;
 };
 
 export const paginationItem = tv({ base: '' });
