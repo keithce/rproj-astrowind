@@ -58,8 +58,40 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Validate environment variables
+        run: |
+          echo "Checking environment variables..."
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "❌ NOTION_TOKEN is not set"
+            exit 1
+          else
+            echo "✅ NOTION_TOKEN is set (length: ${#NOTION_TOKEN})"
+          fi
+          if [ -z "$NOTION_RR_RESOURCES_ID" ]; then
+            echo "❌ NOTION_RR_RESOURCES_ID is not set"
+            exit 1
+          else
+            echo "✅ NOTION_RR_RESOURCES_ID is set: $NOTION_RR_RESOURCES_ID"
+          fi
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+
+      - name: Validate Notion configuration
+        run: bun run validate:notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+
       - name: Build project
-        run: bun run build
+        run: |
+          echo "Environment variables during build:"
+          echo "NOTION_TOKEN length: ${#NOTION_TOKEN}"
+          echo "NOTION_RR_RESOURCES_ID: $NOTION_RR_RESOURCES_ID"
+          echo "Starting build..."
+          bun run build
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
@@ -201,8 +233,38 @@ jobs:
       - name: Install matching Chrome & ChromeDriver
         run: npx browser-driver-manager install chrome
 
+      - name: Validate environment variables
+        run: |
+          echo "Checking environment variables..."
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "❌ NOTION_TOKEN is not set"
+            exit 1
+          else
+            echo "✅ NOTION_TOKEN is set (length: ${#NOTION_TOKEN})"
+          fi
+          if [ -z "$NOTION_RR_RESOURCES_ID" ]; then
+            echo "❌ NOTION_RR_RESOURCES_ID is not set"
+            exit 1
+          else
+            echo "✅ NOTION_RR_RESOURCES_ID is set: $NOTION_RR_RESOURCES_ID"
+          fi
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+
+      - name: Validate Notion configuration
+        run: bun run validate:notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+
       - name: Build project
-        run: bun run build
+        run: |
+          echo "Environment variables during build:"
+          echo "NOTION_TOKEN length: ${#NOTION_TOKEN}"
+          echo "NOTION_RR_RESOURCES_ID: $NOTION_RR_RESOURCES_ID"
+          echo "Starting build..."
+          bun run build
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}

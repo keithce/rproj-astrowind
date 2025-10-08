@@ -41,6 +41,7 @@
     "test:contrast": "node scripts/contrast-checker.js",
     "test:contrast:palette": "node scripts/contrast-checker.js --palette",
     "validate:css": "node scripts/css-variable-validator.js",
+    "validate:notion": "node scripts/validate-notion-config.js",
     "test:css-vars": "bun run validate:css",
     "test:all": "bun run test:contrast && bun run validate:css && bun run visual-verify:ci",
     "docs:css": "node scripts/generate-css-docs.js",
