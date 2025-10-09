@@ -81,11 +81,11 @@ export const headerData = {
     },
     {
       text: 'Resources',
-      href: getPermalink('/resources'),
+      href: getPermalink('/resources/all/1'),
     },
     {
       text: 'TIL',
-      href: getPermalink('/til'),
+      href: getPermalink('/til/all/1'),
     },
     {
       text: 'My Story',

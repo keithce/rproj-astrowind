@@ -69,7 +69,7 @@ const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
 
 // SEO metadata
 const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
-const seoDescription = `All RR Resources. ${page.total} resources found.`;
+const seoDescription = `All RR Resources. ${totalEntries} resources found.`;
 
 // Load filter data
 const categories = await findResourceCategories();
@@ -83,13 +83,13 @@ const types = await findResourceTypes();
     canonical: Astro.url.href,
   }}
 >
-  <div class="mx-auto max-w-7xl px-6 py-8 md:px-8">
+  <div class="px-6 py-8 mx-auto max-w-7xl md:px-8">
     <div class="mb-8">
-      <div class="flex items-center justify-between">
-        <h1 class="leading-tighter text-3xl font-bold tracking-tighter md:text-4xl">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold tracking-tighter leading-tighter md:text-4xl">
           {title}
           {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
-          <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
+          <span class="text-lg font-normal text-muted-foreground">(Page {currentPage} of {totalPages})</span>
         </h1>
         <RrFilterSheet categories={categories} types={types} />
       </div>
@@ -109,7 +109,7 @@ const types = await findResourceTypes();
           {/* Pagination - disabled when search is active */}
           <div class="mt-8">
             {searchQuery ? (
-              <div class="text-muted-foreground text-center text-sm">
+              <div class="text-sm text-center text-muted-foreground">
                 Showing all {totalEntries} results for "{searchQuery}"
               </div>
             ) : (
@@ -128,10 +128,10 @@ const types = await findResourceTypes();
         </div>
       ) : (
         <div class="py-12 text-center">
-          <h2 class="text-muted-foreground mb-2 text-xl font-semibold">
+          <h2 class="mb-2 text-xl font-semibold text-muted-foreground">
             {searchQuery ? 'No search results found' : 'No resources found'}
           </h2>
-          <p class="text-muted-foreground mb-4">
+          <p class="mb-4 text-muted-foreground">
             {searchQuery ? `Try searching for something else or browse all resources.` : `No resources available.`}
           </p>
         </div>

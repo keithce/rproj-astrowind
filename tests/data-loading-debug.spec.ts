@@ -12,14 +12,19 @@ test.describe('Data Loading', () => {
     await page.goto('/til');
     await page.waitForLoadState('networkidle');
 
-    // Deterministic wait for entries or empty state or a successful Notion/API response
-    await Promise.race([
-      page.waitForSelector('.til-card, [data-til], .til-item, text=No entries found', {
-        state: 'visible',
-        timeout: 10000,
-      }),
-      page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 10000 }),
-    ]);
+    // Start network response wait concurrently (non-blocking)
+    const responsePromise = page
+      .waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 10000 })
+      .catch(() => null);
+
+    // Always wait for DOM indicator to be visible first
+    await page.waitForSelector('.til-card, [data-til], .til-item, text=No entries found', {
+      state: 'visible',
+      timeout: 10000,
+    });
+
+    // Optionally await response (non-blocking for test flow)
+    responsePromise.catch(() => {});
 
     // Assert no console errors
     const errors = consoleLogs.filter(log => log.startsWith('[error]'));
@@ -48,14 +53,19 @@ test.describe('Data Loading', () => {
     await page.goto('/resources');
     await page.waitForLoadState('networkidle');
 
-    // Deterministic wait for entries or empty state or a successful Notion/API response
-    await Promise.race([
-      page.waitForSelector('.resource-card, [data-resource], .resource-item, text=No resources found', {
-        state: 'visible',
-        timeout: 12000,
-      }),
-      page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 12000 }),
-    ]);
+    // Start network response wait concurrently (non-blocking)
+    const responsePromise = page
+      .waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 12000 })
+      .catch(() => null);
+
+    // Always wait for DOM indicator to be visible first
+    await page.waitForSelector('.resource-card, [data-resource], .resource-item, text=No resources found', {
+      state: 'visible',
+      timeout: 12000,
+    });
+
+    // Optionally await response (non-blocking for test flow)
+    responsePromise.catch(() => {});
 
     // Assert no console errors
     const errors = consoleLogs.filter(log => log.startsWith('[error]'));

@@ -47,10 +47,10 @@ jobs:
 
     steps:
       - name: '📥 Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: '📦 Setup Node.js'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -101,10 +101,10 @@ jobs:
 
     steps:
       - name: '📥 Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: '📦 Setup Node.js'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -173,7 +173,7 @@ jobs:
 
       - name: '📝 Comment PR with Results'
         if: github.event_name == 'pull_request' && matrix.test-type == 'axe-core'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
@@ -206,8 +206,8 @@ jobs:
     needs: [build-site, accessibility-tests]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
       - uses: pnpm/action-setup@v4
@@ -246,12 +246,12 @@ jobs:
       checks: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript
       - uses: github/codeql-action/analyze@v3
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install -g pnpm@${{ env.PNPM_VERSION }}
@@ -272,8 +272,8 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
       - uses: pnpm/action-setup@v4
@@ -326,8 +326,8 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
       - uses: pnpm/action-setup@v4
@@ -386,8 +386,8 @@ jobs:
 
     steps:
       # -------- current branch --------
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
       - uses: pnpm/action-setup@v4
@@ -423,7 +423,7 @@ jobs:
 
       # -------- base branch --------
       - name: '📥 Checkout base branch'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.base_ref }}
       - name: '📦 Install Bun'

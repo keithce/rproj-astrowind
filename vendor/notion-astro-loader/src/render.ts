@@ -151,7 +151,7 @@ async function* listBlocks(client: Client, blockId: string, fetchImage: (file: F
         ...block,
         image: {
           type: 'file', // Force file type instead of original type
-          file: url,    // Use 'file' property instead of dynamic property
+          file: { url }, // Use object with url property to match FileObject shape
           caption: block.image.caption,
         },
       };
@@ -407,7 +407,7 @@ export class NotionPageRenderer {
         imageUrl = imageFileObject.file.url;
       }
 
-      console.log('fetchImage: Processing image URL:', imageUrl);
+      this.#logger.debug(`fetchImage: Processing image URL: ${imageUrl}`);
 
       // Download and save the image locally
       const localPath = await saveImageFromAWS(imageUrl, this.imageSavePath, {
@@ -419,9 +419,9 @@ export class NotionPageRenderer {
         },
       });
       
-      console.log('fetchImage: Saved image to local path:', localPath);
+      this.#logger.debug(`fetchImage: Saved image to local path: ${localPath}`);
       this.#imagePaths.push(localPath);
-      console.log('fetchImage: Total imagePaths:', this.#imagePaths.length);
+      this.#logger.debug(`fetchImage: Total imagePaths: ${this.#imagePaths.length}`);
       return localPath;
     } catch (error) {
       this.#logger.error(`Failed to fetch image: ${getErrorMessage(error)}`);
