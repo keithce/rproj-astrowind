@@ -32,7 +32,14 @@ export function rehypeImages(options?: Config) {
           // Check if the src is an AWS S3 URL that corresponds to a local path
           // AWS URLs have format: .../pageId/fileId/filename?params
           // Local files have format: .../fileId.filename
-          if (node.properties.src.includes('prod-files-secure.s3.us-west-2.amazonaws.com')) {
+          let isS3Host = false;
+          try {
+            const urlObj = new URL(node.properties.src, 'http://localhost'); // in case src is relative
+            isS3Host = urlObj.hostname === 'prod-files-secure.s3.us-west-2.amazonaws.com';
+          } catch (e) {
+            // Malformed URL, do not set isS3Host
+          }
+          if (isS3Host) {
             // Extract the file ID from the AWS URL path
             // Pattern: /pageId/fileId/filename
             const awsPathMatch = node.properties.src.match(/\/[a-f0-9-]+\/([a-f0-9-]+)\/[^?]+/i);
