@@ -213,7 +213,6 @@ export class NotionPageRenderer {
         };
       }
     }
-    }
     // Transform Notion raw properties to simple values and also expose them at top-level for convenience
     const transformed: Record<string, unknown> = {};
     try {

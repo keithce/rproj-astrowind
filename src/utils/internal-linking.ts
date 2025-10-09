@@ -379,8 +379,8 @@ export function getBreadcrumbPath(pathname: string): Array<{ text: string; href?
 
         // Check if this is a combined category/type route
         // Pattern: /resources/category/Post%20Production/type/YouTube%20Video/1
-        if (segments.length > 3 && segments[3] === 'type') {
-          const typeText = formatSegmentText(segments[4] || 'Type');
+        if (segments.length > 4 && segments[3] === 'type') {
+          const typeText = formatSegmentText(segments[4]);
           // For combined routes, show a more concise breadcrumb
           breadcrumbs.push({ text: categoryText });
           breadcrumbs.push({ text: typeText });

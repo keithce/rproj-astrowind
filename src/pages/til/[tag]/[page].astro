@@ -57,11 +57,18 @@ const currentTag = allTags.find(tag => tag.slug === params.tag);
 const searchQuery = Astro.url.searchParams.get('search') || null;
 const viewParam = Astro.url.searchParams.get('view') || 'feed';
 
-// Filter entries based on search query (client-side filtering for search)
-let displayEntries = page.data;
+// Get the full list of entries for this tag (unpaginated)
+const allEntries = await getCollection('til');
+const fullEntries = allEntries.filter((entry: CollectionEntry<'til'>) => {
+  const entryTags = entry.data.tags || [];
+  return entryTags.some((entryTag: string) => entryTag.toLowerCase().replace(/\s+/g, '-') === params.tag);
+});
+
+// Filter full entries based on search query
+let filteredEntries = fullEntries;
 if (searchQuery) {
   const searchTerm = searchQuery.toLowerCase();
-  displayEntries = page.data.filter((entry: CollectionEntry<'til'>) => {
+  filteredEntries = fullEntries.filter((entry: CollectionEntry<'til'>) => {
     const data = entry.data;
     const title = data.title || '';
     const summary = data.description || '';
@@ -69,10 +76,16 @@ if (searchQuery) {
   });
 }
 
-// Update pagination info for search results
-const totalEntries = searchQuery ? displayEntries.length : page.total;
-const totalPages = Math.ceil(totalEntries / page.size);
+// Recompute pagination from filtered results
+const totalEntries = filteredEntries.length;
+const pageSize = page.size;
+const totalPages = Math.ceil(totalEntries / pageSize);
 const currentPage = parseInt(params.page, 10);
+
+// Slice filtered results to get current page entries
+const startIndex = (currentPage - 1) * pageSize;
+const endIndex = startIndex + pageSize;
+const displayEntries = filteredEntries.slice(startIndex, endIndex);
 
 // Generate title
 const title = currentTag ? `TIL: #${currentTag.title}` : 'Today I Learned';

@@ -69,11 +69,17 @@ try {
     page_size: 1,
   });
 
-  console.log(`   Total pages: ${queryResponse.results.length} (showing first page only)`);
+  console.log(
+    `   Database query successful (${queryResponse.results.length} result${queryResponse.results.length !== 1 ? 's' : ''} returned)`
+  );
+
+  if (queryResponse.has_more) {
+    console.log(`   Database contains more entries (connectivity verified)`);
+  }
 
   if (queryResponse.results.length > 0) {
     const firstPage = queryResponse.results[0];
-    console.log(`   First page ID: ${firstPage.id}`);
+    console.log(`   Sample page ID: ${firstPage.id}`);
   }
 
   console.log('\n🎉 Notion configuration is valid!');
@@ -81,16 +87,29 @@ try {
   console.error('❌ Failed to connect to Notion API');
   console.error(`   Error: ${error.message}`);
 
-  if (error.code === 'invalid_request_url') {
+  // Safely check if error has a code property
+  const errorCode = typeof error === 'object' && error !== null && 'code' in error ? error.code : null;
+
+  if (errorCode === 'invalid_request_url') {
     console.error('\n💡 This error usually means:');
     console.error('   - The NOTION_RR_RESOURCES_ID is not a valid database ID');
     console.error('   - The database ID format is incorrect');
     console.error('   - The database does not exist or is not accessible');
-  } else if (error.code === 'unauthorized') {
+  } else if (errorCode === 'unauthorized') {
     console.error('\n💡 This error usually means:');
     console.error('   - The NOTION_TOKEN is invalid or expired');
     console.error('   - The integration does not have access to the database');
     console.error('   - The integration needs to be shared with the database');
+  } else if (errorCode !== null) {
+    console.error('\n💡 Please check:');
+    console.error('   - Your Notion API credentials are correct');
+    console.error('   - The database is shared with your integration');
+    console.error('   - You have the necessary permissions');
+  } else {
+    console.error('\n💡 An unexpected error occurred. Please verify:');
+    console.error('   - Your network connection is stable');
+    console.error('   - The Notion API is accessible');
+    console.error('   - Your environment variables are properly configured');
   }
 
   process.exit(1);

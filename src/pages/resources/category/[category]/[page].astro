@@ -111,22 +111,22 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
     canonical: Astro.url.href,
   }}
 >
-  <div class="px-6 py-8 mx-auto max-w-7xl md:px-8">
+  <div class="mx-auto max-w-7xl px-6 py-8 md:px-8">
     <div class="mb-8">
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold tracking-tighter leading-tighter md:text-4xl">
+          <h1 class="leading-tighter text-3xl font-bold tracking-tighter md:text-4xl">
             {title}: {decodedCategory}
             {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
-            <span class="text-lg font-normal text-muted-foreground">(Page {currentPage} of {totalPages})</span>
+            <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
           </h1>
-          <p class="mt-2 text-muted-foreground">
+          <p class="text-muted-foreground mt-2">
             {page.total} resources in the {decodedCategory} category
           </p>
         </div>
         <RrFilterSheet
           categories={allCategories}
-          types={await findResourceTypes()}
+          types={allTypes}
           selectedCategory={decodedCategory || undefined}
           selectedType={undefined}
         />
@@ -162,8 +162,8 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
         <div class="py-16 text-center">
           <div class="mx-auto max-w-md">
             <div class="mb-6">
-              <div class="flex justify-center items-center mx-auto mb-4 w-16 h-16 rounded-full bg-muted">
-                <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                <svg class="text-muted-foreground h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -172,10 +172,10 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
                   />
                 </svg>
               </div>
-              <h2 class="mb-2 text-2xl font-semibold text-foreground">
+              <h2 class="text-foreground mb-2 text-2xl font-semibold">
                 {searchQuery ? 'No search results found' : `No resources in ${decodedCategory} yet`}
               </h2>
-              <p class="mb-6 text-muted-foreground">
+              <p class="text-muted-foreground mb-6">
                 {searchQuery
                   ? `We couldn't find any resources matching "${searchQuery}" in the ${decodedCategory} category.`
                   : `We don't have any resources in the ${decodedCategory} category yet, but we're always adding new content.`}
@@ -185,9 +185,9 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
             <div class="space-y-4">
               <a
                 href="/resources/all/1"
-                class="inline-flex justify-center items-center px-6 py-3 rounded-md transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+                class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-6 py-3 transition-colors"
               >
-                <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -198,13 +198,13 @@ const seoDescription = `Resources in the ${decodedCategory} category. ${page.tot
                 Browse all resources
               </a>
 
-              <div class="pt-4 border-t border-border">
-                <p class="mb-3 text-sm text-muted-foreground">Or explore by type:</p>
-                <div class="flex flex-wrap gap-2 justify-center">
+              <div class="border-border border-t pt-4">
+                <p class="text-muted-foreground mb-3 text-sm">Or explore by type:</p>
+                <div class="flex flex-wrap justify-center gap-2">
                   {allTypes.slice(0, 4).map((type: string) => (
                     <a
                       href={`/resources/type/${encodeURIComponent(type)}/1`}
-                      class="inline-flex items-center px-3 py-1 text-sm rounded-full transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      class="bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex items-center rounded-full px-3 py-1 text-sm transition-colors"
                     >
                       {type}
                     </a>

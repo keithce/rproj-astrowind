@@ -133,8 +133,14 @@ export function getCloudinaryImageUrl(
       src: publicId,
       ...finalOptions,
     });
-  } catch {
-    // Error generating Cloudinary URL - using fallback
+  } catch (error) {
+    // Log error with structured context (excluding sensitive credentials)
+    console.error('Error generating Cloudinary URL - using fallback', {
+      error: error instanceof Error ? error.message : String(error),
+      publicId,
+      options: finalOptions,
+    });
+
     // Return a fallback URL
     return `https://via.placeholder.com/${finalOptions.width || 400}x${finalOptions.height || 300}?text=Image+Error`;
   }
@@ -234,8 +240,15 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         }),
       };
     });
-  } catch {
-    // Error fetching images from Cloudinary, using fallback
+  } catch (err) {
+    // Log error with structured context
+    console.error('Error fetching images from Cloudinary - using fallback', {
+      error: err instanceof Error ? err.message : String(err),
+      category,
+      count,
+      categoryFolder,
+    });
+
     // Return fallback images if search fails
     return generateFallbackImages(category, count);
   }
@@ -308,8 +321,13 @@ export function getOgImageUrl(title: string, subtitle?: string, backgroundImage?
       format: 'jpg',
       quality: 'auto',
     });
-  } catch {
-    // Error generating OG image URL
+  } catch (err) {
+    console.error('Error generating OG image URL', {
+      error: err instanceof Error ? err.message : String(err),
+      title,
+      subtitle,
+      backgroundImage,
+    });
     return '';
   }
 }

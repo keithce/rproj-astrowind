@@ -106,8 +106,12 @@ if (searchQuery) {
 
 // Update pagination info for search results
 const totalEntries = searchQuery ? displayEntries.length : page.total;
-const totalPages = Math.ceil(totalEntries / page.size);
-const currentPage = parseInt(params.page);
+const totalPages = Math.max(1, Math.ceil(totalEntries / page.size));
+
+// Parse and sanitize currentPage with fallback and bounds check
+let p = parseInt(params.page, 10);
+if (Number.isNaN(p)) p = 1;
+const currentPage = Math.min(Math.max(1, p), totalPages);
 
 // Generate title
 const title = 'RR Resources';

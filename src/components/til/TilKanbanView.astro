@@ -33,7 +33,10 @@ const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
           </h3>
           <div class="space-y-3">
             {entriesByDay.get(day)!.map(entry => (
-              <div class="bg-card border-border rounded border p-3 shadow-sm transition-shadow hover:shadow-md">
+              <div
+                class="bg-card border-border rounded border p-3 shadow-sm transition-shadow hover:shadow-md"
+                data-til-entry-id={entry.id}
+              >
                 <a
                   href={`/til/${entry.slug}`}
                   class="text-foreground hover:text-primary mb-2 block font-medium transition-colors"

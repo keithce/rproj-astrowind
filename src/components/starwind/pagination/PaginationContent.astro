@@ -8,7 +8,7 @@ type Props = HTMLAttributes<'ul'> & {
 
 export const paginationContent = tv({ base: 'flex flex-row items-center gap-1' });
 
-const { class: className, ...rest } = Astro.props;
+const { class: className, ...rest } = Astro.props as Props;
 ---
 
 <ul class={paginationContent({ class: className })} data-slot="pagination-content" {...rest}>

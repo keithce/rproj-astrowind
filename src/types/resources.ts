@@ -46,7 +46,19 @@ export function isResourceData(obj: unknown): obj is ResourceData {
       data['Last Updated'] instanceof Date ||
       (typeof data['Last Updated'] === 'object' &&
         data['Last Updated'] !== null &&
-        ('start' in data['Last Updated'] || 'end' in data['Last Updated'] || 'time_zone' in data['Last Updated']))) &&
+        ('start' in data['Last Updated'] || 'end' in data['Last Updated'] || 'time_zone' in data['Last Updated']) &&
+        ('start' in data['Last Updated'] === false ||
+          data['Last Updated'].start === undefined ||
+          data['Last Updated'].start === null ||
+          data['Last Updated'].start instanceof Date) &&
+        ('end' in data['Last Updated'] === false ||
+          data['Last Updated'].end === undefined ||
+          data['Last Updated'].end === null ||
+          data['Last Updated'].end instanceof Date) &&
+        ('time_zone' in data['Last Updated'] === false ||
+          data['Last Updated'].time_zone === undefined ||
+          data['Last Updated'].time_zone === null ||
+          typeof data['Last Updated'].time_zone === 'string'))) &&
     (data['Skill Level'] === undefined ||
       ['Beginner', 'Intermediate', 'Advanced', 'Any'].includes(data['Skill Level'] as string)) &&
     (data.Favorite === undefined || typeof data.Favorite === 'boolean');

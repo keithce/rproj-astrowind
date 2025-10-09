@@ -67,9 +67,19 @@ jobs:
 
       - name: Build project
         run: |
-          echo "Environment variables during build:"
-          echo "NOTION_TOKEN length: ${#NOTION_TOKEN}"
-          echo "NOTION_RR_RESOURCES_ID: $NOTION_RR_RESOURCES_ID"
+          echo "Validating environment variables..."
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "❌ Error: NOTION_TOKEN is not set"
+            exit 1
+          fi
+          echo "✓ NOTION_TOKEN is set (length: ${#NOTION_TOKEN})"
+
+          if [ -z "$NOTION_RR_RESOURCES_ID" ]; then
+            echo "❌ Error: NOTION_RR_RESOURCES_ID is not set"
+            exit 1
+          fi
+          echo "✓ NOTION_RR_RESOURCES_ID is set (length: ${#NOTION_RR_RESOURCES_ID})"
+
           echo "Starting build..."
           bun run build
         env:
@@ -221,9 +231,19 @@ jobs:
 
       - name: Build project
         run: |
-          echo "Environment variables during build:"
-          echo "NOTION_TOKEN length: ${#NOTION_TOKEN}"
-          echo "NOTION_RR_RESOURCES_ID: $NOTION_RR_RESOURCES_ID"
+          echo "Validating environment variables..."
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "❌ Error: NOTION_TOKEN is not set"
+            exit 1
+          fi
+          echo "✓ NOTION_TOKEN is set (length: ${#NOTION_TOKEN})"
+
+          if [ -z "$NOTION_RR_RESOURCES_ID" ]; then
+            echo "❌ Error: NOTION_RR_RESOURCES_ID is not set"
+            exit 1
+          fi
+          echo "✓ NOTION_RR_RESOURCES_ID is set (length: ${#NOTION_RR_RESOURCES_ID})"
+
           echo "Starting build..."
           bun run build
         env:

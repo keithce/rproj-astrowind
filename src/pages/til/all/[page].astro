@@ -36,86 +36,181 @@ const { page } = Astro.props as {
 };
 const params = Astro.params as { tag: string; page: string };
 
-// Get URL parameters
-const searchQuery = Astro.url.searchParams.get('search') || null;
-const viewParam = Astro.url.searchParams.get('view') || 'feed';
-
-// Filter entries based on search query (client-side filtering for search)
-let displayEntries = page.data;
-if (searchQuery) {
-  const searchTerm = searchQuery.toLowerCase();
-  displayEntries = page.data.filter((entry: TilEntry) => {
-    const data = entry.data;
-    const title = data.title || '';
-    const summary = data.description || '';
-    return title.toLowerCase().includes(searchTerm) || summary.toLowerCase().includes(searchTerm);
-  });
-}
-
-// Update pagination info for search results
-const totalEntries = searchQuery ? displayEntries.length : page.total;
-const totalPages = Math.ceil(totalEntries / page.size);
+// Server-side values for initial render
+const allEntries = page.data;
+const totalPages = Math.ceil(page.total / page.size);
 const currentPage = parseInt(params.page);
 
 // Generate title
 const title = 'Today I Learned';
-// const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
-
-// SEO metadata - currently unused but kept for future use
-// const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
-// const seoDescription = `Today I Learned entries. ${page.total} entries found.`;
 ---
 
 <Layout>
-  <div class="mx-auto max-w-7xl px-6 py-8 md:px-8">
+  <div class="mx-auto max-w-7xl px-6 py-8 md:px-8" data-til-page="all">
     <div class="mb-8">
       <h1 class="leading-tighter mb-4 text-3xl font-bold tracking-tighter md:mb-0 md:text-4xl">
         {title}
-        {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
-        <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
+        <span id="search-query-display" class="text-primary hidden"></span>
+        <span id="page-info" class="text-muted-foreground text-lg font-normal"
+          >(Page {currentPage} of {totalPages})</span
+        >
       </h1>
     </div>
 
     {/* Filters and View Toggle*/}
     <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <TilFilterSheet tags={await findTilTags()} selectedTag={undefined} />
-      <TilViewToggle currentView={viewParam as 'feed' | 'kanban'} />
+      <TilViewToggle currentView="feed" />
     </div>
 
-    {/* Search Results or Content*/}
-    {
-      displayEntries.length > 0 ? (
-        <div>
-          {viewParam === 'feed' ? (
-            <TilSocialFeed entries={displayEntries} />
-          ) : (
-            <TilKanbanView entries={displayEntries} />
-          )}
+    {/* Content Container - will be controlled by client-side script */}
+    <div id="til-content-container">
+      {/* Feed View */}
+      <div id="til-feed-view" data-view="feed">
+        <TilSocialFeed entries={allEntries} />
+      </div>
 
-          {/* Pagination*/}
-          <div class="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              lastPage={totalPages}
-              prevUrl={page.url.prev}
-              nextUrl={page.url.next}
-              firstUrl={page.url.first}
-              lastUrl={page.url.last}
-              baseUrl="/til/all"
-              queryParams={Astro.url.searchParams}
-            />
-          </div>
-        </div>
-      ) : (
-        <div class="py-12 text-center">
-          <h2 class="text-muted-foreground mb-2 text-xl font-semibold">
-            {searchQuery ? 'No search results found' : 'No entries found'}
-          </h2>
-          <p class="text-muted-foreground mb-4">
-            {searchQuery ? `Try searching for something else or browse all entries.` : `No entries available.`}
-          </p>
-        </div>
-      )
-    }
+      {/* Kanban View */}
+      <div id="til-kanban-view" data-view="kanban" class="hidden">
+        <TilKanbanView entries={allEntries} />
+      </div>
+
+      {/* Empty State */}
+      <div id="til-empty-state" class="hidden py-12 text-center">
+        <h2 class="text-muted-foreground mb-2 text-xl font-semibold">No search results found</h2>
+        <p class="text-muted-foreground mb-4">Try searching for something else or browse all entries.</p>
+      </div>
+
+      {/* Pagination*/}
+      <div class="mt-8" id="til-pagination">
+        <Pagination
+          currentPage={currentPage}
+          lastPage={totalPages}
+          prevUrl={page.url.prev}
+          nextUrl={page.url.next}
+          firstUrl={page.url.first}
+          lastUrl={page.url.last}
+          baseUrl="/til/all"
+          queryParams={new URLSearchParams()}
+        />
+      </div>
+    </div>
+
+    {/* Store all entries data for client-side filtering */}
+    <script
+      type="application/json"
+      id="til-entries-data"
+      set:html={JSON.stringify(
+        allEntries.map(entry => ({
+          id: entry.id,
+          slug: entry.slug,
+          title: entry.data.title || '',
+          description: entry.data.description || '',
+        }))
+      )}
+    />
   </div>
+
+  <script>
+    // Client-side filtering and view handling
+    interface TilEntryData {
+      id: string;
+      slug: string;
+      title: string;
+      description: string;
+    }
+
+    function initializeTilPage() {
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('search');
+      const viewParam = urlParams.get('view') || 'feed';
+
+      // Get all entries data
+      const entriesDataEl = document.getElementById('til-entries-data');
+      if (!entriesDataEl) return;
+
+      let allEntries: TilEntryData[];
+      try {
+        allEntries = JSON.parse(entriesDataEl.textContent || '[]');
+      } catch (e) {
+        console.error('Failed to parse entries data:', e);
+        return;
+      }
+
+      // Filter entries based on search query
+      let filteredEntries = allEntries;
+      if (searchQuery) {
+        const searchTerm = searchQuery.toLowerCase();
+        filteredEntries = allEntries.filter(entry => {
+          return entry.title.toLowerCase().includes(searchTerm) || entry.description.toLowerCase().includes(searchTerm);
+        });
+
+        // Update search query display
+        const searchQueryDisplay = document.getElementById('search-query-display');
+        if (searchQueryDisplay) {
+          searchQueryDisplay.textContent = `: "${searchQuery}"`;
+          searchQueryDisplay.classList.remove('hidden');
+        }
+      }
+
+      // Handle view toggle
+      const feedView = document.getElementById('til-feed-view');
+      const kanbanView = document.getElementById('til-kanban-view');
+      const emptyState = document.getElementById('til-empty-state');
+
+      if (viewParam === 'kanban') {
+        feedView?.classList.add('hidden');
+        kanbanView?.classList.remove('hidden');
+      } else {
+        feedView?.classList.remove('hidden');
+        kanbanView?.classList.add('hidden');
+      }
+
+      // Handle empty state for search
+      if (searchQuery && filteredEntries.length === 0) {
+        feedView?.classList.add('hidden');
+        kanbanView?.classList.add('hidden');
+        emptyState?.classList.remove('hidden');
+        document.getElementById('til-pagination')?.classList.add('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+      }
+
+      // Filter visible cards based on search
+      if (searchQuery) {
+        // Get all TIL cards in both views
+        const allCards = document.querySelectorAll('[data-til-entry-id]');
+        let visibleCount = 0;
+
+        allCards.forEach(card => {
+          const entryId = card.getAttribute('data-til-entry-id');
+          const isVisible = filteredEntries.some(entry => entry.id === entryId);
+
+          if (isVisible) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        // Update pagination info
+        const pageInfo = document.getElementById('page-info');
+        if (pageInfo && visibleCount === 0) {
+          pageInfo.textContent = '';
+        }
+      }
+    }
+
+    // Run on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeTilPage);
+    } else {
+      initializeTilPage();
+    }
+
+    // Also run when navigating back/forward
+    window.addEventListener('popstate', initializeTilPage);
+  </script>
 </Layout>

@@ -70,6 +70,10 @@ const pageTitle = `${title} (Page ${currentPage} of ${totalPages})`;
 // SEO metadata
 const seoTitle = searchQuery ? `${title}: "${searchQuery}" - Page ${currentPage}` : pageTitle;
 const seoDescription = `All RR Resources. ${page.total} resources found.`;
+
+// Load filter data
+const categories = await findResourceCategories();
+const types = await findResourceTypes();
 ---
 
 <Layout
@@ -87,7 +91,7 @@ const seoDescription = `All RR Resources. ${page.total} resources found.`;
           {searchQuery && <span class="text-primary">: "{searchQuery}"</span>}
           <span class="text-muted-foreground text-lg font-normal">(Page {currentPage} of {totalPages})</span>
         </h1>
-        <RrFilterSheet categories={await findResourceCategories()} types={await findResourceTypes()} />
+        <RrFilterSheet categories={categories} types={types} />
       </div>
     </div>
 

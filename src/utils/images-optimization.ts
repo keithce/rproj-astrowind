@@ -338,13 +338,23 @@ export async function getImagesOptimized(
       width = Number(height * aspectRatio);
     } else if (layout !== 'fullWidth') {
       // Fullwidth images have 100% width, so aspectRatio is applicable
-      /* console suppressed to satisfy lint - validation happens by return */
+      const imageSource = typeof image === 'string' ? image : image?.src || 'unknown';
+      console.error(
+        `[Image Optimization] Missing dimensions for layout="${layout}": aspectRatio provided but no width or height specified.`,
+        `Image: ${imageSource}`,
+        'This may cause Cumulative Layout Shift (CLS) issues. Please provide width or height.'
+      );
     }
   } else if (width && height) {
     aspectRatio = width / height;
   } else if (layout !== 'fullWidth') {
     // Fullwidth images don't need dimensions
-    /* console suppressed to satisfy lint - validation happens by return */
+    const imageSource = typeof image === 'string' ? image : image?.src || 'unknown';
+    console.error(
+      `[Image Optimization] Missing dimensions for layout="${layout}": no width, height, or aspectRatio specified.`,
+      `Image: ${imageSource}`,
+      'This may cause Cumulative Layout Shift (CLS) issues. Please provide width and height, or use layout="fullWidth".'
+    );
   }
 
   let breakpoints = getBreakpoints({ width, breakpoints: widths, layout });

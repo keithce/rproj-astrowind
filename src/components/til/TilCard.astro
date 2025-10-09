@@ -19,7 +19,7 @@ const maxLength = 150;
 const truncatedDescription = description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
 ---
 
-<article class={`til-card ${className}`}>
+<article class={`til-card ${className}`} data-til-entry-id={entry.id}>
   <div
     class="bg-card dark:bg-card border-border flex h-full flex-col rounded-lg border p-6 transition-all duration-300 hover:shadow-md"
   >

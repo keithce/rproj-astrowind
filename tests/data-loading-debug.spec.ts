@@ -1,9 +1,7 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-test.describe('Data Loading Debug', () => {
-  test('Debug TIL Data Loading', async ({ page }) => {
-    console.log('🔍 Starting TIL data loading debug...');
-
+test.describe('Data Loading', () => {
+  test('TIL Data Loading', async ({ page }) => {
     // Capture all console logs
     const consoleLogs: string[] = [];
     page.on('console', msg => {
@@ -23,29 +21,23 @@ test.describe('Data Loading Debug', () => {
       page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 10000 }),
     ]);
 
-    // Filter TIL-related logs
-    const tilLogs = consoleLogs.filter(log => log.includes('[TIL]') || log.includes('TIL') || log.includes('til'));
+    // Assert no console errors
+    const errors = consoleLogs.filter(log => log.startsWith('[error]'));
+    expect(errors, 'Should not have console errors').toHaveLength(0);
 
-    console.log('📋 TIL-related console logs:');
-    tilLogs.forEach(log => console.log(`  ${log}`));
-
-    // Check if we can find any TIL entries in the DOM
+    // Assert TIL cards are present or empty state is shown
     const tilCards = await page.locator('.til-card, [data-til], .til-item').count();
-    console.log(`📊 TIL cards found in DOM: ${tilCards}`);
-
-    // Check for the empty state message
     const emptyState = await page.locator('text=No entries found').isVisible();
-    console.log(`📭 Empty state visible: ${emptyState}`);
 
-    // Check for any error messages (combined with .or())
+    expect(tilCards > 0 || emptyState, 'Should have TIL cards or show empty state').toBeTruthy();
+
+    // Assert no error messages are displayed
     const errorLocator = page.locator('text=Error').or(page.locator('text=error')).or(page.locator('text=Failed'));
     const errorMessages = await errorLocator.count();
-    console.log(`❌ Error messages found: ${errorMessages}`);
+    expect(errorMessages, 'Should not display error messages').toBe(0);
   });
 
-  test('Debug Resources Data Loading', async ({ page }) => {
-    console.log('🔍 Starting Resources data loading debug...');
-
+  test('Resources Data Loading', async ({ page }) => {
     // Capture all console logs
     const consoleLogs: string[] = [];
     page.on('console', msg => {
@@ -65,45 +57,30 @@ test.describe('Data Loading Debug', () => {
       page.waitForResponse(r => /notion|api/i.test(r.url()) && r.ok(), { timeout: 12000 }),
     ]);
 
-    // Filter Resources-related logs
-    const resourceLogs = consoleLogs.filter(
-      log =>
-        log.includes('[RESOURCES]') ||
-        log.includes('RESOURCES') ||
-        log.includes('resources') ||
-        log.includes('Notion') ||
-        log.includes('notion')
-    );
+    // Assert no console errors
+    const errors = consoleLogs.filter(log => log.startsWith('[error]'));
+    expect(errors, 'Should not have console errors').toHaveLength(0);
 
-    console.log('📋 Resources-related console logs:');
-    resourceLogs.forEach(log => console.log(`  ${log}`));
-
-    // Check if we can find any resource entries in the DOM
+    // Assert resource cards are present or empty state is shown
     const resourceCards = await page.locator('.resource-card, [data-resource], .resource-item').count();
-    console.log(`📊 Resource cards found in DOM: ${resourceCards}`);
-
-    // Check for the empty state message
     const emptyState = await page.locator('text=No resources found').isVisible();
-    console.log(`📭 Empty state visible: ${emptyState}`);
 
-    // Check for any error messages (combined with .or())
+    expect(resourceCards > 0 || emptyState, 'Should have resource cards or show empty state').toBeTruthy();
+
+    // Assert no error messages are displayed
     const errorLocator = page.locator('text=Error').or(page.locator('text=error')).or(page.locator('text=Failed'));
     const errorMessages = await errorLocator.count();
-    console.log(`❌ Error messages found: ${errorMessages}`);
+    expect(errorMessages, 'Should not display error messages').toBe(0);
   });
 
-  test('Check Network Requests', async ({ page }) => {
-    console.log('🔍 Checking network requests...');
-
-    const requests: string[] = [];
-    const responses: string[] = [];
-
-    page.on('request', request => {
-      requests.push(`${request.method()} ${request.url()}`);
-    });
+  test('Network Requests Should Succeed', async ({ page }) => {
+    const responses: { status: number; url: string }[] = [];
 
     page.on('response', response => {
-      responses.push(`${response.status()} ${response.url()}`);
+      responses.push({
+        status: response.status(),
+        url: response.url(),
+      });
     });
 
     // Navigate to both pages
@@ -113,37 +90,26 @@ test.describe('Data Loading Debug', () => {
     await page.goto('/resources');
     await page.waitForLoadState('networkidle');
 
-    // Deterministic wait for network to be idle
-    await page.waitForLoadState('networkidle');
+    // Assert no failed requests (status >= 400)
+    const failedRequests = responses.filter(res => res.status >= 400);
 
-    console.log('📡 Network requests made:');
-    requests.forEach(req => console.log(`  ${req}`));
+    expect(
+      failedRequests,
+      `Should not have failed requests. Failed: ${failedRequests.map(r => `${r.status} ${r.url}`).join(', ')}`
+    ).toHaveLength(0);
 
-    console.log('📡 Network responses received:');
-    responses.forEach(res => console.log(`  ${res}`));
-
-    // Check for any failed requests by parsing status code
-    const failedRequests = responses.filter(res => {
-      const statusPart = res.split(' ')[0];
-      const status = parseInt(statusPart, 10);
-      return Number.isFinite(status) && status >= 400;
-    });
-    if (failedRequests.length > 0) {
-      console.log('❌ Failed requests:');
-      failedRequests.forEach(req => console.log(`  ${req}`));
-    }
+    // Assert we received responses (network activity occurred)
+    expect(responses.length, 'Should have received network responses').toBeGreaterThan(0);
   });
 
-  test('Check Page Source for Data', async ({ page }) => {
-    console.log('🔍 Checking page source for data...');
-
+  test('Page Source Contains Expected Data', async ({ page }) => {
     // Check TIL page
     await page.goto('/til');
     await page.waitForLoadState('networkidle');
 
     const tilContent = await page.content();
     const tilHasData = tilContent.includes('til') || tilContent.includes('TIL');
-    console.log(`📄 TIL page has TIL-related content: ${tilHasData}`);
+    expect(tilHasData, 'TIL page should contain TIL-related content').toBeTruthy();
 
     // Check Resources page
     await page.goto('/resources');
@@ -151,13 +117,13 @@ test.describe('Data Loading Debug', () => {
 
     const resourcesContent = await page.content();
     const resourcesHasData = resourcesContent.includes('resource') || resourcesContent.includes('Resource');
-    console.log(`📄 Resources page has resource-related content: ${resourcesHasData}`);
+    expect(resourcesHasData, 'Resources page should contain resource-related content').toBeTruthy();
 
-    // Check for specific error patterns
+    // Assert no Notion or API errors in page source
     const hasNotionError = resourcesContent.includes('Notion') && resourcesContent.includes('Error');
     const hasApiError = resourcesContent.includes('API') && resourcesContent.includes('Error');
 
-    console.log(`❌ Notion error in source: ${hasNotionError}`);
-    console.log(`❌ API error in source: ${hasApiError}`);
+    expect(hasNotionError, 'Should not have Notion errors in page source').toBeFalsy();
+    expect(hasApiError, 'Should not have API errors in page source').toBeFalsy();
   });
 });
