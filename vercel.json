@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "_comment": "Trigger redeploy - syntax error fixed in render.ts",
   "headers": [
     {
       "source": "/form-handler.js",
