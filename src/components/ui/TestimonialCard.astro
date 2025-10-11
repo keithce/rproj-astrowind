@@ -13,14 +13,14 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
 
 <div class={`testimonial-card ${className}`}>
   <div
-    class="bg-[var(--color-card)] p-6 rounded-lg shadow-lg h-full border border-[var(--color-border)] hover:shadow-xl transition-shadow duration-200"
+    class="h-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-lg transition-shadow duration-200 hover:shadow-xl"
   >
     <!-- Rating Stars -->
-    <div class="flex mb-4">
+    <div class="mb-4 flex">
       {
         Array.from({ length: 5 }, (_, i) => (
           <svg
-            class={`w-5 h-5 ${i < rating ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}
+            class={`h-5 w-5 ${i < rating ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -31,7 +31,7 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
     </div>
 
     <!-- Testimonial Text -->
-    <blockquote class="text-[var(--color-foreground)] mb-6 italic leading-relaxed">
+    <blockquote class="mb-6 leading-relaxed text-[var(--color-foreground)] italic">
       "{testimonial}"
     </blockquote>
 
@@ -42,7 +42,7 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
           <img
             src={clientImage}
             alt={clientName}
-            class="w-12 h-12 rounded-full object-cover mr-4 border-2 border-[var(--color-border)]"
+            class="mr-4 h-12 w-12 rounded-full border-2 border-[var(--color-border)] object-cover"
           />
         )
       }
@@ -56,7 +56,7 @@ const { testimonial, clientName, clientTitle, clientImage, rating = 5, className
 
     <!-- Quote Icon -->
     <div class="absolute top-4 right-4 opacity-10">
-      <svg class="w-8 h-8 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 32 32">
+      <svg class="h-8 w-8 text-[var(--color-accent)]" fill="currentColor" viewBox="0 0 32 32">
         <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm16 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"
         ></path>
       </svg>

@@ -46,7 +46,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           name && (
             <div class="mb-6">
               {label && (
-                <label for={name} class="block mb-2 text-sm font-medium text-foreground">
+                <label for={name} class="text-foreground mb-2 block text-sm font-medium">
                   {label}
                   {required && (
                     <span class="ml-1 text-red-500" aria-label="required">
@@ -63,7 +63,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   aria-required={required ? 'true' : 'false'}
                   aria-invalid="false"
                   aria-describedby={`${name}-error ${name}-help`}
-                  class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  class="input-field border-border text-md bg-muted/50 text-foreground focus:ring-primary focus:border-primary block w-full rounded-lg border px-4 py-3 transition-colors focus:ring-2 focus:outline-none"
                 >
                   {options.map(({ value, label }) => (
                     <option value={value} selected={typeof defaultValue !== 'undefined' && defaultValue === value}>
@@ -82,7 +82,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                   aria-required={required ? 'true' : 'false'}
                   aria-invalid="false"
                   aria-describedby={`${name}-error ${name}-help`}
-                  class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  class="input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:ring-primary focus:border-primary block w-full rounded-lg border px-4 py-3 transition-colors focus:ring-2 focus:outline-none"
                 />
               )}
 
@@ -94,7 +94,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
                 style="display: none;"
               />
 
-              <div id={`${name}-help`} class="sr-only field-help-text">
+              <div id={`${name}-help`} class="field-help-text sr-only">
                 {required ? `${label} is required` : `${label} is optional`}
               </div>
             </div>
@@ -105,7 +105,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     textarea && (
       <div class="mb-6">
-        <label for="textarea" class="block mb-2 text-sm font-medium text-foreground">
+        <label for="textarea" class="text-foreground mb-2 block text-sm font-medium">
           {textarea.label}
           {textarea.required && (
             <span class="ml-1 text-red-500" aria-label="required">
@@ -122,7 +122,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           aria-required={textarea.required ? 'true' : 'false'}
           aria-invalid="false"
           aria-describedby="textarea-error textarea-help"
-          class="block px-4 py-3 w-full rounded-lg border transition-colors input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
+          class="input-field border-border text-md bg-muted/50 text-foreground placeholder:text-muted-foreground focus:ring-primary focus:border-primary resize-vertical block w-full rounded-lg border px-4 py-3 transition-colors focus:ring-2 focus:outline-none"
         />
 
         <div
@@ -133,7 +133,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
           style="display: none;"
         />
 
-        <div id="textarea-help" class="sr-only field-help-text">
+        <div id="textarea-help" class="field-help-text sr-only">
           {textarea.required ? `${textarea.label} is required` : `${textarea.label} is optional`}
         </div>
       </div>
@@ -142,18 +142,18 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
 
   {
     disclaimer && (
-      <div class="flex items-start mt-3 mb-6">
-        <div class="flex mt-0.5">
+      <div class="mt-3 mb-6 flex items-start">
+        <div class="mt-0.5 flex">
           <input
             id="disclaimer"
             name="disclaimer"
             type="checkbox"
             aria-describedby="disclaimer-help"
-            class="mt-1 w-4 h-4 rounded border transition-colors cursor-pointer border-border text-primary bg-background focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            class="border-border text-primary bg-background focus:ring-primary mt-1 h-4 w-4 cursor-pointer rounded border transition-colors focus:ring-2 focus:ring-offset-2"
           />
         </div>
         <div class="ml-3">
-          <label for="disclaimer" class="text-sm cursor-pointer select-none text-muted-foreground">
+          <label for="disclaimer" class="text-muted-foreground cursor-pointer text-sm select-none">
             {disclaimer.label}
           </label>
           <div id="disclaimer-help" class="sr-only">
@@ -166,7 +166,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
 
   {
     button && (
-      <div class="grid mt-10">
+      <div class="mt-10 grid">
         <Button variant="primary" type="submit" aria-describedby="submit-status">
           {button}
         </Button>
@@ -179,7 +179,7 @@ const { inputs, textarea, disclaimer, button = 'Contact us', description = '', f
   {
     description && (
       <div class="mt-3 text-center">
-        <p id="form-description" class="text-sm text-muted-foreground">
+        <p id="form-description" class="text-muted-foreground text-sm">
           {description}
         </p>
       </div>

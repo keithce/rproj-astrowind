@@ -45,14 +45,14 @@ const metadata = {
     <Fragment slot="subtitle">
       <span class="sm:inline">
         <span class="font-bold">From Vision to Vibration - Creating Work That Moves People</span>
-        <span class="block mb-1"
+        <span class="mb-1 block"
           >Guidance through your technical and artistic landscape to help your work achieve its fullest resonance.</span
         >
       </span>
     </Fragment>
   </Hero>
 
-  <!-- Features Widget *************** -->
+  {/* Features Widget ****************/}
 
   <Features
     id="features"
@@ -87,7 +87,7 @@ const metadata = {
     ]}
   >
     <Fragment slot="bg">
-      <div class="absolute inset-0 bg-background dark:bg-transparent"></div>
+      <div class="bg-background absolute inset-0 dark:bg-transparent"></div>
     </Fragment>
   </Features>
 
@@ -133,7 +133,7 @@ const metadata = {
     }}
   >
     <Fragment slot="content">
-      <h2 class="mb-2 text-2xl font-bold tracking-tight text-foreground/80 sm:text-3xl">About me</h2>
+      <h2 class="text-foreground/80 mb-2 text-2xl font-bold tracking-tight sm:text-3xl">About me</h2>
       <p>
         Welcome to my creative journey. My work is a testament to my commitment to bringing ideas to life, where each
         pixel becomes a brushstroke in the canvas of imagination.
@@ -148,7 +148,7 @@ const metadata = {
     </Fragment>
 
     <Fragment slot="bg">
-      <div class="absolute inset-0 bg-background/70 dark:bg-transparent"></div>
+      <div class="bg-background/70 absolute inset-0 dark:bg-transparent"></div>
     </Fragment>
   </Content>
 
@@ -216,7 +216,7 @@ const metadata = {
     ]}
   />
 
-  <!-- Steps Widget ****************** -->
+  {/* Steps Widget *******************/}
 
   <Steps
     title="Let's bring your vision to life together – here's how we'll make it happen."
@@ -250,7 +250,7 @@ const metadata = {
     }}
   />
 
-  <!-- Features2 Widget ************** -->
+  {/* Features2 Widget ***************/}
 
   <Features2
     title="Creators & Resources I Trust"
@@ -372,11 +372,11 @@ const metadata = {
     ]}
   >
     <Fragment slot="bg">
-      <div class="absolute inset-0 bg-accent/50"></div>
+      <div class="bg-accent/50 absolute inset-0"></div>
     </Fragment>
   </Features2>
 
-  <!-- HighlightedPosts Widget ******* -->
+  {/* HighlightedPosts Widget ********/}
 
   <BlogLatestPosts
     title="Find More in My Blog"
@@ -384,7 +384,7 @@ const metadata = {
     showContextualLinks={false}
   />
 
-  <!-- CallToAction Widget *********** -->
+  {/* CallToAction Widget ************/}
 
   <CallToAction
     actions={[

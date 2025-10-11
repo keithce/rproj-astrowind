@@ -24,7 +24,7 @@ const relatedPosts = post.tags ? await getRelatedPosts(post, 4) : [];
       title="Related Posts"
       linkText="View All Posts"
       linkUrl={getBlogPermalink()}
-      postIds={relatedPosts.map((post) => post.id)}
+      postIds={relatedPosts.map(post => post.id)}
     />
   ) : null
 }

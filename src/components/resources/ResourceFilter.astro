@@ -1,0 +1,113 @@
+---
+export interface Props {
+  categories: string[];
+  types: string[];
+  selectedCategory?: string;
+  selectedType?: string;
+  class?: string;
+}
+
+const { categories, types, selectedCategory, selectedType, class: className = '' } = Astro.props;
+
+// Helper function to create filter URL
+const createFilterUrl = (category?: string, type?: string, search?: string) => {
+  const params = new URLSearchParams();
+  if (search) params.set('q', search);
+
+  const queryString = params.toString();
+
+  if (category) {
+    return `/resources/category/${category}/1${queryString ? `?${queryString}` : ''}`;
+  } else if (type) {
+    return `/resources/type/${type}/1${queryString ? `?${queryString}` : ''}`;
+  } else {
+    return `/resources/all/1${queryString ? `?${queryString}` : ''}`;
+  }
+};
+
+// Get current search query from URL
+const urlParams = new URLSearchParams(Astro.url.search);
+const searchQuery = urlParams.get('q');
+---
+
+<div class={`rr-filter mb-8 ${className}`}>
+  <!-- Category Filter -->
+  <div class="mb-6">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-foreground text-xl font-bold">Filter by Category</h2>
+      {
+        selectedCategory && (
+          <a
+            href={createFilterUrl(undefined, selectedType, searchQuery || undefined)}
+            class="text-primary hover:text-accent text-sm transition-colors"
+          >
+            Clear category
+          </a>
+        )
+      }
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      {
+        categories.map(category => (
+          <a
+            href={createFilterUrl(category, selectedType, searchQuery || undefined)}
+            class={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+              selectedCategory === category
+                ? 'bg-primary text-white'
+                : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
+            }`}
+          >
+            {category}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Type Filter -->
+  <div class="mb-6">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-foreground text-xl font-bold">Filter by Type</h2>
+      {
+        selectedType && (
+          <a
+            href={createFilterUrl(selectedCategory, undefined, searchQuery || undefined)}
+            class="text-primary hover:text-accent text-sm transition-colors"
+          >
+            Clear type
+          </a>
+        )
+      }
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      {
+        types.map(type => (
+          <a
+            href={createFilterUrl(selectedCategory, type, searchQuery || undefined)}
+            class={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+              selectedType === type ? 'bg-primary text-white' : 'bg-muted hover:bg-muted-foreground/20 text-foreground'
+            }`}
+          >
+            {type}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Clear All Filters -->
+  {
+    (selectedCategory || selectedType) && (
+      <div class="border-border border-t pt-4">
+        <a
+          href={createFilterUrl(undefined, undefined, searchQuery || undefined)}
+          class="text-primary hover:text-accent text-sm font-medium transition-colors"
+        >
+          Clear all filters
+        </a>
+      </div>
+    )
+  }
+</div>

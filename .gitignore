@@ -2,7 +2,7 @@
 dist/
 .output/
 public/pagefind/
-src/assets/images/notion
+src/content/notion/images
 
 # dependencies
 node_modules/
@@ -30,6 +30,30 @@ pnpm-debug.log*
 .vercel
 .vscode/
 .cursor/rules/isolation_rules/
+
+# Temporary files from Notion
+src/assets/images/notion/
+
+# Build metadata and temp working dirs
+tmp/
+**/*.tsbuildinfo
+test-results/
+playwright-report/
+
+# Vendored package build artifacts (keep only sources)
+vendor/notion-astro-loader/src/dist/
+vendor/notion-astro-loader/src/node_modules/
+vendor/notion-astro-loader/src/.github/
+
+# Added by Claude Task Master
+# Logs
+logs
+*.log
+dev-debug.log
+# Dependency directories
+# Environment variables
+# Editor directories and files
+.vscode
 *.suo
 *.ntvs*
 *.njsproj

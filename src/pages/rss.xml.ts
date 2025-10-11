@@ -19,7 +19,7 @@ export const GET = async () => {
     description: METADATA?.description || '',
     site: import.meta.env.SITE,
 
-    items: posts.map((post) => ({
+    items: posts.map(post => ({
       link: getPermalink(post.permalink, 'post'),
       title: post.title,
       description: post.excerpt,

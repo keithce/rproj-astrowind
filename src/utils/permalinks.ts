@@ -7,10 +7,10 @@ import { trim } from '~/utils/utils';
 export const trimSlash = (s: string) => trim(trim(s, '/'));
 const createPath = (...params: string[]) => {
   const paths = params
-    .map((el) => trimSlash(el))
-    .filter((el) => !!el)
+    .map(el => trimSlash(el))
+    .filter(el => !!el)
     .join('/');
-  return '/' + paths + (SITE.trailingSlash && paths ? '/' : '');
+  return `/${paths}${SITE.trailingSlash && paths ? '/' : ''}`;
 };
 
 const BASE_PATHNAME = SITE.base || '/';
@@ -18,7 +18,7 @@ const BASE_PATHNAME = SITE.base || '/';
 export const cleanSlug = (text = '') =>
   trimSlash(text)
     .split('/')
-    .map((slug) => slugify(slug))
+    .map(slug => slugify(slug))
     .join('/');
 
 export const BLOG_BASE = cleanSlug(APP_BLOG?.list?.pathname);
@@ -33,7 +33,7 @@ export const getCanonical = (path = ''): string | URL => {
   if (SITE.trailingSlash == false && path && url.endsWith('/')) {
     return url.slice(0, -1);
   } else if (SITE.trailingSlash == true && path && !url.endsWith('/')) {
-    return url + '/';
+    return `${url}/`;
   }
   return url;
 };
@@ -98,38 +98,40 @@ export const getBlogTagPermalink = (): string => getPermalink(TAG_BASE);
 
 /** */
 export const getAsset = (path: string): string =>
-  '/' +
-  [BASE_PATHNAME, path]
-    .map((el) => trimSlash(el))
-    .filter((el) => !!el)
-    .join('/');
+  `/${[BASE_PATHNAME, path]
+    .map(el => trimSlash(el))
+    .filter(el => !!el)
+    .join('/')}`;
 
 /** */
 const definitivePermalink = (permalink: string): string => createPath(BASE_PATHNAME, permalink);
 
 /** */
-export const applyGetPermalinks = (menu: object = {}) => {
+export const applyGetPermalinks = (menu: unknown = {}): unknown => {
   if (Array.isArray(menu)) {
-    return menu.map((item) => applyGetPermalinks(item));
+    return menu.map(item => applyGetPermalinks(item));
   } else if (typeof menu === 'object' && menu !== null) {
-    const obj = {};
-    for (const key in menu) {
+    const obj: Record<string, unknown> = {};
+    const menuObj = menu as Record<string, unknown>;
+    for (const key in menuObj) {
       if (key === 'href') {
-        if (typeof menu[key] === 'string') {
-          obj[key] = getPermalink(menu[key]);
-        } else if (typeof menu[key] === 'object') {
-          if (menu[key].type === 'home') {
+        const hrefValue = menuObj[key];
+        if (typeof hrefValue === 'string') {
+          obj[key] = getPermalink(hrefValue);
+        } else if (typeof hrefValue === 'object' && hrefValue !== null) {
+          const hrefObj = hrefValue as Record<string, unknown>;
+          if (hrefObj.type === 'home') {
             obj[key] = getHomePermalink();
-          } else if (menu[key].type === 'blog') {
+          } else if (hrefObj.type === 'blog') {
             obj[key] = getBlogPermalink();
-          } else if (menu[key].type === 'asset') {
-            obj[key] = getAsset(menu[key].url);
-          } else if (menu[key].url) {
-            obj[key] = getPermalink(menu[key].url, menu[key].type);
+          } else if (hrefObj.type === 'asset') {
+            obj[key] = getAsset(hrefObj.url as string);
+          } else if (hrefObj.url) {
+            obj[key] = getPermalink(hrefObj.url as string, hrefObj.type as string);
           }
         }
       } else {
-        obj[key] = applyGetPermalinks(menu[key]);
+        obj[key] = applyGetPermalinks(menuObj[key]);
       }
     }
     return obj;

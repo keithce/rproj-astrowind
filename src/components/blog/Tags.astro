@@ -18,13 +18,13 @@ const { tags, class: className = 'text-sm', title = undefined, isCategory = fals
   tags && Array.isArray(tags) && (
     <>
       {title !== undefined && (
-        <span class="align-super font-normal underline underline-offset-4 decoration-2 text-muted dark:text-muted-foreground">
+        <span class="text-muted dark:text-muted-foreground align-super font-normal underline decoration-2 underline-offset-4">
           {title}
         </span>
       )}
       <ul class={className}>
-        {tags.map((tag) => (
-          <li class="bg-primary/10 dark:bg-primary/20 inline-block mr-2 rtl:mr-0 rtl:ml-2 mb-2 py-0.5 px-2 lowercase font-medium">
+        {tags.map(tag => (
+          <li class="bg-primary/10 dark:bg-primary/20 mr-2 mb-2 inline-block px-2 py-0.5 font-medium lowercase rtl:mr-0 rtl:ml-2">
             {!APP_BLOG?.tag?.isEnabled ? (
               tag.title
             ) : (

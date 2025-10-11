@@ -1,0 +1,248 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '~/layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+import { cleanSlug, getPermalink } from '~/utils/permalinks';
+import { getNotionEntryTitle } from '~/utils/notion';
+
+export const prerender = true;
+
+// Local, minimal types to keep lint/type errors away while staying descriptive
+type RRData = {
+  Name?: string;
+  Source?: string;
+  Tags?: string[];
+  Type?: string[];
+  Category?: string[];
+  Keywords?: string[];
+  'AI summary'?: string;
+  properties?: Record<string, unknown>;
+  flat?: Record<string, unknown>;
+};
+type RREntry = { id: string; data: RRData } & Record<string, unknown>;
+
+export const getStaticPaths = (async () => {
+  const getCollectionLoose = getCollection as unknown as (c: string) => Promise<RREntry[]>;
+  const entries = await getCollectionLoose('resources');
+  const used = new Map<string, number>();
+  return entries.map((entry: RREntry) => {
+    const name = getNotionEntryTitle(entry);
+    const base = cleanSlug(name);
+    const n = (used.get(base) ?? 0) + 1;
+    used.set(base, n);
+    const slug = n > 1 ? `${base}-${n}` : base;
+    return { params: { slug }, props: { entry } };
+  });
+}) satisfies GetStaticPaths;
+
+// Properly typed props using the generic type
+type Props = { entry: RREntry };
+type RRRendered = { rendered?: { html?: string } };
+const { entry } = Astro.props as Props;
+const data = entry.data as RRData;
+
+// Derive a flat map from raw Notion properties if `data.flat` isn't present
+type NotionProp = Record<string, unknown> & { type?: string };
+function flattenProperties(props: Record<string, NotionProp> | undefined): Record<string, unknown> {
+  if (!props || typeof props !== 'object') return {};
+  const out: Record<string, unknown> = {};
+  for (const [key, prop] of Object.entries(props)) {
+    const t = prop?.type as string | undefined;
+    let value: unknown;
+    switch (t) {
+      case 'number':
+        value = prop.number;
+        break;
+      case 'url':
+        value = typeof prop.url === 'string' && prop.url.trim() ? prop.url : undefined;
+        break;
+      case 'email':
+        value = prop.email ?? undefined;
+        break;
+      case 'phone_number':
+        value = prop.phone_number ?? undefined;
+        break;
+      case 'checkbox':
+        value = prop.checkbox;
+        break;
+      case 'select':
+        value = (prop as { select?: { name?: string } }).select?.name ?? null;
+        break;
+      case 'multi_select':
+        value = Array.isArray((prop as { multi_select?: Array<{ name?: string }> }).multi_select)
+          ? ((prop as { multi_select?: Array<{ name?: string }> }).multi_select || []).map(o => o?.name).filter(Boolean)
+          : [];
+        break;
+      case 'status':
+        value = (prop as { status?: { name?: string } }).status?.name ?? null;
+        break;
+      case 'title':
+        value = Array.isArray((prop as { title?: Array<{ plain_text?: string }> }).title)
+          ? ((prop as { title?: Array<{ plain_text?: string }> }).title || []).map(rt => rt?.plain_text || '').join('')
+          : '';
+        break;
+      case 'rich_text':
+        value = Array.isArray((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text)
+          ? ((prop as { rich_text?: Array<{ plain_text?: string }> }).rich_text || [])
+              .map(rt => rt?.plain_text || '')
+              .join('')
+          : '';
+        break;
+      case 'date':
+        // Use the full date object structure (start, end, time_zone) from transformed properties
+        value = (prop as { date?: { start?: Date; end?: Date | null; time_zone?: string | null } }).date ?? null;
+        break;
+      case 'created_time':
+        value = prop.created_time ?? undefined;
+        break;
+      case 'last_edited_time':
+        value = prop.last_edited_time ?? undefined;
+        break;
+      default:
+        value = prop;
+    }
+    if (value !== null && value !== undefined) {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+const title = data.Name || getNotionEntryTitle(entry) || 'Resource';
+const description = data['AI summary'] || data.Source || '';
+// Use the actual route slug parameter for canonical URL, fallback to sanitized title if needed
+const routeSlug = Astro.params.slug;
+const canonical = getPermalink(`/resources/${routeSlug || cleanSlug(title)}`, 'post');
+
+if (Astro.props && process.env.NOTION_TRACE === '1') {
+  const keys = Object.keys((data as Record<string, unknown>) || {});
+  console.debug('[resources:slug] id=', (entry as { id: string }).id, 'keys=', keys);
+}
+
+// Debug toggles: show property dump in non-production or when NOTION_TRACE=1
+const showDebug = process?.env?.NOTION_TRACE === '1' || import.meta.env.MODE !== 'production';
+const flatDataForDebug =
+  (data.flat as Record<string, unknown> | undefined) ??
+  flattenProperties(data.properties as Record<string, NotionProp> | undefined) ??
+  (() => {
+    const rest: Record<string, unknown> = { ...(data as Record<string, unknown>) };
+    delete (rest as Record<string, unknown>).properties;
+    return rest;
+  })();
+const propertyKeys = Object.keys((data.properties || {}) as Record<string, unknown>);
+const rawPropsForDebug: Record<string, unknown> = (data.properties || {}) as Record<string, unknown>;
+
+// Normalize commonly displayed fields using top-level, flat, or property fallback
+const flat = flatDataForDebug as Record<string, unknown>;
+const aiSummary = (data['AI summary'] as string | undefined) ?? (flat?.['AI summary'] as string | undefined);
+
+// Helper function to normalize fields to string[]
+const normalizeToStringArray = (value: unknown, flatValue?: unknown): string[] => {
+  if (Array.isArray(value)) return value as string[];
+  if (typeof value === 'string') return [value];
+  if (Array.isArray(flatValue)) return flatValue as string[];
+  if (typeof flatValue === 'string') return [flatValue];
+  return [];
+};
+
+const types = normalizeToStringArray(data.Type, flat?.['Type']);
+const categories = normalizeToStringArray(data.Category, flat?.['Category']);
+const tags = normalizeToStringArray((data as { Tags?: string[] }).Tags, flat?.['Tags']);
+const sourceUrl =
+  (data.Source as string | undefined) ??
+  (typeof flat?.['Source'] === 'string' ? (flat['Source'] as string) : undefined);
+---
+
+<Layout metadata={{ title, description, canonical }}>
+  <article class="prose prose-gray dark:prose-invert container mx-auto max-w-3xl px-4 py-8" data-pagefind-body>
+    <h1 class="mb-4">{title}</h1>
+
+    {
+      aiSummary && (
+        <details class="mb-6 rounded-lg border bg-white/60 p-4 dark:bg-gray-900/60">
+          <summary class="cursor-pointer text-base font-semibold select-none">AI summary</summary>
+          <div class="mt-3 text-base leading-relaxed">{aiSummary}</div>
+        </details>
+      )
+    }
+
+    {
+      showDebug && (
+        <details class="mt-6 rounded-lg border border-gray-200/60 bg-gray-50/60 dark:border-gray-700/60 dark:bg-gray-800/40">
+          <summary class="cursor-pointer px-3 py-2 text-sm font-medium select-none">Debug: Notion Properties</summary>
+          <div class="px-3 pt-2 pb-3 text-xs leading-relaxed">
+            <p class="mb-2 text-gray-700 dark:text-gray-300">Flat data (flattened values):</p>
+            <pre class="overflow-x-auto rounded-md bg-gray-100 p-3 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+              {JSON.stringify(flatDataForDebug, null, 2)}
+            </pre>
+            {propertyKeys.length > 0 && (
+              <div class="mt-4">
+                <p class="mb-2 text-gray-700 dark:text-gray-300">Raw Notion properties:</p>
+                <pre class="overflow-x-auto rounded-md bg-gray-100 p-3 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+                  {JSON.stringify(rawPropsForDebug, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </details>
+      )
+    }
+
+    {/* Render Notion page HTML content */}
+    {
+      (() => {
+        const renderedHtml = (entry as unknown as RRRendered).rendered?.html;
+        return renderedHtml ? <div class="notion-content mt-10" set:html={renderedHtml} /> : null;
+      })()
+    }
+    <div id="debug-rendered-present" style="display:none">
+      {(entry as unknown as RRRendered).rendered ? '1' : '0'}
+    </div>
+
+    <footer class="mt-10 space-y-4">
+      {
+        types.length > 0 && (
+          <p class="mt-4 text-sm">
+            <strong>Type:</strong> {types.join(', ')}
+          </p>
+        )
+      }
+      {
+        categories.length > 0 && (
+          <p class="mt-2 text-sm">
+            <strong>Category:</strong> {categories.join(', ')}
+          </p>
+        )
+      }
+      {
+        tags.length > 0 && (
+          <p class="mt-2 text-sm">
+            <strong>Tags:</strong> {tags.join(', ')}
+          </p>
+        )
+      }
+
+      {
+        sourceUrl && (
+          <p class="text-sm">
+            <strong>Source:</strong>{' '}
+            <a class="underline underline-offset-2" href={sourceUrl} rel="noopener noreferrer" target="_blank">
+              {sourceUrl}
+            </a>
+          </p>
+        )
+      }
+
+      {
+        data.Keywords?.length && (
+          <div class="flex flex-wrap gap-2">
+            {data.Keywords.map((kw: string) => (
+              <span class="bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-100 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium">
+                {kw}
+              </span>
+            ))}
+          </div>
+        )
+      }
+    </footer>
+  </article>
+</Layout>

@@ -32,7 +32,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero Section -->
+  {/* Hero Section*/}
   <Hero
     title={`Capturing Life's <span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)]">Beautiful Moments</span>`}
     subtitle="Professional photographer specializing in creating timeless memories through artistic vision, technical excellence, and a passion for storytelling."
@@ -58,52 +58,52 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     showScrollIndicator={true}
   />
 
-  <!-- Portfolio Section -->
-  <section id="portfolio" class="py-20 bg-[var(--color-background)] dark:bg-[var(--color-background)]">
-    <div class="px-4 mx-auto max-w-7xl">
+  {/* Portfolio Section*/}
+  <section id="portfolio" class="bg-[var(--color-background)] py-20 dark:bg-[var(--color-background)]">
+    <div class="mx-auto max-w-7xl px-4">
       <div class="mb-16 text-center">
-        <h2 class="text-4xl md:text-5xl font-bold text-[var(--color-foreground)] mb-6">Photography Portfolio</h2>
-        <p class="text-xl text-[var(--color-muted-foreground)] max-w-3xl mx-auto mb-8">
+        <h2 class="mb-6 text-4xl font-bold text-[var(--color-foreground)] md:text-5xl">Photography Portfolio</h2>
+        <p class="mx-auto mb-8 max-w-3xl text-xl text-[var(--color-muted-foreground)]">
           Explore our diverse collection of photography services, each crafted with artistic vision and professional
           expertise. All images are delivered through our optimized Cloudinary CDN for the best viewing experience.
         </p>
 
-        <!-- Navigation Buttons -->
-        <div class="flex flex-wrap gap-3 justify-center sm:gap-4">
+        {/* Navigation Buttons*/}
+        <div class="flex flex-wrap justify-center gap-3 sm:gap-4">
           <a
             href="#landscape"
-            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+            class="inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition-colors duration-200 hover:bg-[var(--color-secondary)] hover:shadow-md sm:text-base"
           >
             Landscape
           </a>
           <a
             href="#portrait"
-            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+            class="inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition-colors duration-200 hover:bg-[var(--color-secondary)] hover:shadow-md sm:text-base"
           >
             Portrait
           </a>
           <a
             href="#boudoir"
-            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+            class="inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition-colors duration-200 hover:bg-[var(--color-secondary)] hover:shadow-md sm:text-base"
           >
             Boudoir
           </a>
           <a
             href="#maternity"
-            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+            class="inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition-colors duration-200 hover:bg-[var(--color-secondary)] hover:shadow-md sm:text-base"
           >
             Maternity
           </a>
           <a
             href="#children"
-            class="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-[var(--color-primary-foreground)] font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+            class="inline-flex items-center rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition-colors duration-200 hover:bg-[var(--color-secondary)] hover:shadow-md sm:text-base"
           >
             Children
           </a>
         </div>
       </div>
 
-      <!-- Landscape Photography -->
+      {/* Landscape Photography*/}
       <div id="landscape" class="mb-20">
         <CategoryHero
           title="Landscape Photography"
@@ -113,7 +113,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         <div>
           <PhotoSwiper
             client:visible
-            images={landscapeImages.map((i) => ({
+            images={landscapeImages.map(i => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -126,7 +126,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Portrait Photography -->
+      {/* Portrait Photography*/}
       <div id="portrait" class="mb-20">
         <CategoryHero
           title="Portrait Photography"
@@ -136,7 +136,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         <div>
           <PhotoSwiper
             client:visible
-            images={portraitImages.map((i) => ({
+            images={portraitImages.map(i => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -149,7 +149,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Boudoir Photography -->
+      {/* Boudoir Photography*/}
       <div id="boudoir" class="mb-20">
         <CategoryHero
           title="Boudoir Photography"
@@ -159,7 +159,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         <div>
           <PhotoSwiper
             client:visible
-            images={boudoirImages.map((i) => ({
+            images={boudoirImages.map(i => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -172,7 +172,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Maternity Photography -->
+      {/* Maternity Photography*/}
       <div id="maternity" class="mb-20">
         <CategoryHero
           title="Maternity Photography"
@@ -182,7 +182,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         <div>
           <PhotoSwiper
             client:visible
-            images={maternityImages.map((i) => ({
+            images={maternityImages.map(i => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -195,7 +195,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         </div>
       </div>
 
-      <!-- Children Photography -->
+      {/* Children Photography*/}
       <div id="children" class="mb-20">
         <CategoryHero
           title="Children Photography"
@@ -205,7 +205,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
         <div>
           <PhotoSwiper
             client:visible
-            images={childrenImages.map((i) => ({
+            images={childrenImages.map(i => ({
               src: i.src,
               fullSrc: getCloudinaryImageUrl(i.publicId, {
                 quality: 'auto',
@@ -220,7 +220,7 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     </div>
   </section>
 
-  <!-- Call to Action -->
+  {/* Call to Action*/}
   <CallToAction
     title="Ready to Create Something Beautiful?"
     subtitle="Let's work together to capture your vision and create memories that will last a lifetime."
@@ -234,14 +234,14 @@ const relatedServices = getRelatedPages('/services/color', 3, true);
     ]}
   />
 
-  <!-- Contact Section -->
-  <section id="contact" class="py-20 bg-[var(--color-card)] dark:bg-[var(--color-card)]">
+  {/* Contact Section*/}
+  <section id="contact" class="bg-[var(--color-card)] py-20 dark:bg-[var(--color-card)]">
     <NotionContact defaultService="Color" />
   </section>
 
-  <!-- Related Services -->
-  <section class="py-12 bg-muted/30">
-    <div class="px-4 mx-auto max-w-7xl sm:px-6">
+  {/* Related Services*/}
+  <section class="bg-muted/30 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
       <RelatedPages pages={relatedServices} title="Complete Your Visual Story" variant="cards" />
     </div>
   </section>

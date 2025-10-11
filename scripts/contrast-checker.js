@@ -54,7 +54,7 @@ const COLOR_COMBINATIONS = {
  * Calculate relative luminance of a color
  */
 function getLuminance(r, g, b) {
-  const [rs, gs, bs] = [r, g, b].map((c) => {
+  const [rs, gs, bs] = [r, g, b].map(c => {
     c = c / 255;
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   });
@@ -174,8 +174,8 @@ function testAllCombinations() {
     console.log('\n⚠️  RECOMMENDATIONS');
     console.log('='.repeat(50));
     results
-      .filter((r) => !r.compliance.AA_NORMAL)
-      .forEach((result) => {
+      .filter(r => !r.compliance.AA_NORMAL)
+      .forEach(result => {
         console.log(`• ${result.theme} theme - ${result.combination}: Consider adjusting colors for better contrast`);
       });
   } else {

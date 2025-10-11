@@ -2,6 +2,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { defineConfig } from 'astro/config';
+import { config } from 'dotenv';
+
+// Load environment variables explicitly
+config();
 
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
@@ -21,6 +25,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   output: 'server',
+  experimental: {
+    liveContentCollections: true,
+  },
   adapter: vercelServerless({
     webAnalytics: {
       enabled: true,
@@ -78,6 +85,9 @@ export default defineConfig({
     domains: ['cdn.pixabay.com', 'images.unsplash.com', 'images.pexels.com', 'res.cloudinary.com'],
     responsiveStyles: true,
     layout: 'constrained',
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.amazonaws.com' },
+    ],
   },
 
   markdown: {

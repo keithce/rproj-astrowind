@@ -1,0 +1,109 @@
+---
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '~/components/starwind/sheet';
+import { Button } from '~/components/starwind/button';
+import Filter from '@tabler/icons/outline/filter.svg';
+import type { Taxonomy } from '~/types';
+
+export interface Props {
+  tags: Taxonomy[];
+  selectedTag?: string;
+  class?: string;
+}
+
+const { tags, selectedTag, class: className = '' } = Astro.props;
+
+// Helper function to create filter URL
+const createFilterUrl = (tag?: string, search?: string) => {
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+
+  const queryString = params.toString();
+
+  if (tag) {
+    return `/til/${tag}/1${queryString ? `?${queryString}` : ''}`;
+  } else {
+    return `/til/all/1${queryString ? `?${queryString}` : ''}`;
+  }
+};
+
+// Get current search query from URL
+const urlParams = new URLSearchParams(Astro.url.search);
+const searchQuery = urlParams.get('search');
+---
+
+<div class={`til-filter-sheet ${className}`}>
+  <Sheet>
+    <SheetTrigger asChild>
+      <Button variant="outline" size="sm" class="gap-2">
+        <Filter class="size-4" />
+        Filter TIL
+      </Button>
+    </SheetTrigger>
+
+    <SheetContent side="top" class="h-auto max-h-[80vh] w-full overflow-y-auto">
+      <SheetHeader class="border-border border-b pb-6">
+        <SheetTitle class="text-2xl font-bold">Filter TIL Posts</SheetTitle>
+        <p class="text-muted-foreground mt-2 text-sm">Narrow down your TIL search by tag</p>
+      </SheetHeader>
+
+      <div class="space-y-6 py-6">
+        <!-- Tag Filter -->
+        <div class="bg-muted/30 rounded-lg p-6">
+          <div class="mb-6 flex items-center justify-between">
+            <div>
+              <h2 class="text-foreground mb-1 text-xl font-semibold">Filter by Tag</h2>
+              <p class="text-muted-foreground text-sm">Choose a tag to filter TIL posts</p>
+            </div>
+            {
+              selectedTag && (
+                <a
+                  href={createFilterUrl(undefined, searchQuery || undefined)}
+                  class="text-primary hover:text-accent hover:bg-primary/10 rounded-md px-3 py-1 text-sm font-medium transition-colors"
+                >
+                  Clear tag
+                </a>
+              )
+            }
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            {
+              tags.map(tag => (
+                <a
+                  href={createFilterUrl(tag.slug, searchQuery || undefined)}
+                  class={`rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                    selectedTag === tag.slug
+                      ? 'bg-primary hover:bg-primary/90 text-white shadow-md'
+                      : 'bg-background border-border text-foreground hover:bg-muted hover:border-primary/50 border shadow-sm'
+                  }`}
+                >
+                  #{tag.title}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        <!-- Clear All Filters -->
+        {
+          selectedTag && (
+            <div class="bg-destructive/10 border-destructive/20 rounded-lg border p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-foreground mb-1 text-sm font-medium">Active Filters</h3>
+                  <p class="text-muted-foreground text-xs">Clear all applied filters</p>
+                </div>
+                <a
+                  href={createFilterUrl(undefined, searchQuery || undefined)}
+                  class="text-destructive bg-background border-destructive/20 hover:bg-destructive/10 hover:border-destructive/30 inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium transition-all duration-200"
+                >
+                  Clear all filters
+                </a>
+              </div>
+            </div>
+          )
+        }
+      </div>
+    </SheetContent>
+  </Sheet>
+</div>

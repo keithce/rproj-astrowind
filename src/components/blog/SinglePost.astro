@@ -21,6 +21,14 @@ export interface Props {
 export const prerender = true;
 const { post, url } = Astro.props;
 
+// Helper function to safely convert Date to ISO string for datetime attribute
+function getISODateString(date: Date): string | undefined {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    return undefined;
+  }
+  return date.toISOString();
+}
+
 // Generate contextual links based on post content
 // const postContent = typeof post.content === 'string' ? post.content : ''; // Unused variable
 // const linkSuggestions = generateLinkSuggestions(postContent, Astro.url.pathname); // Unused variable
@@ -59,18 +67,20 @@ const serviceLinks = [
 ];
 ---
 
-<section class="py-8 mx-auto sm:py-16 lg:py-20">
+<section class="mx-auto py-8 sm:py-16 lg:py-20">
   <article data-pagefind-body>
     <header class={post.image ? 'intersect-once intersect-quarter' : 'intersect-once intersect-quarter'}>
-      <div class="flex flex-col justify-between max-w-3xl px-4 mx-auto mt-0 mb-2 sm:flex-row sm:px-6 sm:items-center">
+      <div class="mx-auto mt-0 mb-2 flex max-w-3xl flex-col justify-between px-4 sm:flex-row sm:items-center sm:px-6">
         <p>
-          <Icon name="tabler:clock" class="w-4 h-4 inline-block -mt-0.5 text-muted-foreground" />
-          <time datetime={String(post.publishDate)} class="inline-block">{getFormattedDate(post.publishDate)}</time>
+          <Icon name="tabler:clock" class="text-muted-foreground -mt-0.5 inline-block h-4 w-4" />
+          <time datetime={getISODateString(post.publishDate)} class="inline-block"
+            >{getFormattedDate(post.publishDate)}</time
+          >
           {
             post.author && (
               <>
                 {' '}
-                · <Icon name="tabler:user" class="w-4 h-4 inline-block -mt-0.5 text-muted-foreground" />
+                · <Icon name="tabler:user" class="text-muted-foreground -mt-0.5 inline-block h-4 w-4" />
                 <span class="inline-block">{post.author}</span>
               </>
             )
@@ -97,11 +107,11 @@ const serviceLinks = [
       </div>
 
       <h1
-        class="max-w-3xl px-4 mx-auto text-4xl font-bold tracking-tighter sm:px-6 md:text-5xl leading-tighter font-heading"
+        class="leading-tighter font-heading mx-auto max-w-3xl px-4 text-4xl font-bold tracking-tighter sm:px-6 md:text-5xl"
       >
         {post.title}
       </h1>
-      <p class="max-w-3xl px-4 mx-auto mt-4 mb-8 text-xl text-justify sm:px-6 md:text-2xl text-muted-foreground">
+      <p class="text-muted-foreground mx-auto mt-4 mb-8 max-w-3xl px-4 text-justify text-xl sm:px-6 md:text-2xl">
         {post.excerpt}
       </p>
 
@@ -109,7 +119,7 @@ const serviceLinks = [
         post.image ? (
           <Image
             src={post.image}
-            class="max-w-full lg:max-w-[900px] mx-auto mb-6 sm:rounded-md bg-muted"
+            class="bg-muted mx-auto mb-6 max-w-full sm:rounded-md lg:max-w-[900px]"
             widths={[400, 900]}
             sizes="(max-width: 900px) 400px, 900px"
             alt={post?.excerpt || ''}
@@ -119,25 +129,25 @@ const serviceLinks = [
             decoding="async"
           />
         ) : (
-          <div class="max-w-3xl px-4 mx-auto sm:px-6">
-            <div class="border-t border-border" />
+          <div class="mx-auto max-w-3xl px-4 sm:px-6">
+            <div class="border-border border-t" />
           </div>
         )
       }
     </header>
-    <div class="max-w-3xl px-6 mx-auto mt-8 prose prose-lg sm:px-6 dark:prose-invert">
+    <div class="prose prose-lg dark:prose-invert mx-auto mt-8 max-w-3xl px-6 sm:px-6">
       <slot />
     </div>
-    <div data-pagefind-ignore class="flex flex-col justify-between max-w-3xl px-6 mx-auto mt-8 sm:px-6 sm:flex-row">
+    <div data-pagefind-ignore class="mx-auto mt-8 flex max-w-3xl flex-col justify-between px-6 sm:flex-row sm:px-6">
       <PostTags tags={post.tags} class="mr-5 rtl:mr-0 rtl:ml-5" />
-      <SocialShare url={url} text={post.title} class="mt-5 align-middle sm:mt-1 text-muted-foreground" />
+      <SocialShare url={url} text={post.title} class="text-muted-foreground mt-5 align-middle sm:mt-1" />
     </div>
 
     <!-- Contextual Service Promotion -->
-    <div class="max-w-3xl px-6 mx-auto mt-12 sm:px-6">
-      <div class="border-t border-border pt-8">
-        <div class="bg-accent/10 rounded-lg p-6 mb-8">
-          <h3 class="text-xl font-semibold text-foreground mb-4">Interested in Working Together?</h3>
+    <div class="mx-auto mt-12 max-w-3xl px-6 sm:px-6">
+      <div class="border-border border-t pt-8">
+        <div class="bg-accent/10 mb-8 rounded-lg p-6">
+          <h3 class="text-foreground mb-4 text-xl font-semibold">Interested in Working Together?</h3>
           <p class="text-muted-foreground mb-6">
             If this article resonated with you, explore how our services can help bring your creative projects to life.
           </p>

@@ -16,10 +16,23 @@ export type TilEntry = CollectionEntry<'til'>;
  * Fetch all TIL entries
  */
 export const fetchTilEntries = async (): Promise<TilEntry[]> => {
-  const tilEntries = await getCollection('til', ({ data }) => {
-    return !data.draft;
-  });
-  return tilEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
+  console.log('🔍 [TIL] Starting to fetch TIL entries...');
+  try {
+    const tilEntries = await getCollection('til', ({ data }) => {
+      console.log('🔍 [TIL] Processing entry:', data.title, 'draft:', data.draft);
+      return !data.draft;
+    });
+    console.log('🔍 [TIL] Total entries found:', tilEntries.length);
+    const sorted = tilEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
+    console.log(
+      '🔍 [TIL] Sorted entries:',
+      sorted.map(e => e.data.title)
+    );
+    return sorted;
+  } catch (error) {
+    console.error('❌ [TIL] Error fetching TIL entries:', error);
+    return [];
+  }
 };
 
 /**
@@ -29,9 +42,9 @@ export const findTilTags = async (): Promise<Taxonomy[]> => {
   const entries = await fetchTilEntries();
   const tagMap = new Map<string, Taxonomy>();
 
-  entries.forEach((entry) => {
+  entries.forEach(entry => {
     if (Array.isArray(entry.data.tags)) {
-      entry.data.tags.forEach((tag) => {
+      entry.data.tags.forEach(tag => {
         const slug = tag.toLowerCase().replace(/\s+/g, '-');
         tagMap.set(slug, { slug, title: tag });
       });
@@ -48,7 +61,7 @@ export const findTilEntriesByTag = async (tag: string): Promise<TilEntry[]> => {
   const entries = await fetchTilEntries();
   const normalizedTag = tag.toLowerCase();
 
-  return entries.filter((entry) => entry.data.tags.some((t) => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag));
+  return entries.filter(entry => entry.data.tags.some(t => t.toLowerCase().replace(/\s+/g, '-') === normalizedTag));
 };
 
 /**
@@ -72,10 +85,10 @@ export const groupTilEntriesByDay = async (entries?: TilEntry[]) => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   // Initialize all days
-  days.forEach((day) => grouped.set(day, []));
+  days.forEach(day => grouped.set(day, []));
 
   // Group entries by day
-  tilEntries.forEach((entry) => {
+  tilEntries.forEach(entry => {
     const day = days[entry.data.date.getDay()];
     const existingEntries = grouped.get(day) || [];
     existingEntries.push(entry);
@@ -108,7 +121,7 @@ export const getEntriesForWeek = async (weekDate: Date): Promise<TilEntry[]> => 
   const { startDate, endDate } = getWeekRange(weekDate);
   const entries = await fetchTilEntries();
 
-  return entries.filter((entry) => {
+  return entries.filter(entry => {
     const entryDate = entry.data.date;
     return entryDate >= startDate && entryDate <= endDate;
   });

@@ -122,7 +122,7 @@ export const SEO_OPTIMIZATION = {
 export function optimizeSentenceLength(text: string, maxLength: number = 20): string {
   return text
     .split(/(?<=[.!?])\s+/)
-    .map((sentence) => {
+    .map(sentence => {
       const words = sentence.split(' ');
       if (words.length > maxLength) {
         // Find natural break points
@@ -185,7 +185,7 @@ export function optimizeParagraphStructure(text: string): string {
     text
       // Break long paragraphs at natural points
       .split('\n\n')
-      .map((paragraph) => {
+      .map(paragraph => {
         const sentences = paragraph.split(/(?<=[.!?])\s+/);
 
         // If paragraph has more than 4 sentences, break it up

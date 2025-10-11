@@ -17,44 +17,47 @@ const entriesByDay = (await groupTilEntriesByDay(entries)) ?? new Map();
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // Only include days with entries
-const daysWithEntries = days.filter((day) => (entriesByDay.get(day) ?? []).length > 0);
+const daysWithEntries = days.filter(day => (entriesByDay.get(day) ?? []).length > 0);
 
 // Function to format tag for URL
 const formatTagForUrl = (tag: string) => tag.toLowerCase().replace(/\s+/g, '-');
 ---
 
 <div class={`til-kanban-view ${className}`}>
-  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-x-auto">
+  <div class="grid grid-cols-1 gap-4 overflow-x-auto md:grid-cols-3 lg:grid-cols-5">
     {
-      daysWithEntries.map((day) => (
-        <div class="min-w-[250px] h-full bg-muted/30 rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-foreground mb-4 sticky top-0 bg-muted/30 p-2 -m-2 rounded-t-lg">
+      daysWithEntries.map(day => (
+        <div class="bg-muted/30 h-full min-w-[250px] rounded-lg p-4">
+          <h3 class="text-foreground bg-muted/30 sticky top-0 -m-2 mb-4 rounded-t-lg p-2 text-lg font-semibold">
             {day}
           </h3>
           <div class="space-y-3">
-            {entriesByDay.get(day)!.map((entry) => (
-              <div class="bg-card p-3 rounded border border-border shadow-sm hover:shadow-md transition-shadow">
+            {entriesByDay.get(day)!.map(entry => (
+              <div
+                class="bg-card border-border rounded border p-3 shadow-sm transition-shadow hover:shadow-md"
+                data-til-entry-id={entry.id}
+              >
                 <a
                   href={`/til/${entry.slug}`}
-                  class="block text-foreground hover:text-primary font-medium mb-2 transition-colors"
+                  class="text-foreground hover:text-primary mb-2 block font-medium transition-colors"
                 >
                   {entry.data.title}
                 </a>
-                <div class="text-xs text-muted-foreground mb-2 flex items-center">
-                  <Icon name="tabler:calendar" class="w-3 h-3 inline-block mr-1" />
+                <div class="text-muted-foreground mb-2 flex items-center text-xs">
+                  <Icon name="tabler:calendar" class="mr-1 inline-block h-3 w-3" />
                   {formatTilDate(entry.data.date)}
                 </div>
                 <div class="flex flex-wrap gap-1">
-                  {entry.data.tags.slice(0, 2).map((tag) => (
+                  {entry.data.tags.slice(0, 2).map(tag => (
                     <a
                       href={`/til?tag=${formatTagForUrl(tag)}&view=kanban`}
-                      class="bg-primary/10 dark:bg-primary/20 text-primary px-1.5 py-0.5 rounded text-xs hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+                      class="bg-primary/10 dark:bg-primary/20 text-primary hover:bg-primary/20 dark:hover:bg-primary/30 rounded px-1.5 py-0.5 text-xs transition-colors"
                     >
                       #{tag}
                     </a>
                   ))}
                   {entry.data.tags.length > 2 && (
-                    <span class="text-xs text-muted-foreground">+{entry.data.tags.length - 2}</span>
+                    <span class="text-muted-foreground text-xs">+{entry.data.tags.length - 2}</span>
                   )}
                 </div>
               </div>

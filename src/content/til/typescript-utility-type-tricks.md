@@ -2,17 +2,20 @@
 title: 'TypeScript Utility Type Tricks'
 date: 2025-06-17
 tags: ['typescript', 'programming', 'web development']
-description: 'Today I learned about some lesser-known but incredibly useful TypeScript utility types that have improved my type safety.'
+description: 'Today I learned about some lesser-known but incredibly useful TypeScript
+  utility types that have improved my type safety.'
 draft: false
 ---
 
 # TypeScript Utility Type Tricks
 
-Today I discovered some TypeScript utility types that have significantly improved my code's type safety and readability.
+Today I discovered some TypeScript utility types that have significantly
+improved my code's type safety and readability.
 
 ## Record<K, T>
 
-While I knew about `Record` before, I hadn't fully leveraged its power for creating objects with specific key-value types:
+While I knew about `Record` before, I hadn't fully leveraged its power for
+creating objects with specific key-value types:
 
 ```typescript
 // Instead of this
@@ -100,4 +103,5 @@ type Endpoint = '/users' | '/posts' | '/comments';
 type APIRoute = `${HTTPMethod} ${Endpoint}`;
 ```
 
-These utility types have made my TypeScript code more concise, expressive, and most importantly, safer.
+These utility types have made my TypeScript code more concise, expressive, and
+most importantly, safer.

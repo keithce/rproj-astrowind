@@ -134,7 +134,13 @@ export function getCloudinaryImageUrl(
       ...finalOptions,
     });
   } catch (error) {
-    console.error('Error generating Cloudinary URL:', error);
+    // Log error with structured context (excluding sensitive credentials)
+    console.error('Error generating Cloudinary URL - using fallback', {
+      error: error instanceof Error ? error.message : String(error),
+      publicId,
+      options: finalOptions,
+    });
+
     // Return a fallback URL
     return `https://via.placeholder.com/${finalOptions.width || 400}x${finalOptions.height || 300}?text=Image+Error`;
   }
@@ -156,7 +162,7 @@ export function getResponsiveImageUrls(
 ): Array<{ width: number; url: string }> {
   const { preset = 'responsive', aspectRatio, ...baseOptions } = options;
 
-  return RESPONSIVE_BREAKPOINTS.map((width) => {
+  return RESPONSIVE_BREAKPOINTS.map(width => {
     let height: number | undefined = undefined;
 
     if (aspectRatio) {
@@ -213,7 +219,7 @@ export async function getCategoryImages(category: ImageCategory, count: number =
 
     // If no images found in the folder, return sample data
     if (!searchResult.resources || searchResult.resources.length === 0) {
-      console.warn(`No images found in Cloudinary folder: ${categoryFolder}`);
+      // No images found in Cloudinary folder, using fallback
       return generateFallbackImages(category, count);
     }
 
@@ -226,7 +232,7 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         publicId,
         src: getCloudinaryImageUrl(publicId, { preset: 'portfolio' }),
         alt: `${category} photography - ${filename}`,
-        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        title: filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         thumbnail: getCloudinaryImageUrl(publicId, { preset: 'thumbnail' }),
         responsive: getResponsiveImageUrls(publicId, {
           preset: 'responsive',
@@ -234,8 +240,15 @@ export async function getCategoryImages(category: ImageCategory, count: number =
         }),
       };
     });
-  } catch (error) {
-    console.error(`Error fetching images from Cloudinary for category ${category}:`, error);
+  } catch (err) {
+    // Log error with structured context
+    console.error('Error fetching images from Cloudinary - using fallback', {
+      error: err instanceof Error ? err.message : String(err),
+      category,
+      count,
+      categoryFolder,
+    });
+
     // Return fallback images if search fails
     return generateFallbackImages(category, count);
   }
@@ -308,8 +321,13 @@ export function getOgImageUrl(title: string, subtitle?: string, backgroundImage?
       format: 'jpg',
       quality: 'auto',
     });
-  } catch (error) {
-    console.error('Error generating OG image URL:', error);
+  } catch (err) {
+    console.error('Error generating OG image URL', {
+      error: err instanceof Error ? err.message : String(err),
+      title,
+      subtitle,
+      backgroundImage,
+    });
     return '';
   }
 }

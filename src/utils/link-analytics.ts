@@ -35,7 +35,7 @@ class LinkAnalytics {
 
   private setupEventListeners(): void {
     // Track all internal link clicks
-    document.addEventListener('click', (event) => {
+    document.addEventListener('click', event => {
       const target = event.target as HTMLElement;
       const link = target.closest('a');
 
@@ -122,7 +122,7 @@ class LinkAnalytics {
 
     // Development logging
     if (import.meta.env.DEV) {
-      console.log('Link click tracked:', event);
+      // Development logging for link tracking
     }
   }
 
@@ -148,8 +148,8 @@ class LinkAnalytics {
     topDestinations: Array<{ url: string; clicks: number }>;
   } {
     const totalClicks = this.events.length;
-    const serviceClicks = this.events.filter((e) => e.linkType === 'service').length;
-    const blogClicks = this.events.filter((e) => e.linkType === 'blog').length;
+    const serviceClicks = this.events.filter(e => e.linkType === 'service').length;
+    const blogClicks = this.events.filter(e => e.linkType === 'blog').length;
 
     // Calculate top destinations
     const destinationCounts = this.events.reduce(

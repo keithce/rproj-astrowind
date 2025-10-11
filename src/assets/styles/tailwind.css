@@ -46,7 +46,7 @@
   .btn-tertiary,
   .btn-outline,
   .btn-ghost {
-    @apply inline-flex items-center justify-center px-5 py-3 text-sm font-medium rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-medium transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   /* Button variants using design system colors */
@@ -137,7 +137,7 @@
   }
 
   .btn-loading .loading-spinner {
-    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
     transform: translate(-50%, -50%) translateZ(0);
     will-change: transform;
   }
@@ -176,7 +176,7 @@
   /* Loading state text transitions */
   .btn-loading::before {
     content: attr(data-loading-text);
-    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200;
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity duration-200;
     color: currentColor;
   }
 
@@ -185,16 +185,16 @@
   }
 
   .btn-loading.show-loading-text .loading-spinner {
-    @apply ml-2 relative transform-none left-auto top-auto;
+    @apply relative top-auto left-auto ml-2 transform-none;
   }
 
   /* Button loading size variants */
   .btn-loading--sm .loading-spinner {
-    @apply w-3 h-3 border;
+    @apply h-3 w-3 border;
   }
 
   .btn-loading--lg .loading-spinner {
-    @apply w-5 h-5 border-2;
+    @apply h-5 w-5 border-2;
   }
 
   /* Loading progress indicator (optional enhancement) */
@@ -247,14 +247,14 @@
 
   /* Enhanced patterns for common component styles */
   .card {
-    @apply rounded-lg shadow-sm p-6 transition-all duration-200;
+    @apply rounded-lg p-6 shadow-sm transition-all duration-200;
     background-color: var(--color-card);
     color: var(--color-card-foreground);
     border: 1px solid var(--color-border);
   }
 
   .card-hover {
-    @apply rounded-lg shadow-sm p-6 transition-all duration-200 hover:shadow-md;
+    @apply rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-md;
     background-color: var(--color-card);
     color: var(--color-card-foreground);
     border: 1px solid var(--color-border);
@@ -264,9 +264,7 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 rounded-md shadow-sm 
-           focus:outline-none focus:ring-2 disabled:cursor-not-allowed
-           transition-colors duration-200;
+    @apply w-full rounded-md px-3 py-2 shadow-sm transition-colors duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed;
     border: 1px solid var(--color-input);
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -284,9 +282,7 @@
   }
 
   .input-error {
-    @apply w-full px-3 py-2 rounded-md shadow-sm 
-           focus:outline-none focus:ring-2 disabled:cursor-not-allowed
-           transition-colors duration-200;
+    @apply w-full rounded-md px-3 py-2 shadow-sm transition-colors duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed;
     border: 1px solid var(--color-error);
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -307,7 +303,7 @@
 
   .dark #header.scroll > div:first-child,
   #header.scroll.dark > div:first-child {
-    @apply backdrop-blur-sm border-gray-500/20;
+    @apply border-gray-500/20 backdrop-blur-sm;
     box-shadow: none;
   }
 
@@ -343,11 +339,11 @@
   }
 
   [data-aw-toggle-menu].expanded g > path:first-child {
-    @apply -rotate-45 translate-y-[15px] translate-x-[-3px];
+    @apply translate-x-[-3px] translate-y-[15px] -rotate-45;
   }
 
   [data-aw-toggle-menu].expanded g > path:last-child {
-    @apply rotate-45 translate-y-[-8px] translate-x-[14px];
+    @apply translate-x-[14px] translate-y-[-8px] rotate-45;
   }
 
   .dd *:first-child {
@@ -360,7 +356,7 @@
 
   /* Advanced, reusable utility patterns */
   .card-base {
-    @apply rounded-lg shadow-sm p-6 transition-shadow hover:shadow-md;
+    @apply rounded-lg p-6 shadow-sm transition-shadow hover:shadow-md;
     background-color: var(--color-card);
     color: var(--color-card-foreground);
     border: 1px solid var(--color-border);
@@ -400,7 +396,7 @@
   }
 
   .prose-enhanced code {
-    @apply px-1.5 py-0.5 rounded-md;
+    @apply rounded-md px-1.5 py-0.5;
     background-color: var(--color-muted);
     color: var(--color-muted-foreground);
   }
@@ -412,7 +408,7 @@
   }
 
   .prose-enhanced pre code {
-    @apply p-0 border-none;
+    @apply border-none p-0;
     background-color: transparent;
   }
 }
@@ -606,7 +602,7 @@
 
   /* Form state management classes */
   .error-message {
-    @apply hidden p-3 text-sm rounded-md border text-red-700 bg-red-50 border-red-200 transition-all duration-300;
+    @apply hidden rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 transition-all duration-300;
     will-change: opacity, transform;
     transform: translateZ(0);
   }
@@ -617,7 +613,7 @@
   }
 
   .success-message {
-    @apply hidden p-3 text-sm rounded-md border text-green-700 bg-green-50 border-green-200 transition-all duration-300;
+    @apply hidden rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700 transition-all duration-300;
     will-change: opacity, transform;
     transform: translateZ(0);
   }
@@ -629,7 +625,7 @@
 
   /* Loading message styling */
   .loading-message {
-    @apply hidden p-3 text-sm rounded-md border text-blue-700 bg-blue-50 border-blue-200 transition-all duration-300;
+    @apply hidden rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700 transition-all duration-300;
     will-change: opacity, transform;
     transform: translateZ(0);
   }
@@ -641,7 +637,7 @@
 
   .loading-message.show::before {
     content: '';
-    @apply w-4 h-4 border-2 border-blue-300 rounded-full;
+    @apply h-4 w-4 rounded-full border-2 border-blue-300;
     border-top-color: var(--color-primary);
     animation: spin 1s linear infinite;
     will-change: transform;
@@ -650,7 +646,7 @@
 
   /* Field-specific error messages */
   .field-error-message {
-    @apply hidden mt-1 text-sm text-red-600;
+    @apply mt-1 hidden text-sm text-red-600;
     will-change: opacity, transform;
     transform: translateZ(0);
   }
@@ -662,7 +658,7 @@
 
   /* Field help text styling */
   .field-help-text {
-    @apply text-xs text-gray-500 mt-1;
+    @apply mt-1 text-xs text-gray-500;
   }
 
   /* Enhanced form messages region */
@@ -698,7 +694,7 @@
   }
 
   .skip-link {
-    @apply inline-block px-6 py-3 text-sm font-medium text-white rounded-md shadow-lg;
+    @apply inline-block rounded-md px-6 py-3 text-sm font-medium text-white shadow-lg;
     background-color: var(--color-primary);
     position: absolute;
     left: 50%;
@@ -857,7 +853,7 @@
 
   [data-complex-navigation='grid'] [role='gridcell'],
   [data-complex-navigation='grid'] [data-grid-cell] {
-    @apply p-2 border border-gray-200 rounded cursor-pointer;
+    @apply cursor-pointer rounded border border-gray-200 p-2;
     transition: all 0.2s ease;
   }
 
@@ -876,7 +872,7 @@
   }
 
   [data-complex-navigation='tab-list'] [role='tab'] {
-    @apply px-4 py-2 border-b-2 border-transparent cursor-pointer;
+    @apply cursor-pointer border-b-2 border-transparent px-4 py-2;
     transition: all 0.2s ease;
   }
 
@@ -899,7 +895,7 @@
   }
 
   [data-complex-navigation='tree'] [role='treeitem'] {
-    @apply block p-2 rounded cursor-pointer;
+    @apply block cursor-pointer rounded p-2;
     transition: all 0.2s ease;
   }
 
@@ -982,7 +978,7 @@
     position: absolute;
     top: -8px;
     right: -8px;
-    @apply bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center;
+    @apply flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white;
     font-weight: bold;
     z-index: 9999;
   }

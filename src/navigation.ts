@@ -80,8 +80,12 @@ export const headerData = {
       ],
     },
     {
+      text: 'Resources',
+      href: getPermalink('/resources/all/1'),
+    },
+    {
       text: 'TIL',
-      href: getPermalink('/til'),
+      href: getPermalink('/til/all/1'),
     },
     {
       text: 'My Story',
@@ -102,7 +106,7 @@ export const footerData = {
         { text: 'Enterprise', href: '#' },
         { text: 'Customer stories', href: '#' },
         { text: 'Pricing', href: '#' },
-        { text: 'Resources', href: '#' },
+        { text: 'Resources', href: getPermalink('/resources') },
       ],
     },
     {
@@ -144,8 +148,16 @@ export const footerData = {
   ],
   socialLinks: [
     // { ariaLabel: 'X', icon: 'tabler:brand-x', href: '#' },
-    { ariaLabel: 'Instagram', icon: 'tabler:brand-instagram', href: 'https://www.instagram.com/resonantrhythm' },
-    { ariaLabel: 'Facebook', icon: 'tabler:brand-facebook', href: 'https://www.facebook.com/resonantrhythm' },
+    {
+      ariaLabel: 'Instagram',
+      icon: 'tabler:brand-instagram',
+      href: 'https://www.instagram.com/resonantrhythm',
+    },
+    {
+      ariaLabel: 'Facebook',
+      icon: 'tabler:brand-facebook',
+      href: 'https://www.facebook.com/resonantrhythm',
+    },
     { ariaLabel: 'RSS', icon: 'tabler:rss', href: getAsset('/rss.xml') },
     { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/keithce' },
   ],

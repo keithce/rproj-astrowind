@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { ResourceData } from '../../types/resources.ts';
+import { getNotionEntryTitle } from '../../utils/notion';
+import { cleanSlug } from '../../utils/permalinks';
+
+export interface Props {
+  entry: CollectionEntry<'resources'>;
+  class?: string;
+}
+
+const { entry, class: className = '' } = Astro.props;
+
+// Extract data from the entry
+const data = entry.data as ResourceData;
+const title = data.Name || 'Untitled Resource';
+const type = Array.isArray(data.Type) ? data.Type[0] : data.Type;
+const category = Array.isArray(data.Category) ? data.Category[0] : data.Category;
+const source = data.Source || data['User Defined URL'];
+const summary = data['AI summary'];
+
+// Generate the canonical slug using the same logic as the dynamic route
+const entryTitle = getNotionEntryTitle(entry);
+const canonicalSlug = cleanSlug(entryTitle);
+const href = `/resources/${canonicalSlug}`;
+---
+
+<article
+  class={`resource-card group rounded-lg border bg-card border-border p-6 shadow-sm transition-all hover:shadow-lg ${className}`}
+>
+  <div class="mb-3">
+    <h3 class="mb-2 text-lg leading-tight font-semibold">
+      <a href={href} class="text-card-foreground hover:text-primary transition-colors group-hover:underline">
+        {title}
+      </a>
+    </h3>
+
+    {summary && <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">{summary}</p>}
+  </div>
+
+  <div class="mb-3 flex flex-wrap gap-2">
+    {category && <span class="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">{category}</span>}
+    {type && <span class="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">{type}</span>}
+  </div>
+
+  <div class="flex items-center justify-between">
+    <div class="text-muted-foreground text-xs">
+      {
+        type && category && (
+          <span>
+            Type: {type} · Category: {category}
+          </span>
+        )
+      }
+      {type && !category && <span>Type: {type}</span>}
+      {!type && category && <span>Category: {category}</span>}
+    </div>
+
+    {
+      source && (
+        <a
+          href={source}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary hover:text-accent text-xs font-medium transition-colors"
+        >
+          View Source →
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

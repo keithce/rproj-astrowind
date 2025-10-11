@@ -14,11 +14,11 @@ const { class: className = '', placeholder = 'Search TIL entries...' } = Astro.p
       id="search-input"
       name="q"
       placeholder={placeholder}
-      class="w-full px-4 py-3 rounded-md bg-muted/50 border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+      class="bg-muted/50 border-border text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-4 py-3 focus:ring-2 focus:outline-none"
     />
     <button
       type="submit"
-      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+      class="text-muted-foreground hover:text-primary absolute top-1/2 right-3 -translate-y-1/2 transform transition-colors"
       aria-label="Search"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@ const { class: className = '', placeholder = 'Search TIL entries...' } = Astro.p
       // Trigger search...
     }
 
-    searchForm?.addEventListener('submit', (e) => {
+    searchForm?.addEventListener('submit', e => {
       e.preventDefault();
       const query = searchInput.value.trim();
       if (query) {

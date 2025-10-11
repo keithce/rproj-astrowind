@@ -1,0 +1,42 @@
+// Re-export all types from the main types.d.ts file
+export type {
+  Post,
+  Taxonomy,
+  MetaData,
+  MetaDataRobots,
+  MetaDataImage,
+  MetaDataOpenGraph,
+  MetaDataTwitter,
+  Image,
+  Video,
+  Widget,
+  Headline,
+  TeamMember,
+  Social,
+  Stat,
+  Item,
+  Price,
+  Testimonial,
+  Input,
+  Textarea,
+  Disclaimer,
+  CallToAction,
+  ItemGrid,
+  Collapse,
+  Form,
+  Hero,
+  Team,
+  Stats,
+  Pricing,
+  Testimonials,
+  Brands,
+  Features,
+  Faqs,
+  Steps,
+  Content,
+  Contact,
+} from '../types.d.ts';
+
+// Export types from other type files
+export type { ResourceData } from './resources.js';
+export { isResourceData } from './resources.js';

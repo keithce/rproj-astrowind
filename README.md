@@ -1,7 +1,9 @@
 # 🎨 Resonant Projects .ART
 
-> **A creative technology studio—your hub for tech consulting, mixing & mastering, photography, and short film finishing.**  
-> Bringing together technical expertise and artistic vision to help creators finish and present their work at the highest level.
+> **A creative technology studio—your hub for tech consulting, mixing &
+> mastering, photography, and short film finishing.**  
+> Bringing together technical expertise and artistic vision to help creators
+> finish and present their work at the highest level.
 
 ---
 
@@ -12,8 +14,11 @@
 
 ## ✨ What is Resonant Projects .ART?
 
-Resonant Projects .ART is a multidisciplinary platform by Keith Elliott, designed to help artists, creators, and businesses finish and elevate their creative and technical projects.  
-Whether you're a musician, filmmaker, photographer, or content creator, this is your one-stop shop for:
+Resonant Projects .ART is a multidisciplinary platform by Keith Elliott,
+designed to help artists, creators, and businesses finish and elevate their
+creative and technical projects.  
+Whether you're a musician, filmmaker, photographer, or content creator, this is
+your one-stop shop for:
 
 - 🎚️ **Audio Mixing & Mastering**
 - 📸 **Photography**
@@ -28,9 +33,24 @@ Whether you're a musician, filmmaker, photographer, or content creator, this is 
 - 🤝 **Personalized Collaboration:** Work directly with Keith to bring your vision to life.
 - 🛠️ **Technical Expertise:** Deep knowledge in networking, home studio setup, and creative workflows.
 - 🗂️ **Organized Content:** Easy navigation with clear service pages and content pillars.
+- 📚 **Curated Resources:** A comprehensive collection of tools, tutorials, and references for creators.
 - 📬 **Lead Generation:** Service-specific landing pages and newsletter signup.
 - 🔍 **SEO Optimized:** Structured for discoverability and fast performance.
 - ⚡ **Automated Deployment:** Every commit updates the live site automatically.
+
+---
+
+## 📚 Resources Section
+
+The Resources section provides a curated collection of tools, tutorials, and references specifically selected for creators, musicians, and audio professionals. Features include:
+
+- **Categorized Content:** Resources organized by type (tools, tutorials, references) and category (audio, video, photography, tech)
+- **Smart Search:** Find exactly what you need with our powerful search functionality
+- **Skill Level Filtering:** Resources tagged by difficulty level (Beginner, Intermediate, Advanced)
+- **Regular Updates:** Content is regularly reviewed and updated to ensure relevance
+- **Personal Recommendations:** Hand-picked resources that Keith personally uses and recommends
+
+Access the Resources section at: [https://www.rproj.art/resources](https://www.rproj.art/resources)
 
 ---
 
@@ -50,7 +70,8 @@ Whether you're a musician, filmmaker, photographer, or content creator, this is 
 ## 📬 Contact
 
 Questions, collaborations, or want to request a service?  
-**Email Keith Elliott:** [keith@resonantrhythm.com](mailto:keith@resonantrhythm.com)
+**Email Keith Elliott:**
+[keith@resonantrhythm.com](mailto:keith@resonantrhythm.com)
 
 ---
 

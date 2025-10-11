@@ -108,7 +108,7 @@ const { iconClass = 'w-5 h-5', class: className = '' } = Astro.props;
 
     getSystemTheme: () => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
 
-    applyTheme: (theme) => {
+    applyTheme: theme => {
       let effectiveTheme = theme;
       if (theme === 'system' || !theme) {
         effectiveTheme = themeManager.getSystemTheme();
@@ -120,7 +120,7 @@ const { iconClass = 'w-5 h-5', class: className = '' } = Astro.props;
       document.documentElement.classList.toggle('dark', effectiveTheme === 'dark');
     },
 
-    setTheme: (theme) => {
+    setTheme: theme => {
       localStorage.setItem('theme', theme);
       themeManager.applyTheme(theme);
 

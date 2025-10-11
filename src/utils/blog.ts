@@ -1,7 +1,7 @@
 import type { PaginateFunction } from 'astro';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import type { Post, Taxonomy } from '~/types';
+import type { Post, Taxonomy, MetaData } from '~/types';
 import { APP_BLOG } from 'astrowind:config';
 import { cleanSlug, trimSlash, BLOG_BASE, POST_PERMALINK_PATTERN, CATEGORY_BASE, TAG_BASE } from './permalinks';
 
@@ -35,8 +35,8 @@ const generatePermalink = async ({
 
   return permalink
     .split('/')
-    .map((el) => trimSlash(el))
-    .filter((el) => !!el)
+    .map(el => trimSlash(el))
+    .filter(el => !!el)
     .join('/');
 };
 
@@ -74,26 +74,26 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
   }));
 
   return {
-    id: id,
-    slug: slug,
+    id,
+    slug,
     permalink: await generatePermalink({ id, slug, publishDate, category: category?.slug }),
 
-    publishDate: publishDate,
-    updateDate: updateDate,
+    publishDate,
+    updateDate,
 
-    title: title,
-    excerpt: excerpt,
-    image: image,
+    title,
+    excerpt,
+    image,
 
-    category: category,
-    tags: tags,
-    author: author,
+    category,
+    tags,
+    author,
 
-    draft: draft,
+    draft,
 
-    metadata,
+    metadata: metadata as MetaData,
 
-    Content: Content,
+    Content,
     // or 'content' in case you consume from API
 
     readingTime: remarkPluginFrontmatter?.readingTime,
@@ -102,11 +102,11 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
 
 const load = async function (): Promise<Array<Post>> {
   const posts = await getCollection('post');
-  const normalizedPosts = posts.map(async (post) => await getNormalizedPost(post));
+  const normalizedPosts = posts.map(async post => await getNormalizedPost(post));
 
   const results = (await Promise.all(normalizedPosts))
     .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf())
-    .filter((post) => !post.draft);
+    .filter(post => !post.draft);
 
   return results;
 };
@@ -177,7 +177,7 @@ export const findLatestPosts = async ({ count }: { count?: number }): Promise<Ar
 export const findCategories = async (): Promise<Taxonomy[]> => {
   const posts = await fetchPosts();
   const categoryMap = new Map<string, Taxonomy>();
-  posts.forEach((post) => {
+  posts.forEach(post => {
     if (post.category?.slug && post.category?.title) {
       categoryMap.set(post.category.slug, { slug: post.category.slug, title: post.category.title });
     }
@@ -189,9 +189,9 @@ export const findCategories = async (): Promise<Taxonomy[]> => {
 export const findTags = async (): Promise<Taxonomy[]> => {
   const posts = await fetchPosts();
   const tagMap = new Map<string, Taxonomy>();
-  posts.forEach((post) => {
+  posts.forEach(post => {
     if (Array.isArray(post.tags)) {
-      post.tags.forEach((tag) => {
+      post.tags.forEach(tag => {
         if (tag?.slug && tag?.title) {
           tagMap.set(tag.slug, { slug: tag.slug, title: tag.title });
         }
@@ -213,7 +213,7 @@ export const getStaticPathsBlogList = async ({ paginate }: { paginate: PaginateF
 /** */
 export const getStaticPathsBlogPost = async () => {
   if (!isBlogEnabled || !isBlogPostRouteEnabled) return [];
-  return (await fetchPosts()).flatMap((post) => ({
+  return (await fetchPosts()).flatMap(post => ({
     params: {
       blog: post.permalink,
     },
@@ -226,16 +226,16 @@ export const getStaticPathsBlogCategory = async ({ paginate }: { paginate: Pagin
   if (!isBlogEnabled || !isBlogCategoryRouteEnabled) return [];
 
   const posts = await fetchPosts();
-  const categories = {};
-  posts.map((post) => {
+  const categories: Record<string, Taxonomy> = {};
+  posts.map(post => {
     if (post.category?.slug) {
       categories[post.category?.slug] = post.category;
     }
   });
 
-  return Array.from(Object.keys(categories)).flatMap((categorySlug) =>
+  return Array.from(Object.keys(categories)).flatMap(categorySlug =>
     paginate(
-      posts.filter((post) => post.category?.slug && categorySlug === post.category?.slug),
+      posts.filter(post => post.category?.slug && categorySlug === post.category?.slug),
       {
         params: { category: categorySlug, blog: CATEGORY_BASE || undefined },
         pageSize: blogPostsPerPage,
@@ -250,18 +250,18 @@ export const getStaticPathsBlogTag = async ({ paginate }: { paginate: PaginateFu
   if (!isBlogEnabled || !isBlogTagRouteEnabled) return [];
 
   const posts = await fetchPosts();
-  const tags = {};
-  posts.map((post) => {
+  const tags: Record<string, Taxonomy> = {};
+  posts.map(post => {
     if (Array.isArray(post.tags)) {
-      post.tags.map((tag) => {
+      post.tags.map(tag => {
         tags[tag?.slug] = tag;
       });
     }
   });
 
-  return Array.from(Object.keys(tags)).flatMap((tagSlug) =>
+  return Array.from(Object.keys(tags)).flatMap(tagSlug =>
     paginate(
-      posts.filter((post) => Array.isArray(post.tags) && post.tags.find((elem) => elem.slug === tagSlug)),
+      posts.filter(post => Array.isArray(post.tags) && post.tags.find(elem => elem.slug === tagSlug)),
       {
         params: { tag: tagSlug, blog: TAG_BASE || undefined },
         pageSize: blogPostsPerPage,
@@ -274,7 +274,7 @@ export const getStaticPathsBlogTag = async ({ paginate }: { paginate: PaginateFu
 /** */
 export async function getRelatedPosts(originalPost: Post, maxResults: number = 4): Promise<Post[]> {
   const allPosts = await fetchPosts();
-  const originalTagsSet = new Set(originalPost.tags ? originalPost.tags.map((tag) => tag.slug) : []);
+  const originalTagsSet = new Set(originalPost.tags ? originalPost.tags.map(tag => tag.slug) : []);
 
   const postsWithScores = allPosts.reduce((acc: { post: Post; score: number }[], iteratedPost: Post) => {
     if (iteratedPost.slug === originalPost.slug) return acc;
@@ -285,7 +285,7 @@ export async function getRelatedPosts(originalPost: Post, maxResults: number = 4
     }
 
     if (iteratedPost.tags) {
-      iteratedPost.tags.forEach((tag) => {
+      iteratedPost.tags.forEach(tag => {
         if (originalTagsSet.has(tag.slug)) {
           score += 1;
         }

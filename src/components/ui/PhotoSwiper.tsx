@@ -129,14 +129,14 @@ export default function PhotoSwiper({ images, className = '' }: Props) {
     <>
       <div ref={swiperRef} className={`swiper mySwiper ${className}`}>
         <div className="swiper-wrapper">
-          {images.map((img) => (
+          {images.map(img => (
             <div
               className="swiper-slide"
               key={img.fullSrc}
               tabIndex={0}
               role="button"
               aria-label={`View full size image: ${img.alt}`}
-              onKeyDown={(e) => handleSlideKeyDown(e, img.fullSrc, img.alt)}
+              onKeyDown={e => handleSlideKeyDown(e, img.fullSrc, img.alt)}
             >
               <img
                 src={img.src}
