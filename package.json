@@ -85,7 +85,7 @@
     "autoprefixer": "^10.4.21",
     "botid": "^1.5.8",
     "cloudinary": "^2.7.0",
-    "limax": "4.1.0",
+    "limax": "4.2.1",
     "lodash.merge": "^4.6.2",
     "notion-client": "^7.7.1",
     "notion-utils": "^7.7.1",
