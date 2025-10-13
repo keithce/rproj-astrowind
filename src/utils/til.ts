@@ -16,18 +16,18 @@ export type TilEntry = CollectionEntry<'til'>;
  * Fetch all TIL entries
  */
 export const fetchTilEntries = async (): Promise<TilEntry[]> => {
-  console.log('🔍 [TIL] Starting to fetch TIL entries...');
+  // console.log('🔍 [TIL] Starting to fetch TIL entries...');
   try {
     const tilEntries = await getCollection('til', ({ data }) => {
-      console.log('🔍 [TIL] Processing entry:', data.title, 'draft:', data.draft);
+      // console.log('🔍 [TIL] Processing entry:', data.title, 'draft:', data.draft);
       return !data.draft;
     });
-    console.log('🔍 [TIL] Total entries found:', tilEntries.length);
+    // console.log('🔍 [TIL] Total entries found:', tilEntries.length);
     const sorted = tilEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()) as TilEntry[];
-    console.log(
-      '🔍 [TIL] Sorted entries:',
-      sorted.map(e => e.data.title)
-    );
+    // console.log(
+    //   '🔍 [TIL] Sorted entries:',
+    //   sorted.map(e => e.data.title)
+    // );
     return sorted;
   } catch (error) {
     console.error('❌ [TIL] Error fetching TIL entries:', error);

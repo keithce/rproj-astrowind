@@ -8,12 +8,12 @@ export type ResourceEntry = CollectionEntry<'resources'>;
  * Fetch all RR Resource entries
  */
 export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
-  console.log('🔍 [RESOURCES] Starting to fetch resource entries...');
+  // console.log('🔍 [RESOURCES] Starting to fetch resource entries...');
   try {
     // Try stable content first
     const getCollectionLoose = getCollection as unknown as (c: string) => Promise<ResourceEntry[]>;
     const entries = await getCollectionLoose('resources');
-    console.log('🔍 [RESOURCES] Stable collection entries:', entries.length);
+    // console.log('🔍 [RESOURCES] Stable collection entries:', entries.length);
     if (Array.isArray(entries) && entries.length > 0) {
       const sorted = entries.sort((a, b) => {
         // Sort by name alphabetically as a default
@@ -21,7 +21,7 @@ export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
         const nameB = (b.data as ResourceData).Name || '';
         return nameA.localeCompare(nameB);
       });
-      console.log('🔍 [RESOURCES] Returning stable collection entries:', sorted.length);
+      // console.log('🔍 [RESOURCES] Returning stable collection entries:', sorted.length);
       return sorted;
     }
   } catch (error) {
@@ -36,19 +36,19 @@ export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
       error?: Error | null;
     };
 
-    console.log('🔍 [RESOURCES] Live collection result:', {
-      hasEntries: !!live?.entries,
-      entriesLength: live?.entries?.length || 0,
-      hasError: !!live?.error,
-    });
+    // console.log('🔍 [RESOURCES] Live collection result:', {
+    //   hasEntries: !!live?.entries,
+    //   entriesLength: live?.entries?.length || 0,
+    //   hasError: !!live?.error,
+    // });
 
     if (live?.error) {
-      console.log('🔍 [RESOURCES] Live collection error:', live.error.message);
+      // console.log('🔍 [RESOURCES] Live collection error:', live.error.message);
       return [];
     }
 
     const entries = Array.isArray(live?.entries) ? live.entries : [];
-    console.log('🔍 [RESOURCES] Live collection entries:', entries.length);
+    // console.log('🔍 [RESOURCES] Live collection entries:', entries.length);
 
     const sorted = entries.sort((a, b) => {
       // Sort by name alphabetically as a default
@@ -56,7 +56,7 @@ export const fetchResourceEntries = async (): Promise<ResourceEntry[]> => {
       const nameB = (b.data as ResourceData).Name || '';
       return nameA.localeCompare(nameB);
     });
-    console.log('🔍 [RESOURCES] Returning live collection entries:', sorted.length);
+    // console.log('🔍 [RESOURCES] Returning live collection entries:', sorted.length);
     return sorted;
   } catch (error) {
     console.log('🔍 [RESOURCES] Live collection failed:', error instanceof Error ? error.message : String(error));
