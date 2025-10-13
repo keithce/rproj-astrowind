@@ -255,7 +255,7 @@ class VisualVerificationTester {
     }, theme);
 
     // Wait for theme transition
-    await page.waitForTimeout(500);
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   /**
