@@ -62,7 +62,7 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/vercel": "^8.2.9",
+    "@astrojs/vercel": "^9.0.0",
     "@astrolib/analytics": "^0.6.1",
     "@astrolib/seo": "1.0.0-beta.8",
     "@calcom/embed-react": "^1.5.3",
