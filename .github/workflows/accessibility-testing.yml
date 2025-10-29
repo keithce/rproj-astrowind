@@ -157,7 +157,7 @@ jobs:
         run: pnpm test:accessibility:verbose
 
       - name: '📊 Upload Accessibility Reports'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: accessibility-reports-${{ matrix.test-type }}
@@ -219,7 +219,7 @@ jobs:
           mkdir -p accessibility-trends
           echo "$(date): Accessibility tests completed" >> accessibility-trends/history.log
       - name: '📤 Upload Trends Data'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: accessibility-trends
           path: accessibility-trends/
@@ -307,7 +307,7 @@ jobs:
           node -e "const r=require('./lighthouse-perf-a11y.json');const a=r.categories.accessibility.score*100;const p=r.categories.performance.score*100;console.log('Accessibility Score:',a);console.log('Performance Score:',p);if(a<95){process.exitCode=1;}"
       - name: '📤 Upload Performance Report'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: performance-accessibility-report
           path: lighthouse-perf-a11y.json
@@ -365,7 +365,7 @@ jobs:
           node -e "const r=require('./mobile-a11y.json');const s=r.categories.accessibility.score*100;console.log('Mobile Accessibility Score:',s);if(s<95){process.exitCode=1;}"
       - name: '📤 Upload Mobile Report'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: mobile-accessibility-report
           path: mobile-a11y.json
@@ -467,7 +467,7 @@ jobs:
 
       - name: '📤 Upload Comparison'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: accessibility-regression-comparison
           path: |
