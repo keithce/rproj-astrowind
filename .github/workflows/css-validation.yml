@@ -65,6 +65,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_dev_placeholder' }}
         run: |
           bun run dev > dev.log 2>&1 &
           sleep 20
