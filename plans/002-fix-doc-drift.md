@@ -47,10 +47,22 @@ All of these were verified against the working tree at commit `43a2df2`:
 | Format check                    | `bun run format`                                             | exit 0                   |
 
 ```sh
-grep -rhoE "(import\.meta\.env|process\.env)\.[A-Z_]+" src scripts vendor \
-  --include='*.ts' --include='*.tsx' --include='*.astro' \
-  | grep -oE "[A-Z_]+$" \
+git grep -hoE "(import\.meta\.env|process\.env)(\.[A-Z_][A-Z0-9_]*|\[['\"][A-Z_][A-Z0-9_]*['\"]\])" \
+  -- '*.ts' '*.tsx' '*.mts' '*.cts' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.astro' \
+  | grep -oE "[A-Z_][A-Z0-9_]*" \
+  | grep -vE '^(BASE_URL|DEV|MODE|PROD|SITE|SSR)$' \
   | sort -u
+```
+
+The exclusion removes Vite/Astro-provided constants; they are not user-configured `.env` keys.
+
+Before treating that list as complete, reject unsupported dynamic or destructured reads; both commands must return no matches:
+
+```sh
+git grep -nE "(import\.meta\.env|process\.env)\[[^'\"]" \
+  -- '*.ts' '*.tsx' '*.mts' '*.cts' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.astro'
+git grep -nE "\{[^}]+\}[[:space:]]*=[[:space:]]*(import\.meta\.env|process\.env)" \
+  -- '*.ts' '*.tsx' '*.mts' '*.cts' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.astro'
 ```
 
 ## Scope
@@ -109,9 +121,10 @@ Then point both `CLAUDE.md` and `docs/environment-setup.md` at `.env.example` as
 
 ```sh
 comm -3 \
-  <(grep -rhoE "(import\.meta\.env|process\.env)\.[A-Z_]+" src scripts vendor \
-    --include='*.ts' --include='*.tsx' --include='*.astro' \
-    | grep -oE "[A-Z_]+$" | sort -u) \
+  <(git grep -hoE "(import\.meta\.env|process\.env)(\.[A-Z_][A-Z0-9_]*|\[['\"][A-Z_][A-Z0-9_]*['\"]\])" \
+    -- '*.ts' '*.tsx' '*.mts' '*.cts' '*.js' '*.jsx' '*.mjs' '*.cjs' '*.astro' \
+    | grep -oE "[A-Z_][A-Z0-9_]*" \
+    | grep -vE '^(BASE_URL|DEV|MODE|PROD|SITE|SSR)$' | sort -u) \
   <(sed -nE 's/^([A-Z_][A-Z0-9_]*)=.*/\1/p' .env.example | sort -u)
 ```
 
