@@ -48,6 +48,9 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      - name: Install Puppeteer browser
+        run: bun run puppeteer:install
+
       - name: Build project
         if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
         env:
