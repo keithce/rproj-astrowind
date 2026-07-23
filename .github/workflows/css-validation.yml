@@ -56,6 +56,8 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          # The build imports the Resend client but never sends email.
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_build_placeholder' }}
         run: bun run build
 
       - name: Start dev server

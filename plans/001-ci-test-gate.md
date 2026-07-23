@@ -64,20 +64,23 @@ CI currently gates PRs only on `bun run check` (astro check + lint + format) and
 
 ## Commands you will need
 
-| Purpose | Command | Expected on success |
-|---|---|---|
-| Install | `bun install --frozen-lockfile` | exit 0 |
-| Install browsers | `bunx playwright install --with-deps chromium` | exit 0 |
-| Unit tests | `bun run test:unit` | exit 0 (passes with no tests today) |
-| E2E tests | `bun run test:e2e` | exit 0, both specs pass |
-| YAML sanity | `bunx yaml-lint .github/workflows/actions.yaml` or `node -e "require('js-yaml').load(require('fs').readFileSync('.github/workflows/actions.yaml','utf8')); console.log('ok')"` | `ok` (js-yaml is already a devDependency) |
+| Purpose          | Command                                                                                                                                                                        | Expected on success                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| Install          | `bun install --frozen-lockfile`                                                                                                                                                | exit 0                                    |
+| Install browsers | `bunx playwright install --with-deps chromium`                                                                                                                                 | exit 0                                    |
+| Unit tests       | `bun run test:unit`                                                                                                                                                            | exit 0 (passes with no tests today)       |
+| E2E tests        | `bun run test:e2e`                                                                                                                                                             | exit 0, both specs pass                   |
+| YAML sanity      | `bunx yaml-lint .github/workflows/actions.yaml` or `node -e "require('js-yaml').load(require('fs').readFileSync('.github/workflows/actions.yaml','utf8')); console.log('ok')"` | `ok` (js-yaml is already a devDependency) |
 
 ## Scope
 
 **In scope** (the only files you should modify):
+
 - `.github/workflows/actions.yaml`
+- `plans/README.md` (status row only)
 
 **Out of scope** (do NOT touch, even though they look related):
+
 - `playwright.config.ts` — already CI-ready; a build/preview-based E2E variant is a separately tracked backlog item (TEST-03 in `plans/README.md`).
 - `.github/workflows/accessibility-testing.yml`, `css-validation.yml`, `opencode.yml` — separate pipelines.
 - The two existing spec files — do not "fix" or extend them here.
@@ -95,35 +98,36 @@ CI currently gates PRs only on `bun run check` (astro check + lint + format) and
 Append a new job alongside `build-and-lint` (same file, same triggers). Target shape:
 
 ```yaml
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bun run test:unit
-      - run: bunx playwright install --with-deps chromium
-      - run: bun run test:e2e
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.PUBLIC_CLOUDINARY_CLOUD_NAME }}
-        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+test:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 22
+    - uses: oven-sh/setup-bun@v2
+    - run: bun install --frozen-lockfile
+    - run: bun run test:unit
+    - run: bunx playwright install --with-deps chromium
+    - run: bun run test:e2e
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN || 'ci-placeholder' }}
+        NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID || 'ci-placeholder' }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
+        CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
+        PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.PUBLIC_CLOUDINARY_CLOUD_NAME || 'ci-placeholder' }}
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_test_placeholder' }}
+    - uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 7
 ```
 
 Notes:
-- Keep the same fork-PR guard (`if:` condition) as the build step — fork PRs have no secrets.
+
+- Do not guard the E2E step by fork status: every pull request must run it. Each env expression must fall back to a documented, non-secret CI placeholder when repository secrets are unavailable; trusted push and same-repository PR runs continue to use the real secrets.
 - The action versions must match the ones already used in this file (`actions/checkout@v6`, `actions/setup-node@v6`, `oven-sh/setup-bun@v2`). Use `actions/upload-artifact@v4` (not present in the file yet; v4 is current).
 
 **Verify**: the js-yaml one-liner from "Commands you will need" → prints `ok`.
@@ -142,7 +146,7 @@ No new tests are written in this plan — it wires existing suites into CI. The 
 
 Machine-checkable. ALL must hold:
 
-- [ ] `git diff --name-only` shows only `.github/workflows/actions.yaml` modified
+- [ ] `git diff --name-only` shows only `.github/workflows/actions.yaml` and `plans/README.md` modified
 - [ ] `grep -c "test:e2e" .github/workflows/actions.yaml` → `1`
 - [ ] `grep -c "test:unit" .github/workflows/actions.yaml` → `1`
 - [ ] js-yaml parse one-liner → `ok`
@@ -161,4 +165,4 @@ Stop and report back (do not improvise) if:
 
 - Plan 003 adds the first real unit tests; once it lands, `test:unit` stops being a trivial pass — nothing in this job needs to change.
 - Backlog item TEST-03 (run E2E against `astro build && astro preview` instead of the dev server) builds directly on this job; whoever picks it up should add a second job or matrix entry, not replace this one.
-- Reviewer should scrutinize: the fork-PR `if:` guard is present on the E2E step, so fork PRs still run unit tests but skip the secret-requiring E2E step.
+- Reviewer should scrutinize: the E2E step has no fork-PR guard, every secret-backed env var has an inert fallback, and logs/artifacts do not expose secret values.

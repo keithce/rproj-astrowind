@@ -35,6 +35,7 @@ The current code also can't be unit-tested: the handler is inlined into `defineA
 - `src/actions/index.ts` — the whole action (236 lines). Key excerpts as of `43a2df2`:
 
   Module-level clients (lines 14–18):
+
   ```ts
   const resend = new Resend(import.meta.env.RESEND_API_KEY);
   const notion = new Client({
@@ -44,6 +45,7 @@ The current code also can't be unit-tested: the handler is inlined into `defineA
   ```
 
   The send whose result is discarded (lines 132–139):
+
   ```ts
   const html = await render(React.createElement(ResonantWelcomeEmail, { steps }));
 
@@ -56,6 +58,7 @@ The current code also can't be unit-tested: the handler is inlined into `defineA
   ```
 
   The partial-success branch that is currently unreachable for API errors (lines 207–219):
+
   ```ts
   if (isResendError(error)) {
     // ...
@@ -76,22 +79,25 @@ The current code also can't be unit-tested: the handler is inlined into `defineA
 
 ## Commands you will need
 
-| Purpose | Command | Expected on success |
-|---|---|---|
-| Unit tests | `bun run test:unit` | exit 0, new tests pass |
-| Typecheck | `bun run typecheck` | exit 0 |
-| Astro check | `bun run check:astro` | exit 0 |
-| Lint | `bun run lint` | exit 0 |
-| Full build | `bun run build` | exit 0 |
+| Purpose     | Command               | Expected on success    |
+| ----------- | --------------------- | ---------------------- |
+| Unit tests  | `bun run test:unit`   | exit 0, new tests pass |
+| Typecheck   | `bun run typecheck`   | exit 0                 |
+| Astro check | `bun run check:astro` | exit 0                 |
+| Lint        | `bun run lint`        | exit 0                 |
+| Full build  | `bun run build`       | exit 0                 |
 
 ## Scope
 
 **In scope** (the only files you should modify/create):
+
 - `src/actions/index.ts` (slim down to a thin wrapper)
 - `src/actions/contact-handler.ts` (create — extracted logic)
 - `tests/unit/contact-handler.test.ts` (create)
+- `plans/README.md` (status row only)
 
 **Out of scope** (do NOT touch):
+
 - `src/components/widgets/ContactFormReact.tsx` and `NotionContact.astro` — the client contract (`ContactFormState`) must remain identical, so no client change is needed.
 - `src/utils/notion-datasource.ts` — used as-is (its duplication with the vendored loader is backlog item DEBT-02).
 - `src/utils/welcome-email.tsx` — email template unchanged.
@@ -139,6 +145,7 @@ export async function processContactSubmission(deps: ContactDeps, input: Contact
 ```
 
 Semantics to implement in this step (characterized in Step 2, behavior-fixed in Step 3):
+
 - prohibited word → `{ kind: 'rejected', reason: 'prohibited_content' }`
 - missing `databaseId` → `{ kind: 'config_error', ... }`
 - Notion failure (reuse the existing `isNotionError` classification, moved here) → `{ kind: 'service_error', ... }`
@@ -147,6 +154,7 @@ Semantics to implement in this step (characterized in Step 2, behavior-fixed in 
 Also in this step: move the welcome-email `steps` array + `render(React.createElement(...))` into a small exported `renderWelcomeEmail(name, service)` helper (it can live in `contact-handler.ts`), and drop the submitter `name` from the `console.debug` line when moving it (log `'[action:contact] Processing form submission'` — no PII).
 
 Then rewrite `src/actions/index.ts` as a thin wrapper: keep the Zod `input` schema, `ALLOWED_SERVICES`, module-level `resend`/`notion` clients, and the exported `ContactFormState` interface exactly as they are; the `handler` becomes:
+
 - call `processContactSubmission({ notion, resend, databaseId: import.meta.env.NOTION_DATABASE_ID, renderWelcomeEmail }, input)`
 - map results: `rejected` → throw `ActionError BAD_REQUEST` with the existing user-facing message; `config_error`/`service_error` → throw `ActionError INTERNAL_SERVER_ERROR` with the existing messages; `success` → the existing `{ success: true, message, redirect: '/thank-you' }` (message per Step 3).
 
@@ -157,12 +165,13 @@ Then rewrite `src/actions/index.ts` as a thin wrapper: keep the Zod `input` sche
 Use `bun:test`. Build tiny fakes — objects with just the methods the handler calls (`notion.pages.create`, `notion.databases.retrieve` if `resolveDataSourceId` needs it — simpler: pass a `databaseId` and have the fake `databases.retrieve` return `{ data_sources: [{ id: 'ds_1' }] }`), `resend.emails.send`, and a stub `renderWelcomeEmail` resolving to `'<html></html>'`. Cast fakes with `as unknown as Client` / `as unknown as Resend`.
 
 Cases (each is one `it`):
-1. Happy path: valid input → `{ kind: 'success' }`; `notion.pages.create` called once with the four properties; `resend.emails.send` called once with `to: input.email`.
-2. Prohibited word in message → `{ kind: 'rejected' }`; neither client called.
-3. Missing databaseId → `{ kind: 'config_error' }`; no Notion write.
-4. Notion create rejects with `{ code: 'rate_limited' }` → `{ kind: 'service_error' }`; `resend.emails.send` NOT called.
+
+1. Happy path: valid input → `{ kind: 'success', emailSent: true }`; `notion.pages.create` called once with the four properties; `resend.emails.send` called once with `to: input.email`.
+2. Prohibited word in message → `{ kind: 'rejected', reason: 'prohibited_content' }`; neither client called.
+3. Missing databaseId → `{ kind: 'config_error', detail: 'Missing Notion database configuration.' }`; no Notion write.
+4. Notion create rejects with `{ code: 'rate_limited' }` → `{ kind: 'service_error', detail: 'External service temporarily unavailable. Please try again.' }`; `resend.emails.send` NOT called.
 5. **The bug, characterized**: `resend.emails.send` resolves `{ data: null, error: { name: 'application_error', message: 'boom' } }` → currently returns `{ kind: 'success', emailSent: true }`. Write the assertion for the CURRENT behavior with a comment `// BUG: flipped in Step 3`.
-6. **The retry-duplication path, characterized**: `resend.emails.send` REJECTS (throws) after Notion create succeeded → assert current behavior (whatever the moved code does — if the thrown error has `statusCode`, current `isResendError` returns partial success; if it's a bare `Error`, current code surfaces `service_error`). Comment `// BUG: flipped in Step 3`.
+6. **The retry-duplication path, characterized**: `resend.emails.send` REJECTS with a bare `Error('boom')` after Notion create succeeded → `{ kind: 'service_error', detail: 'An error occurred. Please try again later.' }`. Comment `// BUG: flipped in Step 3`.
 
 **Verify**: `bun run test:unit` → exit 0, 6 tests pass.
 
@@ -193,7 +202,8 @@ Machine-checkable. ALL must hold:
 
 - [ ] `bun run test:unit` → exit 0 with 7 passing tests in `tests/unit/contact-handler.test.ts`
 - [ ] `bun run typecheck`, `bun run lint`, `bun run build` all exit 0
-- [ ] `grep -n "emails.send" src/actions/contact-handler.ts` shows the result captured (destructured `error`), not a bare `await`
+- [ ] `grep -nE 'const \{ error \} = await deps\.resend\.emails\.send' src/actions/contact-handler.ts` → one match
+- [ ] `grep -nE '^[[:space:]]*await deps\.resend\.emails\.send' src/actions/contact-handler.ts` → no matches
 - [ ] `grep -rn "isResendError" src/` → no matches
 - [ ] `grep -n "Processing form submission" src/actions/contact-handler.ts` shows no `name` argument in the log
 - [ ] `ContactFormState` interface in `src/actions/index.ts` unchanged (`git diff` shows no edit to its fields)

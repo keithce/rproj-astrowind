@@ -11,6 +11,7 @@ import { UI } from 'astrowind:config';
   const eventRegistry = new WeakMap();
   const handlerRegistry = new WeakMap();
   let handlerCounter = 0;
+  let themeTransitionTimeout;
   const screenSize = window.matchMedia('(max-width: 767px)');
 
   function applyTheme(theme) {
@@ -107,11 +108,15 @@ import { UI } from 'astrowind:config';
         if (defaultTheme.endsWith(':only')) {
           return;
         }
+        if (themeTransitionTimeout) {
+          clearTimeout(themeTransitionTimeout);
+        }
         document.documentElement.classList.add('theme-transitioning');
         document.documentElement.classList.toggle('dark');
         localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-        setTimeout(() => {
+        themeTransitionTimeout = setTimeout(() => {
           document.documentElement.classList.remove('theme-transitioning');
+          themeTransitionTimeout = undefined;
         }, 250);
       },
       'toggle-color-scheme-click'

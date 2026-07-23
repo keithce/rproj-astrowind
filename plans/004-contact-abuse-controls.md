@@ -41,13 +41,13 @@ The contact action is an unauthenticated endpoint that, on every POST, creates a
 
 ## Commands you will need
 
-| Purpose | Command | Expected on success |
-|---|---|---|
-| Typecheck | `bun run typecheck` | exit 0 |
-| Astro check | `bun run check:astro` | exit 0 |
-| Unit tests | `bun run test:unit` | exit 0 (plan 003's tests still pass) |
-| Build | `bun run build` | exit 0 |
-| Dev server (manual check) | `bun run dev` | serves on :4321 |
+| Purpose                   | Command               | Expected on success                  |
+| ------------------------- | --------------------- | ------------------------------------ |
+| Typecheck                 | `bun run typecheck`   | exit 0                               |
+| Astro check               | `bun run check:astro` | exit 0                               |
+| Unit tests                | `bun run test:unit`   | exit 0 (plan 003's tests still pass) |
+| Build                     | `bun run build`       | exit 0                               |
+| Dev server (manual check) | `bun run dev`         | serves on :4321                      |
 
 ## Suggested executor toolkit
 
@@ -57,12 +57,16 @@ The contact action is an unauthenticated endpoint that, on every POST, creates a
 ## Scope
 
 **In scope** (the only files you should modify):
+
 - `src/layouts/Layout.astro` (re-enable the client component)
 - `src/actions/index.ts` (server-side check in the action wrapper)
-- `tests/unit/contact-handler.test.ts` (only if the wrapper refactor requires it; the pure handler should not change)
+- `src/actions/contact-bot-guard.ts` (create — dependency-injected wrapper guard)
+- `tests/unit/contact-bot-guard.test.ts` (create — mocked allowed and blocked BotID verdicts)
 - `astro.config.ts` (ONLY if the installed botid version requires a build plugin per its README)
+- `plans/README.md` (status row only)
 
 **Out of scope** (do NOT touch):
+
 - `vercel.json` — the BotID rewrites are already correct.
 - `src/actions/contact-handler.ts` — keep the pure handler free of request-context dependencies.
 - Redis-based rate limiting — a `REDIS_URL` exists in the local env but its provider/purpose is unverified; per-IP rate limiting is deferred to backlog item SEC-01b rather than guessed at here.
@@ -110,10 +114,13 @@ if (verification.isBot) {
 ```
 
 Notes:
+
 - Astro actions run inside an Astro request context on Vercel; if `checkBotId()` needs the request headers explicitly, pass them from the action's `context` (second handler argument in Astro actions — `handler: async (input, context)`).
 - In local dev (no Vercel bot infrastructure), the check must fail OPEN, not closed: if the installed helper doesn't already treat local/dev as verified (the README will say — BotID is documented to allow local dev traffic), gate the check on `import.meta.env.PROD`.
 
 **Verify**: `bun run typecheck` → exit 0; `bun run test:unit` → exit 0 (pure-handler tests unaffected); `bun run dev` and submit the contact form on `/contact` in a browser or via the page — submission still succeeds locally (fail-open confirmed).
+
+Keep the verdict-to-error behavior testable without importing Astro virtual modules: extract a dependency-injected `guardContactSubmission(checkBotId, onAllowed)` into `src/actions/contact-bot-guard.ts`, have the action wrapper pass the real `checkBotId` and contact handler, and keep request-context concerns out of `contact-handler.ts`. In `tests/unit/contact-bot-guard.test.ts`, cover both verdicts: `{ isBot: false }` calls `onAllowed` once, while `{ isBot: true }` produces the exact `FORBIDDEN` code and user-facing message above without calling `onAllowed` or either external client.
 
 ### Step 3: Full verification
 
@@ -122,8 +129,8 @@ Notes:
 ## Test plan
 
 - The pure handler tests from plan 003 must still pass unchanged (`bun run test:unit`).
-- The bot check lives in the Astro wrapper, which can't run under `bun test` (virtual `astro:actions` imports) — its verification is the manual dev-server submission in Step 2 plus the first production deploy (see Maintenance notes).
-- No new unit tests are required by this plan.
+- The mocked wrapper-guard test must prove both allowed browser traffic and an `isBot: true` rejection before side effects.
+- On the preview deployment, submit once through a normal browser (allowed) and once with a headless request using the actual action endpoint and payload observed in the browser (blocked with `FORBIDDEN`). Record both results in the PR; Vercel documents this browser-versus-headless check as its BotID deployment smoke test.
 
 ## Done criteria
 
@@ -131,8 +138,10 @@ Machine-checkable. ALL must hold:
 
 - [ ] `grep -n "BotIdClient" src/layouts/Layout.astro` → uncommented import + usage (no `//` or `<!--` on those lines)
 - [ ] `grep -n "checkBotId\|botid/server" src/actions/index.ts` → present
+- [ ] `tests/unit/contact-bot-guard.test.ts` covers allowed and blocked verdicts, including exact `FORBIDDEN` output and zero side effects for the blocked path
 - [ ] `bun run typecheck`, `bun run check:astro`, `bun run test:unit`, `bun run build` all exit 0
 - [ ] Local dev form submission succeeds (fail-open verified)
+- [ ] Preview smoke: normal browser submission succeeds; the headless request is rejected as `FORBIDDEN`
 - [ ] Only in-scope files modified (`git status`)
 - [ ] `plans/README.md` status row updated
 

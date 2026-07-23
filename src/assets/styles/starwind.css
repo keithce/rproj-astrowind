@@ -172,10 +172,13 @@
   }
 
   /* Smooth theme transitions - only during theme toggle, not page navigation */
-  .theme-transitioning * {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-transitioning,
+    .theme-transitioning * {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+    }
   }
 }
 

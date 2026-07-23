@@ -39,23 +39,33 @@ All of these were verified against the working tree at commit `43a2df2`:
 
 ## Commands you will need
 
-| Purpose | Command | Expected on success |
-|---|---|---|
-| Find remaining wrong versions | `grep -rn "Astro 5" CLAUDE.md README.md docs/` | no matches (after fix) |
-| Find wrong config path | `grep -rn "src/content/config.ts" docs/ CLAUDE.md README.md` | no matches (after fix) |
-| Enumerate env vars used by code | `grep -rhoE "(import\.meta\.env|process\.env)\.[A-Z_]+" src scripts vendor --include='*.ts' --include='*.tsx' --include='*.astro' \| grep -oE "[A-Z_]+$" \| sort -u` | list of var names |
-| Format check | `bun run format` | exit 0 |
+| Purpose                         | Command                                                      | Expected on success      |
+| ------------------------------- | ------------------------------------------------------------ | ------------------------ |
+| Find remaining wrong versions   | `grep -rn "Astro 5" CLAUDE.md README.md docs/`               | no matches (after fix)   |
+| Find wrong config path          | `grep -rn "src/content/config.ts" docs/ CLAUDE.md README.md` | no matches (after fix)   |
+| Enumerate env vars used by code | Run the shell block below                                    | sorted list of var names |
+| Format check                    | `bun run format`                                             | exit 0                   |
+
+```sh
+grep -rhoE "(import\.meta\.env|process\.env)\.[A-Z_]+" src scripts vendor \
+  --include='*.ts' --include='*.tsx' --include='*.astro' \
+  | grep -oE "[A-Z_]+$" \
+  | sort -u
+```
 
 ## Scope
 
 **In scope** (the only files you should modify/create):
+
 - `CLAUDE.md`
 - `README.md`
 - `docs/claude/architecture.md`
 - `docs/environment-setup.md`
 - `.env.example` (create)
+- `plans/README.md` (status row only)
 
 **Out of scope** (do NOT touch):
+
 - `.env` — never open it, never copy values from it. The `.env.example` you write contains key names and placeholder comments ONLY.
 - The other ~15 files in `docs/` (stale one-off reports are a separately tracked backlog item, DOCS-04).
 - Any source code.
@@ -95,7 +105,15 @@ Run the env-var enumeration command from "Commands you will need". Write `.env.e
 
 Then point both `CLAUDE.md` and `docs/environment-setup.md` at `.env.example` as the authoritative variable list.
 
-**Verify**: `test -f .env.example && grep -c "=" .env.example` → ≥ 7; `grep -E "=(.+[A-Za-z0-9]{10,})" .env.example` → no matches (no real-looking values).
+**Verify**: `test -f .env.example` → exit 0; the following comparison → no output (the code and example sets match exactly); `grep -E "=(.+[A-Za-z0-9]{10,})" .env.example` → no matches (no real-looking values).
+
+```sh
+comm -3 \
+  <(grep -rhoE "(import\.meta\.env|process\.env)\.[A-Z_]+" src scripts vendor \
+    --include='*.ts' --include='*.tsx' --include='*.astro' \
+    | grep -oE "[A-Z_]+$" | sort -u) \
+  <(sed -nE 's/^([A-Z_][A-Z0-9_]*)=.*/\1/p' .env.example | sort -u)
+```
 
 ### Step 5: Format check
 
@@ -112,7 +130,7 @@ Machine-checkable. ALL must hold:
 - [ ] `grep -rn "Astro 5" CLAUDE.md README.md docs/` → no matches
 - [ ] `grep -rn "src/content/config.ts" docs/ CLAUDE.md README.md` → no matches
 - [ ] `RESEND_API_KEY` and `NOTION_DATABASE_ID` documented in both `CLAUDE.md` and `docs/environment-setup.md`
-- [ ] `.env.example` exists, ≥7 keys, no real secret-looking values
+- [ ] `.env.example` exists, its key set exactly matches the code enumeration, and it contains no real secret-looking values
 - [ ] `git status` shows only in-scope files modified/created
 - [ ] `plans/README.md` status row updated
 
