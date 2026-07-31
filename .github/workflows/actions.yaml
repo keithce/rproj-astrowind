@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-lint:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, incus, garm, ephemeral]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
