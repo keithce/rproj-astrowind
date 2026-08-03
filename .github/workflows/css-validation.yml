@@ -17,6 +17,10 @@ on:
       - 'scripts/css-*.js'
       - 'scripts/contrast-*.js'
       - 'scripts/visual-*.js'
+  # The path filters above mean this workflow can go months without running, so
+  # a regression in it (or in the runner it targets) surfaces only when someone
+  # happens to touch a stylesheet. Manual dispatch makes it testable on demand.
+  workflow_dispatch:
 
 jobs:
   css-validation:

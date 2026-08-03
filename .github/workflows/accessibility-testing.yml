@@ -36,6 +36,11 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          # Prerendering /404 constructs the Resend client at module scope, and
+          # its constructor throws on a missing key -- so the build fails
+          # outright without one even though it never sends mail. Same
+          # placeholder fallback css-validation.yml already carries.
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_build_placeholder' }}
 
   accessibility-tests:
     name: Accessibility Tests
@@ -60,6 +65,9 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RR_RESOURCES_ID: ${{ secrets.NOTION_RR_RESOURCES_ID }}
+          # Same constructor, same reason as the build job above: dev renders
+          # the routes that import the Resend client.
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_dev_placeholder' }}
         run: |
           bun run dev --port ${{ env.DEV_PORT }} --host &
           echo "PID=$!" >> "$GITHUB_OUTPUT"
