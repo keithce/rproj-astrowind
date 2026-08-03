@@ -1,4 +1,4 @@
-import astroEslintParser from 'astro-eslint-parser';
+import * as astroEslintParser from 'astro-eslint-parser';
 import eslintPluginAstro from 'eslint-plugin-astro';
 import globals from 'globals';
 import js from '@eslint/js';
@@ -31,6 +31,15 @@ export default [
       'astro/no-conflict-set-directives': 'error',
       'astro/no-unused-define-vars-in-style': 'error',
       'astro/semi': ['error', 'always'],
+    },
+  },
+  {
+    // Vendored Starwind UI kit — it exports its `tv()` style variants from each
+    // component by design. Keep the upstream source untouched so it stays easy to
+    // re-sync, rather than rewriting 31 files to satisfy the rule.
+    files: ['src/components/starwind/**/*.astro'],
+    rules: {
+      'astro/no-exports-from-components': 'off',
     },
   },
   {

@@ -18,7 +18,6 @@ export interface Props {
   url: string | URL;
 }
 
-export const prerender = true;
 const { post, url } = Astro.props;
 
 // Helper function to safely convert Date to ISO string for datetime attribute
