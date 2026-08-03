@@ -26,6 +26,11 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          # Prerendering /404 constructs the Resend client at module scope and
+          # its constructor throws on a missing key, so the build fails outright
+          # without one even though it never sends mail. Same placeholder
+          # fallback css-validation.yml and accessibility-testing.yml carry.
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_build_placeholder' }}
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
 
   codeql:
