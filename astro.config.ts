@@ -62,7 +62,15 @@ export default defineConfig({
       config: { forward: ['dataLayer.push'] },
     }),
     compress({
-      CSS: true,
+      // Minify with lightningcss, not csso. Tailwind v4 emits every responsive
+      // variant inside CSS Media Queries Level 4 range syntax — `@media
+      // (width>=64rem)` — which csso 5 cannot parse, so it silently deletes the
+      // whole block. That stripped every `sm:`/`md:`/`lg:` utility from the
+      // build and rendered the site at base (mobile) sizes on all viewports.
+      CSS: {
+        csso: false,
+        lightningcss: { minify: true },
+      },
       HTML: {
         'html-minifier-terser': {
           removeAttributeQuotes: false,
