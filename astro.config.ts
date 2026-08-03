@@ -82,6 +82,9 @@ export default defineConfig({
     domains: ['cdn.pixabay.com', 'images.unsplash.com', 'images.pexels.com', 'res.cloudinary.com'],
     responsiveStyles: true,
     layout: 'constrained',
+    // Several posts/heroes use local SVG assets that `adaptOpenGraphImages` rasterizes to JPEG
+    // for Open Graph tags. Astro >=6.3 refuses to process SVG sources unless this is opted in.
+    dangerouslyProcessSVG: true,
     remotePatterns: [
       { protocol: 'https', hostname: '**.amazonaws.com' },
     ],
