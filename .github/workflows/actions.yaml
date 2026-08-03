@@ -32,6 +32,11 @@ jobs:
           # fallback css-validation.yml and accessibility-testing.yml carry.
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 're_ci_build_placeholder' }}
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
+      # Catches a CSS minifier silently dropping Tailwind's `@media (width>=…)`
+      # breakpoints, which produces a green build that renders every page at
+      # base (mobile) styles. Must run after the build, against dist/.
+      - run: bun run verify:responsive-css
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
 
   codeql:
     name: Analyze (CodeQL)
