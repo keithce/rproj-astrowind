@@ -13,7 +13,7 @@ jobs:
     runs-on: [self-hosted, linux, x64, incus, garm, ephemeral]
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - uses: oven-sh/setup-bun@v2
@@ -47,7 +47,7 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: typescript
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - run: bun install --frozen-lockfile
