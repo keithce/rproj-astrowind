@@ -3,78 +3,162 @@ import { UI } from 'astrowind:config';
 ---
 
 <script is:inline define:vars={{ defaultTheme: UI.theme }}>
-  if (window.basic_script) {
-    return;
-  }
-
-  window.basic_script = true;
-  const eventRegistry = new WeakMap();
-  const handlerRegistry = new WeakMap();
-  let handlerCounter = 0;
-  let themeTransitionTimeout;
-  const screenSize = window.matchMedia('(max-width: 767px)');
-
-  function applyTheme(theme) {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  (() => {
+    if (window.basic_script) {
+      return;
     }
-  }
 
-  const initTheme = function () {
-    if ((defaultTheme && defaultTheme.endsWith(':only')) || (!localStorage.theme && defaultTheme !== 'system')) {
-      applyTheme(defaultTheme.replace(':only', ''));
-    } else if (
-      localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      applyTheme('dark');
-    } else {
-      applyTheme('light');
+    window.basic_script = true;
+    const eventRegistry = new WeakMap();
+    const handlerRegistry = new WeakMap();
+    let handlerCounter = 0;
+    let themeTransitionTimeout;
+    const screenSize = window.matchMedia('(max-width: 767px)');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
-  };
-  initTheme();
 
-  function getHandlerKey(fn) {
-    let handlerKey = handlerRegistry.get(fn);
-    if (!handlerKey) {
-      handlerCounter += 1;
-      handlerKey = `handler-${handlerCounter}`;
-      handlerRegistry.set(fn, handlerKey);
+    const initTheme = function () {
+      if ((defaultTheme && defaultTheme.endsWith(':only')) || (!localStorage.theme && defaultTheme !== 'system')) {
+        applyTheme(defaultTheme.replace(':only', ''));
+      } else if (
+        localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        applyTheme('dark');
+      } else {
+        applyTheme('light');
+      }
+    };
+    initTheme();
+
+    function getHandlerKey(fn) {
+      let handlerKey = handlerRegistry.get(fn);
+      if (!handlerKey) {
+        handlerCounter += 1;
+        handlerKey = `handler-${handlerCounter}`;
+        handlerRegistry.set(fn, handlerKey);
+      }
+      return handlerKey;
     }
-    return handlerKey;
-  }
 
-  function attachEvent(selector, event, fn, key) {
-    const matches = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
-    if (matches && matches.length) {
-      matches.forEach(elem => {
-        const target = elem;
-        let existing = eventRegistry.get(target);
-        if (!existing) {
-          existing = new Set();
-          eventRegistry.set(target, existing);
-        }
-        const dedupeKey = key ?? getHandlerKey(fn);
-        const registryKey = `${event}:${dedupeKey}`;
-        if (existing.has(registryKey)) {
-          return;
-        }
-        existing.add(registryKey);
-        elem.addEventListener(event, e => fn(e, elem), false);
-      });
+    function attachEvent(selector, event, fn, key) {
+      const matches = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
+      if (matches && matches.length) {
+        matches.forEach(elem => {
+          const target = elem;
+          let existing = eventRegistry.get(target);
+          if (!existing) {
+            existing = new Set();
+            eventRegistry.set(target, existing);
+          }
+          const dedupeKey = key ?? getHandlerKey(fn);
+          const registryKey = `${event}:${dedupeKey}`;
+          if (existing.has(registryKey)) {
+            return;
+          }
+          existing.add(registryKey);
+          elem.addEventListener(event, e => fn(e, elem), false);
+        });
+      }
     }
-  }
 
-  const onLoad = function () {
-    let lastKnownScrollPosition = window.scrollY;
-    let ticking = true;
+    const onLoad = function () {
+      let lastKnownScrollPosition = window.scrollY;
+      let ticking = true;
 
-    attachEvent(
-      '#header nav',
-      'click',
-      function () {
+      attachEvent(
+        '#header nav',
+        'click',
+        function () {
+          document.querySelector('[data-aw-toggle-menu]')?.classList.remove('expanded');
+          document.body.classList.remove('overflow-hidden');
+          document.getElementById('header')?.classList.remove('h-screen');
+          document.getElementById('header')?.classList.remove('expanded');
+          document.getElementById('header')?.classList.remove('bg-page');
+          document.querySelector('#header nav')?.classList.add('hidden');
+          document.querySelector('#header > div > div:last-child')?.classList.add('hidden');
+        },
+        'header-nav-click'
+      );
+
+      attachEvent(
+        '[data-aw-toggle-menu]',
+        'click',
+        function (_, elem) {
+          elem.classList.toggle('expanded');
+          document.body.classList.toggle('overflow-hidden');
+          document.getElementById('header')?.classList.toggle('h-screen');
+          document.getElementById('header')?.classList.toggle('expanded');
+          document.getElementById('header')?.classList.toggle('bg-page');
+          document.querySelector('#header nav')?.classList.toggle('hidden');
+          document.querySelector('#header > div > div:last-child')?.classList.toggle('hidden');
+        },
+        'toggle-menu-click'
+      );
+
+      attachEvent(
+        '[data-aw-toggle-color-scheme]',
+        'click',
+        function () {
+          if (defaultTheme.endsWith(':only')) {
+            return;
+          }
+          if (themeTransitionTimeout) {
+            clearTimeout(themeTransitionTimeout);
+          }
+          document.documentElement.classList.add('theme-transitioning');
+          document.documentElement.classList.toggle('dark');
+          localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          themeTransitionTimeout = setTimeout(() => {
+            document.documentElement.classList.remove('theme-transitioning');
+            themeTransitionTimeout = undefined;
+          }, 250);
+        },
+        'toggle-color-scheme-click'
+      );
+
+      attachEvent(
+        '[data-aw-social-share]',
+        'click',
+        function (_, elem) {
+          const network = elem.getAttribute('data-aw-social-share');
+          const url = encodeURIComponent(elem.getAttribute('data-aw-url'));
+          const text = encodeURIComponent(elem.getAttribute('data-aw-text'));
+
+          let href;
+          switch (network) {
+            case 'facebook':
+              href = `https://www.facebook.com/sharer.php?u=${url}`;
+              break;
+            case 'twitter':
+              href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+              break;
+            case 'linkedin':
+              href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${text}`;
+              break;
+            case 'whatsapp':
+              href = `https://wa.me/?text=${text}%20${url}`;
+              break;
+            case 'mail':
+              href = `mailto:?subject=%22${text}%22&body=${text}%20${url}`;
+              break;
+
+            default:
+              return;
+          }
+
+          window.open(href, '_blank', 'noopener,noreferrer');
+        },
+        'social-share-click'
+      );
+
+      const handleScreenSizeChange = function () {
         document.querySelector('[data-aw-toggle-menu]')?.classList.remove('expanded');
         document.body.classList.remove('overflow-hidden');
         document.getElementById('header')?.classList.remove('h-screen');
@@ -82,140 +166,58 @@ import { UI } from 'astrowind:config';
         document.getElementById('header')?.classList.remove('bg-page');
         document.querySelector('#header nav')?.classList.add('hidden');
         document.querySelector('#header > div > div:last-child')?.classList.add('hidden');
-      },
-      'header-nav-click'
-    );
+      };
+      attachEvent([screenSize], 'change', handleScreenSizeChange, 'screen-size-change');
 
-    attachEvent(
-      '[data-aw-toggle-menu]',
-      'click',
-      function (_, elem) {
-        elem.classList.toggle('expanded');
-        document.body.classList.toggle('overflow-hidden');
-        document.getElementById('header')?.classList.toggle('h-screen');
-        document.getElementById('header')?.classList.toggle('expanded');
-        document.getElementById('header')?.classList.toggle('bg-page');
-        document.querySelector('#header nav')?.classList.toggle('hidden');
-        document.querySelector('#header > div > div:last-child')?.classList.toggle('hidden');
-      },
-      'toggle-menu-click'
-    );
-
-    attachEvent(
-      '[data-aw-toggle-color-scheme]',
-      'click',
-      function () {
-        if (defaultTheme.endsWith(':only')) {
-          return;
+      function applyHeaderStylesOnScroll() {
+        const header = document.querySelector('#header[data-aw-sticky-header]');
+        if (!header) return;
+        if (lastKnownScrollPosition > 60 && !header.classList.contains('scroll')) {
+          header.classList.add('scroll');
+        } else if (lastKnownScrollPosition <= 60 && header.classList.contains('scroll')) {
+          header.classList.remove('scroll');
         }
-        if (themeTransitionTimeout) {
-          clearTimeout(themeTransitionTimeout);
-        }
-        document.documentElement.classList.add('theme-transitioning');
-        document.documentElement.classList.toggle('dark');
-        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-        themeTransitionTimeout = setTimeout(() => {
-          document.documentElement.classList.remove('theme-transitioning');
-          themeTransitionTimeout = undefined;
-        }, 250);
-      },
-      'toggle-color-scheme-click'
-    );
+        ticking = false;
+      }
+      applyHeaderStylesOnScroll();
 
-    attachEvent(
-      '[data-aw-social-share]',
-      'click',
-      function (_, elem) {
-        const network = elem.getAttribute('data-aw-social-share');
-        const url = encodeURIComponent(elem.getAttribute('data-aw-url'));
-        const text = encodeURIComponent(elem.getAttribute('data-aw-text'));
+      attachEvent(
+        [document],
+        'scroll',
+        function () {
+          lastKnownScrollPosition = window.scrollY;
 
-        let href;
-        switch (network) {
-          case 'facebook':
-            href = `https://www.facebook.com/sharer.php?u=${url}`;
-            break;
-          case 'twitter':
-            href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-            break;
-          case 'linkedin':
-            href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${text}`;
-            break;
-          case 'whatsapp':
-            href = `https://wa.me/?text=${text}%20${url}`;
-            break;
-          case 'mail':
-            href = `mailto:?subject=%22${text}%22&body=${text}%20${url}`;
-            break;
-
-          default:
-            return;
-        }
-
-        window.open(href, '_blank', 'noopener,noreferrer');
-      },
-      'social-share-click'
-    );
-
-    const handleScreenSizeChange = function () {
-      document.querySelector('[data-aw-toggle-menu]')?.classList.remove('expanded');
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              applyHeaderStylesOnScroll();
+            });
+            ticking = true;
+          }
+        },
+        'document-scroll'
+      );
+    };
+    const onPageShow = function () {
+      document.documentElement.classList.add('motion-safe:scroll-smooth');
+      const elem = document.querySelector('[data-aw-toggle-menu]');
+      if (elem) {
+        elem.classList.remove('expanded');
+      }
       document.body.classList.remove('overflow-hidden');
       document.getElementById('header')?.classList.remove('h-screen');
       document.getElementById('header')?.classList.remove('expanded');
-      document.getElementById('header')?.classList.remove('bg-page');
       document.querySelector('#header nav')?.classList.add('hidden');
-      document.querySelector('#header > div > div:last-child')?.classList.add('hidden');
     };
-    attachEvent([screenSize], 'change', handleScreenSizeChange, 'screen-size-change');
 
-    function applyHeaderStylesOnScroll() {
-      const header = document.querySelector('#header[data-aw-sticky-header]');
-      if (!header) return;
-      if (lastKnownScrollPosition > 60 && !header.classList.contains('scroll')) {
-        header.classList.add('scroll');
-      } else if (lastKnownScrollPosition <= 60 && header.classList.contains('scroll')) {
-        header.classList.remove('scroll');
-      }
-      ticking = false;
-    }
-    applyHeaderStylesOnScroll();
+    window.addEventListener('load', onLoad);
+    window.addEventListener('pageshow', onPageShow);
 
-    attachEvent(
-      [document],
-      'scroll',
-      function () {
-        lastKnownScrollPosition = window.scrollY;
-
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            applyHeaderStylesOnScroll();
-          });
-          ticking = true;
-        }
-      },
-      'document-scroll'
-    );
-  };
-  const onPageShow = function () {
-    document.documentElement.classList.add('motion-safe:scroll-smooth');
-    const elem = document.querySelector('[data-aw-toggle-menu]');
-    if (elem) {
-      elem.classList.remove('expanded');
-    }
-    document.body.classList.remove('overflow-hidden');
-    document.getElementById('header')?.classList.remove('h-screen');
-    document.getElementById('header')?.classList.remove('expanded');
-    document.querySelector('#header nav')?.classList.add('hidden');
-  };
-
-  window.addEventListener('load', onLoad);
-  window.addEventListener('pageshow', onPageShow);
-
-  document.addEventListener('astro:after-swap', () => {
-    initTheme();
-    onLoad();
-    onPageShow();
-  });
+    document.addEventListener('astro:after-swap', () => {
+      initTheme();
+      onLoad();
+      onPageShow();
+    });
+  })();
 </script>
 
 <script is:inline>
