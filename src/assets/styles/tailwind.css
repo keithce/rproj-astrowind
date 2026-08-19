@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+/* Keep hashed /_astro CSS filenames unique after disabling astro-compress CSS. */
+
 @layer base {
   /*
     Border color compatibility for Tailwind CSS v4

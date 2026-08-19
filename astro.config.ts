@@ -69,7 +69,10 @@ export default defineConfig({
       config: { forward: ['dataLayer.push'] },
     }),
     compress({
-      CSS: true,
+      // Vite already minifies CSS. A second pass (csso) silently drops Tailwind
+      // v4 range media queries like `@media (width >= 40rem)`, so desktop
+      // renders the mobile-first layout.
+      CSS: false,
       // Vercel already brotli/gzip's HTML at the edge. Minifying 1,300+ HTML
       // files here was taking ~2 of every 4-minute production build.
       HTML: false,
