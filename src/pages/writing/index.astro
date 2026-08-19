@@ -2,12 +2,22 @@
 import { getCollection } from 'astro:content';
 import Layout from '~/layouts/PageLayout.astro';
 import { getFormattedDate } from '~/utils/utils';
+import { loadLiveEditorialEntries, type LiveEditorialEntry } from '~/utils/frequency-editorial';
 
-export const prerender = true;
+export const prerender = false;
 
-const entries = (await getCollection('editorial')).sort(
-  (left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime()
-);
+type WritingListEntry = {
+  id: string;
+  data: LiveEditorialEntry['data'];
+};
+
+const liveEntries = await loadLiveEditorialEntries().catch(() => []);
+const entries: WritingListEntry[] =
+  liveEntries.length > 0
+    ? liveEntries
+    : (await getCollection('editorial'))
+        .map(entry => ({ id: entry.id, data: entry.data }))
+        .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime());
 
 const metadata = {
   title: 'Writing',

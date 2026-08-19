@@ -30,7 +30,14 @@ export default defineConfig({
       enabled: true,
     },
     maxDuration: 30,
-    isr: false,
+    isr: {
+      // Writing and blog pages fetch Frequency exports at request time.
+      // One hour is fresher than the previous 8-hour full production rebuild,
+      // without spending build minutes.
+      expiration: 60 * 60,
+      ...(process.env.ISR_BYPASS_TOKEN ? { bypassToken: process.env.ISR_BYPASS_TOKEN } : {}),
+      exclude: ['/til/board', '/api/revalidate', /^\/api\/.+/],
+    },
   }),
 
   build: {
@@ -63,11 +70,9 @@ export default defineConfig({
     }),
     compress({
       CSS: true,
-      HTML: {
-        'html-minifier-terser': {
-          removeAttributeQuotes: false,
-        },
-      },
+      // Vercel already brotli/gzip's HTML at the edge. Minifying 1,300+ HTML
+      // files here was taking ~2 of every 4-minute production build.
+      HTML: false,
       Image: false,
       JavaScript: true,
       SVG: false,

@@ -2,19 +2,31 @@
 import { getCollection } from 'astro:content';
 import Layout from '~/layouts/PageLayout.astro';
 import { getFormattedDate } from '~/utils/utils';
+import { loadLiveEditorialEntry } from '~/utils/frequency-editorial';
 
-export const prerender = true;
+export const prerender = false;
 
-export async function getStaticPaths() {
-  const entries = await getCollection('editorial');
-  return entries.map(entry => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+const slug = Astro.params.slug;
+if (!slug) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
 }
 
-const { entry } = Astro.props;
-const renderedHtml = entry.rendered?.html;
+const liveEntry = await loadLiveEditorialEntry(slug).catch(() => undefined);
+const collectionEntry = liveEntry
+  ? undefined
+  : (await getCollection('editorial')).find(entry => entry.id === slug || entry.data.slug === slug);
+
+const entry = liveEntry
+  ? { id: liveEntry.id, data: liveEntry.data, html: liveEntry.html }
+  : collectionEntry
+    ? { id: collectionEntry.id, data: collectionEntry.data, html: collectionEntry.rendered?.html }
+    : undefined;
+
+if (!entry) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const renderedHtml = entry.html;
 
 const metadata = {
   title: entry.data.title,

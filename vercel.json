@@ -1,7 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "bun run astro build",
+  "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/resources",
+      "destination": "/resources/all/1",
+      "permanent": true
+    },
+    {
+      "source": "/til",
+      "destination": "/til/all/1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/:path*",
@@ -17,7 +31,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1800, immutable"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },

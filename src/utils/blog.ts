@@ -1,9 +1,10 @@
-import type { PaginateFunction } from 'astro';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import type { Post, Taxonomy, MetaData } from '~/types';
 import { APP_BLOG } from 'astrowind:config';
-import { cleanSlug, trimSlash, BLOG_BASE, POST_PERMALINK_PATTERN, CATEGORY_BASE, TAG_BASE } from './permalinks';
+import { cleanSlug, trimSlash, POST_PERMALINK_PATTERN } from './permalinks';
+import { loadLiveEditorialEntries, type LiveEditorialEntry } from '~/utils/frequency-editorial';
+import { loadLiveEssays, type LiveEssay } from '~/utils/frequency-essays';
 
 const generatePermalink = async ({
   id,
@@ -100,7 +101,9 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
   };
 };
 
-const normalizeEditorialEntry = (entry: CollectionEntry<'editorial'>): Post => {
+const normalizeEditorialEntry = (
+  entry: Pick<CollectionEntry<'editorial'> | LiveEditorialEntry, 'id' | 'data'>
+): Post => {
   const kind = entry.data.kind.replaceAll('_', ' ');
   return {
     id: entry.id,
@@ -116,20 +119,79 @@ const normalizeEditorialEntry = (entry: CollectionEntry<'editorial'>): Post => {
   };
 };
 
-const load = async function (): Promise<Array<Post>> {
-  const posts = await getCollection('post');
-  const editorialEntries = await getCollection('editorial');
-  const normalizedPosts = posts.map(async post => await getNormalizedPost(post));
-  const normalizedEditorial = editorialEntries.map(normalizeEditorialEntry);
+const liveEssayToPost = async (essay: LiveEssay): Promise<Post> => {
+  const slug = cleanSlug(essay.id);
+  const category = essay.category
+    ? {
+        slug: cleanSlug(essay.category),
+        title: essay.category,
+      }
+    : undefined;
 
-  const results = [...(await Promise.all(normalizedPosts)), ...normalizedEditorial]
-    .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf())
-    .filter(post => !post.draft);
-
-  return results;
+  return {
+    id: essay.id,
+    slug,
+    permalink: await generatePermalink({
+      id: essay.id,
+      slug,
+      publishDate: essay.publishDate,
+      category: category?.slug,
+    }),
+    publishDate: essay.publishDate,
+    updateDate: essay.updateDate,
+    title: essay.title,
+    excerpt: essay.excerpt,
+    image: essay.image,
+    category,
+    tags: essay.tags.map(tag => ({
+      slug: cleanSlug(tag),
+      title: tag,
+    })),
+    author: essay.author,
+    draft: essay.draft,
+    metadata: {},
+    content: essay.html,
+  };
 };
 
-let _posts: Array<Post>;
+const load = async function (): Promise<Array<Post>> {
+  const [collectionPosts, liveEssays, liveEditorial] = await Promise.all([
+    getCollection('post'),
+    loadLiveEssays().catch(() => [] as LiveEssay[]),
+    loadLiveEditorialEntries().catch(() => [] as LiveEditorialEntry[]),
+  ]);
+
+  const postsToNormalize =
+    liveEssays.length > 0 ? collectionPosts.filter(post => !post.id.startsWith('essay/')) : collectionPosts;
+  const normalizedLocalPosts = await Promise.all(postsToNormalize.map(post => getNormalizedPost(post)));
+  const normalizedLiveEssays = await Promise.all(liveEssays.map(essay => liveEssayToPost(essay)));
+
+  const byId = new Map<string, Post>();
+  for (const post of normalizedLocalPosts) {
+    byId.set(post.id, post);
+  }
+  for (const post of normalizedLiveEssays) {
+    byId.set(post.id, post);
+  }
+
+  if (liveEditorial.length > 0) {
+    for (const entry of liveEditorial) {
+      byId.set(entry.id, normalizeEditorialEntry(entry));
+    }
+  } else {
+    const editorialEntries = await getCollection('editorial');
+    for (const entry of editorialEntries) {
+      byId.set(entry.id, normalizeEditorialEntry(entry));
+    }
+  }
+
+  return Array.from(byId.values())
+    .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf())
+    .filter(post => !post.draft);
+};
+
+const FETCH_POSTS_TTL_MS = 30_000;
+let cachedPosts: { at: number; posts: Array<Post> } | undefined;
 
 /** */
 export const isBlogEnabled = APP_BLOG.isEnabled;
@@ -148,11 +210,19 @@ export const blogPostsPerPage = APP_BLOG?.postsPerPage;
 
 /** */
 export const fetchPosts = async (): Promise<Array<Post>> => {
-  if (!_posts) {
-    _posts = await load();
+  if (cachedPosts && Date.now() - cachedPosts.at < FETCH_POSTS_TTL_MS) {
+    return cachedPosts.posts;
   }
 
-  return _posts;
+  const posts = await load();
+  cachedPosts = { at: Date.now(), posts };
+  return posts;
+};
+
+/** */
+export const findPostByPermalink = async (permalink: string): Promise<Post | undefined> => {
+  const posts = await fetchPosts();
+  return posts.find(post => post.permalink === permalink || post.slug === permalink);
 };
 
 /** */
@@ -217,78 +287,6 @@ export const findTags = async (): Promise<Taxonomy[]> => {
     }
   });
   return Array.from(tagMap.values());
-};
-
-/** */
-export const getStaticPathsBlogList = async ({ paginate }: { paginate: PaginateFunction }) => {
-  if (!isBlogEnabled || !isBlogListRouteEnabled) return [];
-  return paginate(await fetchPosts(), {
-    params: { blog: BLOG_BASE || undefined },
-    pageSize: blogPostsPerPage,
-  });
-};
-
-/** */
-export const getStaticPathsBlogPost = async () => {
-  if (!isBlogEnabled || !isBlogPostRouteEnabled) return [];
-  return (await fetchPosts())
-    .filter(post => !post.permalink.startsWith('writing/'))
-    .flatMap(post => ({
-      params: {
-        blog: post.permalink,
-      },
-      props: { post },
-    }));
-};
-
-/** */
-export const getStaticPathsBlogCategory = async ({ paginate }: { paginate: PaginateFunction }) => {
-  if (!isBlogEnabled || !isBlogCategoryRouteEnabled) return [];
-
-  const posts = await fetchPosts();
-  const categories: Record<string, Taxonomy> = {};
-  posts.map(post => {
-    if (post.category?.slug) {
-      categories[post.category?.slug] = post.category;
-    }
-  });
-
-  return Array.from(Object.keys(categories)).flatMap(categorySlug =>
-    paginate(
-      posts.filter(post => post.category?.slug && categorySlug === post.category?.slug),
-      {
-        params: { category: categorySlug, blog: CATEGORY_BASE || undefined },
-        pageSize: blogPostsPerPage,
-        props: { category: categories[categorySlug] },
-      }
-    )
-  );
-};
-
-/** */
-export const getStaticPathsBlogTag = async ({ paginate }: { paginate: PaginateFunction }) => {
-  if (!isBlogEnabled || !isBlogTagRouteEnabled) return [];
-
-  const posts = await fetchPosts();
-  const tags: Record<string, Taxonomy> = {};
-  posts.map(post => {
-    if (Array.isArray(post.tags)) {
-      post.tags.map(tag => {
-        tags[tag?.slug] = tag;
-      });
-    }
-  });
-
-  return Array.from(Object.keys(tags)).flatMap(tagSlug =>
-    paginate(
-      posts.filter(post => Array.isArray(post.tags) && post.tags.find(elem => elem.slug === tagSlug)),
-      {
-        params: { tag: tagSlug, blog: TAG_BASE || undefined },
-        pageSize: blogPostsPerPage,
-        props: { tag: tags[tagSlug] },
-      }
-    )
-  );
 };
 
 /** */

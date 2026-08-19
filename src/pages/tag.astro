@@ -5,7 +5,7 @@ import Headline from '~/components/blog/Headline.astro';
 import { blogTagRobots, findTags } from '~/utils/blog';
 import { getBlogTagPermalink } from '~/utils/permalinks';
 
-export const prerender = true;
+export const prerender = false;
 
 const allTags = await findTags();
 

@@ -1,6 +1,5 @@
 ---
-// Redirect /resources to /resources/all/1
-export const prerender = false;
+export const prerender = true;
 
-return Astro.redirect(`/resources/all/1${Astro.url.search || ''}`, 301);
+return Astro.redirect('/resources/all/1', 301);
 ---
