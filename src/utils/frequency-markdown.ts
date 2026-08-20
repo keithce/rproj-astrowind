@@ -76,6 +76,10 @@ export async function mapWithConcurrency<T, R>(
   concurrency: number,
   mapper: (item: T) => Promise<R>
 ): Promise<R[]> {
+  if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
+    throw new RangeError('concurrency must be a positive integer.');
+  }
+
   const results = new Array<R>(items.length);
   let nextIndex = 0;
   const worker = async () => {

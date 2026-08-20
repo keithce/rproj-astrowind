@@ -4,6 +4,7 @@ import {
   parseEditorialManifest,
   parseMarkdownDocument,
 } from '../../src/utils/frequency-editorial';
+import { mapWithConcurrency } from '../../src/utils/frequency-markdown';
 
 describe('parseEditorialManifest', () => {
   test('accepts the public_editorial_v1 contract', () => {
@@ -39,6 +40,14 @@ describe('parseMarkdownDocument', () => {
     const parsed = parseMarkdownDocument('---\ntitle: Hello\n---\n\nBody copy.\n');
     expect(parsed.frontmatter.title).toBe('Hello');
     expect(parsed.body.trim()).toBe('Body copy.');
+  });
+});
+
+describe('mapWithConcurrency', () => {
+  test('rejects a non-positive concurrency limit', async () => {
+    await expect(mapWithConcurrency([1], 0, async value => value)).rejects.toThrow(
+      'concurrency must be a positive integer'
+    );
   });
 });
 
