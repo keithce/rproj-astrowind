@@ -1,6 +1,4 @@
 ---
-import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
-
 import Layout from '~/layouts/PageLayout.astro';
 import BlogList from '~/components/blog/List.astro';
 import Headline from '~/components/blog/Headline.astro';
@@ -10,19 +8,36 @@ import Pagination from '~/components/blog/Pagination.astro';
 import PostTags from '~/components/blog/Tags.astro';
 import Search from '~/components/ui/Search.astro';
 
-import { blogListRobots, getStaticPathsBlogList, findCategories, findTags } from '~/utils/blog';
+import {
+  blogListRobots,
+  blogPostsPerPage,
+  fetchPosts,
+  findCategories,
+  findTags,
+  isBlogEnabled,
+  isBlogListRouteEnabled,
+} from '~/utils/blog';
+import { paginateItems, parsePageParam } from '~/utils/blog-pagination';
+import { getBlogPermalink } from '~/utils/permalinks';
 
-export const prerender = true;
+export const prerender = false;
 
-export const getStaticPaths = (async ({ paginate }) => {
-  return await getStaticPathsBlogList({ paginate });
-}) satisfies GetStaticPaths;
+if (!isBlogEnabled || !isBlogListRouteEnabled) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const pageNumber = parsePageParam(Astro.params.page);
+if (pageNumber === null) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
 
-const { page } = Astro.props as Props;
-const currentPage = page.currentPage ?? 1;
+const posts = await fetchPosts();
+const page = paginateItems(posts, pageNumber, blogPostsPerPage || 6, getBlogPermalink());
+if (!page) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
 
+const currentPage = page.currentPage;
 const allCategories = await findCategories();
 const allTags = await findTags();
 

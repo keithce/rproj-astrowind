@@ -1,32 +1,51 @@
 ---
-import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
-
 import merge from 'lodash.merge';
 import type { ImageMetadata } from 'astro';
+import { getCollection, render } from 'astro:content';
 import Layout from '~/layouts/PageLayout.astro';
 import SinglePost from '~/components/blog/SinglePost.astro';
 import ToBlogLink from '~/components/blog/ToBlogLink.astro';
 
 import { getCanonical, getPermalink } from '~/utils/permalinks';
-import { getStaticPathsBlogPost, blogPostRobots } from '~/utils/blog';
+import { blogPostRobots, findPostByPermalink, isBlogEnabled, isBlogPostRouteEnabled } from '~/utils/blog';
+import { loadLiveEssay } from '~/utils/frequency-essays';
 import { findImage } from '~/utils/images';
-import type { MetaData } from '~/types';
+import type { MetaData, Post } from '~/types';
 import RelatedPosts from '~/components/blog/RelatedPosts.astro';
 
-export const prerender = true;
+export const prerender = false;
 
-export const getStaticPaths = (async () => {
-  return await getStaticPathsBlogPost();
-}) satisfies GetStaticPaths;
+const permalink = Astro.params.blog;
+if (!isBlogEnabled || !isBlogPostRouteEnabled || !permalink) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+let post: Post | undefined = await findPostByPermalink(permalink);
+if (!post || post.permalink.startsWith('writing/')) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
 
-const { post } = Astro.props as Props;
+if (post.id.startsWith('essay/') && !post.content) {
+  const liveEssay = await loadLiveEssay(post.id).catch(() => undefined);
+  if (liveEssay?.html) {
+    post = { ...post, content: liveEssay.html };
+  }
+} else if (!post.Content && !post.content) {
+  const postId = post.id;
+  const entry = (await getCollection('post')).find(item => item.id === postId);
+  if (entry) {
+    const { Content, remarkPluginFrontmatter } = await render(entry);
+    post = {
+      ...post,
+      Content,
+      readingTime: remarkPluginFrontmatter?.readingTime,
+    };
+  }
+}
 
 const url = getCanonical(getPermalink(post.permalink, 'post'));
 const image = (await findImage(post.image)) as ImageMetadata | string | undefined;
 
-// Extract the Content component from the post
 const { Content } = post;
 
 const metadata = merge(

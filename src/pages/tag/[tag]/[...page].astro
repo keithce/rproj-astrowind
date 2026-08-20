@@ -1,0 +1,52 @@
+---
+import { blogPostsPerPage, blogTagRobots, fetchPosts, isBlogEnabled, isBlogTagRouteEnabled } from '~/utils/blog';
+import { paginateItems, parsePageParam } from '~/utils/blog-pagination';
+import { getPermalink } from '~/utils/permalinks';
+
+import Layout from '~/layouts/PageLayout.astro';
+import BlogList from '~/components/blog/List.astro';
+import Headline from '~/components/blog/Headline.astro';
+import Pagination from '~/components/blog/Pagination.astro';
+
+export const prerender = false;
+
+if (!isBlogEnabled || !isBlogTagRouteEnabled) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const tagSlug = Astro.params.tag;
+const pageNumber = parsePageParam(Astro.params.page);
+if (!tagSlug || pageNumber === null) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const posts = await fetchPosts();
+const tagPosts = posts.filter(post => Array.isArray(post.tags) && post.tags.some(tag => tag.slug === tagSlug));
+const tag = tagPosts[0]?.tags?.find(item => item.slug === tagSlug);
+if (!tag) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const page = paginateItems(tagPosts, pageNumber, blogPostsPerPage || 6, getPermalink(tagSlug, 'tag'));
+if (!page) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const currentPage = page.currentPage;
+
+const metadata = {
+  title: `Posts by tag '${tag.title}'${currentPage > 1 ? ` — Page ${currentPage} ` : ''}`,
+  robots: {
+    index: blogTagRobots?.index,
+    follow: blogTagRobots?.follow,
+  },
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="mx-auto max-w-4xl px-4 py-12 sm:py-16 md:px-6 lg:py-20">
+    <Headline>Tag: {tag.title}</Headline>
+    <BlogList posts={page.data} />
+    <Pagination prevUrl={page.url.prev} nextUrl={page.url.next} />
+  </section>
+</Layout>

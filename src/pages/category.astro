@@ -5,7 +5,7 @@ import Headline from '~/components/blog/Headline.astro';
 import { blogCategoryRobots, findCategories } from '~/utils/blog';
 import { getBlogCategoryPermalink } from '~/utils/permalinks';
 
-export const prerender = true;
+export const prerender = false;
 
 const allCategories = await findCategories();
 
