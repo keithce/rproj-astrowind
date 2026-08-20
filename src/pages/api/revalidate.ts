@@ -29,12 +29,13 @@ export const POST: APIRoute = async ({ request }) => {
           'x-prerender-revalidate': token,
         },
       });
-      return { path, status: response.status };
+      return { path, status: response.status, ok: response.ok };
     })
   );
 
-  return new Response(JSON.stringify({ ok: true, results }), {
-    status: 200,
+  const ok = results.every(result => result.ok);
+  return new Response(JSON.stringify({ ok, results }), {
+    status: ok ? 200 : 502,
     headers: { 'Content-Type': 'application/json' },
   });
 };

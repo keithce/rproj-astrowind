@@ -52,9 +52,7 @@ describe('editorialFrontmatterFromRaw', () => {
   };
 
   test('requires a valid canonical URL', () => {
-    expect(() => editorialFrontmatterFromRaw({ title: 'Hello' }, fallback)).toThrow(
-      'missing a valid canonicalAppUrl'
-    );
+    expect(() => editorialFrontmatterFromRaw({ title: 'Hello' }, fallback)).toThrow('missing a valid canonicalAppUrl');
   });
 
   test('keeps explicit canonical and dek values', () => {
@@ -72,5 +70,17 @@ describe('editorialFrontmatterFromRaw', () => {
     expect(data.title).toBe('Named');
     expect(data.dek).toBe('A short dek.');
     expect(data.canonicalAppUrl).toBe('https://app.resonantprojects.art/editorial/fixture-phase-four-id');
+  });
+
+  test('falls back when publishedAt is invalid', () => {
+    const data = editorialFrontmatterFromRaw(
+      {
+        publishedAt: 'not-a-date',
+        canonicalAppUrl: 'https://app.resonantprojects.art/editorial/fixture-phase-four-id',
+      },
+      fallback
+    );
+
+    expect(data.publishedAt.getTime()).toBe(fallback.publishedAt);
   });
 });

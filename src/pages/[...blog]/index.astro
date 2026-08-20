@@ -31,7 +31,8 @@ if (post.id.startsWith('essay/') && !post.content) {
     post = { ...post, content: liveEssay.html };
   }
 } else if (!post.Content && !post.content) {
-  const entry = (await getCollection('post')).find(item => item.id === post.id);
+  const postId = post.id;
+  const entry = (await getCollection('post')).find(item => item.id === postId);
   if (entry) {
     const { Content, remarkPluginFrontmatter } = await render(entry);
     post = {

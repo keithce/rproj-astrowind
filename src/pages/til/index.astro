@@ -1,5 +1,5 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
-return Astro.redirect('/til/all/1', 301);
+return Astro.redirect(`/til/all/1${Astro.url.search}`, 301);
 ---

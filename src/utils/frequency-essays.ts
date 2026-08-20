@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { FREQUENCY_EXPORTS_DIR, getEssayContentBaseUrl, getEssayManifestUrl } from '~/utils/frequency';
 import {
-  fetchText,
+  loadRemoteManifest,
   loadTextFromRemoteOrLocal,
+  mapWithConcurrency,
   parseMarkdownDocument,
   renderMarkdownHtml,
 } from '~/utils/frequency-markdown';
@@ -74,15 +75,13 @@ function toDate(value: unknown, fallback: Date): Date {
 export async function loadEssayManifestSource(): Promise<ManifestSource | null> {
   const manifestLocation = getEssayManifestUrl();
   const contentBaseUrl = getEssayContentBaseUrl();
-  try {
-    const manifest = parseEssayManifest(await fetchText(manifestLocation));
+  const remoteManifest = await loadRemoteManifest(manifestLocation, parseEssayManifest, 'essay');
+  if (remoteManifest) {
     return {
       mode: 'remote',
       contentBaseUrl,
-      manifest,
+      manifest: remoteManifest,
     };
-  } catch {
-    // Remote fetch failed — fall through to a local export dir when one is configured.
   }
 
   if (FREQUENCY_EXPORTS_DIR !== null) {
@@ -154,17 +153,15 @@ export async function loadLiveEssays(): Promise<LiveEssay[]> {
     return [];
   }
 
-  const results = await Promise.all(
-    source.manifest.items.map(async item => {
-      try {
-        return await loadEssayFromItem(source, item, false);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(`Failed to load essay ${item.slug}: ${message}`);
-        return null;
-      }
-    })
-  );
+  const results = await mapWithConcurrency(source.manifest.items, 6, async item => {
+    try {
+      return await loadEssayFromItem(source, item, false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to load essay ${item.slug}: ${message}`);
+      return null;
+    }
+  });
 
   return results
     .filter((essay): essay is LiveEssay => essay !== null)

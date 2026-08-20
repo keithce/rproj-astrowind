@@ -155,8 +155,8 @@ const load = async function (): Promise<Array<Post>> {
     loadLiveEditorialEntries().catch(() => [] as LiveEditorialEntry[]),
   ]);
 
-  const postsToNormalize =
-    liveEssays.length > 0 ? collectionPosts.filter(post => !post.id.startsWith('essay/')) : collectionPosts;
+  const liveEssayIds = new Set(liveEssays.map(essay => essay.id));
+  const postsToNormalize = collectionPosts.filter(post => !liveEssayIds.has(post.id));
   const normalizedLocalPosts = await Promise.all(postsToNormalize.map(post => getNormalizedPost(post)));
   const normalizedLiveEssays = await Promise.all(liveEssays.map(essay => liveEssayToPost(essay)));
 
@@ -185,7 +185,7 @@ const load = async function (): Promise<Array<Post>> {
 };
 
 const FETCH_POSTS_TTL_MS = 30_000;
-let cachedPosts: { at: number; posts: Array<Post> } | undefined;
+let cachedPosts: { at: number; posts: Promise<Array<Post>> } | undefined;
 
 /** */
 export const isBlogEnabled = APP_BLOG.isEnabled;
@@ -208,7 +208,10 @@ export const fetchPosts = async (): Promise<Array<Post>> => {
     return cachedPosts.posts;
   }
 
-  const posts = await load();
+  const posts = load().catch(error => {
+    cachedPosts = undefined;
+    throw error;
+  });
   cachedPosts = { at: Date.now(), posts };
   return posts;
 };

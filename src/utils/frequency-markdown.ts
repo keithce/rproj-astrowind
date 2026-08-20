@@ -20,44 +20,72 @@ export function parseMarkdownDocument(source: string): {
     throw new Error('Markdown file is missing frontmatter.');
   }
 
-  return {
-    frontmatter: loadYaml(match[1] ?? '') as Record<string, unknown>,
-    body: match[2] ?? '',
-  };
+  const frontmatter = loadYaml(match[1] ?? '');
+  if (frontmatter === null || typeof frontmatter !== 'object' || Array.isArray(frontmatter)) {
+    throw new Error('Markdown frontmatter must be a YAML mapping.');
+  }
+
+  return { frontmatter: frontmatter as Record<string, unknown>, body: match[2] ?? '' };
 }
 
-const fetchTextCache = new Map<string, Promise<string>>();
+const FETCH_TEXT_TTL_MS = 30_000;
+const fetchTextCache = new Map<string, { at: number; request: Promise<string> }>();
 
 async function fetchTextUncached(url: URL): Promise<string> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 6_000);
 
-  let response: Response;
   try {
-    response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
+    }
+    return await response.text();
   } finally {
     clearTimeout(timeoutId);
   }
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
-  }
-  return await response.text();
 }
 
 export async function fetchText(url: URL): Promise<string> {
   const key = url.toString();
   const cached = fetchTextCache.get(key);
-  if (cached) {
-    return cached;
+  if (cached && Date.now() - cached.at < FETCH_TEXT_TTL_MS) {
+    return cached.request;
   }
 
   const request = fetchTextUncached(url).catch(error => {
     fetchTextCache.delete(key);
     throw error;
   });
-  fetchTextCache.set(key, request);
+  fetchTextCache.set(key, { at: Date.now(), request });
   return request;
+}
+
+export async function loadRemoteManifest<T>(url: URL, parser: (raw: string) => T, label: string): Promise<T | null> {
+  try {
+    return parser(await fetchText(url));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Failed to load remote ${label} manifest: ${message}`);
+    return null;
+  }
+}
+
+export async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  const worker = async () => {
+    while (nextIndex < items.length) {
+      const index = nextIndex++;
+      results[index] = await mapper(items[index] as T);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
+  return results;
 }
 
 export async function renderMarkdownHtml(body: string): Promise<string> {

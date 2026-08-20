@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { FREQUENCY_EXPORTS_DIR, getEditorialContentBaseUrl, getEditorialManifestUrl } from '~/utils/frequency';
 import {
-  fetchText,
+  loadRemoteManifest,
   loadTextFromRemoteOrLocal,
+  mapWithConcurrency,
   parseMarkdownDocument,
   renderMarkdownHtml,
 } from '~/utils/frequency-markdown';
@@ -87,16 +88,14 @@ export function parseEditorialManifest(raw: string): EditorialManifest {
 export async function loadEditorialManifestSource(): Promise<EditorialManifestSource | null> {
   const manifestLocation = getEditorialManifestUrl();
   const contentBaseUrl = getEditorialContentBaseUrl();
-  try {
-    const manifest = parseEditorialManifest(await fetchText(manifestLocation));
+  const remoteManifest = await loadRemoteManifest(manifestLocation, parseEditorialManifest, 'editorial');
+  if (remoteManifest) {
     return {
       mode: 'remote',
       manifestUrl: manifestLocation,
       contentBaseUrl,
-      manifest,
+      manifest: remoteManifest,
     };
-  } catch {
-    // Remote fetch failed — fall through to a local export dir when one is configured.
   }
 
   if (FREQUENCY_EXPORTS_DIR !== null) {
@@ -146,12 +145,16 @@ export function editorialFrontmatterFromRaw(
   fallback: Pick<EditorialManifestEntry, 'slug' | 'title' | 'kind' | 'publishedAt' | 'evidenceStatus'>
 ): EditorialFrontmatter {
   const publishedAtValue = raw.publishedAt;
-  const publishedAt =
+  const parsedPublishedAt =
     publishedAtValue instanceof Date
       ? publishedAtValue
       : typeof publishedAtValue === 'string' || typeof publishedAtValue === 'number'
         ? new Date(publishedAtValue)
-        : new Date(fallback.publishedAt);
+        : undefined;
+  const publishedAt =
+    parsedPublishedAt && !Number.isNaN(parsedPublishedAt.getTime())
+      ? parsedPublishedAt
+      : new Date(fallback.publishedAt);
 
   const canonical = raw.canonicalAppUrl;
   if (typeof canonical !== 'string' || !URL.canParse(canonical)) {
@@ -179,8 +182,10 @@ export async function loadLiveEditorialEntries(): Promise<LiveEditorialEntry[]> 
     return [];
   }
 
-  const results = await Promise.all(
-    source.manifest.items.map(async item => {
+  const results = await mapWithConcurrency<EditorialManifestEntry, LiveEditorialEntry | null>(
+    source.manifest.items,
+    6,
+    async item => {
       try {
         const { raw, fileUrl } = await loadEditorialMarkdownEntry(source, item.path);
         const { frontmatter, body } = parseMarkdownDocument(raw);
@@ -190,14 +195,14 @@ export async function loadLiveEditorialEntries(): Promise<LiveEditorialEntry[]> 
           data,
           body,
           html: '',
-          fileUrl,
+          ...(fileUrl ? { fileUrl } : {}),
         } satisfies LiveEditorialEntry;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error(`Failed to load editorial entry "${item.slug}": ${message}`);
         return null;
       }
-    })
+    }
   );
 
   return results

@@ -55,6 +55,7 @@ describe('liveEssayFromRaw', () => {
     expect(essay.excerpt).toBe('A short excerpt.');
     expect(essay.category).toBe('music');
     expect(essay.tags).toEqual(['mix', 'master']);
+    expect(essay.publishDate.toISOString()).toBe(item.publishDate);
     expect(essay.html).toBe('<p>Body</p>');
   });
 });
