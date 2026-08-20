@@ -179,27 +179,30 @@ export async function loadLiveEditorialEntries(): Promise<LiveEditorialEntry[]> 
     return [];
   }
 
-  const entries: LiveEditorialEntry[] = [];
-  for (const item of source.manifest.items) {
-    try {
-      const { raw, fileUrl } = await loadEditorialMarkdownEntry(source, item.path);
-      const { frontmatter, body } = parseMarkdownDocument(raw);
-      const data = editorialFrontmatterFromRaw(frontmatter, item);
-      const html = await renderMarkdownHtml(body);
-      entries.push({
-        id: item.slug,
-        data,
-        body,
-        html,
-        fileUrl,
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(`Failed to load editorial entry "${item.slug}": ${message}`);
-    }
-  }
+  const results = await Promise.all(
+    source.manifest.items.map(async item => {
+      try {
+        const { raw, fileUrl } = await loadEditorialMarkdownEntry(source, item.path);
+        const { frontmatter, body } = parseMarkdownDocument(raw);
+        const data = editorialFrontmatterFromRaw(frontmatter, item);
+        return {
+          id: item.slug,
+          data,
+          body,
+          html: '',
+          fileUrl,
+        } satisfies LiveEditorialEntry;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to load editorial entry "${item.slug}": ${message}`);
+        return null;
+      }
+    })
+  );
 
-  return entries.sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime());
+  return results
+    .filter((entry): entry is LiveEditorialEntry => entry !== null)
+    .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime());
 }
 
 export async function loadLiveEditorialEntry(slug: string): Promise<LiveEditorialEntry | undefined> {

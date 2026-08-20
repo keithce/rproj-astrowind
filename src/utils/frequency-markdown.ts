@@ -26,9 +26,11 @@ export function parseMarkdownDocument(source: string): {
   };
 }
 
-export async function fetchText(url: URL): Promise<string> {
+const fetchTextCache = new Map<string, Promise<string>>();
+
+async function fetchTextUncached(url: URL): Promise<string> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), 6_000);
 
   let response: Response;
   try {
@@ -41,6 +43,21 @@ export async function fetchText(url: URL): Promise<string> {
     throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
   }
   return await response.text();
+}
+
+export async function fetchText(url: URL): Promise<string> {
+  const key = url.toString();
+  const cached = fetchTextCache.get(key);
+  if (cached) {
+    return cached;
+  }
+
+  const request = fetchTextUncached(url).catch(error => {
+    fetchTextCache.delete(key);
+    throw error;
+  });
+  fetchTextCache.set(key, request);
+  return request;
 }
 
 export async function renderMarkdownHtml(body: string): Promise<string> {

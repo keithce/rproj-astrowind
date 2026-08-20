@@ -1,4 +1,4 @@
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import type { Post, Taxonomy, MetaData } from '~/types';
 import { APP_BLOG } from 'astrowind:config';
@@ -43,7 +43,6 @@ const generatePermalink = async ({
 
 const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> => {
   const { id, data } = post;
-  const { Content, remarkPluginFrontmatter } = await render(post);
 
   const {
     publishDate: rawPublishDate = new Date(),
@@ -93,11 +92,6 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
     draft,
 
     metadata: metadata as MetaData,
-
-    Content,
-    // or 'content' in case you consume from API
-
-    readingTime: remarkPluginFrontmatter?.readingTime,
   };
 };
 
@@ -150,7 +144,7 @@ const liveEssayToPost = async (essay: LiveEssay): Promise<Post> => {
     author: essay.author,
     draft: essay.draft,
     metadata: {},
-    content: essay.html,
+    ...(essay.html ? { content: essay.html } : {}),
   };
 };
 

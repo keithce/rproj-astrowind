@@ -34,7 +34,7 @@ export interface LiveEssay {
   author?: string;
   draft: boolean;
   image?: string;
-  html: string;
+  html?: string;
 }
 
 type ManifestSource =
@@ -113,7 +113,7 @@ export async function loadEssayMarkdownEntry(
   return loadTextFromRemoteOrLocal(source, relativePath, 'Essay');
 }
 
-export function liveEssayFromRaw(raw: Record<string, unknown>, item: EssayManifestItem, html: string): LiveEssay {
+export function liveEssayFromRaw(raw: Record<string, unknown>, item: EssayManifestItem, html?: string): LiveEssay {
   const fallbackDate = item.publishDate ? new Date(item.publishDate) : new Date(0);
   const category = typeof raw.category === 'string' ? raw.category : item.category || undefined;
   const image = typeof raw.image === 'string' ? raw.image : undefined;
@@ -137,24 +137,51 @@ export function liveEssayFromRaw(raw: Record<string, unknown>, item: EssayManife
   };
 }
 
+async function loadEssayFromItem(
+  source: ManifestSource,
+  item: EssayManifestItem,
+  renderHtml: boolean
+): Promise<LiveEssay> {
+  const { raw } = await loadEssayMarkdownEntry(source, item.path);
+  const { frontmatter, body } = parseMarkdownDocument(raw);
+  const html = renderHtml ? await renderMarkdownHtml(body) : undefined;
+  return liveEssayFromRaw(frontmatter, item, html);
+}
+
 export async function loadLiveEssays(): Promise<LiveEssay[]> {
   const source = await loadEssayManifestSource();
   if (!source) {
     return [];
   }
 
-  const essays: LiveEssay[] = [];
-  for (const item of source.manifest.items) {
-    try {
-      const { raw } = await loadEssayMarkdownEntry(source, item.path);
-      const { frontmatter, body } = parseMarkdownDocument(raw);
-      const html = await renderMarkdownHtml(body);
-      essays.push(liveEssayFromRaw(frontmatter, item, html));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(`Failed to load essay ${item.slug}: ${message}`);
-    }
+  const results = await Promise.all(
+    source.manifest.items.map(async item => {
+      try {
+        return await loadEssayFromItem(source, item, false);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to load essay ${item.slug}: ${message}`);
+        return null;
+      }
+    })
+  );
+
+  return results
+    .filter((essay): essay is LiveEssay => essay !== null)
+    .sort((left, right) => right.publishDate.getTime() - left.publishDate.getTime());
+}
+
+export async function loadLiveEssay(idOrSlug: string): Promise<LiveEssay | undefined> {
+  const source = await loadEssayManifestSource();
+  if (!source) {
+    return undefined;
   }
 
-  return essays.sort((left, right) => right.publishDate.getTime() - left.publishDate.getTime());
+  const slug = idOrSlug.startsWith('essay/') ? idOrSlug.slice('essay/'.length) : idOrSlug;
+  const item = source.manifest.items.find(entry => entry.slug === slug);
+  if (!item) {
+    return undefined;
+  }
+
+  return loadEssayFromItem(source, item, true);
 }
