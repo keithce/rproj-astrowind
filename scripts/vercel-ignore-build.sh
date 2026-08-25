@@ -10,6 +10,16 @@ set -u
 PREV="${VERCEL_GIT_PREVIOUS_SHA:-}"
 CURR="${VERCEL_GIT_COMMIT_SHA:-}"
 
+# Escape hatch for build-time-only configuration changes. `ISR_BYPASS_TOKEN` is
+# read in astro.config.ts and baked into the ISR prerender config, so setting or
+# rotating it needs a fresh build at an unchanged SHA -- exactly the case the
+# SHA check below cancels. Set FORCE_BUILD=1 as a project environment variable,
+# run one deployment, then remove it.
+if [[ "${FORCE_BUILD:-}" == "1" ]]; then
+  echo "Build: FORCE_BUILD=1 set, skipping the ignore checks."
+  exit 1
+fi
+
 if [[ -n "$PREV" && -n "$CURR" && "$PREV" == "$CURR" ]]; then
   echo "Skip: git SHA $CURR matches the previous deployment (deploy hook / empty rebuild)."
   exit 0
